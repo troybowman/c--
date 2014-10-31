@@ -15,22 +15,22 @@
 
 %%
 
-"while"		{ return WHILE; }
-"return"	{ return RETURN; }
-"char"		{ yylval.type = CHAR_TYPE; return CHAR; }
-"int"		{ yylval.type = INT_TYPE; return INT; }
-"void"		{ yylval.type = VOID_TYPE; return VOID; }
-"extern"	{ return EXTERN; }
-"if"		{ return IF; }
-"else"		{ return ELSE; }
-"for"		{ return FOR; }
-"=="		{ return EQUALS; }
-"!="		{ return NOT_EQUAL; }
-"<="		{ return LT_EQUAL; }
-">="		{ return GT_EQUAL; }
-"&&"		{ return AND; }
-"||"		{ return OR; }
-			
+"while"	 { return WHILE; }
+"return" { return RETURN; }
+"char"	 { yylval.type = CHAR_TYPE; return CHAR; }
+"int"		 { yylval.type = INT_TYPE; return INT; }
+"void"	 { yylval.type = VOID_TYPE; return VOID; }
+"extern" { return EXTERN; }
+"if"		 { return IF; }
+"else"	 { return ELSE; }
+"for"		 { return FOR; }
+"=="		 { return EQUALS; }
+"!="		 { return NOT_EQUAL; }
+"<="		 { return LT_EQUAL; }
+">="		 { return GT_EQUAL; }
+"&&"		 { return AND; }
+"||"		 { return OR; }
+
 "[" |
 "]" |
 "(" |
@@ -46,28 +46,52 @@
 "/" |
 "=" |
 "<" |
-">"	         { return yytext[0]; }
+">"	{ return yytext[0]; }
 
 
-[0-9]+		 { yylval.con = atoi(yytext); return INT_CON; }
+[0-9]+ {
+         yylval.con = atoi(yytext);
+         return INT_CON;
+       }
 
-'[[:print:]]{-}[\]{-}[']' |			
-'\\n'		  	  |			
-'\\0'						{ /*printf("found Charcon\n");*/ yylval.charCon = strdup(yytext); return CHAR_CON; }
+'[[:print:]]{-}[\]{-}[']' |
+'\\n'		  	              |
+'\\0'						          {
+                            yylval.charCon = strdup(yytext);
+                            return CHAR_CON;
+                          }
 
-[[:alpha:]]{+}[_]   |      
-[[:alpha:]][[:alpha:]]{+}[_]{+}[0-9]+           { yylval.id = strdup(yytext); return ID; }
+[[:alpha:]]{+}[_]                     |
+[[:alpha:]][[:alpha:]]{+}[_]{+}[0-9]+ {
+                                        yylval.id = strdup(yytext);
+                                        return ID;
+                                      }
 
-"\""[[:print:]]{-}["]{-}[\n]+"\""		{ /*printf("found stringcon\n");*/ yylval.stringCon = strdup(yytext); return STRING_CON; }	
+"\""[[:print:]]{-}["]{-}[\n]+"\""	{
+                                    yylval.stringCon = strdup(yytext);
+                                    return STRING_CON;
+                                  }
 
-[[:space:]]+
+[[:space:]]+ /* nom */
 
 
-"/*"			 { BEGIN(COMMENT); }
-<COMMENT>"*/"   	 { BEGIN(INITIAL); }
-<COMMENT>([^*]|\n)+|.	
-<COMMENT><<EOF>>	 { printf("Unterminated comment, line %d\n", yylineno); return 0; }
+"/*" {
+       BEGIN(COMMENT);
+     }
 
-.			 { /*printf("found error token\n");*/ return yytext[0]; }
- 
+<COMMENT>"*/" {
+                BEGIN(INITIAL);
+              }
+
+<COMMENT>([^*]|\n)+|. /* nom */
+
+<COMMENT><<EOF>> {
+                   printf("Unterminated comment, line %d\n", yylineno);
+                   return 0;
+                 }
+
+.	{
+    return yytext[0];
+  }
+
 %%
