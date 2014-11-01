@@ -4,9 +4,9 @@
   #include <errno.h>
   #include <string.h>
 
-  extern FILE *yyin;
-  extern int yylex();
-  extern int yylineno;
+  extern "C" FILE *yyin;
+  extern "C" int yylex();
+  extern "C" int yylineno;
   int yyerror(const char *s);
 %}
 

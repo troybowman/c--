@@ -1,6 +1,7 @@
 %{
   #include <stdlib.h>
-  #include "parser.tab.h"
+  #include "parser.hpp"
+  #define YY_DECL extern "C" int yylex()
 %}
 
 %option noinput
