@@ -1,35 +1,31 @@
 %{
-  #include<stdlib.h>
-#ifndef TABLE_C
-  #define TABLE_C
-  #include "table.c"
-#endif
+  #include <stdlib.h>
   #include "parser.tab.h"
-  //extern int yylval;
 %}
 
-%option nounput
 %option noinput
+%option nounput
 %option yylineno
+
 %x COMMENT
 
 %%
 
-"while"	 { return WHILE; }
+"int"		 { return INT_TYPE;  }
+"char"	 { return CHAR_TYPE; }
+"void"	 { return VOID_TYPE; }
+"while"	 { return WHILE;  }
 "return" { return RETURN; }
-"char"	 { yylval.type = CHAR_TYPE; return CHAR; }
-"int"		 { yylval.type = INT_TYPE; return INT; }
-"void"	 { yylval.type = VOID_TYPE; return VOID; }
 "extern" { return EXTERN; }
-"if"		 { return IF; }
-"else"	 { return ELSE; }
-"for"		 { return FOR; }
-"=="		 { return EQUALS; }
-"!="		 { return NOT_EQUAL; }
-"<="		 { return LT_EQUAL; }
-">="		 { return GT_EQUAL; }
-"&&"		 { return AND; }
-"||"		 { return OR; }
+"if"		 { return IF;     }
+"else"	 { return ELSE;   }
+"for"		 { return FOR;    }
+"=="		 { return EQ;     }
+"!="		 { return NEQ;    }
+"<="		 { return LEQ;    }
+">="		 { return GEQ;    }
+"&&"		 { return AND;    }
+"||"		 { return OR;     }
 
 "[" |
 "]" |
@@ -50,26 +46,25 @@
 
 
 [0-9]+ {
-         yylval.con = atoi(yytext);
-         return INT_CON;
+         yylval.i = atoi(yytext);
+         return INT;
        }
 
 '[[:print:]]{-}[\]{-}[']' |
 '\\n'		  	              |
 '\\0'						          {
-                            yylval.charCon = strdup(yytext);
-                            return CHAR_CON;
+                            yylval.str = strdup(yytext);
+                            return CHAR;
                           }
 
-[[:alpha:]]{+}[_]                     |
-[[:alpha:]][[:alpha:]]{+}[_]{+}[0-9]+ {
-                                        yylval.id = strdup(yytext);
-                                        return ID;
-                                      }
+[[:alpha:]]([[:alpha:]]{+}[_]{+}[0-9]+)? {
+                                           yylval.str = strdup(yytext);
+                                           return ID;
+                                         }
 
 "\""[[:print:]]{-}["]{-}[\n]+"\""	{
-                                    yylval.stringCon = strdup(yytext);
-                                    return STRING_CON;
+                                    yylval.str = strdup(yytext);
+                                    return STRING;
                                   }
 
 [[:space:]]+ /* nom */
