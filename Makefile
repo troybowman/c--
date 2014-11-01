@@ -16,8 +16,8 @@ lex.yy.c : scanner.l
 	flex scanner.l
 
 parser.tab.c : parser.y
-	bison -d parser.y
+	bison -d -v parser.y
 
 .PHONY: clean
 clean:
-	rm -rf c--* lex.yy.c parser.tab* *.o
+	rm -rf c--* lex.yy.c parser.tab* *.o parser.output

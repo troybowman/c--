@@ -19,7 +19,7 @@
 %token<i> INT
 %token<str> CHAR STRING ID
 
-%token INT_TYPE CHAR_TYPE VOID_TYPE
+%token INT_TYPE CHAR_TYPE VOID
 %token WHILE RETURN EXTERN IF ELSE FOR
 %token EQ NEQ LEQ GEQ AND OR
 
@@ -32,7 +32,11 @@ prog : prog decl  ';' /* done - trailing decls are fine */
      | /* empty */
      ;
 
-decl : type var_decl decl_list
+decl : type var_decl var_decl_list
+     | EXTERN type func_decls
+     | EXTERN VOID func_decls
+     |        type func_decls
+     |        VOID func_decls
      ;
 
 type : INT_TYPE
@@ -43,9 +47,32 @@ var_decl : ID
          | ID '[' INT ']'
          ;
 
-decl_list : decl_list ',' var_decl
-          | /* empty */
+var_decl_list : var_decl_list ',' var_decl
+              | /* empty */
+              ;
+
+func_decls : func_decl func_decl_list
+           ;
+
+func_decl : ID '(' param_decls ')'
           ;
+
+func_decl_list : func_decl_list ',' func_decl
+               | /* empty */
+               ;
+
+param_decls : VOID
+            | param_decl param_decl_list
+            ;
+
+param_decl : type ID
+           | type ID '[' ']'
+           ;
+
+param_decl_list : param_decl_list ',' param_decl
+                | /* empty */
+                ;
+
 
 %%
 

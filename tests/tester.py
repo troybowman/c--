@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys, os, glob, subprocess, re
 
 cmm = os.path.join("..", "c--")

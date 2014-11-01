@@ -13,7 +13,7 @@
 
 "int"		 { return INT_TYPE;  }
 "char"	 { return CHAR_TYPE; }
-"void"	 { return VOID_TYPE; }
+"void"	 { return VOID;      }
 "while"	 { return WHILE;  }
 "return" { return RETURN; }
 "extern" { return EXTERN; }
