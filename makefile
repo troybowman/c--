@@ -1,10 +1,17 @@
 CC = g++
-CFLAGS = -g -Wall -O2
 
-PARSER_CPP = parser.cpp
-SCANNER_CPP = scanner.cpp
+I = ./include/
+SRC = ./src/
+BIN = ./bin/
+OBJ = ./obj/
 
-CPPFILES = $(PARSER_CPP) $(SCANNER_CPP)
+CFLAGS = -I$(I)
+
+ifndef NDEBUG
+  CFLAGS += -g -Wall
+else
+  CFLAGS += -O2 -DNDEBUG
+endif
 
 ifdef __MAC__
   LIBFLEX=-ll
@@ -12,15 +19,31 @@ else
   LIBFLEX=-lfl
 endif
 
-c--: $(CPPFILES)
-	$(CC) $(CFLAGS) -o $@ $(CPPFILES) $(LIBFLEX)
+OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)messages.o
+HFILES   = $(I)symbols.h $(I)messages.h
 
-$(SCANNER_CPP): scanner.l
-	flex -o $@ scanner.l
+#------------------------------------------------------------------------------
+$(BIN)c--: $(OBJFILES)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBFLEX)
 
-$(PARSER_CPP): parser.y
-	bison -o $@ -d -v parser.y
+#------------------------------------------------------------------------------
+$(OBJ)parser.o: $(OBJ)parser.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJ)parser.cpp: $(SRC)parser.y $(HFILES)
+	bison -o $@ -d -v $<
+
+#------------------------------------------------------------------------------
+$(OBJ)scanner.o: $(OBJ)scanner.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
+	flex -o $@ $<
+
+#------------------------------------------------------------------------------
+$(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY: clean
 clean:
-	rm -rf c--* $(PARSER_CPP) $(SCANNER_CPP) parser.tab* *.o parser.output
+	rm -rf $(BIN)c--* $(OBJ)*

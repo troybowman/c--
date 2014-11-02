@@ -1,5 +1,6 @@
 %{
   #include <stdlib.h>
+  #include <symbols.h>
   #include "parser.hpp"
   #define YY_DECL extern "C" int yylex()
 %}
