@@ -31,6 +31,18 @@ static const char *prim2str(primitive_t p)
 }
 
 //-----------------------------------------------------------------------------
+static const char *rt2str(return_type_t rt_type)
+{
+  switch ( rt_type )
+  {
+    case RT_INT:  return "RT_INT";
+    case RT_CHAR: return "RT_CHAR";
+    case RT_VOID: return "RT_VOID";
+    default:      return "RT_UNKNOWN";
+  }
+}
+
+//-----------------------------------------------------------------------------
 void print_gsyms()
 {
   fprintf(stdout, header, "GLOBAL SYMBOL TABLE");
@@ -57,7 +69,34 @@ void print_gsyms()
         break;
       case ST_FUNCTION:
         fprintf(stdout, "ST_FUNCTION\n");
-        cmtout("    coming soon...\n");
+        cmtout("    rt_type: %s\n", rt2str(s->func.rt_type));
+        cmtout("    params:\n");
+        if ( s->func.params == NULL )
+          cmtout("      none\n");
+        else
+        {
+          paramlist_t::iterator i;
+          for ( i = s->func.params->begin(); i < s->func.params->end(); i++ )
+          {
+            cmtout("       %d: %s\n", i->idx, i->sym->name.c_str());
+            cmtout("         type: ");
+            switch ( i->sym->type )
+            {
+              case ST_PRIMITIVE:
+                fprintf(stdout, "ST_PRIMITIVE\n");
+                cmtout("            base: %s\n", prim2str(i->sym->prim));
+                break;
+              case ST_ARRAY:
+                fprintf(stdout, "ST_ARRAY\n");
+                cmtout("            base: %s\n", prim2str(i->sym->array.type));
+                break;
+              default:
+                fprintf(stdout, "ST_UNKNOWN\n");
+                break;
+            }
+          }
+        }
+        cmtout("    is_extern: %s\n", s->func.is_extern ? "yes" : "no");
         break;
       default:
         fprintf(stdout, "ST_UNKNOWN\n");

@@ -14,9 +14,10 @@ else
 endif
 
 ifdef __MAC__
-  LIBFLEX=-ll
+  CFLAGS += -Wno-varargs
+  LIBFLEX = -ll
 else
-  LIBFLEX=-lfl
+  LIBFLEX = -lfl
 endif
 
 OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)messages.o

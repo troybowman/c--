@@ -20,23 +20,22 @@
   symtab_t lsyms; // local symbol table
 
   static void insert_gvar(symbol_t *sym, primitive_t prim);
-  static inline void process_gvar_list(primitive_t type, symlist_t *list)
-  {
-    if ( list == NULL )
-      return;
-    symlist_t::iterator i;
-    for ( i = list->begin(); i != list->end(); i++ )
-      insert_gvar(*i, type);
-  }
+  static void process_gvar_list(symlist_t *list, primitive_t type);
+  static void process_func_list(
+    symlist_t *list,
+    return_type_t rt,
+    bool is_extern);
 %}
 
 %union
 {
   int i;
   char *str;
-  symbol_t *sym;
   primitive_t prim;
+  symbol_t *sym;
   symlist_t *symlist;
+  param_t param;
+  paramlist_t *paramlist;
 }
 
 %token<i> INT
@@ -47,8 +46,11 @@
 %token EQ NEQ LEQ GEQ AND OR
 
 %type<prim> type
-%type<sym> var_decl
-%type<symlist> var_decl_list
+%type<sym> var_decl func_decl
+%type<symlist> var_decls  var_decl_list
+%type<symlist> func_decls func_decl_list
+%type<param> param_decl
+%type<paramlist> param_decl_list
 
 %start prog
 
@@ -59,39 +61,38 @@ prog : prog decl  ';' /* done - trailing decls are fine */
      | /* empty */
      ;
 
-decl : type var_decl var_decl_list
-       {
-         insert_gvar($2, $1);
-         process_gvar_list($1, $3);
-         if ( $3 != NULL )
-           delete $3;
-       }
-     | EXTERN type func_decls
-     | EXTERN VOID func_decls
-     |        type func_decls
-     |        VOID func_decls
+decl :        type var_decls  { process_gvar_list($2, $1);                       }
+     | EXTERN type func_decls { process_func_list($3, return_type_t($2), true);  }
+     | EXTERN VOID func_decls { process_func_list($3, RT_VOID,           true);  }
+     |        type func_decls { process_func_list($2, return_type_t($1), false); }
+     |        VOID func_decls { process_func_list($2, RT_VOID,           false); }
      ;
 
 type : INT_TYPE  { $$ = PRIM_INT; }
      | CHAR_TYPE { $$ = PRIM_CHAR; }
      ;
 
+var_decls : var_decl var_decl_list
+            {
+              symlist_t *list = $2 == NULL ? new symlist_t() : $2;
+              if ( $1 != NULL )
+                list->push_back($1);
+              $$ = list;
+            }
+          ;
+
 var_decl : ID
            {
-             $$ = new symbol_t($1, yylineno);
+             $$ = new symbol_t($1, yylineno, ST_PRIMITIVE, ST_UNKNOWN);
              free($1);
            }
          | ID '[' INT ']'
            {
              if ( $3 >= 0 )
-             {
-               $$ = new symbol_t($1, $3, yylineno);
-             }
+               $$ = new symbol_t($1, yylineno, ST_ARRAY, PRIM_UNKNOWN, $3);
              else
              {
-               fprintf(stderr,
-                       "error, line %d: arrays must have non-negative size\n",
-                       yylineno);
+               fprintf(stderr, "error, line %d: arrays must have non-negative size\n", yylineno);
                $$ = NULL;
              }
              free($1);
@@ -101,7 +102,7 @@ var_decl : ID
 var_decl_list : var_decl_list ',' var_decl
                 {
                   symlist_t *symlist = $1;
-                  if ( $1 == NULL )
+                  if ( symlist == NULL )
                     symlist = new symlist_t();
                   if ( $3 != NULL )
                     symlist->push_back($3);
@@ -111,25 +112,66 @@ var_decl_list : var_decl_list ',' var_decl
               ;
 
 func_decls : func_decl func_decl_list
+             {
+               symlist_t *list = $2 == NULL ? new symlist_t() : $2;
+               list->push_back($1);
+               $$ = list;
+             }
            ;
 
-func_decl : ID '(' param_decls ')'
+func_decl : ID '(' VOID ')'
+            {
+              $$ = new symbol_t($1, yylineno, ST_FUNCTION, NULL, RT_UNKNOWN, false);
+              free($1);
+            }
+          | ID '(' param_decl param_decl_list ')'
+            {
+              paramlist_t *params = $4 == NULL
+                                     ? new paramlist_t()
+                                     : $4;
+              params->insert(params->begin(), $3);
+              int size = params->size();
+              for ( int i = 0; i < size; i++ )
+                params->at(i).idx = i;
+              $$ = new symbol_t($1, yylineno, ST_FUNCTION, params, RT_UNKNOWN, false);
+              free($1);
+            }
           ;
 
 func_decl_list : func_decl_list ',' func_decl
-               | /* empty */
+                 {
+                   symlist_t *symlist = $1;
+                   if ( symlist == NULL )
+                     symlist = new symlist_t();
+                   symlist->push_back($3);
+                   $$ = symlist;
+                 }
+               | /* empty */ { $$ = NULL; }
                ;
 
-param_decls : VOID
-            | param_decl param_decl_list
-            ;
-
 param_decl : type ID
+             {
+               $$.idx = -1;
+               $$.sym = new symbol_t($2, yylineno, ST_PRIMITIVE, $1);
+               free($2)
+             }
            | type ID '[' ']'
+             {
+               $$.idx = -1;
+               $$.sym = new symbol_t($2, yylineno, ST_ARRAY, $1, -1);
+               free($2);
+             }
            ;
 
 param_decl_list : param_decl_list ',' param_decl
-                | /* empty */
+                  {
+                    paramlist_t *paramlist = $1;
+                    if ( paramlist == NULL )
+                      paramlist = new paramlist_t();
+                    paramlist->push_back($3);
+                    $$ = paramlist;
+                  }
+                | /* empty */ { $$ = NULL; }
                 ;
 
 %%
@@ -172,6 +214,33 @@ static void insert_gvar(symbol_t *sym, primitive_t prim)
     }
     insert_gsym(sym);
   }
+}
+
+//-----------------------------------------------------------------------------
+static void process_gvar_list(symlist_t *list, primitive_t type)
+{
+  if ( list == NULL )
+    return;
+  symlist_t::iterator i;
+  for ( i = list->begin(); i != list->end(); i++ )
+    insert_gvar(*i, type);
+  delete list;
+}
+
+//-----------------------------------------------------------------------------
+static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_extern)
+{
+  if ( list == NULL )
+    return;
+  symlist_t::iterator i;
+  for ( i = list->begin(); i != list->end(); i++ )
+  {
+    symbol_t *sym = *i;
+    sym->func.rt_type = rt_type;
+    sym->func.is_extern = is_extern;
+    insert_gsym(sym);
+  }
+  delete list;
 }
 
 //-----------------------------------------------------------------------------

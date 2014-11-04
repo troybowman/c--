@@ -2,6 +2,7 @@
 #define SYMBOL_H
 
 #include <stdlib.h>
+#include <vector>
 #include <string>
 #include <list>
 #include <map>
@@ -10,6 +11,7 @@ struct symbol_t;
 struct function_t;
 struct array_t;
 
+//-----------------------------------------------------------------------------
 // symbol table
 typedef std::map<std::string, symbol_t *> symtab_t;
 // for things like: int x, y, z;
@@ -18,23 +20,25 @@ typedef std::list<symbol_t *> symlist_t;
 extern symtab_t gsyms; // global symbol table
 extern symtab_t lsyms; // local symbol table
 
-enum primitive_t
-{
-  PRIM_UNKNOWN,
-  PRIM_INT,
-  PRIM_CHAR
-};
-
+//-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_UNKNOWN,
+  ST_UNKNOWN = -1,
   ST_PRIMITIVE,
   ST_ARRAY,
   ST_FUNCTION
 };
 
-// array size
-typedef int asize_t;
+//-----------------------------------------------------------------------------
+enum primitive_t
+{
+  PRIM_UNKNOWN = -1,
+  PRIM_INT,
+  PRIM_CHAR
+};
+
+//-----------------------------------------------------------------------------
+typedef int asize_t; // array size
 
 struct array_t
 {
@@ -42,6 +46,32 @@ struct array_t
   primitive_t type;
 };
 
+//-----------------------------------------------------------------------------
+enum return_type_t
+{
+  RT_UNKNOWN = PRIM_UNKNOWN,
+  RT_INT     = PRIM_INT,
+  RT_CHAR    = PRIM_CHAR,
+  RT_VOID
+};
+
+//-----------------------------------------------------------------------------
+struct param_t
+{
+  int idx;
+  symbol_t *sym;
+};
+
+typedef std::vector<param_t> paramlist_t;
+
+struct function_t
+{
+  return_type_t rt_type;
+  paramlist_t *params;
+  bool is_extern;
+};
+
+//-----------------------------------------------------------------------------
 struct symbol_t
 {
   int line;
@@ -51,30 +81,41 @@ struct symbol_t
   {
     primitive_t prim;
     array_t array;
-    //function_t func;
+    function_t func;
   };
 
-  symbol_t(char *_name,
-           asize_t size,
-           int _line) : line(_line), type(ST_ARRAY)
+  symbol_t(const char *_name, int _line, symbol_type_t _type, ...)
+    : line(_line), type(_type)
   {
     name.assign(_name);
-    array.size = size;
-    array.type = PRIM_UNKNOWN;
+
+    va_list va;
+    va_start(va, _type);
+    switch ( _type )
+    {
+      case ST_PRIMITIVE:
+        prim = va_arg(va, primitive_t);
+        break;
+      case ST_ARRAY:
+        array.type = va_arg(va, primitive_t);
+        array.size = va_arg(va, asize_t);
+        break;
+      case ST_FUNCTION:
+        func.params    = va_arg(va, paramlist_t *);
+        func.rt_type   = va_arg(va, return_type_t);
+        func.is_extern = va_arg(va, bool);
+        break;
+      default:
+        type = ST_UNKNOWN;
+        break;
+    }
   }
 
-  symbol_t(char *_name, int _line)
-    : line(_line), type(ST_PRIMITIVE)
+  ~symbol_t()
   {
-    name.assign(_name);
-    prim = PRIM_UNKNOWN;
+    if ( type == ST_FUNCTION && func.params != NULL )
+      func.params->clear();
   }
-
-  //~symbol_t()
-  //{
-  //  if ( type == ST_FUNCTION )
-  //    func.params.clear()
-  //}
 };
 
 #endif // SYMBOL_H

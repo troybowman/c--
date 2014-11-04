@@ -23,4 +23,9 @@ extern int f19(int a, int b[], char c, char d[]), f20(int x, int y, char z, char
 extern void f21(void),
             f22(int x[]),
             f23(char x[]),
-            f24(int x, int y);
+            f24(int x, int y),
+
+f25(int a, int a, int a, int a,int a, int a, int a, int a,
+    int c[], int c[], int c[], int c[],int c[], int c[], int c[], int c[],
+    char b, char b, char b, char b,char b, char b, char b, char b,
+    char d[], char d[], char d[], char d[],char d[], char d[], char d[], char d[]);
