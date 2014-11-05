@@ -75,7 +75,7 @@ void print_gsyms()
           cmtout("      none\n");
         else
         {
-          paramlist_t::iterator i;
+          paramvec_t::iterator i;
           for ( i = s->func.params->begin(); i < s->func.params->end(); i++ )
           {
             cmtout("       %d: %s\n", i->idx, i->sym->name.c_str());

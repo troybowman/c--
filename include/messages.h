@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+//-----------------------------------------------------------------------------
 #define INTERR(code)                   \
 do                                     \
 {                                      \
@@ -12,11 +13,19 @@ do                                     \
   exit(code);                          \
 } while ( false );
 
-//-----------------------------------------------------------------------------
-// Debug/Logging messages
 
 #ifndef NDEBUG
 
+//-----------------------------------------------------------------------------
+#define ASSERT(code, cond) \
+do                         \
+{                          \
+  if ( !(cond) )           \
+    INTERR(code);          \
+} while ( false );
+
+//-----------------------------------------------------------------------------
+// Debug/Logging messages
 //-----------------------------------------------------------------------------
 typedef uint32_t dbg_flags_t;
 
@@ -54,8 +63,9 @@ do                                 \
 
 #else
 
-#define DBG(flag, ...) // nothing
+#define DBG(flag, ...)     // nothing
 #define DBG_SUMMARY(flags) // nothing
+#define ASSERT(code, cond) // nothing
 
 #endif // DEBUG
 

@@ -35,7 +35,7 @@
   symbol_t *sym;
   symlist_t *symlist;
   param_t param;
-  paramlist_t *paramlist;
+  paramvec_t *paramvec;
 }
 
 %token<i> INT
@@ -50,7 +50,7 @@
 %type<symlist> var_decls  var_decl_list
 %type<symlist> func_decls func_decl_list
 %type<param> param_decl
-%type<paramlist> param_decl_list
+%type<paramvec> param_decl_list
 
 %start prog
 
@@ -121,19 +121,21 @@ func_decls : func_decl func_decl_list
 
 func_decl : ID '(' VOID ')'
             {
-              $$ = new symbol_t($1, yylineno, ST_FUNCTION, NULL, RT_UNKNOWN, false);
+              $$ = new symbol_t($1, yylineno, ST_FUNCTION,
+                                RT_UNKNOWN, NULL, NULL, NULL, false);
               free($1);
             }
           | ID '(' param_decl param_decl_list ')'
             {
-              paramlist_t *params = $4 == NULL
-                                     ? new paramlist_t()
-                                     : $4;
+              paramvec_t *params = $4 == NULL
+                                    ? new paramvec_t()
+                                    : $4;
               params->insert(params->begin(), $3);
               int size = params->size();
               for ( int i = 0; i < size; i++ )
                 params->at(i).idx = i;
-              $$ = new symbol_t($1, yylineno, ST_FUNCTION, params, RT_UNKNOWN, false);
+              $$ = new symbol_t($1, yylineno, ST_FUNCTION,
+                                RT_UNKNOWN, params, NULL, NULL, false);
               free($1);
             }
           ;
@@ -165,11 +167,11 @@ param_decl : type ID
 
 param_decl_list : param_decl_list ',' param_decl
                   {
-                    paramlist_t *paramlist = $1;
-                    if ( paramlist == NULL )
-                      paramlist = new paramlist_t();
-                    paramlist->push_back($3);
-                    $$ = paramlist;
+                    paramvec_t *params = $1;
+                    if ( params == NULL )
+                      params = new paramvec_t();
+                    params->push_back($3);
+                    $$ = params;
                   }
                 | /* empty */ { $$ = NULL; }
                 ;
@@ -177,23 +179,92 @@ param_decl_list : param_decl_list ',' param_decl
 %%
 
 //-----------------------------------------------------------------------------
-static bool insert_gsym(symbol_t *sym)
+static bool param_check(const paramvec_t &p1, const paramvec_t &p2)
 {
-  if ( sym->type == ST_FUNCTION )
-  {
-    // check if defined or declared
-  }
-  else if ( gsyms[sym->name] != NULL )
-  {
-    fprintf(stderr,
-            "error, symbol %s redeclared at line %d "
-            "(previous declaration at line %d)\n",
-            sym->name.c_str(), sym->line, gsyms[sym->name]->line);
-    delete sym;
+  if ( p1.size() != p2.size() )
     return false;
+
+  int size = p1.size();
+  for ( int i = 0; i < size; i++ )
+  {
+    symbol_t *s1 = p1[i].sym;
+    symbol_t *s2 = p2[i].sym;
+
+    switch ( s1->type )
+    {
+      case ST_PRIMITIVE:
+        if ( s2->type != ST_PRIMITIVE || s2->prim != s1->prim )
+          return false;
+        break;
+      case ST_ARRAY:
+        if ( s2->type != ST_ARRAY || s2->array.type != s1->array.type )
+          return false;
+        break;
+      default:
+        INTERR(5555);
+    }
+  }
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+enum col_res_t
+{
+  COL_OK,
+  COL_REDECL,
+  COL_PARAMS
+};
+
+//-----------------------------------------------------------------------------
+static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
+{
+  ASSERT(6666, prev.name == sym.name);
+
+  if ( prev.type != ST_FUNCTION
+    || sym.type  != ST_FUNCTION
+    || prev.func.rt_type != sym.func.rt_type
+    || prev.func.is_extern
+    || prev.func.syntax_tree != NULL
+    || sym.func.syntax_tree  == NULL )
+  {
+    return COL_REDECL;
+  }
+
+  if ( !param_check(*prev.func.params, *sym.func.params) )
+    return COL_PARAMS;
+
+  return COL_OK;
+}
+
+//-----------------------------------------------------------------------------
+static void insert_gsym(symbol_t *sym)
+{
+  if ( gsyms[sym->name] != NULL )
+  {
+    symbol_t *prev = gsyms[sym->name];
+    col_res_t res = handle_collision(*prev, *sym);
+
+    if ( res != COL_OK )
+    {
+      if ( res == COL_PARAMS )
+      {
+        fprintf(stderr,
+                "error: paramters for function %s defined at line %d "
+                "do not match the parameters in its declaration at line %d\n",
+                sym->name.c_str(), sym->line, prev->line);
+      }
+      else
+      {
+        fprintf(stderr,
+                "error, symbol %s redeclared at line %d "
+                "(previous declaration at line %d)\n",
+                sym->name.c_str(), sym->line, prev->line);
+      }
+      delete sym;
+      return;
+    }
   }
   gsyms[sym->name] = sym;
-  return true;
 }
 
 //-----------------------------------------------------------------------------

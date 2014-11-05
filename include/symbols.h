@@ -7,6 +7,8 @@
 #include <list>
 #include <map>
 
+#include "treenode.h"
+
 struct symbol_t;
 struct function_t;
 struct array_t;
@@ -14,11 +16,14 @@ struct array_t;
 //-----------------------------------------------------------------------------
 // symbol table
 typedef std::map<std::string, symbol_t *> symtab_t;
+
 // for things like: int x, y, z;
 typedef std::list<symbol_t *> symlist_t;
 
-extern symtab_t gsyms; // global symbol table
-extern symtab_t lsyms; // local symbol table
+// allow anyone who includes this file to have access to
+// the global and local symbol tables
+extern symtab_t gsyms;
+extern symtab_t lsyms;
 
 //-----------------------------------------------------------------------------
 enum symbol_type_t
@@ -62,12 +67,14 @@ struct param_t
   symbol_t *sym;
 };
 
-typedef std::vector<param_t> paramlist_t;
+typedef std::vector<param_t> paramvec_t;
 
 struct function_t
 {
   return_type_t rt_type;
-  paramlist_t *params;
+  paramvec_t *params;
+  symtab_t *symbols;
+  treenode_t *syntax_tree;
   bool is_extern;
 };
 
@@ -101,9 +108,11 @@ struct symbol_t
         array.size = va_arg(va, asize_t);
         break;
       case ST_FUNCTION:
-        func.params    = va_arg(va, paramlist_t *);
-        func.rt_type   = va_arg(va, return_type_t);
-        func.is_extern = va_arg(va, bool);
+        func.rt_type     = va_arg(va, return_type_t);
+        func.params      = va_arg(va, paramvec_t *);
+        func.symbols     = va_arg(va, symtab_t *);
+        func.syntax_tree = va_arg(va, treenode_t *);
+        func.is_extern   = va_arg(va, bool);
         break;
       default:
         type = ST_UNKNOWN;
