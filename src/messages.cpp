@@ -9,9 +9,11 @@ static const char *header =
 "#-----------------------------------------------------------------------------\n";
 
 //-----------------------------------------------------------------------------
-static void cmtout(const char *fmt, ...)
+static void cmtout(int indent, const char *fmt, ...)
 {
   std::string line("# ");
+  while ( --indent >= 0 )
+    line.append("  ");
   line += fmt;
   va_list va;
   va_start(va, fmt);
@@ -46,49 +48,51 @@ static const char *rt2str(return_type_t rt_type)
 void print_gsyms()
 {
   fprintf(stdout, header, "GLOBAL SYMBOL TABLE");
-  cmtout("size: %d\n", gsyms.size());
+  cmtout(0, "size: %d\n", gsyms.size());
 
   symtab_t::const_iterator i;
   for ( i = gsyms.begin(); i != gsyms.end(); i++ )
   {
+    int indent = 0;
     const symbol_t *s = i->second;
-    cmtout("sym: %s\n", s->name.c_str());
-    cmtout("  line: %d\n", s->line);
+    cmtout(indent, "sym: %s\n", s->name.c_str());
+    cmtout(++indent, "line: %d\n", s->line);
 
-    cmtout("  type: ");
+    cmtout(indent, "type: ");
     switch ( s->type )
     {
       case ST_PRIMITIVE:
-        fprintf(stdout, "ST_PRIMITIVE\n");
-        cmtout("    base: %s\n", prim2str(s->prim));
+        fprintf(stdout,  "ST_PRIMITIVE\n");
+        cmtout(++indent, "base: %s\n", prim2str(s->prim));
         break;
       case ST_ARRAY:
-        fprintf(stdout, "ST_ARRAY\n");
-        cmtout("    base: %s\n", prim2str(s->array.type));
-        cmtout("    size: 0x%x\n", s->array.size);
+        fprintf(stdout,  "ST_ARRAY\n");
+        cmtout(++indent, "base: %s\n", prim2str(s->array.type));
+        cmtout(indent,   "size: 0x%x\n", s->array.size);
         break;
       case ST_FUNCTION:
-        fprintf(stdout, "ST_FUNCTION\n");
-        cmtout("    rt_type: %s\n", rt2str(s->func.rt_type));
-        cmtout("    params:\n");
+        fprintf(stdout,  "ST_FUNCTION\n");
+        cmtout(++indent, "rt_type: %s\n", rt2str(s->func.rt_type));
+        cmtout(indent,   "params:\n");
         if ( s->func.params == NULL )
-          cmtout("      none\n");
+          cmtout(indent+1, "none\n");
         else
         {
           paramvec_t::iterator i;
           for ( i = s->func.params->begin(); i < s->func.params->end(); i++ )
           {
-            cmtout("       %d: %s\n", i->idx, i->sym->name.c_str());
-            cmtout("         type: ");
+            int pindent = indent+1;
+            cmtout(pindent, "%d: %s\n", i->idx, i->sym->name.c_str());
+            cmtout(++pindent, "type: ");
             switch ( i->sym->type )
             {
               case ST_PRIMITIVE:
                 fprintf(stdout, "ST_PRIMITIVE\n");
-                cmtout("            base: %s\n", prim2str(i->sym->prim));
+                cmtout(++pindent, "base: %s\n", prim2str(i->sym->prim));
                 break;
               case ST_ARRAY:
                 fprintf(stdout, "ST_ARRAY\n");
-                cmtout("            base: %s\n", prim2str(i->sym->array.type));
+                cmtout(++pindent, "base: %s\n", prim2str(i->sym->array.type));
                 break;
               default:
                 fprintf(stdout, "ST_UNKNOWN\n");
@@ -96,7 +100,7 @@ void print_gsyms()
             }
           }
         }
-        cmtout("    is_extern: %s\n", s->func.is_extern ? "yes" : "no");
+        cmtout(indent, "is_extern: %s\n", s->func.is_extern ? "yes" : "no");
         break;
       default:
         fprintf(stdout, "ST_UNKNOWN\n");

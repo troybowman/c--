@@ -338,12 +338,8 @@ static bool parseargs(int argc, char **argv)
 #ifndef NDEBUG
   else
   {
-    if ( argc != 4 )
+    if ( argc != 4 || strcmp("-v", argv[1]) != 0 )
       return false;
-
-    if ( strcmp("-v", argv[1]) != 0 )
-      return false;
-
     dbg_flags |= dbg_flags_t(atoi(argv[2]));
     infile = argv[3];
   }
@@ -353,7 +349,6 @@ static bool parseargs(int argc, char **argv)
     return false;
   }
 #endif
-
   yyin = fopen(infile, "r");
   if ( yyin == NULL )
   {
