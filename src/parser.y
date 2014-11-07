@@ -34,7 +34,7 @@
   primitive_t prim;
   symbol_t *sym;
   symlist_t *symlist;
-  param_t param;
+  symbol_t * param;
   paramvec_t *paramvec;
 }
 
@@ -142,7 +142,7 @@ params : param_decl param_decl_list
            params->insert(params->begin(), $1);
            int size = params->size();
            for ( int i = 0; i < size; i++ )
-             params->at(i).idx = i;
+             params->at(i)->idx = i;
            $$ = params;
          }
        ;
@@ -160,14 +160,12 @@ func_decl_list : func_decl_list ',' func_decl
 
 param_decl : type ID
              {
-               $$.idx = -1;
-               $$.sym = new symbol_t($2, yylineno, ST_PRIMITIVE, $1);
+               $$ = new symbol_t($2, yylineno, ST_PRIMITIVE, $1);
                free($2)
              }
            | type ID '[' ']'
              {
-               $$.idx = -1;
-               $$.sym = new symbol_t($2, yylineno, ST_ARRAY, $1, -1);
+               $$ = new symbol_t($2, yylineno, ST_ARRAY, $1, -1);
                free($2);
              }
            ;
@@ -194,8 +192,8 @@ static bool param_check(const paramvec_t &p1, const paramvec_t &p2)
   int size = p1.size();
   for ( int i = 0; i < size; i++ )
   {
-    symbol_t *s1 = p1[i].sym;
-    symbol_t *s2 = p2[i].sym;
+    symbol_t *s1 = p1[i];
+    symbol_t *s2 = p2[i];
 
     switch ( s1->type )
     {
@@ -208,7 +206,7 @@ static bool param_check(const paramvec_t &p1, const paramvec_t &p2)
           return false;
         break;
       default:
-        INTERR(5555);
+        INTERR(0);
     }
   }
   return true;
@@ -225,7 +223,7 @@ enum col_res_t
 //-----------------------------------------------------------------------------
 static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
 {
-  ASSERT(6666, prev.name == sym.name);
+  ASSERT(0, prev.name == sym.name);
 
   if ( prev.type != ST_FUNCTION
     || sym.type  != ST_FUNCTION
@@ -288,7 +286,7 @@ static void insert_gvar(symbol_t *sym, primitive_t prim)
         sym->array.type = prim;
         break;
       default:
-        INTERR(1111);
+        INTERR(0);
     }
     insert_gsym(sym);
   }

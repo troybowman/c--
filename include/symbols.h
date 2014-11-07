@@ -61,14 +61,7 @@ enum return_type_t
   RT_VOID
 };
 
-//-----------------------------------------------------------------------------
-struct param_t
-{
-  int idx;
-  symbol_t *sym;
-};
-
-typedef std::vector<param_t> paramvec_t;
+typedef std::vector<symbol_t *> paramvec_t;
 
 struct function_t
 {
@@ -82,6 +75,7 @@ struct function_t
 //-----------------------------------------------------------------------------
 struct symbol_t
 {
+  int idx;  // param #
   int line; // src line
   std::string name;
   symbol_type_t type;
@@ -93,7 +87,7 @@ struct symbol_t
   };
 
   symbol_t(const char *_name, int _line, symbol_type_t _type, ...)
-    : line(_line), type(_type)
+    : idx(-1), line(_line), type(_type)
   {
     name.assign(_name);
 

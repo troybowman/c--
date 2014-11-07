@@ -81,18 +81,19 @@ void print_gsyms()
           paramvec_t::iterator i;
           for ( i = s->func.params->begin(); i < s->func.params->end(); i++ )
           {
+            symbol_t *p = *i;
             int pindent = indent+1;
-            cmtout(pindent, "%d: %s\n", i->idx, i->sym->name.c_str());
+            cmtout(pindent, "%d: %s\n", p->idx, p->name.c_str());
             cmtout(++pindent, "type: ");
-            switch ( i->sym->type )
+            switch ( p->type )
             {
               case ST_PRIMITIVE:
                 fprintf(stdout, "ST_PRIMITIVE\n");
-                cmtout(++pindent, "base: %s\n", prim2str(i->sym->prim));
+                cmtout(++pindent, "base: %s\n", prim2str(p->prim));
                 break;
               case ST_ARRAY:
                 fprintf(stdout, "ST_ARRAY\n");
-                cmtout(++pindent, "base: %s\n", prim2str(i->sym->array.type));
+                cmtout(++pindent, "base: %s\n", prim2str(p->array.type));
                 break;
               default:
                 fprintf(stdout, "ST_UNKNOWN\n");
