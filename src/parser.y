@@ -50,15 +50,16 @@
 %type<symlist> var_decls  var_decl_list
 %type<symlist> func_decls func_decl_list
 %type<param> param_decl
-%type<paramvec> param_decl_list
+%type<paramvec> params param_decl_list
 
 %start prog
 
 %%
 
-prog : prog decl  ';' /* done - trailing decls are fine */
+prog : prog decl  ';'
      | prog error ';' { yyerrok; }
-     | /* empty */
+     | /* TODO: empty programs technically aren't syntactically valid,
+          but we'll get a 'no main()' error anyway, which is better */
      ;
 
 decl :        type var_decls  { process_gvar_list($2, $1);                       }
@@ -125,20 +126,26 @@ func_decl : ID '(' VOID ')'
                                 RT_UNKNOWN, NULL, NULL, NULL, false);
               free($1);
             }
-          | ID '(' param_decl param_decl_list ')'
+          | ID '(' params ')'
             {
-              paramvec_t *params = $4 == NULL
-                                    ? new paramvec_t()
-                                    : $4;
-              params->insert(params->begin(), $3);
-              int size = params->size();
-              for ( int i = 0; i < size; i++ )
-                params->at(i).idx = i;
               $$ = new symbol_t($1, yylineno, ST_FUNCTION,
-                                RT_UNKNOWN, params, NULL, NULL, false);
+                                RT_UNKNOWN, $3, NULL, NULL, false);
               free($1);
             }
           ;
+
+params : param_decl param_decl_list
+         {
+           paramvec_t *params = $2 == NULL
+                                 ? new paramvec_t()
+                                 : $2;
+           params->insert(params->begin(), $1);
+           int size = params->size();
+           for ( int i = 0; i < size; i++ )
+             params->at(i).idx = i;
+           $$ = params;
+         }
+       ;
 
 func_decl_list : func_decl_list ',' func_decl
                  {

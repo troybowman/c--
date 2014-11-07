@@ -2,12 +2,13 @@
 #define SYMBOL_H
 
 #include <stdlib.h>
+
 #include <vector>
 #include <string>
 #include <list>
 #include <map>
 
-#include "treenode.h"
+#include <treenode.h>
 
 struct symbol_t;
 struct function_t;
@@ -81,7 +82,7 @@ struct function_t
 //-----------------------------------------------------------------------------
 struct symbol_t
 {
-  int line;
+  int line; // src line
   std::string name;
   symbol_type_t type;
   union
@@ -124,6 +125,8 @@ struct symbol_t
   {
     if ( type == ST_FUNCTION && func.params != NULL )
       func.params->clear();
+      // and symbol table
+      // and syntax tree
   }
 };
 
