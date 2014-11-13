@@ -37,9 +37,11 @@ enum dbg_flag_t
 {
   dbg_gsyms     = 1 << 0,
   dbg_lsyms     = 1 << 1,
-  dbg_gvars     = 1 << 2,
-  dbg_insert    = 1 << 3,
-  dbg_decl_list = 1 << 4,
+  dbg_tree      = 1 << 2,
+  dbg_code      = 1 << 3,
+  dbg_gvars     = 1 << 4,
+  dbg_insert    = 1 << 5,
+  dbg_decl_list = 1 << 6,
 };
 
 #define DBG(flag, ...)             \
@@ -51,14 +53,15 @@ do                                 \
 
 void print_gsyms();
 void print_lsyms();
+void print_tree();
 
 #define DBG_SUMMARY(flags)         \
 do                                 \
 {                                  \
   if ( (flags & dbg_gsyms) != 0 )  \
     print_gsyms();                 \
-  if ( (flags & dbg_lsyms) != 0 )  \
-    print_lsyms();                 \
+  if ( (flags & dbg_tree)  != 0 )  \
+    print_tree();                  \
 } while ( false );
 
 #else

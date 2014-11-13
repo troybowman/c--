@@ -116,4 +116,8 @@ void print_lsyms()
   fprintf(stdout, header, "LOCAL SYMBOL TABLE");
 }
 
+void print_tree()
+{
+  fprintf(stdout, header, "Syntax TREE");
+}
 #endif // NDEBUG
