@@ -38,12 +38,13 @@ enum dbg_flag_t
   dbg_gsyms     = 1 << 0,
   dbg_lsyms     = 1 << 1,
   dbg_tree      = 1 << 2,
-  dbg_code      = 1 << 3,
+  dbg_nocode    = 1 << 3,
   dbg_gvars     = 1 << 4,
   dbg_insert    = 1 << 5,
   dbg_decl_list = 1 << 6,
 };
 
+//-----------------------------------------------------------------------------
 #define DBG(flag, ...)             \
 do                                 \
 {                                  \
@@ -55,6 +56,7 @@ void print_gsyms();
 void print_lsyms();
 void print_tree();
 
+//-----------------------------------------------------------------------------
 #define DBG_SUMMARY(flags)         \
 do                                 \
 {                                  \
@@ -64,11 +66,21 @@ do                                 \
     print_tree();                  \
 } while ( false );
 
+//-----------------------------------------------------------------------------
+#define CHECK_CODEGEN_FLAGS(flags) \
+do                                 \
+{                                  \
+  if ( (flags & dbg_nocode) != 0 ) \
+    exit(0);                       \
+} while ( false );
+
 #else
 
-#define DBG(flag, ...)     // nothing
-#define DBG_SUMMARY(flags) // nothing
-#define ASSERT(code, cond) // nothing
+//-----------------------------------------------------------------------------
+#define DBG(flag, ...)             // nothing
+#define DBG_SUMMARY(flags)         // nothing
+#define ASSERT(code, cond)         // nothing
+#define CHECK_CODEGEN_FLAGS(flags) // nothing
 
 #endif // DEBUG
 

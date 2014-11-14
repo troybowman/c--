@@ -58,8 +58,7 @@
 
 prog : prog decl  ';'
      | prog error ';' { yyerrok; }
-     | /* TODO: empty programs technically aren't syntactically valid,
-          but we'll get a 'no main()' error anyway, which is better */
+     | /* empty */
      ;
 
 decl :        type var_decls  { process_gvar_list($2, $1);                       }
@@ -137,12 +136,9 @@ func_decl : ID '(' VOID ')'
 params : param_decl param_decl_list
          {
            paramvec_t *params = $2 == NULL
-                                 ? new paramvec_t()
-                                 : $2;
+                              ? new paramvec_t()
+                              : $2;
            params->insert(params->begin(), $1);
-           int size = params->size();
-           for ( int i = 0; i < size; i++ )
-             params->at(i)->idx = i;
            $$ = params;
          }
        ;
@@ -372,6 +368,8 @@ int main(int argc, char **argv)
   yyparse();
 
   DBG_SUMMARY(dbg_flags);
+  CHECK_CODEGEN_FLAGS(dbg_flags);
+
   return 0;
 }
 

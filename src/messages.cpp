@@ -78,12 +78,13 @@ void print_gsyms()
           cmtout(indent+1, "none\n");
         else
         {
-          paramvec_t::iterator i;
-          for ( i = s->func.params->begin(); i < s->func.params->end(); i++ )
+          paramvec_t *params = s->func.params;
+          int size = params->size();
+          for ( int i = 0; i < size; i++ )
           {
-            symbol_t *p = *i;
+            symbol_t *p = params->at(i);
             int pindent = indent+1;
-            cmtout(pindent, "%d: %s\n", p->idx, p->name.c_str());
+            cmtout(pindent, "%d: %s\n", i, p->name.c_str());
             cmtout(++pindent, "type: ");
             switch ( p->type )
             {
@@ -118,6 +119,6 @@ void print_lsyms()
 
 void print_tree()
 {
-  fprintf(stdout, header, "Syntax TREE");
+  fprintf(stdout, header, "SYNTAX TREE");
 }
 #endif // NDEBUG

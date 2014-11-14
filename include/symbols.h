@@ -75,8 +75,8 @@ struct function_t
 //-----------------------------------------------------------------------------
 struct symbol_t
 {
-  int idx;  // param #
-  int line; // src line
+  int off;   // offset from fp
+  int line;  // src line
   std::string name;
   symbol_type_t type;
   union
@@ -87,7 +87,7 @@ struct symbol_t
   };
 
   symbol_t(const char *_name, int _line, symbol_type_t _type, ...)
-    : idx(-1), line(_line), type(_type)
+    : off(0), line(_line), type(_type)
   {
     name.assign(_name);
 
@@ -113,6 +113,7 @@ struct symbol_t
         type = ST_UNKNOWN;
         break;
     }
+    va_end(va);
   }
 
   ~symbol_t()
