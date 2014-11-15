@@ -1,11 +1,11 @@
 #ifndef NDEBUG
 
-#include "messages.h"
-#include "symbols.h"
+#include <messages.h>
+#include <symbols.h>
 
 static const char *header =
 "#-----------------------------------------------------------------------------\n"
-"# %s\n"
+"# %s%s\n"
 "#-----------------------------------------------------------------------------\n";
 
 //-----------------------------------------------------------------------------
@@ -45,13 +45,12 @@ static const char *rt2str(return_type_t rt_type)
 }
 
 //-----------------------------------------------------------------------------
-void print_gsyms()
+void print_syms(const symtab_t &syms)
 {
-  fprintf(stdout, header, "GLOBAL SYMBOL TABLE");
-  cmtout(0, "size: %d\n", gsyms.size());
+  cmtout(0, "size: %d\n", syms.size());
 
   symtab_t::const_iterator i;
-  for ( i = gsyms.begin(); i != gsyms.end(); i++ )
+  for ( i = syms.begin(); i != syms.end(); i++ )
   {
     int indent = 0;
     const symbol_t *s = i->second;
@@ -112,13 +111,25 @@ void print_gsyms()
 }
 
 //-----------------------------------------------------------------------------
-void print_lsyms()
+void print_gsyms()
 {
-  fprintf(stdout, header, "LOCAL SYMBOL TABLE");
+  fprintf(stdout, header, "GLOBAL SYMBOL TABLE", "");
+  print_syms(gsyms);
 }
 
-void print_tree()
+//-----------------------------------------------------------------------------
+void walk_funcs(dbg_flags_t flags)
 {
-  fprintf(stdout, header, "SYNTAX TREE");
+  symlist_t::const_iterator i;
+  for ( i = functions.begin(); i != functions.end(); i++ )
+  {
+    symbol_t *f = *i;
+    ASSERT(0, f->type == ST_FUNCTION);
+    if ( (flags & dbg_lsyms) != 0 )
+    {
+      fprintf(stdout, header, "LOCAL SYMBOLS FOR FUNCTION: ", f->name.c_str());
+      print_syms(*f->func.symbols);
+    }
+  }
 }
 #endif // NDEBUG

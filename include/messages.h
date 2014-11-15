@@ -53,8 +53,7 @@ do                                 \
 } while ( false );
 
 void print_gsyms();
-void print_lsyms();
-void print_tree();
+void walk_funcs(dbg_flags_t flags);
 
 //-----------------------------------------------------------------------------
 #define DBG_SUMMARY(flags)         \
@@ -62,8 +61,11 @@ do                                 \
 {                                  \
   if ( (flags & dbg_gsyms) != 0 )  \
     print_gsyms();                 \
-  if ( (flags & dbg_tree)  != 0 )  \
-    print_tree();                  \
+  if ( (flags & dbg_lsyms) != 0    \
+    || (flags & dbg_tree)  != 0 )  \
+  {                                \
+    walk_funcs(flags);             \
+  }                                \
 } while ( false );
 
 //-----------------------------------------------------------------------------

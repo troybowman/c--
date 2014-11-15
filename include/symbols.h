@@ -15,16 +15,12 @@ struct function_t;
 struct array_t;
 
 //-----------------------------------------------------------------------------
-// symbol table
-typedef std::map<std::string, symbol_t *> symtab_t;
+typedef std::map<std::string, symbol_t *> symtab_t; // symbol table
 
-// for things like: int x, y, z;
-typedef std::list<symbol_t *> symlist_t;
+typedef std::list<symbol_t *> symlist_t; // for things like: int x, y, z;
 
-// allow anyone who includes this file to have access to
-// the global and local symbol tables
 extern symtab_t gsyms;
-extern symtab_t lsyms;
+extern symlist_t functions;
 
 //-----------------------------------------------------------------------------
 enum symbol_type_t
@@ -70,6 +66,13 @@ struct function_t
   symtab_t *symbols;
   treenode_t *syntax_tree;
   bool is_extern;
+};
+
+struct func_body_t
+{
+  symtab_t *symbols; // local symbols
+  treenode_t *tree;  // function's code
+  func_body_t(symtab_t *s, treenode_t *t) : symbols(s), tree(t) {}
 };
 
 //-----------------------------------------------------------------------------

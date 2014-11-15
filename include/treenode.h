@@ -2,7 +2,7 @@ struct treenode_t;
 
 enum treenode_type_t
 {
-  TNT_EMTPY,
+  TNT_EMPTY,
 };
 
 struct treenode_t
