@@ -301,6 +301,7 @@ static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
 //-----------------------------------------------------------------------------
 static bool insert_sym(symtab_t &table, symbol_t *sym)
 {
+  ASSERT(0, sym != NULL);
   if ( table[sym->name] != NULL )
   {
     symbol_t *prev = table[sym->name];

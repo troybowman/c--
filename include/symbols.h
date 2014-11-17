@@ -1,8 +1,6 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <stdlib.h>
-
 #include <vector>
 #include <string>
 #include <list>
@@ -15,7 +13,11 @@ struct function_t;
 struct array_t;
 
 //-----------------------------------------------------------------------------
-typedef std::map<std::string, symbol_t *> symtab_t; // symbol table
+class symtab_t : public std::map<std::string, symbol_t *>
+{
+public:
+  ~symtab_t();
+};
 
 typedef std::list<symbol_t *> symlist_t; // for things like: int x, y, z;
 
@@ -74,6 +76,7 @@ struct symbol_t
   int off;   // offset from fp
   int line;  // src line
   std::string name;
+
   symbol_type_t type;
   union
   {
@@ -82,57 +85,8 @@ struct symbol_t
     function_t func;
   };
 
-  symbol_t(const char *_name, int _line, symbol_type_t _type, ...)
-    : off(0), line(_line), type(_type)
-  {
-    name.assign(_name);
-
-    va_list va;
-    va_start(va, _type);
-    switch ( _type )
-    {
-      case ST_PRIMITIVE:
-        prim = va_arg(va, primitive_t);
-        break;
-      case ST_ARRAY:
-        array.type = va_arg(va, primitive_t);
-        array.size = va_arg(va, asize_t);
-        break;
-      case ST_FUNCTION:
-        func.rt_type     = va_arg(va, return_type_t);
-        func.params      = va_arg(va, paramvec_t *);
-        func.symbols     = va_arg(va, symtab_t *);
-        func.syntax_tree = va_arg(va, treenode_t *);
-        func.is_extern   = va_arg(va, bool);
-        break;
-      default:
-        type = ST_UNKNOWN;
-        break;
-    }
-    va_end(va);
-  }
-
-  ~symbol_t()
-  {
-    if ( type == ST_FUNCTION )
-    {
-      if ( func.symbols != NULL )
-      {
-        symtab_t::iterator i;
-        symtab_t *syms = func.symbols;
-        for ( i = syms->begin(); i != syms->end(); i++ )
-        {
-          symbol_t *sym = i->second;
-          delete sym;
-        }
-        syms->clear();
-      }
-      if ( func.params != NULL )
-        func.params->clear();
-      if ( func.syntax_tree != NULL )
-        delete func.syntax_tree;
-    }
-  }
+  symbol_t(const char *, int, symbol_type_t, ...);
+  ~symbol_t();
 };
 
 #endif // SYMBOL_H
