@@ -45,7 +45,6 @@ $(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
 $(OBJ)symbols.o: $(SRC)symbols.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-#------------------------------------------------------------------------------
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 

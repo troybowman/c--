@@ -132,7 +132,7 @@ func_decls : func_decl func_decl_list
              }
            ;
 
-func_decl : ID '(' VOID ')' { $$ = func_decl_init($1, NULL, yylineno); }
+func_decl : ID '(' VOID ')' { $$ = func_decl_init($1, new paramvec_t(), yylineno); }
           | ID '(' params ')' { $$ = func_decl_init($1, $3, yylineno) }
           ;
 
@@ -203,21 +203,19 @@ stmts : /* empty */ { $$ = new treenode_t(TNT_EMPTY); }
 //-----------------------------------------------------------------------------
 static symbol_t *func_decl_init(char *name, paramvec_t *params, int line)
 {
+  ASSERT(0, params != NULL);
   symbol_t *f = new symbol_t(name, line, ST_FUNCTION,
                              RT_UNKNOWN, params, NULL, NULL, false);
   free(name);
 
   f->func.symbols = new symtab_t();
-  if ( params != NULL )
+  int size = params->size();
+  for ( int i = 0; i < size; i++ )
   {
-    int size = params->size();
-    for ( int i = 0; i < size; i++ )
+    if ( !insert_sym(*f->func.symbols, params->at(i)) )
     {
-      if ( !insert_sym(*f->func.symbols, params->at(i)) )
-      {
-        delete f;
-        return NULL;
-      }
+      delete f;
+      return NULL;
     }
   }
   // maintain global pointer to current local symbol table

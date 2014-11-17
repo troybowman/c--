@@ -73,7 +73,7 @@ void print_syms(const symtab_t &syms)
         fprintf(stdout,  "ST_FUNCTION\n");
         cmtout(++indent, "rt_type: %s\n", rt2str(s->func.rt_type));
         cmtout(indent,   "params:\n");
-        if ( s->func.params == NULL )
+        if ( s->func.params->size() < 1 )
           cmtout(indent+1, "none\n");
         else
         {
