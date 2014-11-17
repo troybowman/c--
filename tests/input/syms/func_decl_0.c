@@ -25,7 +25,7 @@ extern void f21(void),
             f23(char x[]),
             f24(int x, int y),
 
-f25(int a, int a, int a, int a,int a, int a, int a, int a,
-    int c[], int c[], int c[], int c[],int c[], int c[], int c[], int c[],
-    char b, char b, char b, char b,char b, char b, char b, char b,
-    char d[], char d[], char d[], char d[],char d[], char d[], char d[], char d[]);
+f25(int a, int b, int c, int d,int e, int f, int g, int h,
+    int i[], int j[], int k[], int l[],int m[], int n[], int o[], int p[],
+    char q, char r, char s, char t,char u, char v, char w, char x,
+    char y[], char z[], char aa[], char bb[],char cc[], char dd[], char ee[], char ff[]);

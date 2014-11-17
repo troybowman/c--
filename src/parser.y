@@ -16,10 +16,12 @@
   dbg_flags_t dbg_flags = 0;
 #endif
 
-  symtab_t gsyms;      // global symbol table
-  symlist_t functions; // functions, in order as they appear in the source file
+  symtab_t gsyms;         // global symbol table
+  symtab_t *lsyms = NULL; // pointer to current local symbol table
+  symlist_t functions;    // functions, in order as they appear in the source file
 
-  //---------------------------------------------------------------------------
+  static bool insert_sym(symtab_t &table, symbol_t *sym);
+
   static void process_var_list(
     symtab_t &table,
     symlist_t *list,
@@ -31,7 +33,9 @@
   static void process_func_def(
     symbol_t *func,
     return_type_t rt,
-    func_body_t *body);
+    treenode_t *tree);
+
+  static symbol_t *func_decl_init(char *name, paramvec_t *params, int line);
 %}
 
 %union
@@ -42,7 +46,6 @@
   symbol_t *sym;
   symlist_t *symlist;
   paramvec_t *paramvec;
-  func_body_t *body;
   treenode_t *tree;
   symtab_t *symtab;
 }
@@ -59,9 +62,7 @@
 %type<symlist>  var_decls  var_decl_list
 %type<symlist>  func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<symtab>   local_decls
-%type<body>     func_body
-%type<tree>     stmts
+%type<tree>     func_body stmts
 
 %start prog
 
@@ -73,7 +74,7 @@ prog : prog decl  ';'
      | /* empty */
      ;
 
-decl :        type var_decls  { process_var_list(gsyms, $2, $1);                       }
+decl :        type var_decls  { process_var_list(gsyms, $2, $1);                 }
      | EXTERN type func_decls { process_func_list($3, return_type_t($2), true);  }
      | EXTERN VOID func_decls { process_func_list($3, RT_VOID,           true);  }
      |        type func_decls { process_func_list($2, return_type_t($1), false); }
@@ -131,18 +132,8 @@ func_decls : func_decl func_decl_list
              }
            ;
 
-func_decl : ID '(' VOID ')'
-            {
-              $$ = new symbol_t($1, yylineno, ST_FUNCTION,
-                                RT_UNKNOWN, NULL, NULL, NULL, false);
-              free($1);
-            }
-          | ID '(' params ')'
-            {
-              $$ = new symbol_t($1, yylineno, ST_FUNCTION,
-                                RT_UNKNOWN, $3, NULL, NULL, false);
-              free($1);
-            }
+func_decl : ID '(' VOID ')' { $$ = func_decl_init($1, NULL, yylineno); }
+          | ID '(' params ')' { $$ = func_decl_init($1, $3, yylineno) }
           ;
 
 params : param_decl param_decl_list
@@ -193,27 +184,61 @@ func : type func_decl func_body { process_func_def($2, return_type_t($1), $3); }
      | VOID func_decl func_body { process_func_def($2, RT_VOID, $3); }
      ;
 
-func_body : '{' local_decls stmts '}'
-            {
-              $$ = new func_body_t($2, $3);
-            }
+func_body : '{' local_decls stmts '}' { $$ = $3; }
           ;
 
 local_decls : local_decls type var_decls ';'
               {
-                symtab_t *lvars = $1 == NULL
-                                ? new symtab_t()
-                                : $1;
-                process_var_list(*lvars, $3, $2);
-                $$ = lvars;
+                ASSERT(0, lsyms != NULL);
+                process_var_list(*lsyms, $3, $2);
               }
-            | /* empty */ { $$ = NULL; }
+            | /* empty */
             ;
 
 stmts : /* empty */ { $$ = new treenode_t(TNT_EMPTY); }
       ;
 
 %%
+
+//-----------------------------------------------------------------------------
+static symbol_t *func_decl_init(char *name, paramvec_t *params, int line)
+{
+  symbol_t *f = new symbol_t(name, line, ST_FUNCTION,
+                             RT_UNKNOWN, params, NULL, NULL, false);
+  free(name);
+
+  f->func.symbols = new symtab_t();
+  if ( params != NULL )
+  {
+    int size = params->size();
+    for ( int i = 0; i < size; i++ )
+    {
+      if ( !insert_sym(*f->func.symbols, params->at(i)) )
+      {
+        delete f;
+        return NULL;
+      }
+    }
+  }
+  // maintain global pointer to current local symbol table
+  lsyms = f->func.symbols;
+  return f;
+}
+
+//-----------------------------------------------------------------------------
+static void process_func_def(symbol_t *f, return_type_t rt, treenode_t *tree)
+{
+  if ( f == NULL )
+    return;
+
+  ASSERT(0, tree != NULL);
+
+  f->func.rt_type = rt;
+  f->func.syntax_tree = tree;
+
+  if ( insert_sym(gsyms, f) )
+    functions.push_back(f);
+}
 
 //-----------------------------------------------------------------------------
 static bool param_check(const paramvec_t &p1, const paramvec_t &p2)
@@ -258,7 +283,7 @@ static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
   ASSERT(0, prev.name == sym.name);
 
   if ( prev.type != ST_FUNCTION               // any non-function occuring twice is wrong
-    || sym.type  != ST_FUNCTION               //
+    || sym.type  != ST_FUNCTION               // ""
     || prev.func.rt_type != sym.func.rt_type  // return types must exactly match
     || prev.func.is_extern                    // extern functions must not be defined
     || prev.func.syntax_tree != NULL          // declaration cannot come after definition
@@ -309,22 +334,6 @@ static bool insert_sym(symtab_t &table, symbol_t *sym)
 }
 
 //-----------------------------------------------------------------------------
-static void process_func_def(symbol_t *func, return_type_t rt, func_body_t *body)
-{
-  ASSERT(0, body != NULL);
-  ASSERT(0, func != NULL);
-  // defined functions must have a syntax tree, even if there's nothing in it
-  ASSERT(0, body->tree != NULL);
-
-  func->func.rt_type = rt;
-  func->func.symbols = body->symbols;
-  func->func.syntax_tree = body->tree;
-
-  if ( insert_sym(gsyms, func) )
-    functions.push_back(func);
-}
-
-//-----------------------------------------------------------------------------
 static void process_var_list(symtab_t &table, symlist_t *list, primitive_t prim)
 {
   if ( list == NULL )
@@ -359,9 +368,12 @@ static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_ex
   for ( i = list->begin(); i != list->end(); i++ )
   {
     symbol_t *sym = *i;
-    sym->func.rt_type = rt_type;
-    sym->func.is_extern = is_extern;
-    insert_sym(gsyms, sym);
+    if ( sym != NULL )
+    {
+      sym->func.rt_type = rt_type;
+      sym->func.is_extern = is_extern;
+      insert_sym(gsyms, sym);
+    }
   }
   delete list;
 }

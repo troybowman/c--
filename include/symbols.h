@@ -68,13 +68,6 @@ struct function_t
   bool is_extern;
 };
 
-struct func_body_t
-{
-  symtab_t *symbols; // local symbols
-  treenode_t *tree;  // function's code
-  func_body_t(symtab_t *s, treenode_t *t) : symbols(s), tree(t) {}
-};
-
 //-----------------------------------------------------------------------------
 struct symbol_t
 {
@@ -121,10 +114,24 @@ struct symbol_t
 
   ~symbol_t()
   {
-    if ( type == ST_FUNCTION && func.params != NULL )
-      func.params->clear();
-      // and symbol table
-      // and syntax tree
+    if ( type == ST_FUNCTION )
+    {
+      if ( func.symbols != NULL )
+      {
+        symtab_t::iterator i;
+        symtab_t *syms = func.symbols;
+        for ( i = syms->begin(); i != syms->end(); i++ )
+        {
+          symbol_t *sym = i->second;
+          delete sym;
+        }
+        syms->clear();
+      }
+      if ( func.params != NULL )
+        func.params->clear();
+      if ( func.syntax_tree != NULL )
+        delete func.syntax_tree;
+    }
   }
 };
 
