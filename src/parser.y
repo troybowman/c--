@@ -5,6 +5,7 @@
   #include <string.h>
 
   #include <symbols.h>
+  #include <treenode.h>
   #include <messages.h>
 
   extern "C" FILE *yyin;

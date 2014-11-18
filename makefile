@@ -14,13 +14,12 @@ else
 endif
 
 ifdef __MAC__
-  CFLAGS += -Wno-varargs
   LIBFLEX = -ll
 else
   LIBFLEX = -lfl
 endif
 
-OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbols.o $(OBJ)messages.o
+OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbols.o $(OBJ)treenode.o $(OBJ)messages.o
 HFILES   = $(I)symbols.h $(I)messages.h $(I)treenode.h
 
 #------------------------------------------------------------------------------
@@ -43,7 +42,10 @@ $(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
 
 #------------------------------------------------------------------------------
 $(OBJ)symbols.o: $(SRC)symbols.cpp $(HFILES)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
+
+$(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
+	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
 
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<

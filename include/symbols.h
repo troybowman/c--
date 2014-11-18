@@ -6,11 +6,10 @@
 #include <list>
 #include <map>
 
-#include <treenode.h>
-
 struct symbol_t;
 struct function_t;
 struct array_t;
+struct treenode_t;
 
 //-----------------------------------------------------------------------------
 class symtab_t : public std::map<std::string, symbol_t *>
