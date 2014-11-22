@@ -1,7 +1,7 @@
 #ifndef NDEBUG
 
 #include <messages.h>
-#include <symbols.h>
+#include <symbol.h>
 
 static const char *header =
 "#-----------------------------------------------------------------------------\n"

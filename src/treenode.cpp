@@ -1,7 +1,6 @@
-#include <stdlib.h>
+#include <stdarg.h>
 
 #include <treenode.h>
-#include <symbols.h>
 #include <messages.h>
 
 treenode_t::treenode_t(treenode_type_t _type, ...)

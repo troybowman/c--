@@ -4,7 +4,7 @@
   #include <errno.h>
   #include <string.h>
 
-  #include <symbols.h>
+  #include <symbol.h>
   #include <treenode.h>
   #include <messages.h>
 

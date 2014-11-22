@@ -1,6 +1,6 @@
-#include <stdlib.h>
+#include <stdarg.h>
 
-#include <symbols.h>
+#include <symbol.h>
 #include <treenode.h>
 
 //-----------------------------------------------------------------------------

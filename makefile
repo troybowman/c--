@@ -19,8 +19,8 @@ else
   LIBFLEX = -lfl
 endif
 
-OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbols.o $(OBJ)treenode.o $(OBJ)messages.o
-HFILES   = $(I)symbols.h $(I)messages.h $(I)treenode.h
+OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbol.o $(OBJ)treenode.o $(OBJ)messages.o
+HFILES   = $(I)symbol.h $(I)treenode.h $(I)messages.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
@@ -41,7 +41,7 @@ $(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
 	flex -o $@ $<
 
 #------------------------------------------------------------------------------
-$(OBJ)symbols.o: $(SRC)symbols.cpp $(HFILES)
+$(OBJ)symbol.o: $(SRC)symbol.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
 
 $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
