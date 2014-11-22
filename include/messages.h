@@ -5,6 +5,16 @@
 #include <stdint.h>
 #include <stdio.h>
 
+extern bool usererr;
+
+//-----------------------------------------------------------------------------
+#define USERERR(format, ...)            \
+do                                      \
+{                                       \
+  usererr = true;                       \
+  fprintf(stderr, format, __VA_ARGS__); \
+} while ( false )
+
 //-----------------------------------------------------------------------------
 #define INTERR(code)                   \
 do                                     \

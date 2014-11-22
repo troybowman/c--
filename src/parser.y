@@ -17,26 +17,27 @@
   dbg_flags_t dbg_flags = 0;
 #endif
 
-  symtab_t gsyms;         // global symbol table
-  symtab_t *lsyms = NULL; // pointer to current local symbol table
-  symlist_t functions;    // functions, in order as they appear in the source file
+  symtab_t gsyms; // global symbol table
+  bool usererr = false; // don't generate code if we encountered an error
+  symlist_t functions; // functions, in order as they appear in the source file
 
-  static bool insert_sym(symtab_t &table, symbol_t *sym);
+  // pointer to current active symbol table.
+  // (could be &gsyms, the current local symtab,
+  //  or a temporary symtab for parameters)
+  static symtab_t *cursyms = &gsyms;
 
-  static void process_var_list(
-    symtab_t &table,
-    symlist_t *list,
-    primitive_t type);
-  static void process_func_list(
-    symlist_t *list,
-    return_type_t rt,
-    bool is_extern);
-  static void process_func_def(
-    symbol_t *func,
-    return_type_t rt,
-    treenode_t *tree);
+  static void process_var_list(symlist_t *, primitive_t);
+  static void process_func_list(symlist_t *, return_type_t, bool);
 
-  static symbol_t *func_decl_init(char *name, paramvec_t *params, int line);
+  // use a temporary symbol table to validate parameter declarations
+  static inline void param_on() { cursyms = new symtab_t(); }
+  static inline void param_off() { delete cursyms; cursyms = &gsyms; }
+
+  // initialize/complete function definition
+  static void f_enter(symbol_t *, return_type_t);
+  static void f_leave(symbol_t *, treenode_t *);
+
+  static symbol_t *validate_var_decl(const char *, int, array_sfx_t);
 %}
 
 %union
@@ -49,6 +50,7 @@
   paramvec_t *paramvec;
   treenode_t *tree;
   symtab_t *symtab;
+  array_sfx_t asfx;
 }
 
 %token<i> INT
@@ -58,34 +60,39 @@
 %token WHILE RETURN EXTERN IF ELSE FOR
 %token EQ NEQ LEQ GEQ AND OR
 
-%type<prim>     type
-%type<sym>      var_decl func_decl param_decl
-%type<symlist>  var_decls  var_decl_list
-%type<symlist>  func_decls func_decl_list
+%type<prim> type
+%type<sym> var_decl func_decl param_decl
+%type<symlist> var_decls  var_decl_list
+%type<symlist> func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<tree>     func_body stmts
+%type<tree> func_body stmts
+%type<asfx> array_sfx param_array_sfx
 
 %start prog
 
 %%
 
+/*---------------------------------------------------------------------------*/
 prog : prog decl  ';'
      | prog error ';' { yyerrok; }
      | prog func
      | /* empty */
      ;
 
-decl :        type var_decls  { process_var_list(gsyms, $2, $1);                 }
-     | EXTERN type func_decls { process_func_list($3, return_type_t($2), true);  }
-     | EXTERN VOID func_decls { process_func_list($3, RT_VOID,           true);  }
-     |        type func_decls { process_func_list($2, return_type_t($1), false); }
-     |        VOID func_decls { process_func_list($2, RT_VOID,           false); }
+/*---------------------------------------------------------------------------*/
+decl :        type var_decls  { process_var_list ($2, $1);                       delete $2; }
+     | EXTERN type func_decls { process_func_list($3, return_type_t($2), true);  delete $3; }
+     | EXTERN VOID func_decls { process_func_list($3, RT_VOID,           true);  delete $3; }
+     |        type func_decls { process_func_list($2, return_type_t($1), false); delete $2; }
+     |        VOID func_decls { process_func_list($2, RT_VOID,           false); delete $2; }
      ;
 
+/*---------------------------------------------------------------------------*/
 type : INT_TYPE  { $$ = PRIM_INT; }
      | CHAR_TYPE { $$ = PRIM_CHAR; }
      ;
 
+/*---------------------------------------------------------------------------*/
 var_decls : var_decl var_decl_list
             {
               symlist_t *list = $2 == NULL ? new symlist_t() : $2;
@@ -95,24 +102,32 @@ var_decls : var_decl var_decl_list
             }
           ;
 
-var_decl : ID
+/*---------------------------------------------------------------------------*/
+var_decl : ID array_sfx
            {
-             $$ = new symbol_t($1, yylineno, ST_PRIMITIVE, ST_UNKNOWN);
-             free($1);
-           }
-         | ID '[' INT ']'
-           {
-             if ( $3 >= 0 )
-               $$ = new symbol_t($1, yylineno, ST_ARRAY, PRIM_UNKNOWN, $3);
-             else
-             {
-               fprintf(stderr, "error, line %d: arrays must have non-negative size\n", yylineno);
-               $$ = NULL;
-             }
+             $$ = validate_var_decl($1, yylineno, $2);
              free($1);
            }
          ;
 
+/*---------------------------------------------------------------------------*/
+array_sfx : '[' INT ']'
+            {
+              if ( $2 >= 0 )
+              {
+                $$.code = ASFX_OK;
+                $$.size = $2;
+              }
+              else
+              {
+                USERERR("error: line %d: arrays must have non-negative size\n", yylineno);
+                $$.code = ASFX_ERROR;
+              }
+            }
+          | /* empty */ { $$.code = ASFX_NONE; }
+          ;
+
+/*---------------------------------------------------------------------------*/
 var_decl_list : var_decl_list ',' var_decl
                 {
                   symlist_t *symlist = $1;
@@ -125,6 +140,7 @@ var_decl_list : var_decl_list ',' var_decl
               | /* empty */ { $$ = NULL; }
               ;
 
+/*---------------------------------------------------------------------------*/
 func_decls : func_decl func_decl_list
              {
                symlist_t *list = $2 == NULL ? new symlist_t() : $2;
@@ -133,20 +149,15 @@ func_decls : func_decl func_decl_list
              }
            ;
 
-func_decl : ID '(' VOID ')' { $$ = func_decl_init($1, new paramvec_t(), yylineno); }
-          | ID '(' params ')' { $$ = func_decl_init($1, $3, yylineno) }
+/*---------------------------------------------------------------------------*/
+func_decl : ID '(' { param_on(); } params { param_off(); } ')'
+            {
+              $$ = new symbol_t($1, yylineno, ST_FUNCTION,
+                                RT_UNKNOWN, $4, NULL, NULL, false);
+            }
           ;
 
-params : param_decl param_decl_list
-         {
-           paramvec_t *params = $2 == NULL
-                              ? new paramvec_t()
-                              : $2;
-           params->insert(params->begin(), $1);
-           $$ = params;
-         }
-       ;
-
+/*---------------------------------------------------------------------------*/
 func_decl_list : func_decl_list ',' func_decl
                  {
                    symlist_t *symlist = $1;
@@ -158,85 +169,101 @@ func_decl_list : func_decl_list ',' func_decl
                | /* empty */ { $$ = NULL; }
                ;
 
-param_decl : type ID
+/*---------------------------------------------------------------------------*/
+params : param_decl param_decl_list
+         {
+           paramvec_t *params = $2 == NULL
+                              ? new paramvec_t()
+                              : $2;
+           params->insert(params->begin(), $1);
+           $$ = params;
+         }
+       | VOID { $$ = new paramvec_t(); }
+       ;
+
+/*---------------------------------------------------------------------------*/
+param_decl : type ID param_array_sfx
              {
-               $$ = new symbol_t($2, yylineno, ST_PRIMITIVE, $1);
-               free($2)
-             }
-           | type ID '[' ']'
-             {
-               $$ = new symbol_t($2, yylineno, ST_ARRAY, $1, -1);
+               symbol_t *sym = validate_var_decl($2, yylineno, $3);
+               if ( sym != NULL )
+               {
+                 if ( sym->type == ST_PRIMITIVE )
+                   sym->prim = $1;
+                 else
+                   sym->array.type = $1;
+               }
+               $$ = sym;
                free($2);
              }
            ;
 
+/*---------------------------------------------------------------------------*/
+param_array_sfx : '[' ']'     { $$.code = ASFX_OK;   $$.size = -1; }
+                | /* empty */ { $$.code = ASFX_NONE; $$.size = -1; }
+                ;
+
+/*---------------------------------------------------------------------------*/
 param_decl_list : param_decl_list ',' param_decl
                   {
                     paramvec_t *params = $1;
                     if ( params == NULL )
                       params = new paramvec_t();
-                    params->push_back($3);
+                    if ( $3 != NULL )
+                      params->push_back($3);
                     $$ = params;
                   }
                 | /* empty */ { $$ = NULL; }
                 ;
 
-func : type func_decl func_body { process_func_def($2, return_type_t($1), $3); }
-     | VOID func_decl func_body { process_func_def($2, RT_VOID, $3); }
+/*---------------------------------------------------------------------------*/
+func : type func_decl
+       '{'
+          { f_enter($2, return_type_t($1)); }
+          func_body
+          { f_leave($2, $5); }
+       '}'
+     | VOID func_decl
+       '{'
+          { f_enter($2, RT_VOID); }
+          func_body
+          { f_leave($2, $5); }
+       '}'
      ;
 
-func_body : '{' local_decls stmts '}' { $$ = $3; }
+/*---------------------------------------------------------------------------*/
+func_body : local_decls stmts { $$ = $2; }
           ;
 
-local_decls : local_decls type var_decls ';'
-              {
-                ASSERT(0, lsyms != NULL);
-                process_var_list(*lsyms, $3, $2);
-              }
+/*---------------------------------------------------------------------------*/
+local_decls : local_decls type var_decls ';' { process_var_list($3, $2); }
             | /* empty */
             ;
 
+/*---------------------------------------------------------------------------*/
 stmts : /* empty */ { $$ = new treenode_t(TNT_EMPTY); }
       ;
 
 %%
 
 //-----------------------------------------------------------------------------
-static symbol_t *func_decl_init(char *name, paramvec_t *params, int line)
+static symbol_t *validate_var_decl(const char *name, int line, array_sfx_t asfx)
 {
-  ASSERT(0, params != NULL);
-  symbol_t *f = new symbol_t(name, line, ST_FUNCTION,
-                             RT_UNKNOWN, params, NULL, NULL, false);
-  free(name);
+  if ( asfx.code == ASFX_ERROR )
+    return NULL;
 
-  f->func.symbols = new symtab_t();
-  int size = params->size();
-  for ( int i = 0; i < size; i++ )
+  symbol_t *prev = cursyms->get(std::string(name));
+  if ( prev != NULL )
   {
-    if ( !insert_sym(*f->func.symbols, params->at(i)) )
-    {
-      delete f;
-      return NULL;
-    }
+    USERERR("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
+            prev->name.c_str(), yylineno, prev->line);
+    return NULL;
   }
-  // maintain global pointer to current local symbol table
-  lsyms = f->func.symbols;
-  return f;
-}
 
-//-----------------------------------------------------------------------------
-static void process_func_def(symbol_t *f, return_type_t rt, treenode_t *tree)
-{
-  if ( f == NULL )
-    return;
-
-  ASSERT(0, tree != NULL);
-
-  f->func.rt_type = rt;
-  f->func.syntax_tree = tree;
-
-  if ( insert_sym(gsyms, f) )
-    functions.push_back(f);
+  symbol_t *sym = asfx.code == ASFX_NONE
+                ? new symbol_t(name, line, ST_PRIMITIVE, PRIM_UNKNOWN)
+                : new symbol_t(name, line, ST_ARRAY, PRIM_UNKNOWN, asfx.size);
+  cursyms->insert(sym);
+  return sym;
 }
 
 //-----------------------------------------------------------------------------
@@ -272,77 +299,112 @@ static bool param_check(const paramvec_t &p1, const paramvec_t &p2)
 enum col_res_t
 {
   COL_OK,
-  COL_REDECL,
-  COL_PARAMS
+  COL_PARAMS,
+  COL_REDEF,
+  COL_RET
 };
 
 //-----------------------------------------------------------------------------
 static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
 {
-  ASSERT(0, prev.name == sym.name);
+  ASSERT(1000, prev.type == ST_FUNCTION);
+  ASSERT(1001, sym.type  == ST_FUNCTION);
 
-  if ( prev.type != ST_FUNCTION               // any non-function occuring twice is wrong
-    || sym.type  != ST_FUNCTION               // ""
-    || prev.func.rt_type != sym.func.rt_type  // return types must exactly match
-    || prev.func.is_extern                    // extern functions must not be defined
-    || prev.func.syntax_tree != NULL          // declaration cannot come after definition
-    || sym.func.syntax_tree  == NULL )        // cannot declare function twice
-  {
-    return COL_REDECL;
-  }
+  if ( prev.func.syntax_tree != NULL )
+    return COL_REDEF;
 
   if ( !param_check(*prev.func.params, *sym.func.params) )
     return COL_PARAMS;
 
+  if ( prev.func.rt_type != sym.func.rt_type )
+    return COL_RET;
+
   return COL_OK;
 }
 
-//-----------------------------------------------------------------------------
-static bool insert_sym(symtab_t &table, symbol_t *sym)
-{
-  ASSERT(0, sym != NULL);
-  if ( table[sym->name] != NULL )
-  {
-    symbol_t *prev = table[sym->name];
-    col_res_t res = handle_collision(*prev, *sym);
 
-    if ( res != COL_OK )
-    {
-      if ( res == COL_PARAMS )
-      {
-        fprintf(stderr,
-                "error: paramters for function %s defined at line %d "
-                "do not match the parameters in its declaration at line %d\n",
-                sym->name.c_str(), sym->line, prev->line);
-      }
-      else
-      {
-        fprintf(stderr,
-                "error, symbol %s redeclared at line %d "
-                "(previous declaration at line %d)\n",
-                sym->name.c_str(), sym->line, prev->line);
-      }
-      delete sym;
-      return false;
-    }
-    // symbols for function declarations are replaced with the
-    // symbol containing the definition (& correct param names)
-    delete prev;
+//-----------------------------------------------------------------------------
+static void init_lsyms(symbol_t *f)
+{
+  ASSERT(1002, f != NULL);
+  f->func.symbols = new symtab_t();
+
+  symtab_t *syms = f->func.symbols;
+  paramvec_t *params = f->func.params;
+
+  int size = params->size();
+  for ( int i = 0; i < size; i++ )
+  {
+    symbol_t *p = params->at(i);
+    ASSERT(1003, syms->get(p->name) == NULL);
+    syms->insert(p);
   }
-  table[sym->name] = sym;
-  return true;
 }
 
 //-----------------------------------------------------------------------------
-static void process_var_list(symtab_t &table, symlist_t *list, primitive_t prim)
+static void f_enter(symbol_t *f, return_type_t rt)
 {
-  if ( list == NULL )
-    return;
+  ASSERT(1004, f != NULL);
+
+  f->func.rt_type = rt;
+
+  symbol_t *prev = cursyms->get(f->name);
+  if ( prev != NULL )
+  {
+    col_res_t res = handle_collision(*prev, *f);
+
+    if ( res != COL_OK )
+    {
+      if ( res == COL_REDEF )
+      {
+        USERERR("error: function %s redefined at line %d "
+                "(previous definition starts at line %d)\n",
+                f->name.c_str(), f->line, prev->line);
+      }
+      else if ( res == COL_PARAMS )
+      {
+        USERERR("error: parameters in definition of function %s at line %d "
+                "do not match the paramters in its declaration at line %d\n",
+                f->name.c_str(), f->line, prev->line);
+      }
+      else if ( res == COL_RET )
+      {
+        USERERR("error: return value for function %s at line %d "
+                "does not match the return type of its declaration at line %d\n",
+                f->name.c_str(), f->line, prev->line);
+      }
+      exit(2); // these errors invalidate an entire function definition. we do not try to recover from them
+    }
+    // symbol for declaration is replaced with the new symbol
+    delete prev;
+  }
+  cursyms->insert(f);
+
+  init_lsyms(f);
+  cursyms = f->func.symbols;
+}
+//-----------------------------------------------------------------------------
+static void f_leave(symbol_t *f, treenode_t *tree)
+{
+  ASSERT(1005, f != NULL);
+  ASSERT(1006, tree != NULL);
+
+  f->func.syntax_tree = tree;
+  functions.push_back(f);
+
+  cursyms = &gsyms;
+}
+
+//-----------------------------------------------------------------------------
+static void process_var_list(symlist_t *list, primitive_t prim)
+{
+  ASSERT(1007, list != NULL);
+
   symlist_t::iterator i;
   for ( i = list->begin(); i != list->end(); i++ )
   {
+    ASSERT(1008, *i != NULL);
     symbol_t *sym = *i;
-    ASSERT(0, sym != NULL);
     switch ( sym->type )
     {
       case ST_PRIMITIVE:
@@ -354,28 +416,32 @@ static void process_var_list(symtab_t &table, symlist_t *list, primitive_t prim)
       default:
         INTERR(0);
     }
-    insert_sym(table, sym);
   }
-  delete list;
 }
 
 //-----------------------------------------------------------------------------
 static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_extern)
 {
-  if ( list == NULL )
-    return;
+  ASSERT(1010, list != NULL);
+
   symlist_t::iterator i;
   for ( i = list->begin(); i != list->end(); i++ )
   {
+    ASSERT(1011, *i != NULL);
+
     symbol_t *sym = *i;
-    if ( sym != NULL )
+    symbol_t *prev = cursyms->get(sym->name);
+    if ( prev != NULL )
     {
-      sym->func.rt_type = rt_type;
-      sym->func.is_extern = is_extern;
-      insert_sym(gsyms, sym);
+      USERERR("error: function %s redeclared at line %d (previous declaration at line %d)\n",
+              sym->name.c_str(), sym->line, prev->line);
+      delete sym;
+      continue;
     }
+    sym->func.rt_type = rt_type;
+    sym->func.is_extern = is_extern;
+    cursyms->insert(sym);
   }
-  delete list;
 }
 
 //-----------------------------------------------------------------------------

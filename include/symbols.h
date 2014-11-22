@@ -10,13 +10,7 @@ struct symbol_t;
 struct function_t;
 struct array_t;
 struct treenode_t;
-
-//-----------------------------------------------------------------------------
-class symtab_t : public std::map<std::string, symbol_t *>
-{
-public:
-  ~symtab_t();
-};
+class symtab_t;
 
 typedef std::list<symbol_t *> symlist_t; // for things like: int x, y, z;
 
@@ -86,6 +80,46 @@ struct symbol_t
 
   symbol_t(const char *, int, symbol_type_t, ...);
   ~symbol_t();
+};
+
+
+//-----------------------------------------------------------------------------
+class symtab_t // symbol table
+{
+  typedef std::map<std::string, symbol_t *> smap_t;
+
+  smap_t map;
+
+public:
+  symbol_t *get(std::string key) { return map[key]; }
+
+  bool insert(symbol_t *value)
+  {
+    if ( value == NULL )
+      return false;
+    map[value->name] = value;
+    return true;
+  }
+
+  typedef smap_t::iterator iterator;
+  typedef smap_t::const_iterator const_iterator;
+
+  iterator begin() { return map.begin(); }
+  iterator end() { return map.end(); }
+  const_iterator begin() const { return map.begin(); }
+  const_iterator end() const { return map.end(); }
+
+  size_t size() const { return map.size(); }
+};
+
+//-----------------------------------------------------------------------------
+struct array_sfx_t
+{
+  int code;
+#define ASFX_OK     1
+#define ASFX_NONE   0
+#define ASFX_ERROR -1
+  int size;
 };
 
 #endif // SYMBOL_H

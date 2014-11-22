@@ -50,6 +50,7 @@ $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+#------------------------------------------------------------------------------
 .PHONY: clean
 clean:
 	rm -rf $(BIN)c--* $(OBJ)*

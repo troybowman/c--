@@ -124,7 +124,7 @@ void walk_funcs(dbg_flags_t flags)
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     symbol_t *f = *i;
-    ASSERT(0, f->type == ST_FUNCTION);
+    ASSERT(1012, f->type == ST_FUNCTION);
     if ( (flags & dbg_lsyms) != 0 )
     {
       fprintf(stdout, header, "LOCAL SYMBOLS FOR FUNCTION: ", f->name.c_str());

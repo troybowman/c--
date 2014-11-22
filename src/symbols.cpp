@@ -39,19 +39,8 @@ symbol_t::~symbol_t()
 {
   if ( type == ST_FUNCTION )
   {
-    if ( func.params != NULL )
-      delete func.params;
-    if ( func.symbols != NULL )
-      delete func.symbols;
-    if ( func.syntax_tree != NULL )
-      delete func.syntax_tree;
+    int size = func.params->size();
+    for ( int i = 0; i < size; i++ )
+      delete func.params->at(i);
   }
-}
-
-//-----------------------------------------------------------------------------
-symtab_t::~symtab_t()
-{
-  symtab_t::iterator i;
-  for ( i = begin(); i != end(); i++ )
-    delete i->second;
 }
