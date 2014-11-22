@@ -3,6 +3,7 @@
 
 struct symbol_t;
 
+//-----------------------------------------------------------------------------
 enum treenode_type_t
 {
   TNT_EMPTY,
@@ -39,6 +40,7 @@ enum treenode_type_t
 #define FOR_BODY  3
 };
 
+//-----------------------------------------------------------------------------
 struct treenode_t
 {
   treenode_type_t type;

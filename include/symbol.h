@@ -91,7 +91,7 @@ class symtab_t // symbol table
   smap_t map;
 
 public:
-  symbol_t *get(std::string key) { return map[key]; }
+  symbol_t *get(const std::string &key) { return map[key]; }
 
   bool insert(symbol_t *value)
   {
