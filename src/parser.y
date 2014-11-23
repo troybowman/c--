@@ -365,12 +365,12 @@ static void f_enter(symbol_t *f, return_type_t rt)
           break;
         case COL_PARAMS:
           USERERR("error: parameters in definition of function %s at line %d "
-                  "do not match the paramters in its declaration at line %d\n",
+                  "do not match the parameters in its declaration at line %d\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         case COL_RET:
           USERERR("error: return type for function %s at line %d "
-                  "does not match the return type of its declaration at line %d\n",
+                  "does not match the return type in its declaration at line %d\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         default:
@@ -469,20 +469,17 @@ static bool parseargs(int argc, char **argv)
   {
     infile = argv[1];
   }
-#ifndef NDEBUG
   else
   {
+#ifndef NDEBUG
     if ( argc != 4 || strcmp("-v", argv[1]) != 0 )
       return false;
     dbg_flags |= dbg_flags_t(atoi(argv[2]));
     infile = argv[3];
-  }
 #else
-  else
-  {
     return false;
-  }
 #endif
+  }
   yyin = fopen(infile, "r");
   if ( yyin == NULL )
   {
