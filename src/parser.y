@@ -228,6 +228,8 @@ func : type func_decl
           func_body
           { f_leave($2, $5); }
        '}'
+     | error '{' { exit(FATAL_FUNCDEF); } /* avoid processing an invaild function */
+     | error '}' { yyerrok; }             /* function never began, start over at '}' */
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -360,7 +362,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
           break;
         case COL_REDECL:
           USERERR("error: symbol %s redeclared as a function at line %d "
-                  "(previous declaration at line %d\n",
+                  "(previous declaration at line %d)\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         case COL_PARAMS:
@@ -376,7 +378,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
         default:
           INTERR(1012);
       }
-      exit(2); // these errors invalidate an entire function definition. we do not try to recover from them
+      exit(FATAL_FUNCDEF); // these errors invalidate an entire function definition. we do not try to recover from them
     }
     // symbol for declaration is replaced with the new symbol
     delete prev;
@@ -457,7 +459,7 @@ static void usage(const char *prog)
     "usage: %s filename\n";
 #endif
   fprintf(stderr, msg, prog);
-  exit(1);
+  exit(FATAL_USAGE);
 }
 
 //-----------------------------------------------------------------------------
