@@ -97,7 +97,7 @@ var_decls : var_decl var_decl_list
             {
               symlist_t *list = $2 == NULL ? new symlist_t() : $2;
               if ( $1 != NULL )
-                list->push_back($1);
+                list->insert(list->begin(), $1);
               $$ = list;
             }
           ;
@@ -144,7 +144,7 @@ var_decl_list : var_decl_list ',' var_decl
 func_decls : func_decl func_decl_list
              {
                symlist_t *list = $2 == NULL ? new symlist_t() : $2;
-               list->push_back($1);
+               list->insert(list->begin(), $1);
                $$ = list;
              }
            ;
@@ -236,6 +236,7 @@ func_body : local_decls stmts { $$ = $2; }
 
 /*---------------------------------------------------------------------------*/
 local_decls : local_decls type var_decls ';' { process_var_list($3, $2); }
+            | local_decls error          ';' { yyerrok; }
             | /* empty */
             ;
 
@@ -300,6 +301,7 @@ enum col_res_t
 {
   COL_OK,
   COL_PARAMS,
+  COL_REDECL,
   COL_REDEF,
   COL_RET
 };
@@ -307,21 +309,15 @@ enum col_res_t
 //-----------------------------------------------------------------------------
 static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
 {
-  ASSERT(1000, prev.type == ST_FUNCTION);
-  ASSERT(1001, sym.type  == ST_FUNCTION);
+  ASSERT(1000, sym.type == ST_FUNCTION);
+  ASSERT(1001, prev.name == sym.name);
 
-  if ( prev.func.syntax_tree != NULL )
-    return COL_REDEF;
-
-  if ( !param_check(*prev.func.params, *sym.func.params) )
-    return COL_PARAMS;
-
-  if ( prev.func.rt_type != sym.func.rt_type )
-    return COL_RET;
-
-  return COL_OK;
+  return prev.type != ST_FUNCTION                          ? COL_REDECL
+       : prev.func.syntax_tree != NULL                     ? COL_REDEF
+       : !param_check(*prev.func.params, *sym.func.params) ? COL_PARAMS
+       : prev.func.rt_type != sym.func.rt_type             ? COL_RET
+       : COL_OK;
 }
-
 
 //-----------------------------------------------------------------------------
 static void init_lsyms(symbol_t *f)
@@ -355,23 +351,30 @@ static void f_enter(symbol_t *f, return_type_t rt)
 
     if ( res != COL_OK )
     {
-      if ( res == COL_REDEF )
+      switch ( res )
       {
-        USERERR("error: function %s redefined at line %d "
-                "(previous definition starts at line %d)\n",
-                f->name.c_str(), f->line, prev->line);
-      }
-      else if ( res == COL_PARAMS )
-      {
-        USERERR("error: parameters in definition of function %s at line %d "
-                "do not match the paramters in its declaration at line %d\n",
-                f->name.c_str(), f->line, prev->line);
-      }
-      else if ( res == COL_RET )
-      {
-        USERERR("error: return value for function %s at line %d "
-                "does not match the return type of its declaration at line %d\n",
-                f->name.c_str(), f->line, prev->line);
+        case COL_REDEF:
+          USERERR("error: function %s redefined at line %d "
+                  "(previous definition starts at line %d)\n",
+                  f->name.c_str(), f->line, prev->line);
+          break;
+        case COL_REDECL:
+          USERERR("error: symbol %s redeclared as a function at line %d "
+                  "(previous declaration at line %d\n",
+                  f->name.c_str(), f->line, prev->line);
+          break;
+        case COL_PARAMS:
+          USERERR("error: parameters in definition of function %s at line %d "
+                  "do not match the paramters in its declaration at line %d\n",
+                  f->name.c_str(), f->line, prev->line);
+          break;
+        case COL_RET:
+          USERERR("error: return type for function %s at line %d "
+                  "does not match the return type of its declaration at line %d\n",
+                  f->name.c_str(), f->line, prev->line);
+          break;
+        default:
+          INTERR(1012);
       }
       exit(2); // these errors invalidate an entire function definition. we do not try to recover from them
     }
