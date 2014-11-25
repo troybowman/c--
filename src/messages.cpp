@@ -7,10 +7,10 @@
 // Error messages
 //-----------------------------------------------------------------------------
 
-#define MAXERRS 50
+#define MAXERRS   50
 #define MAXERRLEN 250
 
-typedef std::list<std::string *> errlist_t;
+typedef std::list<std::string> errlist_t;
 
 //-----------------------------------------------------------------------------
 static errlist_t errmsgs;
@@ -20,7 +20,7 @@ void purge_and_exit(int code)
 {
   errlist_t::const_iterator i;
   for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
-    fprintf(stderr, (*i)->c_str());
+    fprintf(stderr, i->c_str());
   exit(code);
 }
 
@@ -32,7 +32,7 @@ void usererr(const char *format, ...)
 
   char buf[MAXERRLEN];
   vsnprintf(buf, MAXERRLEN, format, va);
-  errmsgs.push_back(new std::string(buf));
+  errmsgs.push_back(std::string(buf));
 
   va_end(va);
 
