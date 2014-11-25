@@ -2,7 +2,9 @@
 
 #include <treenode.h>
 #include <messages.h>
+#include <symbol.h>
 
+//-----------------------------------------------------------------------------
 treenode_t::treenode_t(treenode_type_t _type, ...)
   : type(_type)
 {
@@ -22,6 +24,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       val = va_arg(va, int);
       break;
     case TNT_STRCON:
+    case TNT_CHARCON:
       str = va_arg(va, char *);
       break;
     case TNT_SYMBOL:
@@ -62,7 +65,41 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       children[STMT_CUR]  = va_arg(va, treenode_t *);
       children[STMT_NEXT] = va_arg(va, treenode_t *);
       ASSERT(1019, children[STMT_CUR] != NULL);
+    case TNT_CALL:
+      children[CALL_SYM]  = va_arg(va, treenode_t *);
+      children[CALL_ARGS] = va_arg(va, treenode_t *);
+      ASSERT(1023, children[CALL_SYM] != NULL);
     default:
       INTERR(1020);
+  }
+}
+
+//-----------------------------------------------------------------------------
+bool treenode_t::is_int_compat()
+{
+  switch ( type )
+  {
+    // all arithmetic expressions resolve to int, and thus are int compatible
+    case TNT_PLUS:
+    case TNT_MINUS:
+    case TNT_MULT:
+    case TNT_DIV:
+    // integer constants and char constants are of course int compatible
+    case TNT_INTCON:
+    case TNT_CHARCON:
+    // we can only have arrays of its or chars, so array lookups are always good
+    case TNT_ARRAY_LOOKUP:
+    // report error nodes as compatible to avoid cascading error messages
+    case TNT_ERROR:
+      return true;
+    case TNT_SYMBOL:
+      return sym->type == ST_PRIMITIVE;
+    case TNT_CALL:
+    {
+      symbol_t *sym = children[CALL_SYM]->sym;
+      return sym->func.rt_type != RT_VOID;
+    }
+    default:
+      return false;
   }
 }

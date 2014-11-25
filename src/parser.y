@@ -341,6 +341,7 @@ static void init_lsyms(symbol_t &f)
 static void f_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
+  ASSERT(1026, rt != RT_UNKNOWN);
 
   f->func.rt_type = rt;
 
@@ -426,6 +427,7 @@ static void process_var_list(symlist_t *list, primitive_t prim)
 static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_extern)
 {
   ASSERT(1010, list != NULL);
+  ASSERT(1025, rt_type != RT_UNKNOWN);
 
   symlist_t::iterator i;
   for ( i = list->begin(); i != list->end(); i++ )
@@ -441,6 +443,7 @@ static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_ex
       delete sym;
       continue;
     }
+
     sym->func.rt_type = rt_type;
     sym->func.is_extern = is_extern;
     cursyms->insert(sym);

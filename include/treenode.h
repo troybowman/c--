@@ -8,11 +8,11 @@ enum treenode_type_t
 {
   TNT_EMPTY,
   TNT_ERROR,
-
   TNT_INTCON,
+  TNT_CHARCON,
   TNT_STRCON,
   TNT_SYMBOL,
-
+  // non-leaf nodes:
   TNT_ASSG,
   TNT_PLUS,
   TNT_MINUS,
@@ -28,20 +28,20 @@ enum treenode_type_t
   TNT_OR,
 #define LHS 0
 #define RHS 1
-
   TNT_ARRAY_LOOKUP,
 #define AL_BASE   0
 #define AL_OFFSET 1
-
   TNT_FOR,
 #define FOR_INIT  0
 #define FOR_CHECK 1
 #define FOR_INC   2
 #define FOR_BODY  3
-
   TNT_STMT,
 #define STMT_CUR  0
 #define STMT_NEXT 1
+  TNT_CALL,
+#define CALL_SYM  0
+#define CALL_ARGS 1
 };
 
 //-----------------------------------------------------------------------------
@@ -54,8 +54,11 @@ struct treenode_t
     char *str;
     symbol_t *sym;
   };
+
   treenode_t *children[4];
   treenode_t(treenode_type_t _type, ...);
+
+  bool is_int_compat();
 };
 
 #endif // TREENODE_H
