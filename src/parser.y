@@ -290,7 +290,7 @@ static bool param_check(const paramvec_t &p1, const paramvec_t &p2)
           return false;
         break;
       default:
-        INTERR(0);
+        INTERR(1021);
     }
   }
   return true;
@@ -417,7 +417,7 @@ static void process_var_list(symlist_t *list, primitive_t prim)
         sym->array.type = prim;
         break;
       default:
-        INTERR(0);
+        INTERR(1022);
     }
   }
 }

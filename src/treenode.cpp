@@ -26,6 +26,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       break;
     case TNT_SYMBOL:
       sym = va_arg(va, symbol_t *);
+      ASSERT(1014, sym != NULL);
       break;
     case TNT_ASSG:
     case TNT_PLUS:
@@ -42,10 +43,14 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
     case TNT_OR:
       children[LHS] = va_arg(va, treenode_t *);
       children[RHS] = va_arg(va, treenode_t *);
+      ASSERT(1015, children[LHS] != NULL);
+      ASSERT(1016, children[RHS] != NULL);
       break;
     case TNT_ARRAY_LOOKUP:
       children[AL_BASE]   = va_arg(va, treenode_t *);
       children[AL_OFFSET] = va_arg(va, treenode_t *);
+      ASSERT(1017, children[AL_BASE] != NULL);
+      ASSERT(1018, children[AL_OFFSET] != NULL);
       break;
     case TNT_FOR:
       children[FOR_INIT]  = va_arg(va, treenode_t *);
@@ -53,7 +58,11 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       children[FOR_INC]   = va_arg(va, treenode_t *);
       children[FOR_BODY]  = va_arg(va, treenode_t *);
       break;
+    case TNT_STMT:
+      children[STMT_CUR]  = va_arg(va, treenode_t *);
+      children[STMT_NEXT] = va_arg(va, treenode_t *);
+      ASSERT(1019, children[STMT_CUR] != NULL);
     default:
-      INTERR(0);
+      INTERR(1020);
   }
 }

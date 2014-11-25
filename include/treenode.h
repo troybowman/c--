@@ -38,6 +38,10 @@ enum treenode_type_t
 #define FOR_CHECK 1
 #define FOR_INC   2
 #define FOR_BODY  3
+
+  TNT_STMT,
+#define STMT_CUR  0
+#define STMT_NEXT 1
 };
 
 //-----------------------------------------------------------------------------

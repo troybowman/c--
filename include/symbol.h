@@ -6,6 +6,8 @@
 #include <list>
 #include <map>
 
+#include <messages.h>
+
 struct symbol_t;
 struct function_t;
 struct array_t;
@@ -93,12 +95,10 @@ class symtab_t // symbol table
 public:
   symbol_t *get(const std::string &key) { return map[key]; }
 
-  bool insert(symbol_t *value)
+  void insert(symbol_t *value)
   {
-    if ( value == NULL )
-      return false;
+    ASSERT(1013, value != NULL);
     map[value->name] = value;
-    return true;
   }
 
   typedef smap_t::iterator iterator;
