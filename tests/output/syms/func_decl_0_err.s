@@ -7,3 +7,4 @@ syntax error, line: 19
 syntax error, line: 21
 syntax error, line: 25
 syntax error, line: 28
+# c-- exited with code: 4

@@ -13,17 +13,11 @@
   extern "C" int yylineno;
   int yyerror(const char *s);
 
-#ifndef NDEBUG
-  dbg_flags_t dbg_flags = 0;
-#endif
-
-  symtab_t gsyms; // global symbol table
-  bool usererr = false; // don't generate code if we encountered an error
+  symtab_t gsyms;      // global symbol table
   symlist_t functions; // functions, in order as they appear in the source file
 
-  // pointer to current active symbol table.
-  // (could be &gsyms, the current local symtab,
-  //  or a temporary symtab for parameters)
+  // pointer to current active symbol table. (could be &gsyms,
+  // the current local symtab, or a temporary symtab for parameters)
   static symtab_t *cursyms = &gsyms;
 
   static void process_var_list(symlist_t *, primitive_t);
@@ -38,6 +32,10 @@
   static void f_leave(symbol_t *, treenode_t *);
 
   static symbol_t *validate_var_decl(const char *, int, array_sfx_t);
+
+#ifndef NDEBUG
+  dbg_flags_t dbg_flags = 0;
+#endif
 %}
 
 %union
@@ -120,7 +118,7 @@ array_sfx : '[' INT ']'
               }
               else
               {
-                USERERR("error: line %d: arrays must have non-negative size\n", yylineno);
+                usererr("error: line %d: arrays must have non-negative size\n", yylineno);
                 $$.code = ASFX_ERROR;
               }
             }
@@ -228,8 +226,8 @@ func : type func_decl
           func_body
           { f_leave($2, $5); }
        '}'
-     | error '{' { exit(FATAL_FUNCDEF); } /* avoid processing an invaild function */
-     | error '}' { yyerrok; }             /* function never began, start over at '}' */
+     | error '{' { purge_and_exit(FATAL_FUNCDEF); } /* avoid processing an invaild function */
+     | error '}' { yyerrok; }  /* function never began, start over at '}' */
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -257,7 +255,7 @@ static symbol_t *validate_var_decl(const char *name, int line, array_sfx_t asfx)
   symbol_t *prev = cursyms->get(std::string(name));
   if ( prev != NULL )
   {
-    USERERR("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
+    usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
             prev->name.c_str(), yylineno, prev->line);
     return NULL;
   }
@@ -356,29 +354,29 @@ static void f_enter(symbol_t *f, return_type_t rt)
       switch ( res )
       {
         case COL_REDEF:
-          USERERR("error: function %s redefined at line %d "
+          usererr("error: function %s redefined at line %d "
                   "(previous definition starts at line %d)\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         case COL_REDECL:
-          USERERR("error: symbol %s redeclared as a function at line %d "
+          usererr("error: symbol %s redeclared as a function at line %d "
                   "(previous declaration at line %d)\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         case COL_PARAMS:
-          USERERR("error: parameters in definition of function %s at line %d "
+          usererr("error: parameters in definition of function %s at line %d "
                   "do not match the parameters in its declaration at line %d\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         case COL_RET:
-          USERERR("error: return type for function %s at line %d "
+          usererr("error: return type for function %s at line %d "
                   "does not match the return type in its declaration at line %d\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         default:
           INTERR(1012);
       }
-      exit(FATAL_FUNCDEF); // these errors invalidate an entire function definition. we do not try to recover from them
+      purge_and_exit(FATAL_FUNCDEF); // these errors invalidate an entire function definition. we do not try to recover from them
     }
     // symbol for declaration is replaced with the new symbol
     delete prev;
@@ -438,7 +436,7 @@ static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_ex
     symbol_t *prev = cursyms->get(sym->name);
     if ( prev != NULL )
     {
-      USERERR("error: function %s redeclared at line %d (previous declaration at line %d)\n",
+      usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
               sym->name.c_str(), sym->line, prev->line);
       delete sym;
       continue;
@@ -498,6 +496,7 @@ int main(int argc, char **argv)
     usage(argv[0]);
 
   yyparse();
+  checkerr();
 
   DBG_SUMMARY(dbg_flags);
   CHECK_CODEGEN_FLAGS(dbg_flags);
@@ -508,6 +507,6 @@ int main(int argc, char **argv)
 //-----------------------------------------------------------------------------
 int yyerror(const char *s)
 {
-  fprintf(stderr, "%s, line: %d\n", s, yylineno);
+  usererr("%s, line: %d\n", s, yylineno);
   return 3;
 }

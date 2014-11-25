@@ -261,3 +261,4 @@
 #   line: 43
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
+# c-- exited with code: 0

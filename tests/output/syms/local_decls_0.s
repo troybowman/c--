@@ -35,3 +35,4 @@
 #   line: 5
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
+# c-- exited with code: 0

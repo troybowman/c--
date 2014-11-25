@@ -1,8 +1,60 @@
-#ifndef NDEBUG
+#include <list>
+#include <string>
 
 #include <messages.h>
+
+//-----------------------------------------------------------------------------
+// Error messages
+//-----------------------------------------------------------------------------
+
+#define MAXERRS 50
+#define MAXERRLEN 250
+
+typedef std::list<std::string *> errlist_t;
+
+//-----------------------------------------------------------------------------
+static errlist_t errmsgs;
+
+//-----------------------------------------------------------------------------
+void purge_and_exit(int code)
+{
+  errlist_t::const_iterator i;
+  for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
+    fprintf(stderr, (*i)->c_str());
+  exit(code);
+}
+
+//-----------------------------------------------------------------------------
+void usererr(const char *format, ...)
+{
+  va_list va;
+  va_start(va, format);
+
+  char buf[MAXERRLEN];
+  vsnprintf(buf, MAXERRLEN, format, va);
+  errmsgs.push_back(new std::string(buf));
+
+  va_end(va);
+
+  if ( errmsgs.size() >= MAXERRS )
+    purge_and_exit(FATAL_MAXERR);
+}
+
+//-----------------------------------------------------------------------------
+void checkerr()
+{
+  if ( errmsgs.size() > 0 )
+    purge_and_exit(FATAL_NORMAL);
+}
+
+//-----------------------------------------------------------------------------
+// Debug/Logging messages
+//-----------------------------------------------------------------------------
+#ifndef NDEBUG
+
 #include <symbol.h>
 
+//-----------------------------------------------------------------------------
 static const char *header =
 "#-----------------------------------------------------------------------------\n"
 "# %s%s\n"

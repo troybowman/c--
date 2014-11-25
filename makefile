@@ -48,7 +48,7 @@ $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
 
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
 
 #------------------------------------------------------------------------------
 .PHONY: clean

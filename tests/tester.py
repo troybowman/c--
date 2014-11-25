@@ -17,20 +17,16 @@ for d in dirs:
     for infile in glob.iglob(path):
         print "compiling: %s" % infile
 
-        # don't log any symbol table/syntax tree info for a file with errors in it.
-        # (this bahavior is undefied at the moment)
-        if os.path.splitext(infile)[0].endswith("_err"):
-            args = [ cmm, infile ]
-        else:
-            args = [ cmm, "-v", str(DBG_SUMMARY_MASK), infile ]
+        args = [ cmm, "-v", str(DBG_SUMMARY_MASK), infile ]
 
         outname = re.sub("input/", "output/",
-                        re.sub("\.c", ".s",
-                            infile))
+                    re.sub("\.c", ".s",
+                      infile))
 
         with open(outname, "w") as outfile:
             try:
-                subprocess.call(args, stdout=outfile, stderr=outfile)
+                code = subprocess.call(args, stdout=outfile, stderr=outfile)
+                outfile.write("# c-- exited with code: %d" % code)
             except OSError as e:
                 outfile.write("couldn't launch c--: %s" % e.strerror)
             except:
