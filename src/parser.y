@@ -31,7 +31,7 @@
   static void f_enter(symbol_t *, return_type_t);
   static void f_leave(symbol_t *, treenode_t *);
 
-  static symbol_t *validate_var_decl(const char *, int, array_sfx_t);
+  static symbol_t *process_var_decl(const char *, int, array_sfx_t);
 
 #ifndef NDEBUG
   dbg_flags_t dbg_flags = 0;
@@ -103,7 +103,7 @@ var_decls : var_decl var_decl_list
 /*---------------------------------------------------------------------------*/
 var_decl : ID array_sfx
            {
-             $$ = validate_var_decl($1, yylineno, $2);
+             $$ = process_var_decl($1, yylineno, $2);
              free($1);
            }
          ;
@@ -150,6 +150,7 @@ func_decls : func_decl func_decl_list
 /*---------------------------------------------------------------------------*/
 func_decl : ID '(' { param_on(); } params { param_off(); } ')'
             {
+              ASSERT(0, $4 != NULL);
               $$ = new symbol_t($1, yylineno, ST_FUNCTION,
                                 RT_UNKNOWN, $4, NULL, NULL, false);
             }
@@ -182,7 +183,7 @@ params : param_decl param_decl_list
 /*---------------------------------------------------------------------------*/
 param_decl : type ID param_array_sfx
              {
-               symbol_t *sym = validate_var_decl($2, yylineno, $3);
+               symbol_t *sym = process_var_decl($2, yylineno, $3);
                if ( sym != NULL )
                {
                  if ( sym->type == ST_PRIMITIVE )
@@ -247,7 +248,7 @@ stmts : /* empty */ { $$ = new treenode_t(TNT_EMPTY); }
 %%
 
 //-----------------------------------------------------------------------------
-static symbol_t *validate_var_decl(const char *name, int line, array_sfx_t asfx)
+static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
 {
   if ( asfx.code == ASFX_ERROR )
     return NULL;
@@ -320,13 +321,12 @@ static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
 }
 
 //-----------------------------------------------------------------------------
-static void init_lsyms(symbol_t *f)
+static void init_lsyms(symbol_t &f)
 {
-  ASSERT(1002, f != NULL);
-  f->func.symbols = new symtab_t();
+  f.func.symbols = new symtab_t();
 
-  symtab_t *syms = f->func.symbols;
-  paramvec_t *params = f->func.params;
+  symtab_t *syms = f.func.symbols;
+  paramvec_t *params = f.func.params;
 
   int size = params->size();
   for ( int i = 0; i < size; i++ )
@@ -383,7 +383,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
   }
   cursyms->insert(f);
 
-  init_lsyms(f);
+  init_lsyms(*f);
   cursyms = f->func.symbols;
 }
 //-----------------------------------------------------------------------------
