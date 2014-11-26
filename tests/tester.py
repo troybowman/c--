@@ -26,11 +26,11 @@ for d in dirs:
         with open(outname, "w") as outfile:
             try:
                 code = subprocess.call(args, stdout=outfile, stderr=outfile)
-                outfile.write("# c-- exited with code: %d" % code)
+                outfile.write("# c-- exited with code: %d\n" % code)
             except OSError as e:
-                outfile.write("couldn't launch c--: %s" % e.strerror)
+                outfile.write("couldn't launch c--: %s\n" % e.strerror)
             except:
-                outfile.write("idk wtf happened")
+                outfile.write("idk wtf happened\n")
                 raise
 
 #------------------------------------------------------------------------------
