@@ -2,7 +2,6 @@
 
 #include <treenode.h>
 #include <messages.h>
-#include <symbol.h>
 
 //-----------------------------------------------------------------------------
 treenode_t::treenode_t(treenode_type_t _type, ...)
@@ -24,12 +23,12 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       val = va_arg(va, int);
       break;
     case TNT_STRCON:
-    case TNT_CHARCON:
       str = va_arg(va, char *);
       break;
     case TNT_SYMBOL:
       sym = va_arg(va, symbol_t *);
-      ASSERT(1014, sym != NULL);
+      ASSERT(1019, sym != NULL);
+      ASSERT(1026, sym->type != ST_UNKNOWN);
       break;
     case TNT_ASSG:
     case TNT_PLUS:
@@ -46,30 +45,27 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
     case TNT_OR:
       children[LHS] = va_arg(va, treenode_t *);
       children[RHS] = va_arg(va, treenode_t *);
-      ASSERT(1015, children[LHS] != NULL);
-      ASSERT(1016, children[RHS] != NULL);
+      ASSERT(1020, children[LHS] != NULL);
+      ASSERT(1021, children[RHS] != NULL);
       break;
     case TNT_ARRAY_LOOKUP:
-      children[AL_BASE]   = va_arg(va, treenode_t *);
-      children[AL_OFFSET] = va_arg(va, treenode_t *);
-      ASSERT(1017, children[AL_BASE] != NULL);
-      ASSERT(1018, children[AL_OFFSET] != NULL);
+      children[AL_BASE] = va_arg(va, treenode_t *);
+      children[AL_IDX]  = va_arg(va, treenode_t *);
+      ASSERT(1022, children[AL_BASE] != NULL);
+      ASSERT(1023, children[AL_IDX] != NULL);
       break;
     case TNT_FOR:
       children[FOR_INIT]  = va_arg(va, treenode_t *);
       children[FOR_CHECK] = va_arg(va, treenode_t *);
       children[FOR_INC]   = va_arg(va, treenode_t *);
       children[FOR_BODY]  = va_arg(va, treenode_t *);
-      break;
     case TNT_STMT:
       children[STMT_CUR]  = va_arg(va, treenode_t *);
       children[STMT_NEXT] = va_arg(va, treenode_t *);
-    case TNT_CALL:
-      children[CALL_SYM]  = va_arg(va, treenode_t *);
-      children[CALL_ARGS] = va_arg(va, treenode_t *);
-      ASSERT(1023, children[CALL_SYM] != NULL);
+      ASSERT(1024, children[STMT_CUR] != NULL);
+      break;
     default:
-      INTERR(1020);
+      INTERR(0);
   }
 }
 
@@ -93,11 +89,6 @@ bool treenode_t::is_int_compat()
       return true;
     case TNT_SYMBOL:
       return sym->type == ST_PRIMITIVE;
-    case TNT_CALL:
-    {
-      symbol_t *sym = children[CALL_SYM]->sym;
-      return sym->func.rt_type != RT_VOID;
-    }
     default:
       return false;
   }

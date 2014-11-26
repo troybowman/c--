@@ -14,7 +14,7 @@ struct array_t;
 struct treenode_t;
 class symtab_t;
 
-typedef std::list<symbol_t *> symlist_t; // for things like: int x, y, z;
+typedef std::list<symbol_t *> symlist_t;
 
 extern symtab_t gsyms;
 extern symlist_t functions;

@@ -6,7 +6,6 @@ struct symbol_t;
 //-----------------------------------------------------------------------------
 enum treenode_type_t
 {
-  TNT_EMPTY,
   TNT_ERROR,
   TNT_INTCON,
   TNT_CHARCON,
@@ -60,5 +59,14 @@ struct treenode_t
 
   bool is_int_compat();
 };
+
+//-----------------------------------------------------------------------------
+// describes a 'list' of statements in the syntax tree
+struct stmt_summary_t
+{
+  treenode_t *head;
+  treenode_t *tail;
+  stmt_summary_t(treenode_t *h, treenode_t *t) : head(h), tail(t) {}
+}
 
 #endif // TREENODE_H
