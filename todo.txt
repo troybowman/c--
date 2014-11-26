@@ -1,0 +1,2 @@
+__asm__("int $3") on interr
+use references for low level functions like init_lsyms()
