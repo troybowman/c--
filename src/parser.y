@@ -34,8 +34,10 @@
   static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
 
   static void append_stmt(stmt_summary_t *ss, treenode_t *stmt);
-  static symbol_t *validate_stmt_id(const char *id, int line);
-  static treenode_t *process_stmt_var(symbol_t *sym, treenode_t *idx, int line);
+  static symbol_t *process_stmt_id(const char *id, int line);
+  static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line);
+
+  static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line);
 
 #ifndef NDEBUG
   dbg_flags_t dbg_flags = 0;
@@ -68,7 +70,7 @@
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
 %type<tree>     func_body stmt assg stmt_var stmt_array_sfx expr
-%type<asfx>     array_sfx param_array_sfx
+%type<asfx>     decl_array_sfx param_array_sfx
 %type<ss>       stmts
 
 %start prog
@@ -106,7 +108,7 @@ var_decls : var_decl var_decl_list
           ;
 
 /*---------------------------------------------------------------------------*/
-var_decl : ID array_sfx
+var_decl : ID decl_array_sfx
            {
              $$ = process_var_decl($1, yylineno, $2);
              free($1);
@@ -114,7 +116,7 @@ var_decl : ID array_sfx
          ;
 
 /*---------------------------------------------------------------------------*/
-array_sfx : '[' INT ']'
+decl_array_sfx : '[' INT ']'
             {
               if ( $2 >= 0 )
               {
@@ -174,7 +176,7 @@ func_decl_list : func_decl_list ',' func_decl
                ;
 
 /*---------------------------------------------------------------------------*/
-params : param_decl param_decl_list
+params : param_decl param_decl_list /* TODO: no idea why i did this backwards */
          {
            paramvec_t *params = $2 == NULL
                               ? new paramvec_t()
@@ -261,19 +263,19 @@ stmts : stmts stmt
 
 /*---------------------------------------------------------------------------*/
 stmt : assg  ';' { $$ = $1; }
-     | error ';' { yyerrok; }
+     /*| error ';' { yyerrok; }*/
      ;
 
 /*---------------------------------------------------------------------------*/
-assg : stmt_var '=' expr { $$ = process_assg($1, $3); }
+assg : stmt_var '=' expr     { $$ = process_assg($1, $3, yylineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
 stmt_var : ID stmt_array_sfx
            {
-             symbol_t *sym = validate_stmt_id($1, yylineno);
+             symbol_t *sym = process_stmt_id($1, yylineno);
              $$ = sym == NULL
-                ? new treenode_t(TNT_ERROR)
+                ? ERRNODE
                 : process_stmt_var(sym, $2, yylineno);
              free($1);
            }
@@ -299,22 +301,100 @@ static void append_stmt(stmt_summary_t *ss, treenode_t *stmt)
   ASSERT(1028, stmt != NULL);
 
   treenode_t *oldtail = ss->tail;
-
-  ASSERT(1029, oldtail->type == TNT_STMT);
-  ASSERT(1030, oldtail->children[STMT_NEXT] == NULL);
-
   treenode_t *newtail = new treenode_t(TNT_STMT, stmt, NULL);
+
   oldtail->children[STMT_NEXT] = newtail;
   ss->tail = newtail;
 }
 
 //-----------------------------------------------------------------------------
-static symbol_t *validate_stmt_id(const char *name, int line)
+static symbol_t *process_stmt_id(const char *id, int line)
 {
-  symbol_t *sym = cursyms->get(std::string(name));
+  std::string key(id);
+  symbol_t *sym = cursyms->get(key); // first check local symbols
   if ( sym == NULL )
-    usererr("error: use of undeclared identifier %s at line %d\n", sym->name.c_str(), line);
+  {
+    sym = gsyms.get(key); // now global symbols
+    if ( sym == NULL )
+      usererr("error: use of undeclared identifier %s at line %d\n", name, line);
+  }
   return sym;
+}
+
+//-----------------------------------------------------------------------------
+enum lookup_res_t
+{
+  AL_OK,
+  AL_ERR_BASE,
+  AL_ERR_IDX
+};
+
+//-----------------------------------------------------------------------------
+static inline lookup_res_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
+{
+  return sym.type != ST_ARRAY ? AL_ERR_BASE
+       : !idx.is_int_compat() ? AL_ERR_IDX
+       : AL_OK;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line)
+{
+  ASSERT(0, sym != NULL);
+
+  if ( idx == NULL )
+    return new treenode_t(TNT_SYMBOL, sym);
+
+  lookup_res_t res = validate_array_lookup(*sym, *idx);
+
+  if ( res != AL_OK )
+  {
+    switch( res )
+    {
+      case AL_ERR_BASE:
+        usererr("error: symbol %s used as an array bit is not of array type, line %d\n",
+                sym->name.c_str(), line);
+        break;
+      case AL_ERR_IDX:
+        usererr("error: expression for array index is not of integer type, line %d\n", line);
+        break;
+      default:
+        INTERR(0);
+    }
+    delete idx;
+    return ERRNODE;
+  }
+
+  treenode_t *base = new treenode_t(TNT_SYMBOL, sym);
+  return new treenode_t(TNT_ARRAY_LOOKUP, base, idx);
+}
+
+//-----------------------------------------------------------------------------
+static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
+{
+  if ( lhs.type == TNT_ERROR || rhs.type == TNT_ERROR )
+    return true;
+
+  bool res = lhs.type == TNT_SYMBOL
+           ? lhs.sym->type == ST_PRIMITIVE
+           : lhs.type == TNT_ARRAY_LOOKUP;
+
+  return res ? rhs.is_int_compat() : false;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
+{
+  ASSERT(0, lhs != NULL);
+  ASSERT(0, rhs != NULL);
+
+  if ( !validate_assg(*lhs, *rhs) )
+  {
+    usererr("error: invalid operand types for assignment, line %d\n", line);
+    return ERRNODE;
+  }
+
+  return new treenode_t(TNT_ASSG, lhs, rhs);
 }
 
 //-----------------------------------------------------------------------------
@@ -339,7 +419,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
 }
 
 //-----------------------------------------------------------------------------
-static bool param_check(const paramvec_t &p1, const paramvec_t &p2)
+static bool check_params(const paramvec_t &p1, const paramvec_t &p2)
 {
   if ( p1.size() != p2.size() )
     return false;
@@ -383,10 +463,10 @@ static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
   ASSERT(1000, sym.type == ST_FUNCTION);
   ASSERT(1001, prev.name == sym.name);
 
-  return prev.type != ST_FUNCTION                          ? COL_REDECL
-       : prev.func.syntax_tree != NULL                     ? COL_REDEF
-       : !param_check(*prev.func.params, *sym.func.params) ? COL_PARAMS
-       : prev.func.rt_type != sym.func.rt_type             ? COL_RET
+  return prev.type != ST_FUNCTION                           ? COL_REDECL
+       : prev.func.syntax_tree != NULL                      ? COL_REDEF
+       : !check_params(*prev.func.params, *sym.func.params) ? COL_PARAMS
+       : prev.func.rt_type != sym.func.rt_type              ? COL_RET
        : COL_OK;
 }
 
@@ -411,7 +491,6 @@ static void init_lsyms(symbol_t &f)
 static void f_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
-  ASSERT(1026, rt != RT_UNKNOWN);
 
   f->func.rt_type = rt;
 
@@ -449,7 +528,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
       }
       purge_and_exit(FATAL_FUNCDEF); // these errors invalidate an entire function definition. we do not try to recover from them
     }
-    // symbol for declaration is replaced with the new symbol
+    // existing symbol for declaration is replaced with the definition
     delete prev;
   }
   cursyms->insert(f);

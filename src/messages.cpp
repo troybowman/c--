@@ -54,6 +54,7 @@ void checkerr()
 #ifndef NDEBUG
 
 #include <symbol.h>
+#include <treenode.h>
 
 //-----------------------------------------------------------------------------
 static const char *header =
@@ -171,6 +172,12 @@ void print_gsyms()
 }
 
 //-----------------------------------------------------------------------------
+void print_tree(const treenode_t *tree)
+{
+
+}
+
+//-----------------------------------------------------------------------------
 void walk_funcs(dbg_flags_t flags)
 {
   symlist_t::const_iterator i;
@@ -182,6 +189,11 @@ void walk_funcs(dbg_flags_t flags)
     {
       fprintf(stdout, header, "LOCAL SYMBOLS FOR FUNCTION: ", f->name.c_str());
       print_syms(*f->func.symbols);
+    }
+    if ( (flags & dbg_tree) != 0 )
+    {
+      //fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->name.c_str());
+      //print_tree(f->func.syntax_tree);
     }
   }
 }

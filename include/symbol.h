@@ -84,7 +84,6 @@ struct symbol_t
   ~symbol_t();
 };
 
-
 //-----------------------------------------------------------------------------
 class symtab_t // symbol table
 {
@@ -93,7 +92,11 @@ class symtab_t // symbol table
   smap_t map;
 
 public:
-  symbol_t *get(const std::string &key) { return map[key]; }
+  symbol_t *get(const std::string &key)
+  {
+    try { return map.at(key); }
+    catch ( const std::out_of_range & ) { return NULL; }
+  }
 
   void insert(symbol_t *value)
   {

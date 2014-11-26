@@ -17,7 +17,6 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
   va_start(va, _type);
   switch ( _type )
   {
-    case TNT_EMPTY:
     case TNT_ERROR:
       break;
     case TNT_INTCON:
@@ -26,6 +25,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
     case TNT_STRCON:
     case TNT_CHARCON:
       str = va_arg(va, char *);
+      ASSERT(0, str!= NULL);
       break;
     case TNT_SYMBOL:
       sym = va_arg(va, symbol_t *);
@@ -64,17 +64,29 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
     case TNT_STMT:
       children[STMT_CUR]  = va_arg(va, treenode_t *);
       children[STMT_NEXT] = va_arg(va, treenode_t *);
+      break;
+      // stmt nodes can point to nothing - it's how we identify empty functions
     case TNT_CALL:
       children[CALL_SYM]  = va_arg(va, treenode_t *);
       children[CALL_ARGS] = va_arg(va, treenode_t *);
       ASSERT(1023, children[CALL_SYM] != NULL);
+      break;
     default:
       INTERR(1020);
   }
 }
 
 //-----------------------------------------------------------------------------
-bool treenode_t::is_int_compat()
+treenode_t::~treenode_t()
+{
+  if ( type == TNT_CHARCON || type == TNT_STRCON )
+    free(str);
+  for ( int i = 0; i < 4; i++ )
+    delete children[i];
+}
+
+//-----------------------------------------------------------------------------
+bool treenode_t::is_int_compat() const
 {
   switch ( type )
   {
@@ -86,7 +98,7 @@ bool treenode_t::is_int_compat()
     // integer constants and char constants are of course int compatible
     case TNT_INTCON:
     case TNT_CHARCON:
-    // we can only have arrays of its or chars, so array lookups are always good
+    // we can only have arrays of ints or chars, so array lookups are always good
     case TNT_ARRAY_LOOKUP:
     // report error nodes as compatible to avoid cascading error messages
     case TNT_ERROR:

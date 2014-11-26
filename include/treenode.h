@@ -55,18 +55,23 @@ struct treenode_t
   };
 
   treenode_t *children[4];
-  treenode_t(treenode_type_t _type, ...);
 
-  bool is_int_compat();
+  treenode_t(treenode_type_t _type, ...);
+  ~treenode_t();
+
+  bool is_int_compat() const;
 };
 
 //-----------------------------------------------------------------------------
-// describes a 'list' of statements in the syntax tree
+#define ERRNODE new treenode_t(TNT_ERROR)
+
+//-----------------------------------------------------------------------------
+// describes a sequence of statements in the syntax tree
 struct stmt_summary_t
 {
   treenode_t *head;
   treenode_t *tail;
   stmt_summary_t(treenode_t *h, treenode_t *t) : head(h), tail(t) {}
-}
+};
 
 #endif // TREENODE_H

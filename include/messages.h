@@ -20,11 +20,11 @@ void purge_and_exit(int code);
 void usererr(const char *format, ...);
 
 //-----------------------------------------------------------------------------
-#define INTERR(code)                   \
-do                                     \
-{                                      \
-  fprintf(stderr, "interr: %d", code); \
-  exit(code);                          \
+#define INTERR(code)                     \
+do                                       \
+{                                        \
+  fprintf(stderr, "interr: %d\n", code); \
+  exit(code);                            \
 } while ( false );
 
 //-----------------------------------------------------------------------------
