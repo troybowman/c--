@@ -316,7 +316,7 @@ static symbol_t *process_stmt_id(const char *id, int line)
   {
     sym = gsyms.get(key); // now global symbols
     if ( sym == NULL )
-      usererr("error: use of undeclared identifier %s at line %d\n", name, line);
+      usererr("error: use of undeclared identifier %s at line %d\n", key.c_str(), line);
   }
   return sym;
 }

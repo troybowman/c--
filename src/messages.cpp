@@ -192,8 +192,8 @@ void walk_funcs(dbg_flags_t flags)
     }
     if ( (flags & dbg_tree) != 0 )
     {
-      //fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->name.c_str());
-      //print_tree(f->func.syntax_tree);
+      fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->name.c_str());
+      print_tree(f->func.syntax_tree);
     }
   }
 }
