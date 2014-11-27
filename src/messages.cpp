@@ -208,22 +208,23 @@ void print_tree(const treenode_t *node, int cnt)
 {
   ASSERT(0, node != NULL);
   ++cnt;
-  cmtout(0, "treenode %d: type: %s\n", cnt, tnt2str(node->type));
+  cmtout(0, "node %d: type: %s", cnt, tnt2str(node->type));
   switch ( node->type )
   {
     case TNT_INTCON:
-      cmtout(0, "  val: %d\n", node->val);
+      fprintf(stdout, " val: %d", node->val);
       break;
     case TNT_CHARCON:
     case TNT_STRCON:
-      cmtout(0, "  str: %s\n", node->str);
+      fprintf(stdout, " str: %s", node->str);
       break;
     case TNT_SYMBOL:
-      cmtout(0, "  sym: %s\n", node->sym->name.c_str());
+      fprintf(stdout, " sym: %s", node->sym->name.c_str());
       break;
     default:
       break;
   }
+  fprintf(stdout, "\n");
   for ( int i = 0; i < 4; i++ )
   {
     treenode_t *child = node->children[i];
