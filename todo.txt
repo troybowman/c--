@@ -1,2 +1,13 @@
 __asm__("int $3") on interr
-use references for low level functions like init_lsyms()
+
+tester find c-- directory:
+ cwd = os.getcwd()
+ last_child = cwd
+ cur = os.path.dirname(cwd)
+ while not os.path.basename(cur).lower().startswith("idasrc"):
+     last_child = cur
+     parent = os.path.dirname(cur)
+     if parent == cur:
+         break
+     cur = parent
+ idahome = last_child
