@@ -33,7 +33,7 @@
 
   static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
 
-  static void append_stmt(stmt_summary_t *ss, treenode_t *stmt);
+  static void append_stmt(seq_summary_t &ss, treenode_t *stmt);
   static symbol_t *process_stmt_id(const char *id, int line);
   static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line);
 
@@ -55,7 +55,7 @@
   treenode_t *tree;
   symtab_t *symtab;
   array_sfx_t asfx;
-  stmt_summary_t *ss;
+  seq_summary_t ss;
 }
 
 %token<i>   INT
@@ -239,7 +239,7 @@ func : type func_decl
      ;
 
 /*---------------------------------------------------------------------------*/
-func_body : local_decls stmts { $$ = $2->head; }
+func_body : local_decls stmts { $$ = $2.head; }
           ;
 
 /*---------------------------------------------------------------------------*/
@@ -257,7 +257,8 @@ stmts : stmts stmt
       | /* empty */
         {
           treenode_t *init = new treenode_t(TNT_STMT, NULL, NULL);
-          $$ = new stmt_summary_t(init, init);
+          $$.head = init;
+          $$.tail = init;
         }
       ;
 
@@ -293,16 +294,15 @@ expr : INT    { $$ = new treenode_t(TNT_INTCON, $1); }
 %%
 
 //-----------------------------------------------------------------------------
-static void append_stmt(stmt_summary_t *ss, treenode_t *stmt)
+static void append_stmt(seq_summary_t &ss, treenode_t *stmt)
 {
-  ASSERT(1027, ss != NULL);
   ASSERT(1028, stmt != NULL);
 
-  treenode_t *oldtail = ss->tail;
+  treenode_t *oldtail = ss.tail;
   treenode_t *newtail = new treenode_t(TNT_STMT, stmt, NULL);
 
   oldtail->children[STMT_NEXT] = newtail;
-  ss->tail = newtail;
+  ss.tail = newtail;
 }
 
 //-----------------------------------------------------------------------------
@@ -533,6 +533,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
   init_lsyms(*f);
   cursyms = f->func.symbols;
 }
+
 //-----------------------------------------------------------------------------
 static void f_leave(symbol_t *f, treenode_t *tree)
 {

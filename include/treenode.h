@@ -66,12 +66,12 @@ struct treenode_t
 #define ERRNODE new treenode_t(TNT_ERROR)
 
 //-----------------------------------------------------------------------------
-// describes a sequence of statements in the syntax tree
-struct stmt_summary_t
+// helpes build linear sequences of related treenodes
+// (like statements, argument lists, etc)
+struct seq_summary_t
 {
   treenode_t *head;
   treenode_t *tail;
-  stmt_summary_t(treenode_t *h, treenode_t *t) : head(h), tail(t) {}
 };
 
 #endif // TREENODE_H

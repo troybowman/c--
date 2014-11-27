@@ -95,13 +95,12 @@ bool treenode_t::is_int_compat() const
     case TNT_MINUS:
     case TNT_MULT:
     case TNT_DIV:
-    // integer constants and char constants are of course int compatible
-    case TNT_INTCON:
-    case TNT_CHARCON:
     // we can only have arrays of ints or chars, so array lookups are always good
     case TNT_ARRAY_LOOKUP:
     // report error nodes as compatible to avoid cascading error messages
     case TNT_ERROR:
+    case TNT_INTCON:
+    case TNT_CHARCON:
       return true;
     case TNT_SYMBOL:
       return sym->type == ST_PRIMITIVE;
