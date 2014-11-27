@@ -32,5 +32,5 @@
 # child 0 for node 3:
 # node 4: type: TNT_SYMBOL sym: x
 # child 1 for node 3:
-# node 4: type: TNT_INTCON val: 5
+# node 5: type: TNT_INTCON val: 5
 # c-- exited with code: 0

@@ -204,11 +204,13 @@ void print_gsyms()
 }
 
 //-----------------------------------------------------------------------------
-void print_tree(const treenode_t *node, int cnt)
+void print_tree(const treenode_t *node, int *cnt)
 {
   ASSERT(0, node != NULL);
-  ++cnt;
-  cmtout(0, "node %d: type: %s", cnt, tnt2str(node->type));
+  ASSERT(0, cnt != NULL);
+  (*cnt)++;
+  int curnode = *cnt;
+  cmtout(0, "node %d: type: %s", curnode, tnt2str(node->type));
   switch ( node->type )
   {
     case TNT_INTCON:
@@ -230,7 +232,7 @@ void print_tree(const treenode_t *node, int cnt)
     treenode_t *child = node->children[i];
     if ( child != NULL )
     {
-      cmtout(0, "child %d for node %d:\n", i, cnt);
+      cmtout(0, "child %d for node %d:\n", i, curnode);
       print_tree(node->children[i], cnt);
     }
   }
@@ -251,8 +253,9 @@ void walk_funcs(dbg_flags_t flags)
     }
     if ( (flags & dbg_tree) != 0 )
     {
+      int cnt = 0;
       fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->name.c_str());
-      print_tree(f->func.syntax_tree, 0);
+      print_tree(f->func.syntax_tree, &cnt);
     }
   }
 }
