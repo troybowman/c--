@@ -64,8 +64,8 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
     case TNT_STMT:
       children[STMT_CUR]  = va_arg(va, treenode_t *);
       children[STMT_NEXT] = va_arg(va, treenode_t *);
-      break;
       // stmt nodes can point to nothing - it's how we identify empty functions
+      break;
     case TNT_CALL:
       children[CALL_SYM]  = va_arg(va, treenode_t *);
       children[CALL_ARGS] = va_arg(va, treenode_t *);
