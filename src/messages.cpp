@@ -99,6 +99,38 @@ static const char *rt2str(return_type_t rt_type)
 }
 
 //-----------------------------------------------------------------------------
+static const char *tnt2str(treenode_type_t tnt)
+{
+  switch ( tnt )
+  {
+    case TNT_ERROR:        return  "TNT_ERROR";
+    case TNT_INTCON:       return  "TNT_INTCON";
+    case TNT_CHARCON:      return  "TNT_CHARCON";
+    case TNT_STRCON:       return  "TNT_STRCON";
+    case TNT_SYMBOL:       return  "TNT_SYMBOL";
+    case TNT_ASSG:         return  "TNT_ASSG";
+    case TNT_PLUS:         return  "TNT_PLUS";
+    case TNT_MINUS:        return  "TNT_MINUS";
+    case TNT_MULT:         return  "TNT_MULT";
+    case TNT_DIV:          return  "TNT_DIV";
+    case TNT_LT:           return  "TNT_LT";
+    case TNT_GT:           return  "TNT_GT";
+    case TNT_LEQ:          return  "TNT_LEQ";
+    case TNT_GEQ:          return  "TNT_GEQ";
+    case TNT_EQ:           return  "TNT_EQ";
+    case TNT_NEQ:          return  "TNT_NEQ";
+    case TNT_AND:          return  "TNT_AND";
+    case TNT_OR:           return  "TNT_OR";
+    case TNT_ARRAY_LOOKUP: return  "TNT_ARRAY_LOOKUP";
+    case TNT_FOR:          return  "TNT_FOR";
+    case TNT_STMT:         return  "TNT_STMT";
+    case TNT_CALL:         return  "TNT_CALL";
+    default:
+      INTERR(0);
+  }
+}
+
+//-----------------------------------------------------------------------------
 void print_syms(const symtab_t &syms)
 {
   cmtout(0, "size: %d\n", syms.size());
@@ -172,9 +204,35 @@ void print_gsyms()
 }
 
 //-----------------------------------------------------------------------------
-void print_tree(const treenode_t *tree)
+void print_tree(const treenode_t *node, int cnt)
 {
-
+  ASSERT(0, node != NULL);
+  ++cnt;
+  cmtout(0, "treenode %d: type: %s\n", cnt, tnt2str(node->type));
+  switch ( node->type )
+  {
+    case TNT_INTCON:
+      cmtout(0, "  val: %d\n", node->val);
+      break;
+    case TNT_CHARCON:
+    case TNT_STRCON:
+      cmtout(0, "  str: %s\n", node->str);
+      break;
+    case TNT_SYMBOL:
+      cmtout(0, "  sym: %s\n", node->sym->name.c_str());
+      break;
+    default:
+      break;
+  }
+  for ( int i = 0; i < 4; i++ )
+  {
+    treenode_t *child = node->children[i];
+    if ( child != NULL )
+    {
+      cmtout(0, "child %d for node %d:\n", i, cnt);
+      print_tree(node->children[i], cnt);
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -193,8 +251,9 @@ void walk_funcs(dbg_flags_t flags)
     if ( (flags & dbg_tree) != 0 )
     {
       fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->name.c_str());
-      print_tree(f->func.syntax_tree);
+      print_tree(f->func.syntax_tree, 0);
     }
   }
 }
+
 #endif // NDEBUG

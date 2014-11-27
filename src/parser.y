@@ -267,16 +267,14 @@ stmt : assg  ';' { $$ = $1; }
      ;
 
 /*---------------------------------------------------------------------------*/
-assg : stmt_var '=' expr     { $$ = process_assg($1, $3, yylineno); }
+assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
 stmt_var : ID stmt_array_sfx
            {
              symbol_t *sym = process_stmt_id($1, yylineno);
-             $$ = sym == NULL
-                ? ERRNODE
-                : process_stmt_var(sym, $2, yylineno);
+             $$ = sym == NULL ? ERRNODE : process_stmt_var(sym, $2, yylineno);
              free($1);
            }
          ;
@@ -375,11 +373,10 @@ static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
   if ( lhs.type == TNT_ERROR || rhs.type == TNT_ERROR )
     return true;
 
-  bool res = lhs.type == TNT_SYMBOL
-           ? lhs.sym->type == ST_PRIMITIVE
-           : lhs.type == TNT_ARRAY_LOOKUP;
+  bool lhs_valid = (lhs.type == TNT_SYMBOL && lhs.sym->type == ST_PRIMITIVE)
+                 || lhs.type == TNT_ARRAY_LOOKUP;
 
-  return res ? rhs.is_int_compat() : false;
+  return lhs_valid ? rhs.is_int_compat() : false;
 }
 
 //-----------------------------------------------------------------------------
