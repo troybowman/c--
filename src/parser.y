@@ -32,7 +32,6 @@
 
   static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
 
-  static void     seq_init(seq_t &seq, treenode_type_t type);
   static seq_t &seq_append(seq_t &seq, treenode_t *app, treenode_type_t type);
 
   static   symbol_t *process_stmt_id (const char *id, int line);
@@ -251,7 +250,7 @@ local_decls : local_decls type var_decls ';' { process_var_list($3, $2); }
 
 /*---------------------------------------------------------------------------*/
 stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
-      | /* empty */ { seq_init($$, TNT_STMT); }
+      | /* empty */ { $$.head = NULL; $$.tail = NULL; }
       ;
 
 /*---------------------------------------------------------------------------*/
@@ -286,25 +285,20 @@ expr : INT    { $$ = new treenode_t(TNT_INTCON, $1); }
 %%
 
 //-----------------------------------------------------------------------------
-static void seq_init(seq_t &seq, treenode_type_t type)
+static seq_t &seq_append(seq_t &seq, treenode_t *cur, treenode_type_t type)
 {
-  ASSERT(1031, is_seq_type(type));
-
-  treenode_t *init = new treenode_t(type, NULL, NULL);
-  seq.head = init;
-  seq.tail = init;
-}
-
-//-----------------------------------------------------------------------------
-static seq_t &seq_append(seq_t &seq, treenode_t *app, treenode_type_t type)
-{
-  ASSERT(1028, app != NULL);
+  ASSERT(1028, cur != NULL);
   ASSERT(1029, is_seq_type(type));
 
-  treenode_t *newtail = new treenode_t(type, app, NULL);
+  treenode_t *to_app = new treenode_t(type, cur, NULL);
 
-  seq.tail->children[SEQ_NEXT] = newtail;
-  seq.tail = newtail;
+  if ( seq.head == NULL )
+    seq.head = to_app;
+  else
+    seq.tail->children[SEQ_NEXT] = to_app;
+
+  seq.tail = to_app;
+
   return seq;
 }
 
@@ -541,7 +535,6 @@ static void f_enter(symbol_t *f, return_type_t rt)
 static void f_leave(symbol_t *f, treenode_t *tree)
 {
   ASSERT(1005, f != NULL);
-  ASSERT(1006, tree != NULL);
 
   f->func.syntax_tree = tree;
   f->func.defined = true;

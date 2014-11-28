@@ -206,7 +206,8 @@ void print_gsyms()
 //-----------------------------------------------------------------------------
 void print_tree(const treenode_t *node, int *cnt)
 {
-  ASSERT(0, node != NULL);
+  if ( node == NULL )
+    return;
   ASSERT(0, cnt != NULL);
   (*cnt)++;
   int curnode = *cnt;
