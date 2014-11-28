@@ -360,8 +360,7 @@ static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int li
     return ERRNODE;
   }
 
-  treenode_t *base = new treenode_t(TNT_SYMBOL, sym);
-  return new treenode_t(TNT_ARRAY_LOOKUP, base, idx);
+  return new treenode_t(TNT_ARRAY_LOOKUP, sym, idx);
 }
 
 //-----------------------------------------------------------------------------

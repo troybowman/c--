@@ -28,8 +28,7 @@ enum treenode_type_t
 #define LHS 0
 #define RHS 1
   TNT_ARRAY_LOOKUP,
-#define AL_BASE   0
-#define AL_OFFSET 1
+#define AL_OFFSET 0
   TNT_FOR,
 #define FOR_INIT  0
 #define FOR_CHECK 1
@@ -40,8 +39,7 @@ enum treenode_type_t
 #define SEQ_CUR   0
 #define SEQ_NEXT  1
   TNT_CALL,
-#define CALL_SYM  0
-#define CALL_ARGS 1
+#define CALL_ARGS 0
 };
 
 //-----------------------------------------------------------------------------

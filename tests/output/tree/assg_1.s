@@ -39,11 +39,9 @@
 # child 0 for node 1:
 # node 2: type: TNT_ASSG
 # child 0 for node 2:
-# node 3: type: TNT_ARRAY_LOOKUP
+# node 3: type: TNT_ARRAY_LOOKUP sym: y
 # child 0 for node 3:
-# node 4: type: TNT_SYMBOL sym: y
-# child 1 for node 3:
-# node 5: type: TNT_INTCON val: 0
+# node 4: type: TNT_INTCON val: 0
 # child 1 for node 2:
-# node 6: type: TNT_CHARCON str: '\0'
+# node 5: type: TNT_CHARCON str: '\0'
 # c-- exited with code: 0

@@ -222,6 +222,8 @@ void print_tree(const treenode_t *node, int *cnt)
       fprintf(stdout, " str: %s", node->str);
       break;
     case TNT_SYMBOL:
+    case TNT_ARRAY_LOOKUP:
+    case TNT_CALL:
       fprintf(stdout, " sym: %s", node->sym->name.c_str());
       break;
     default:
