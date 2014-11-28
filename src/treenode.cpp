@@ -78,7 +78,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
 }
 
 //-----------------------------------------------------------------------------
-treenode_t::~treenode_t()
+treenode_t::~treenode_t( )
 {
   if ( type == TNT_CHARCON || type == TNT_STRCON )
     free(str);
