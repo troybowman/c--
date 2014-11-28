@@ -159,8 +159,8 @@ func_decls : func_decl func_decl_list
 func_decl : ID '(' { param_on(); } params { param_off(); } ')'
             {
               ASSERT(0, $4 != NULL);
-              $$ = new symbol_t($1, yylineno, ST_FUNCTION,
-                                RT_UNKNOWN, $4, NULL, NULL, false);
+              $$ = new symbol_t($1, yylineno, ST_FUNCTION, RT_UNKNOWN,
+                                $4, NULL, NULL, false, false);
             }
           ;
 
@@ -464,7 +464,7 @@ static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
   ASSERT(1001, prev.name == sym.name);
 
   return prev.type != ST_FUNCTION                           ? COL_REDECL
-       : prev.func.syntax_tree != NULL                      ? COL_REDEF
+       : prev.func.defined                                  ? COL_REDEF
        : !check_params(*prev.func.params, *sym.func.params) ? COL_PARAMS
        : prev.func.rt_type != sym.func.rt_type              ? COL_RET
        : COL_OK;
@@ -544,6 +544,8 @@ static void f_leave(symbol_t *f, treenode_t *tree)
   ASSERT(1006, tree != NULL);
 
   f->func.syntax_tree = tree;
+  f->func.defined = true;
+
   functions.push_back(f);
 
   cursyms = &gsyms;

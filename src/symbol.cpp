@@ -26,6 +26,7 @@ symbol_t::symbol_t(const char *_name, int _line, symbol_type_t _type, ...)
       func.symbols     = va_arg(va, symtab_t *);
       func.syntax_tree = va_arg(va, treenode_t *);
       func.is_extern   = va_arg(va, bool);
+      func.defined     = va_arg(va, bool);
       break;
     default:
       type = ST_UNKNOWN;

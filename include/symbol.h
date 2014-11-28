@@ -63,6 +63,7 @@ struct function_t
   symtab_t *symbols;
   treenode_t *syntax_tree;
   bool is_extern;
+  bool defined;
 };
 
 //-----------------------------------------------------------------------------
