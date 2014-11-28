@@ -28,16 +28,18 @@
   static inline void param_off() { delete cursyms; cursyms = &gsyms; }
 
   static void f_enter(symbol_t *f, return_type_t rt); // initialize func def
-  static void f_leave(symbol_t *f, treenode_t *tree);
+  static void f_leave(symbol_t *f, const treenode_t *tree);
 
   static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
 
-  static seq_t &seq_append(seq_t &seq, treenode_t *app, treenode_type_t type);
+  static seq_t &seq_append(seq_t &seq, const treenode_t *app, treenode_type_t type);
 
   static   symbol_t *process_stmt_id (const char *id, int line);
   static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line);
 
   static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line);
+  static treenode_t *process_call(const symbol_t *sym, treenode_t *args, int line);
+  static treenode_t *process_call_stmt(treenode_t *call, int line);
 
 #ifndef NDEBUG
   dbg_flags_t dbg_flags = 0;
@@ -69,7 +71,7 @@
 %type<sym>      var_decl func_decl param_decl
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<tree>     func_body stmt assg stmt_var stmt_array_sfx expr
+%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts
 
@@ -204,8 +206,8 @@ param_decl : type ID param_array_sfx
            ;
 
 /*---------------------------------------------------------------------------*/
-param_array_sfx : '[' ']'     { $$.code = ASFX_OK;   $$.size = -1; }
-                | /* empty */ { $$.code = ASFX_NONE; $$.size = -1; }
+param_array_sfx : '[' ']'     { $$.code = ASFX_OK; $$.size = -1; }
+                | /* empty */ { $$.code = ASFX_NONE; }
                 ;
 
 /*---------------------------------------------------------------------------*/
@@ -254,19 +256,44 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
       ;
 
 /*---------------------------------------------------------------------------*/
-stmt : assg  ';' { $$ = $1; }
-     /*| error ';' { yyerrok; }*/
+stmt : stmt_var '=' expr ';' { $$ = process_assg($1, $3, yylineno); }
+     | call ';'              { $$ = process_call_stmt($1, yylineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
-assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
+call : ID '(' args ')'
+       {
+         symbol_t *sym = process_stmt_id($1, yylineno);
+         $$ = sym != NULL
+            ? process_call(sym, $3, yylineno);
+            : ERRNODE;
+         free($1);
+       }
      ;
+
+/*---------------------------------------------------------------------------*/
+args : expr arg_list
+       {
+         // append arg_list to 1st arg
+         treenode_t *head = new treenode_t(TNT_ARG, $1, NULL);
+         head->children[SEQ_NEXT] = $2.head;
+         $$ = head;
+       }
+     | /* empty */ { $$ = NULL; }
+     ;
+
+/*---------------------------------------------------------------------------*/
+arg_list : arg_list ',' expr { $$ = seq_append($1, $2, TNT_ARG); }
+         | /* empty */       { $$.head = NULL; $$.tail = NULL; }
+         ;
 
 /*---------------------------------------------------------------------------*/
 stmt_var : ID stmt_array_sfx
            {
              symbol_t *sym = process_stmt_id($1, yylineno);
-             $$ = sym == NULL ? ERRNODE : process_stmt_var(sym, $2, yylineno);
+             $$ = sym != NULL
+                ? process_stmt_var(sym, $2, yylineno)
+                : ERRNODE;
              free($1);
            }
          ;
@@ -277,15 +304,90 @@ stmt_array_sfx : '[' expr ']' { $$ = $2; }
                ;
 
 /*---------------------------------------------------------------------------*/
-expr : INT    { $$ = new treenode_t(TNT_INTCON, $1); }
-     | CHAR   { $$ = new treenode_t(TNT_CHARCON, $1); }
-     | STRING { $$ = new treenode_t(TNT_STRCON, $1); }
+expr : INT      { $$ = new treenode_t(TNT_INTCON, $1); }
+     | CHAR     { $$ = new treenode_t(TNT_CHARCON, $1); }
+     | STRING   { $$ = new treenode_t(TNT_STRCON, $1); }
+     | stmt_var { $$ = $1; }
+     | call     { $$ = $1; }
      ;
 
 %%
 
 //-----------------------------------------------------------------------------
-static seq_t &seq_append(seq_t &seq, treenode_t *cur, treenode_type_t type)
+struct arg_res_t
+{
+  int code;
+#define  ARGS_OK       0
+#define  ARGS_INCOMPAT 1
+#define  ARGS_NUM      2
+  int info;
+  arg_res_t(int c, int i = -1) : code(c), info(i) {}
+};
+
+//-----------------------------------------------------------------------------
+static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
+{
+  ASSERT(0, f.type == ST_FUNCTION);
+
+  int nparams = f.params->size();
+  int nargs = count_args(args);
+
+  if ( nargs != nparams )
+    return arg_res_t(ARGS_NUM, nargs);
+
+  for ( int i = 0; i < nparams; i++ )
+  {
+    bool ok = false;
+    symbol_t *param = f.params->at(i);
+    switch ( param->type )
+    {
+      case ST_PRIMITIVE:
+        ok = args->is_int_compat();
+        break;
+      case ST_ARRAY:
+        ok = args->type == TNT_SYMBOL && args->sym->type == ST_ARRAY;
+        break;
+      default:
+        INTERR(0);
+    }
+    if ( !ok )
+      return arg_res_t(ARGS_INCOMPAT, i+1);
+  }
+
+  return arg_res_t(ARGS_OK);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
+{
+  ASSERT(0, f != NULL);
+
+  arg_res_t res = validate_call(*f, args);
+
+  if ( res.code != ARGS_OK )
+  {
+    switch ( res.code )
+    {
+      case ARGS_NUM:
+        usererr("error: expected %d arguments for function %s, got %d - line %d\n",
+                f->params->size(), f->name.c_str(), res.info, line);
+        break;
+      case ARGS_INCOMPAT:
+        usererr("error: argument %d to function %s is of incompatible type, line %d\n",
+                res.info, f->name.c_str(), line);
+        break;
+      default:
+        INTERR(0);
+    }
+    delete args;
+    return ERRNODE;
+  }
+
+  return new treenode_t(TNT_CALL, f, args);
+}
+
+//-----------------------------------------------------------------------------
+static seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type)
 {
   ASSERT(1028, cur != NULL);
   ASSERT(1029, is_seq_type(type));
@@ -384,6 +486,7 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
   if ( !validate_assg(*lhs, *rhs) )
   {
     usererr("error: invalid operand types for assignment, line %d\n", line);
+    // TODO delete lhs, rhs
     return ERRNODE;
   }
 
@@ -453,7 +556,6 @@ enum col_res_t
 //-----------------------------------------------------------------------------
 static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
 {
-  ASSERT(1000, sym.type == ST_FUNCTION);
   ASSERT(1001, prev.name == sym.name);
 
   return prev.type != ST_FUNCTION                           ? COL_REDECL
@@ -484,6 +586,7 @@ static void init_lsyms(symbol_t &f)
 static void f_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
+  ASSERT(1000, f->type == ST_FUNCTION);
 
   f->func.rt_type = rt;
 
@@ -519,7 +622,8 @@ static void f_enter(symbol_t *f, return_type_t rt)
         default:
           INTERR(1012);
       }
-      purge_and_exit(FATAL_FUNCDEF); // these errors invalidate an entire function definition. we do not try to recover from them
+      // these errors invalidate an entire function definition. we do not try to recover from them
+      purge_and_exit(FATAL_FUNCDEF);
     }
     // existing symbol for declaration is replaced with the definition
     delete prev;
@@ -531,7 +635,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
 }
 
 //-----------------------------------------------------------------------------
-static void f_leave(symbol_t *f, treenode_t *tree)
+static void f_leave(symbol_t *f, const treenode_t *tree)
 {
   ASSERT(1005, f != NULL);
 

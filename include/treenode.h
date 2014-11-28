@@ -2,6 +2,7 @@
 #define TREENODE_H
 
 struct symbol_t;
+struct treenode_t;
 
 //-----------------------------------------------------------------------------
 enum treenode_type_t
@@ -72,6 +73,8 @@ struct seq_t
   treenode_t *head;
   treenode_t *tail;
 };
+
+int count_args(treenode_t *args);
 
 #ifndef NDEBUG
 bool is_seq_type(treenode_type_t type);

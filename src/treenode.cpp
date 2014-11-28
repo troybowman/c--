@@ -112,6 +112,19 @@ bool treenode_t::is_int_compat() const
   }
 }
 
+//-----------------------------------------------------------------------------
+int count_args(treenode_t *args)
+{
+  int cnt = 0;
+  treenode_t *arg = args;
+  while ( arg != NULL && arg->type == TNT_ARG )
+  {
+    cnt++;
+    arg = arg->children[SEQ_NEXT];
+  }
+  return cnt;
+}
+
 #ifndef NDEBUG
 bool is_seq_type(treenode_type_t type)
 {
