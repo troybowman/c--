@@ -62,9 +62,9 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       children[FOR_BODY]  = va_arg(va, treenode_t *);
       break;
     case TNT_STMT:
-      children[STMT_CUR]  = va_arg(va, treenode_t *);
-      children[STMT_NEXT] = va_arg(va, treenode_t *);
-      // stmt nodes can point to nothing - it's how we identify empty functions
+    case TNT_ARG:
+      children[SEQ_CUR]   = va_arg(va, treenode_t *);
+      children[SEQ_NEXT]  = va_arg(va, treenode_t *);
       break;
     case TNT_CALL:
       children[CALL_SYM]  = va_arg(va, treenode_t *);
@@ -113,3 +113,17 @@ bool treenode_t::is_int_compat() const
       return false;
   }
 }
+
+#ifndef NDEBUG
+bool is_seq_type(treenode_type_t type)
+{
+  switch ( type )
+  {
+    case TNT_STMT:
+    case TNT_ARG:
+      return true;
+    default:
+      return false;
+  }
+}
+#endif

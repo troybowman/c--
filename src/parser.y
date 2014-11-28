@@ -27,14 +27,15 @@
   static inline void param_on() { cursyms = new symtab_t(); }
   static inline void param_off() { delete cursyms; cursyms = &gsyms; }
 
-  // initialize/complete function definition
-  static void f_enter(symbol_t *f, return_type_t rt);
+  static void f_enter(symbol_t *f, return_type_t rt); // initialize func def
   static void f_leave(symbol_t *f, treenode_t *tree);
 
   static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
 
-  static void append_stmt(seq_summary_t &ss, treenode_t *stmt);
-  static symbol_t *process_stmt_id(const char *id, int line);
+  static void     seq_init(seq_t &seq, treenode_type_t type);
+  static seq_t &seq_append(seq_t &seq, treenode_t *app, treenode_type_t type);
+
+  static   symbol_t *process_stmt_id (const char *id, int line);
   static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line);
 
   static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line);
@@ -55,7 +56,7 @@
   treenode_t *tree;
   symtab_t *symtab;
   array_sfx_t asfx;
-  seq_summary_t ss;
+  seq_t seq;
 }
 
 %token<i>   INT
@@ -71,7 +72,7 @@
 %type<paramvec> params param_decl_list
 %type<tree>     func_body stmt assg stmt_var stmt_array_sfx expr
 %type<asfx>     decl_array_sfx param_array_sfx
-%type<ss>       stmts
+%type<seq>      stmts
 
 %start prog
 
@@ -249,17 +250,8 @@ local_decls : local_decls type var_decls ';' { process_var_list($3, $2); }
             ;
 
 /*---------------------------------------------------------------------------*/
-stmts : stmts stmt
-        {
-          append_stmt($1, $2);
-          $$ = $1;
-        }
-      | /* empty */
-        {
-          treenode_t *init = new treenode_t(TNT_STMT, NULL, NULL);
-          $$.head = init;
-          $$.tail = init;
-        }
+stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
+      | /* empty */ { seq_init($$, TNT_STMT); }
       ;
 
 /*---------------------------------------------------------------------------*/
@@ -294,15 +286,26 @@ expr : INT    { $$ = new treenode_t(TNT_INTCON, $1); }
 %%
 
 //-----------------------------------------------------------------------------
-static void append_stmt(seq_summary_t &ss, treenode_t *stmt)
+static void seq_init(seq_t &seq, treenode_type_t type)
 {
-  ASSERT(1028, stmt != NULL);
+  ASSERT(1031, is_seq_type(type));
 
-  treenode_t *oldtail = ss.tail;
-  treenode_t *newtail = new treenode_t(TNT_STMT, stmt, NULL);
+  treenode_t *init = new treenode_t(type, NULL, NULL);
+  seq.head = init;
+  seq.tail = init;
+}
 
-  oldtail->children[STMT_NEXT] = newtail;
-  ss.tail = newtail;
+//-----------------------------------------------------------------------------
+static seq_t &seq_append(seq_t &seq, treenode_t *app, treenode_type_t type)
+{
+  ASSERT(1028, app != NULL);
+  ASSERT(1029, is_seq_type(type));
+
+  treenode_t *newtail = new treenode_t(type, app, NULL);
+
+  seq.tail->children[SEQ_NEXT] = newtail;
+  seq.tail = newtail;
+  return seq;
 }
 
 //-----------------------------------------------------------------------------

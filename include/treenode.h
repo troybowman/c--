@@ -36,8 +36,9 @@ enum treenode_type_t
 #define FOR_INC   2
 #define FOR_BODY  3
   TNT_STMT,
-#define STMT_CUR  0
-#define STMT_NEXT 1
+  TNT_ARG,
+#define SEQ_CUR   0
+#define SEQ_NEXT  1
   TNT_CALL,
 #define CALL_SYM  0
 #define CALL_ARGS 1
@@ -68,10 +69,14 @@ struct treenode_t
 //-----------------------------------------------------------------------------
 // helpes build linear sequences of related treenodes
 // (like statements, argument lists, etc)
-struct seq_summary_t
+struct seq_t
 {
   treenode_t *head;
   treenode_t *tail;
 };
+
+#ifndef NDEBUG
+bool is_seq_type(treenode_type_t type);
+#endif
 
 #endif // TREENODE_H
