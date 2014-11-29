@@ -351,6 +351,7 @@ enum ret_res_t
 {
   RET_EXTRA,
   RET_MISSING,
+  RET_INCOMPAT,
   RET_OK,
   RET_OK_RESOLVED
 };
@@ -361,9 +362,11 @@ static ret_res_t validate_ret_stmt(const treenode_t *expr)
   ASSERT(0, ctx.rt != RT_UNKNOWN);
 
   if ( ctx.rt == RT_VOID )
-    return expr != NULL ? RET_EXTRA   : RET_OK;
+    return expr != NULL ? RET_EXTRA : RET_OK;
   else
-    return expr == NULL ? RET_MISSING : RET_OK_RESOLVED;
+    return expr == NULL           ? RET_MISSING
+         : !expr->is_int_compat() ? RET_INCOMPAT
+         : RET_OK_RESOLVED;
 }
 
 //-----------------------------------------------------------------------------
@@ -382,6 +385,10 @@ static treenode_t *process_ret_stmt(treenode_t *expr, int line)
       case RET_EXTRA:
         usererr("error: line %d - return statements in a void function "
                 "must not return a value\n", line);
+        break;
+      case RET_INCOMPAT:
+        usererr("error: line %d - return value is not compatible "
+                "with function's return type\n", line);
         break;
       default:
         INTERR(0);
@@ -599,7 +606,7 @@ static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int li
     switch( res )
     {
       case AL_ERR_BASE:
-        usererr("error: symbol %s used as an array bit is not of array type, line %d\n",
+        usererr("error: symbol %s used as an array but is not of array type, line %d\n",
                 sym->name.c_str(), line);
         break;
       case AL_ERR_IDX:

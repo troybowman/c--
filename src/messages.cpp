@@ -126,6 +126,7 @@ static const char *tnt2str(treenode_type_t tnt)
     case TNT_STMT:         return "TNT_STMT";
     case TNT_CALL:         return "TNT_CALL";
     case TNT_ARG:          return "TNT_ARG";
+    case TNT_RET:          return "TNT_RET";
     default:
       INTERR(1030);
   }
@@ -166,6 +167,9 @@ static const char *child2str(treenode_type_t type, int child)
     case TNT_CALL:
       ASSERT(1034, child == CALL_ARGS);
       return "CALL_ARGS";
+    case TNT_RET:
+      ASSERT(1035, child == RET_EXPR);
+      return "RET_EXPR";
     default:
       INTERR(1035);
   }
