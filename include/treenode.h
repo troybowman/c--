@@ -41,6 +41,8 @@ enum treenode_type_t
 #define SEQ_NEXT  1
   TNT_CALL,
 #define CALL_ARGS 0
+  TNT_RET,
+#define RET_EXPR  0
 };
 
 //-----------------------------------------------------------------------------

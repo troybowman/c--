@@ -17,20 +17,24 @@
   symlist_t functions; // functions, in order as they appear in the source file
 
   //---------------------------------------------------------------------------
-  // maintain a global/local context
   static struct
   {
-    symtab_t *syms;
-    return_type_t rt;
+    symtab_t *syms;    // pointer to currently active symbol table
+    return_type_t rt;  // return type of current function
+    bool ret_resolved; // have we seen a 'return expr' statement yet? (for non-void funcs)
 
-    void setglobal() { syms = &gsyms; rt = RT_UNKNOWN; }
-
+    void setglobal()
+    {
+      syms = &gsyms;
+      rt = RT_UNKNOWN;
+      ret_resolved = true;
+    }
     void setlocal(symtab_t *_syms, return_type_t _rt = RT_UNKNOWN)
     {
       syms = _syms;
       rt = _rt;
+      ret_resolved = _rt == RT_VOID;
     }
-
     void trash() { delete syms; setglobal(); }
   } ctx;
 
@@ -53,8 +57,11 @@
   static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line);
 
   static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line);
+
   static treenode_t *process_call(const symbol_t *sym, treenode_t *args, int line);
   static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr);
+
+  static treenode_t *process_ret_stmt(treenode_t *expr, int line);
 
   //---------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -87,7 +94,7 @@
 %type<sym>      var_decl func_decl param_decl
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args
+%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args ret_expr
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
 
@@ -274,8 +281,12 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
 /*---------------------------------------------------------------------------*/
 stmt : stmt_var '=' expr ';' { $$ = process_assg($1, $3, yylineno); }
      | call ';'              { $$ = process_call_ctx($1, yylineno, false); }
-     /*| RETURN ret_expr ';'   { $$ = process_ret_stmt($1); }*/
+     | RETURN ret_expr ';'   { $$ = process_ret_stmt($2, yylineno); }
      ;
+
+/*---------------------------------------------------------------------------*/
+ret_expr : expr        { $$ = $1; }
+         | /* empty */ { $$ = NULL; }
 
 /*---------------------------------------------------------------------------*/
 call : ID '(' args ')'
@@ -334,6 +345,56 @@ expr : INT      { $$ = new treenode_t(TNT_INTCON, $1); }
      ;
 
 %%
+
+//-----------------------------------------------------------------------------
+enum ret_res_t
+{
+  RET_EXTRA,
+  RET_MISSING,
+  RET_OK,
+  RET_OK_RESOLVED
+};
+
+//-----------------------------------------------------------------------------
+static ret_res_t validate_ret_stmt(const treenode_t *expr)
+{
+  ASSERT(0, ctx.rt != RT_UNKNOWN);
+
+  if ( ctx.rt == RT_VOID )
+    return expr != NULL ? RET_EXTRA   : RET_OK;
+  else
+    return expr == NULL ? RET_MISSING : RET_OK_RESOLVED;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_ret_stmt(treenode_t *expr, int line)
+{
+  ret_res_t res = validate_ret_stmt(expr);
+
+  if ( res < RET_OK )
+  {
+    switch ( res )
+    {
+      case RET_MISSING:
+        usererr("error: line %d - return statements in a non-void function "
+                "must return a value\n", line);
+        break;
+      case RET_EXTRA:
+        usererr("error: line %d - return statements in a void function "
+                "must not return a value\n", line);
+        break;
+      default:
+        INTERR(0);
+    }
+    delete expr;
+    return ERRNODE;
+  }
+
+  if ( res == RET_OK_RESOLVED )
+    ctx.ret_resolved = true;
+
+  return new treenode_t(TNT_RET, expr);
+}
 
 //-----------------------------------------------------------------------------
 struct arg_res_t
@@ -737,6 +798,9 @@ static void f_leave(symbol_t *f, treenode_t *tree)
 
   f->func.syntax_tree = tree;
   f->func.defined = true;
+
+  if ( !ctx.ret_resolved )
+    usererr("error: non-void funcion %s must return a value\n", f->name.c_str());
 
   functions.push_back(f);
 

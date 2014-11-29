@@ -72,6 +72,9 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       ASSERT(1023, sym       != NULL);
       ASSERT(0,    sym->type == ST_FUNCTION);
       break;
+    case TNT_RET:
+      children[RET_EXPR]  = va_arg(va, treenode_t*);
+      break;
     default:
       INTERR(1020);
   }
