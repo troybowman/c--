@@ -18,3 +18,8 @@ void emp(void) {}
 int func1(void) {}
 char func2(int one, char two, int three[], char four[]) {}
 void func3(char y[]) {}
+
+extern int func8(void)
+{
+
+}
