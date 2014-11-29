@@ -525,11 +525,13 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
     switch ( res )
     {
       case CCTX_EXPR:
-        usererr("error: line %d - function %s called as part of an expression must not have return type void\n",
+        usererr("error: line %d - function %s called as part of an expression "
+                "but does not return a value\n",
                 line, call->sym->name.c_str());
         break;
       case CCTX_STMT:
-        usererr("error: line %d - function %s called as a standalone statement must have return type void\n",
+        usererr("error: line %d - function %s called as a standalone statement "
+                "but does not have return type void\n",
                 line, call->sym->name.c_str());
         break;
       default:

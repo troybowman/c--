@@ -1,0 +1,15 @@
+error: use of undeclared identifier not_here at line 10
+error: line 11 - function func1 called as part of an expression but does not return a value
+error: line 12 - function func2 called as a standalone statement but does not have return type void
+error: argument 3 to function bunch is of incompatible type, line 23
+error: argument 3 to function bunch is of incompatible type, line 25
+error: expected 3 arguments for function bunch, 0 were provided. line 26
+error: argument 1 to function bunch is of incompatible type, line 27
+error: argument 1 to function bunch is of incompatible type, line 27
+error: argument 1 to function bunch is of incompatible type, line 27
+error: argument 1 to function print_string is of incompatible type, line 30
+error: expected 3 arguments for function bunch, 0 were provided. line 31
+error: expected 3 arguments for function bunch, 0 were provided. line 32
+error: expected 3 arguments for function bunch, 2 were provided. line 33
+error: argument 1 to function print_string is of incompatible type, line 34
+# c-- exited with code: 4
