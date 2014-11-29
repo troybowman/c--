@@ -132,6 +132,46 @@ static const char *tnt2str(treenode_type_t tnt)
 }
 
 //-----------------------------------------------------------------------------
+static const char *child2str(treenode_type_t type, int child)
+{
+  switch ( type )
+  {
+    case TNT_ASSG:
+    case TNT_PLUS:
+    case TNT_MINUS:
+    case TNT_MULT:
+    case TNT_DIV:
+    case TNT_LT:
+    case TNT_GT:
+    case TNT_LEQ:
+    case TNT_GEQ:
+    case TNT_EQ:
+    case TNT_NEQ:
+    case TNT_AND:
+    case TNT_OR:
+      ASSERT(1031, child == LHS || child == RHS);
+      return child == LHS ? "LHS" : "RHS";
+    case TNT_ARRAY_LOOKUP:
+      ASSERT(1032, child == AL_OFFSET);
+      return "AL_OFFSET";
+    case TNT_FOR:
+      return child == FOR_INIT  ? "FOR_INIT"
+           : child == FOR_CHECK ? "FOR_CHECK"
+           : child == FOR_INC   ? "FOR_INC"
+           :                      "FOR_BODY";
+    case TNT_STMT:
+    case TNT_ARG:
+      ASSERT(1033, child == SEQ_CUR || child == SEQ_NEXT);
+      return child == SEQ_CUR ? "SEQ_CUR" : "SEQ_NEXT";
+    case TNT_CALL:
+      ASSERT(1034, child == CALL_ARGS);
+      return "CALL_ARGS";
+    default:
+      INTERR(1035);
+  }
+}
+
+//-----------------------------------------------------------------------------
 void print_syms(const symtab_t &syms)
 {
   cmtout(0, "size: %d\n", syms.size());
@@ -236,7 +276,7 @@ void print_tree(const treenode_t *node, int *cnt)
     treenode_t *child = node->children[i];
     if ( child != NULL )
     {
-      cmtout(0, "child %d for node %d:\n", i, curnode);
+      cmtout(0, "child %s for node %d\n", child2str(node->type, i), curnode);
       print_tree(node->children[i], cnt);
     }
   }

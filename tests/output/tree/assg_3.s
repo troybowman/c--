@@ -38,58 +38,58 @@
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
-# child 0 for node 1:
+# child SEQ_CUR for node 1
 # node 2: type: TNT_ASSG
-# child 0 for node 2:
+# child LHS for node 2
 # node 3: type: TNT_SYMBOL sym: one
-# child 1 for node 2:
+# child RHS for node 2
 # node 4: type: TNT_SYMBOL sym: x
-# child 1 for node 1:
+# child SEQ_NEXT for node 1
 # node 5: type: TNT_STMT
-# child 0 for node 5:
+# child SEQ_CUR for node 5
 # node 6: type: TNT_ASSG
-# child 0 for node 6:
+# child LHS for node 6
 # node 7: type: TNT_SYMBOL sym: one
-# child 1 for node 6:
+# child RHS for node 6
 # node 8: type: TNT_SYMBOL sym: y
-# child 1 for node 5:
+# child SEQ_NEXT for node 5
 # node 9: type: TNT_STMT
-# child 0 for node 9:
+# child SEQ_CUR for node 9
 # node 10: type: TNT_ASSG
-# child 0 for node 10:
+# child LHS for node 10
 # node 11: type: TNT_SYMBOL sym: x
-# child 1 for node 10:
+# child RHS for node 10
 # node 12: type: TNT_SYMBOL sym: one
-# child 1 for node 9:
+# child SEQ_NEXT for node 9
 # node 13: type: TNT_STMT
-# child 0 for node 13:
+# child SEQ_CUR for node 13
 # node 14: type: TNT_ASSG
-# child 0 for node 14:
+# child LHS for node 14
 # node 15: type: TNT_SYMBOL sym: y
-# child 1 for node 14:
+# child RHS for node 14
 # node 16: type: TNT_SYMBOL sym: y
-# child 1 for node 13:
+# child SEQ_NEXT for node 13
 # node 17: type: TNT_STMT
-# child 0 for node 17:
+# child SEQ_CUR for node 17
 # node 18: type: TNT_ASSG
-# child 0 for node 18:
+# child LHS for node 18
 # node 19: type: TNT_SYMBOL sym: z
-# child 1 for node 18:
+# child RHS for node 18
 # node 20: type: TNT_SYMBOL sym: one
-# child 1 for node 17:
+# child SEQ_NEXT for node 17
 # node 21: type: TNT_STMT
-# child 0 for node 21:
+# child SEQ_CUR for node 21
 # node 22: type: TNT_ASSG
-# child 0 for node 22:
+# child LHS for node 22
 # node 23: type: TNT_SYMBOL sym: one
-# child 1 for node 22:
+# child RHS for node 22
 # node 24: type: TNT_SYMBOL sym: z
-# child 1 for node 21:
+# child SEQ_NEXT for node 21
 # node 25: type: TNT_STMT
-# child 0 for node 25:
+# child SEQ_CUR for node 25
 # node 26: type: TNT_ASSG
-# child 0 for node 26:
+# child LHS for node 26
 # node 27: type: TNT_SYMBOL sym: y
-# child 1 for node 26:
+# child RHS for node 26
 # node 28: type: TNT_SYMBOL sym: z
 # c-- exited with code: 0

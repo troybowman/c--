@@ -25,10 +25,10 @@
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
-# child 0 for node 1:
+# child SEQ_CUR for node 1
 # node 2: type: TNT_ASSG
-# child 0 for node 2:
+# child LHS for node 2
 # node 3: type: TNT_SYMBOL sym: x
-# child 1 for node 2:
+# child RHS for node 2
 # node 4: type: TNT_INTCON val: 5
 # c-- exited with code: 0
