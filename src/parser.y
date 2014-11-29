@@ -276,7 +276,12 @@ args : expr arg_list
        {
          // append arg_list to 1st arg
          treenode_t *head = new treenode_t(TNT_ARG, $1, NULL);
-         head->children[SEQ_NEXT] = $2.head;
+         head->val = 1;
+         if ( $2.head != NULL )
+         {
+           head->children[SEQ_NEXT] = $2.head;
+           head->val += $2.head->val;
+         }
          $$ = head;
        }
      | /* empty */ { $$ = NULL; }
@@ -348,10 +353,19 @@ static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
         ok = expr->is_int_compat();
         break;
       case ST_ARRAY:
-        ok = expr->type == TNT_SYMBOL && expr->sym->type == ST_ARRAY;
+        if ( expr->type == TNT_STRCON )
+        {
+          ok = param->array.type == PRIM_CHAR;
+        }
+        else if ( expr->type == TNT_SYMBOL )
+        {
+          const symbol_t *sym = expr->sym;
+          ok = sym->type == ST_ARRAY
+            && sym->array.type == param->array.type;
+        }
         break;
       default:
-        INTERR(0);
+        INTERR(1031);
     }
     if ( !ok )
       return arg_res_t(ARGS_INCOMPAT, i+1);
@@ -382,7 +396,7 @@ static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
                 res.info, f->name.c_str(), line);
         break;
       default:
-        INTERR(0);
+        INTERR(1032);
     }
     delete args;
     return ERRNODE;
@@ -434,7 +448,7 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
                 line, call->sym->name.c_str());
         break;
       default:
-        INTERR(0);
+        INTERR(1033);
     }
     delete call;
     return ERRNODE;
@@ -514,7 +528,7 @@ static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int li
         usererr("error: expression for array index is not of integer type, line %d\n", line);
         break;
       default:
-        INTERR(0);
+        INTERR(1034);
     }
     delete idx;
     return ERRNODE;
