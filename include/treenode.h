@@ -74,8 +74,6 @@ struct seq_t
   treenode_t *tail;
 };
 
-int count_args(const treenode_t *args);
-
 #ifndef NDEBUG
 bool is_seq_type(treenode_type_t type);
 #endif

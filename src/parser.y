@@ -328,30 +328,35 @@ struct arg_res_t
 static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
 {
   ASSERT(0, f.type == ST_FUNCTION);
+  paramvec_t *params = f.func.params;
 
-  int nparams = f.func.params->size();
-  int nargs = count_args(args);
+  int nparams = params->size();
+  int nargs = args == NULL ? 0 : args->val;
 
   if ( nargs != nparams )
     return arg_res_t(ARGS_NUM, nargs);
 
+  const treenode_t *curarg = args;
   for ( int i = 0; i < nparams; i++ )
   {
     bool ok = false;
-    symbol_t *param = f.func.params->at(i);
+    const symbol_t *param  = params->at(i);
+    const treenode_t *expr = curarg->children[SEQ_CUR];
     switch ( param->type )
     {
       case ST_PRIMITIVE:
-        ok = args->is_int_compat();
+        ok = expr->is_int_compat();
         break;
       case ST_ARRAY:
-        ok = args->type == TNT_SYMBOL && args->sym->type == ST_ARRAY;
+        ok = expr->type == TNT_SYMBOL && expr->sym->type == ST_ARRAY;
         break;
       default:
         INTERR(0);
     }
     if ( !ok )
       return arg_res_t(ARGS_INCOMPAT, i+1);
+
+    curarg = curarg->children[SEQ_NEXT];
   }
 
   return arg_res_t(ARGS_OK);
@@ -453,6 +458,7 @@ static seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type
 
   seq.tail = to_app;
 
+  seq.head->val++;
   return seq;
 }
 
