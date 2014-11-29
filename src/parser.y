@@ -622,6 +622,7 @@ enum col_res_t
   COL_PARAMS,
   COL_REDECL,
   COL_REDEF,
+  COL_EXT,
   COL_RET
 };
 
@@ -631,6 +632,7 @@ static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
   ASSERT(1001, prev.name == sym.name);
 
   return prev.type != ST_FUNCTION                           ? COL_REDECL
+       : prev.func.is_extern                                ? COL_EXT
        : prev.func.defined                                  ? COL_REDEF
        : !check_params(*prev.func.params, *sym.func.params) ? COL_PARAMS
        : prev.func.rt_type != sym.func.rt_type              ? COL_RET
@@ -689,6 +691,11 @@ static void f_enter(symbol_t *f, return_type_t rt)
         case COL_RET:
           usererr("error: return type for function %s at line %d "
                   "does not match the return type in its declaration at line %d\n",
+                  f->name.c_str(), f->line, prev->line);
+          break;
+        case COL_EXT:
+          usererr("error: function %s is defined at line %d "
+                  "but is declared extern at line %d\n",
                   f->name.c_str(), f->line, prev->line);
           break;
         default:
