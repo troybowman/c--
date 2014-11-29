@@ -28,7 +28,7 @@
   static inline void param_off() { delete cursyms; cursyms = &gsyms; }
 
   static void f_enter(symbol_t *f, return_type_t rt); // initialize func def
-  static void f_leave(symbol_t *f, const treenode_t *tree);
+  static void f_leave(symbol_t *f, treenode_t *tree);
 
   static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
 
@@ -39,7 +39,7 @@
 
   static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line);
   static treenode_t *process_call(const symbol_t *sym, treenode_t *args, int line);
-  static treenode_t *process_call_stmt(treenode_t *call, int line);
+  static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr);
 
 #ifndef NDEBUG
   dbg_flags_t dbg_flags = 0;
@@ -71,9 +71,9 @@
 %type<sym>      var_decl func_decl param_decl
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call
+%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args
 %type<asfx>     decl_array_sfx param_array_sfx
-%type<seq>      stmts
+%type<seq>      stmts arg_list
 
 %start prog
 
@@ -257,7 +257,7 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
 
 /*---------------------------------------------------------------------------*/
 stmt : stmt_var '=' expr ';' { $$ = process_assg($1, $3, yylineno); }
-     | call ';'              { $$ = process_call_stmt($1, yylineno); }
+     | call ';'              { $$ = process_call_ctx($1, yylineno, false); }
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -265,7 +265,7 @@ call : ID '(' args ')'
        {
          symbol_t *sym = process_stmt_id($1, yylineno);
          $$ = sym != NULL
-            ? process_call(sym, $3, yylineno);
+            ? process_call(sym, $3, yylineno)
             : ERRNODE;
          free($1);
        }
@@ -283,7 +283,7 @@ args : expr arg_list
      ;
 
 /*---------------------------------------------------------------------------*/
-arg_list : arg_list ',' expr { $$ = seq_append($1, $2, TNT_ARG); }
+arg_list : arg_list ',' expr { $$ = seq_append($1, $3, TNT_ARG); }
          | /* empty */       { $$.head = NULL; $$.tail = NULL; }
          ;
 
@@ -307,8 +307,8 @@ stmt_array_sfx : '[' expr ']' { $$ = $2; }
 expr : INT      { $$ = new treenode_t(TNT_INTCON, $1); }
      | CHAR     { $$ = new treenode_t(TNT_CHARCON, $1); }
      | STRING   { $$ = new treenode_t(TNT_STRCON, $1); }
+     | call     { $$ = process_call_ctx($1, yylineno, true); }
      | stmt_var { $$ = $1; }
-     | call     { $$ = $1; }
      ;
 
 %%
@@ -317,9 +317,9 @@ expr : INT      { $$ = new treenode_t(TNT_INTCON, $1); }
 struct arg_res_t
 {
   int code;
-#define  ARGS_OK       0
-#define  ARGS_INCOMPAT 1
-#define  ARGS_NUM      2
+#define ARGS_OK       0
+#define ARGS_INCOMPAT 1
+#define ARGS_NUM      2
   int info;
   arg_res_t(int c, int i = -1) : code(c), info(i) {}
 };
@@ -329,7 +329,7 @@ static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
 {
   ASSERT(0, f.type == ST_FUNCTION);
 
-  int nparams = f.params->size();
+  int nparams = f.func.params->size();
   int nargs = count_args(args);
 
   if ( nargs != nparams )
@@ -338,7 +338,7 @@ static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
   for ( int i = 0; i < nparams; i++ )
   {
     bool ok = false;
-    symbol_t *param = f.params->at(i);
+    symbol_t *param = f.func.params->at(i);
     switch ( param->type )
     {
       case ST_PRIMITIVE:
@@ -369,8 +369,8 @@ static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
     switch ( res.code )
     {
       case ARGS_NUM:
-        usererr("error: expected %d arguments for function %s, got %d - line %d\n",
-                f->params->size(), f->name.c_str(), res.info, line);
+        usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
+                f->func.params->size(), f->name.c_str(), res.info, line);
         break;
       case ARGS_INCOMPAT:
         usererr("error: argument %d to function %s is of incompatible type, line %d\n",
@@ -384,6 +384,58 @@ static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
   }
 
   return new treenode_t(TNT_CALL, f, args);
+}
+
+//-----------------------------------------------------------------------------
+enum cctx_res_t
+{
+  CCTX_OK,
+  CCTX_EXPR,
+  CCTX_STMT
+};
+
+//-----------------------------------------------------------------------------
+static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
+{
+  if ( call.type == TNT_ERROR )
+    return CCTX_OK;
+
+  ASSERT(0, call.type == TNT_CALL);
+
+  return_type_t rt = call.sym->func.rt_type;
+  if ( expr )
+    return rt == RT_VOID ? CCTX_EXPR : CCTX_OK;
+  else
+    return rt != RT_VOID ? CCTX_STMT : CCTX_OK;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
+{
+  ASSERT(0, call != NULL);
+
+  cctx_res_t res = validate_call_ctx(*call, expr);
+
+  if ( res != CCTX_OK )
+  {
+    switch ( res )
+    {
+      case CCTX_EXPR:
+        usererr("error: line %d - function %s called as part of an expression must not have return type void\n",
+                line, call->sym->name.c_str());
+        break;
+      case CCTX_STMT:
+        usererr("error: line %d - function %s called as a standalone statement must have return type void\n",
+                line, call->sym->name.c_str());
+        break;
+      default:
+        INTERR(0);
+    }
+    delete call;
+    return ERRNODE;
+  }
+
+  return call;
 }
 
 //-----------------------------------------------------------------------------
@@ -635,7 +687,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
 }
 
 //-----------------------------------------------------------------------------
-static void f_leave(symbol_t *f, const treenode_t *tree)
+static void f_leave(symbol_t *f, treenode_t *tree)
 {
   ASSERT(1005, f != NULL);
 

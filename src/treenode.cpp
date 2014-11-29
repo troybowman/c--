@@ -78,7 +78,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
 }
 
 //-----------------------------------------------------------------------------
-treenode_t::~treenode_t( )
+treenode_t::~treenode_t()
 {
   if ( type == TNT_CHARCON || type == TNT_STRCON )
     free(str);
@@ -113,10 +113,10 @@ bool treenode_t::is_int_compat() const
 }
 
 //-----------------------------------------------------------------------------
-int count_args(treenode_t *args)
+int count_args(const treenode_t *args)
 {
   int cnt = 0;
-  treenode_t *arg = args;
+  const treenode_t *arg = args;
   while ( arg != NULL && arg->type == TNT_ARG )
   {
     cnt++;
