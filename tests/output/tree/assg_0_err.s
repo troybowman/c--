@@ -1,0 +1,10 @@
+syntax error, line: 8
+syntax error, line: 9
+syntax error, line: 11
+syntax error, line: 13
+syntax error, line: 14
+syntax error, line: 15
+syntax error, line: 16
+syntax error, line: 18
+syntax error, line: 19
+# c-- exited with code: 4
