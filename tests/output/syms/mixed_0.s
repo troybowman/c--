@@ -33,7 +33,7 @@
 # sym: func1
 #   line: 10
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: RT_VOID
 #     params:
 #       0: buf
 #         type: ST_ARRAY
@@ -45,7 +45,7 @@
 # sym: func2
 #   line: 16
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: RT_VOID
 #     params:
 #       0: buf
 #         type: ST_ARRAY
@@ -57,7 +57,7 @@
 # sym: func3
 #   line: 24
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: RT_VOID
 #     params:
 #       0: buf
 #         type: ST_ARRAY

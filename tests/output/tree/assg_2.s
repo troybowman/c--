@@ -5,7 +5,7 @@
 # sym: func1
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: RT_VOID
 #     params:
 #       none
 #     is_extern: no

@@ -19,7 +19,7 @@ void func1(void)
   char str1[1], str2[2], str3[3], ch;
 }
 
-int func2(int aa,
+void func2(int aa,
   char bb, char string[],
           int ary[])
 {

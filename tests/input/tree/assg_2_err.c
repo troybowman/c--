@@ -10,7 +10,7 @@ void func1(void)
   x = 6;
 }
 
-int main(int args[])
+void main(int args[])
 {
   int x;
   x = 6;

@@ -5,7 +5,7 @@
 # sym: main
 #   line: 1
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: RT_VOID
 #     params:
 #       0: argc
 #         type: ST_PRIMITIVE

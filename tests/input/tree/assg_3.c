@@ -2,7 +2,7 @@
 
 int one;
 
-int main(char x, char y)
+void main(char x, char y)
 {
   char z;
 

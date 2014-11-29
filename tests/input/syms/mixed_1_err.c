@@ -12,7 +12,7 @@ void func4(void) {}
 void func5(void) {}
 void func6(void) {}
 
-char func7(void)
+void func7(void)
 {
   char func8;
   char func8;

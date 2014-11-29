@@ -1,6 +1,6 @@
 /* syntax errors in more complex assignments */
 
-int main(int argc, char argv[])
+void main(int argc, char argv[])
 {
   int x;
   char y;

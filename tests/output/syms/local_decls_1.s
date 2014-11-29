@@ -12,7 +12,7 @@
 # sym: func2
 #   line: 24
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: RT_VOID
 #     params:
 #       0: aa
 #         type: ST_PRIMITIVE

@@ -12,7 +12,7 @@ void func4(void) {}
 void func5(void) {}
 void func6(void) {}
 
-char func7(void)
+void func7(void)
 {
   char func8(void);
   char func8;
@@ -36,7 +36,7 @@ void missing_open_bracket(int x)
   asdflkjhasd
 }
 
-int func8()
+void func8()
 {
   intad
     kjasdhkljh
