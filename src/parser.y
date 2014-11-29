@@ -246,7 +246,7 @@ func_body : local_decls stmts { $$ = $2.head; }
 
 /*---------------------------------------------------------------------------*/
 local_decls : local_decls type var_decls ';' { process_var_list($3, $2); }
-            | local_decls error          ';' { yyerrok; }
+            | local_decls error          ';' { yyerrok; } /* TODO: this handles errors in statements as well */
             | /* empty */
             ;
 
