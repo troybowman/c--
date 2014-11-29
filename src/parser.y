@@ -16,16 +16,31 @@
   symtab_t gsyms;      // global symbol table
   symlist_t functions; // functions, in order as they appear in the source file
 
-  // pointer to current active symbol table. (could be &gsyms,
-  // the current local symtab, or a temporary symtab for parameters)
-  static symtab_t *cursyms = &gsyms;
+  //---------------------------------------------------------------------------
+  // maintain a global/local context
+  static struct
+  {
+    symtab_t *syms;
+    return_type_t rt;
 
+    void setglobal() { syms = &gsyms; rt = RT_UNKNOWN; }
+
+    void setlocal(symtab_t *_syms, return_type_t _rt = RT_UNKNOWN)
+    {
+      syms = _syms;
+      rt = _rt;
+    }
+
+    void trash() { delete syms; setglobal(); }
+  } ctx;
+
+  //---------------------------------------------------------------------------
   static void process_var_list(symlist_t *list, primitive_t type);
   static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern);
 
   // use a temporary symbol table to validate parameter declarations
-  static inline void param_on() { cursyms = new symtab_t(); }
-  static inline void param_off() { delete cursyms; cursyms = &gsyms; }
+  static inline void param_on() { ctx.setlocal(new symtab_t()); }
+  static inline void param_off() { ctx.trash(); }
 
   static void f_enter(symbol_t *f, return_type_t rt); // initialize func def
   static void f_leave(symbol_t *f, treenode_t *tree);
@@ -41,6 +56,7 @@
   static treenode_t *process_call(const symbol_t *sym, treenode_t *args, int line);
   static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr);
 
+  //---------------------------------------------------------------------------
 #ifndef NDEBUG
   dbg_flags_t dbg_flags = 0;
 #endif
@@ -258,6 +274,7 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
 /*---------------------------------------------------------------------------*/
 stmt : stmt_var '=' expr ';' { $$ = process_assg($1, $3, yylineno); }
      | call ';'              { $$ = process_call_ctx($1, yylineno, false); }
+     /*| RETURN ret_expr ';'   { $$ = process_ret_stmt($1); }*/
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -480,7 +497,7 @@ static seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type
 static symbol_t *process_stmt_id(const char *id, int line)
 {
   std::string key(id);
-  symbol_t *sym = cursyms->get(key); // first check local symbols
+  symbol_t *sym = ctx.syms->get(key); // first check local symbols
   if ( sym == NULL )
   {
     sym = gsyms.get(key); // now global symbols
@@ -571,7 +588,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
   if ( asfx.code == ASFX_ERROR )
     return NULL;
 
-  symbol_t *prev = cursyms->get(std::string(name));
+  symbol_t *prev = ctx.syms->get(std::string(name));
   if ( prev != NULL )
   {
     usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
@@ -582,7 +599,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
   symbol_t *sym = asfx.code == ASFX_NONE
                 ? new symbol_t(name, line, ST_PRIMITIVE, PRIM_UNKNOWN)
                 : new symbol_t(name, line, ST_ARRAY, PRIM_UNKNOWN, asfx.size);
-  cursyms->insert(sym);
+  ctx.syms->insert(sym);
   return sym;
 }
 
@@ -664,7 +681,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
 
   f->func.rt_type = rt;
 
-  symbol_t *prev = cursyms->get(f->name);
+  symbol_t *prev = ctx.syms->get(f->name);
   if ( prev != NULL )
   {
     col_res_t res = handle_collision(*prev, *f);
@@ -707,10 +724,10 @@ static void f_enter(symbol_t *f, return_type_t rt)
     // existing symbol for declaration is replaced with the definition
     delete prev;
   }
-  cursyms->insert(f);
+  ctx.syms->insert(f);
 
   init_lsyms(*f);
-  cursyms = f->func.symbols;
+  ctx.setlocal(f->func.symbols, f->func.rt_type);
 }
 
 //-----------------------------------------------------------------------------
@@ -723,7 +740,7 @@ static void f_leave(symbol_t *f, treenode_t *tree)
 
   functions.push_back(f);
 
-  cursyms = &gsyms;
+  ctx.setglobal();
 }
 
 //-----------------------------------------------------------------------------
@@ -762,7 +779,7 @@ static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_ex
     ASSERT(1011, *i != NULL);
 
     symbol_t *sym = *i;
-    symbol_t *prev = cursyms->get(sym->name);
+    symbol_t *prev = ctx.syms->get(sym->name);
     if ( prev != NULL )
     {
       usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
@@ -773,7 +790,7 @@ static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_ex
 
     sym->func.rt_type = rt_type;
     sym->func.is_extern = is_extern;
-    cursyms->insert(sym);
+    ctx.syms->insert(sym);
   }
 }
 
@@ -825,6 +842,7 @@ int main(int argc, char **argv)
   if ( !parseargs(argc, argv) )
     usage(argv[0]);
 
+  ctx.setglobal();
   yyparse();
   checkerr();
 
