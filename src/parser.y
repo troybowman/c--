@@ -91,7 +91,10 @@
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
 
-%left EQ NEQ LEQ GEQ AND OR '<' '>'
+%left OR
+%left AND
+%left EQ NEQ
+%left '<' LEQ '>' GEQ
 %right UNARY
 
 %start prog
@@ -341,19 +344,19 @@ stmt_array_sfx : '[' expr ']' { $$ = $2; }
                ;
 
 /*---------------------------------------------------------------------------*/
-expr : INT      { $$ = new treenode_t(TNT_INTCON, $1); }
-     | CHAR     { $$ = new treenode_t(TNT_CHARCON, $1); }
-     | STRING   { $$ = new treenode_t(TNT_STRCON, $1); }
-     | call     { $$ = process_call_ctx($1, yylineno, true); }
-     | stmt_var { $$ = $1; }
-     | expr EQ  expr  { $$ = process_bool_expr($1, TNT_EQ,  $3, yylineno); }
-     | expr NEQ expr  { $$ = process_bool_expr($1, TNT_NEQ, $3, yylineno); }
-     | expr '<' expr  { $$ = process_bool_expr($1, TNT_LT,  $3, yylineno); }
-     | expr LEQ expr  { $$ = process_bool_expr($1, TNT_LEQ, $3, yylineno); }
-     | expr '>' expr  { $$ = process_bool_expr($1, TNT_GT,  $3, yylineno); }
-     | expr GEQ expr  { $$ = process_bool_expr($1, TNT_GEQ, $3, yylineno); }
-     | expr AND expr  { $$ = process_bool_expr($1, TNT_AND, $3, yylineno); }
-     | expr OR  expr  { $$ = process_bool_expr($1, TNT_OR,  $3, yylineno); }
+expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
+     | CHAR                 { $$ = new treenode_t(TNT_CHARCON, $1); }
+     | STRING               { $$ = new treenode_t(TNT_STRCON, $1); }
+     | call                 { $$ = process_call_ctx($1, yylineno, true); }
+     | stmt_var             { $$ = $1; }
+     | expr EQ  expr        { $$ = process_bool_expr($1, TNT_EQ,  $3, yylineno); }
+     | expr NEQ expr        { $$ = process_bool_expr($1, TNT_NEQ, $3, yylineno); }
+     | expr '<' expr        { $$ = process_bool_expr($1, TNT_LT,  $3, yylineno); }
+     | expr LEQ expr        { $$ = process_bool_expr($1, TNT_LEQ, $3, yylineno); }
+     | expr '>' expr        { $$ = process_bool_expr($1, TNT_GT,  $3, yylineno); }
+     | expr GEQ expr        { $$ = process_bool_expr($1, TNT_GEQ, $3, yylineno); }
+     | expr AND expr        { $$ = process_bool_expr($1, TNT_AND, $3, yylineno); }
+     | expr OR  expr        { $$ = process_bool_expr($1, TNT_OR,  $3, yylineno); }
      | '!' expr %prec UNARY { $$ = process_bool_expr(NULL, TNT_NOT, $2, yylineno); }
      | '(' expr ')'         { $$ = $2; }
      ;

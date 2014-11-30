@@ -128,6 +128,8 @@ static const char *tnt2str(treenode_type_t tnt)
     case TNT_ARG:          return "TNT_ARG";
     case TNT_RET:          return "TNT_RET";
     case TNT_IF:           return "TNT_IF";
+    case TNT_NOT:          return "TNT_NOT";
+    case TNT_NEG:          return "TNT_NEG";
     default:
       INTERR(1030);
   }
@@ -151,6 +153,8 @@ static const char *child2str(treenode_type_t type, int child)
     case TNT_NEQ:
     case TNT_AND:
     case TNT_OR:
+    case TNT_NOT:
+    case TNT_NEG:
       ASSERT(1031, child == LHS || child == RHS);
       return child == LHS ? "LHS" : "RHS";
     case TNT_ARRAY_LOOKUP:

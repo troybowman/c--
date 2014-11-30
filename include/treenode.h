@@ -26,11 +26,10 @@ enum treenode_type_t
   TNT_NEQ,
   TNT_AND,
   TNT_OR,
-#define LHS 0
-#define RHS 1
   TNT_NOT,
   TNT_NEG,
-#define UNARY_OP  0
+#define LHS 0
+#define RHS 1
   TNT_ARRAY_LOOKUP,
 #define AL_OFFSET 0
   TNT_FOR,

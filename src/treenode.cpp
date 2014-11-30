@@ -49,6 +49,13 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       ASSERT(1015, children[LHS] != NULL);
       ASSERT(1016, children[RHS] != NULL);
       break;
+    case TNT_NOT:
+    case TNT_NEG:
+      children[LHS] = va_arg(va, treenode_t *);
+      children[RHS] = va_arg(va, treenode_t *);
+      ASSERT(1053, children[LHS] == NULL);
+      ASSERT(1054, children[RHS] != NULL);
+      break;
     case TNT_ARRAY_LOOKUP:
       sym                 = va_arg(va, symbol_t *);
       children[AL_OFFSET] = va_arg(va, treenode_t *);
