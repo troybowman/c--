@@ -809,9 +809,9 @@ static void f_enter(symbol_t *f, return_type_t rt)
     // existing symbol for declaration is replaced with the definition
     delete prev;
   }
+  init_lsyms(*f);
   ctx.syms->insert(f);
 
-  init_lsyms(*f);
   ctx.setlocal(f->func.symbols, f->func.rt_type);
 }
 
