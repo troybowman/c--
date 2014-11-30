@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 import sys, os, glob, subprocess, re
 
+# TODO:
+ #cwd = os.getcwd()
+ #last_child = cwd
+ #cur = os.path.dirname(cwd)
+ #while not os.path.basename(cur).lower().startswith("idasrc"):
+     #last_child = cur
+     #parent = os.path.dirname(cur)
+     #if parent == cur:
+         #break
+     #cur = parent
+ #idahome = last_child
 cmm = os.path.join("..", "bin", "c--")
 
 if not os.path.exists(cmm):
@@ -34,4 +45,4 @@ for d in dirs:
                 raise
 
 #------------------------------------------------------------------------------
-# soon to come: automatically report changed files
+# #TODO: automatically report changed files

@@ -20,11 +20,12 @@ void purge_and_exit(int code);
 void usererr(const char *format, ...);
 
 //-----------------------------------------------------------------------------
-#define INTERR(code)                     \
-do                                       \
-{                                        \
-  fprintf(stderr, "interr: %d\n", code); \
-  exit(code);                            \
+#define INTERR(code)                            \
+do                                              \
+{                                               \
+  /* TODO: if ( debugged ) __asm__("int $3") */ \
+  fprintf(stderr, "interr: %d\n", code);        \
+  exit(code);                                   \
 } while ( false );
 
 //-----------------------------------------------------------------------------
