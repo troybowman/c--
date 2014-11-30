@@ -722,7 +722,7 @@ enum col_res_t
 };
 
 //-----------------------------------------------------------------------------
-static col_res_t handle_collision(const symbol_t &prev, const symbol_t &sym)
+static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
 {
   ASSERT(1001, prev.name == sym.name);
 
@@ -797,7 +797,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
   symbol_t *prev = ctx.syms->get(f->name);
   if ( prev != NULL )
   {
-    col_res_t res = handle_collision(*prev, *f);
+    col_res_t res = validate_collision(*prev, *f);
 
     if ( res != COL_OK )
     {
