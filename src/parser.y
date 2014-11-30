@@ -415,6 +415,33 @@ struct arg_res_t
 };
 
 //-----------------------------------------------------------------------------
+static bool check_arg(const symbol_t &param, const treenode_t &expr)
+{
+  bool ok = false;
+  switch ( param.type )
+  {
+    case ST_PRIMITIVE:
+      ok = expr.is_int_compat();
+      break;
+    case ST_ARRAY:
+      if ( expr.type == TNT_STRCON )
+      {
+        ok = param.array.type == PRIM_CHAR;
+      }
+      else if ( expr.type == TNT_SYMBOL )
+      {
+        const symbol_t *sym = expr.sym;
+        ok = sym->type == ST_ARRAY
+          && sym->array.type == param.array.type;
+      }
+      break;
+    default:
+      INTERR(1031);
+  }
+  return ok;
+}
+
+//-----------------------------------------------------------------------------
 static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
 {
   ASSERT(0, f.type == ST_FUNCTION);
@@ -429,30 +456,7 @@ static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
   const treenode_t *curarg = args;
   for ( int i = 0; i < nparams; i++ )
   {
-    bool ok = false;
-    const symbol_t *param  = params->at(i);
-    const treenode_t *expr = curarg->children[SEQ_CUR];
-    switch ( param->type )
-    {
-      case ST_PRIMITIVE:
-        ok = expr->is_int_compat();
-        break;
-      case ST_ARRAY:
-        if ( expr->type == TNT_STRCON )
-        {
-          ok = param->array.type == PRIM_CHAR;
-        }
-        else if ( expr->type == TNT_SYMBOL )
-        {
-          const symbol_t *sym = expr->sym;
-          ok = sym->type == ST_ARRAY
-            && sym->array.type == param->array.type;
-        }
-        break;
-      default:
-        INTERR(1031);
-    }
-    if ( !ok )
+    if ( !check_arg(*params->at(i), *curarg->children[SEQ_CUR]) )
       return arg_res_t(ARGS_INCOMPAT, i+1);
 
     curarg = curarg->children[SEQ_NEXT];
@@ -748,6 +752,41 @@ static void init_lsyms(symbol_t &f)
 }
 
 //-----------------------------------------------------------------------------
+static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &prev)
+{
+  switch ( res )
+  {
+    case COL_REDEF:
+      usererr("error: function %s redefined at line %d "
+              "(previous definition starts at line %d)\n",
+              f.name.c_str(), f.line, prev.line);
+      break;
+    case COL_REDECL:
+      usererr("error: symbol %s redeclared as a function at line %d "
+              "(previous declaration at line %d)\n",
+              f.name.c_str(), f.line, prev.line);
+      break;
+    case COL_PARAMS:
+      usererr("error: parameters in definition of function %s at line %d "
+              "do not match the parameters in its declaration at line %d\n",
+              f.name.c_str(), f.line, prev.line);
+      break;
+    case COL_RET:
+      usererr("error: return type for function %s at line %d "
+              "does not match the return type in its declaration at line %d\n",
+              f.name.c_str(), f.line, prev.line);
+      break;
+    case COL_EXT:
+      usererr("error: function %s is defined at line %d "
+              "but is declared extern at line %d\n",
+              f.name.c_str(), f.line, prev.line);
+      break;
+    default:
+      INTERR(1012);
+  }
+}
+
+//-----------------------------------------------------------------------------
 static void f_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
@@ -762,37 +801,9 @@ static void f_enter(symbol_t *f, return_type_t rt)
 
     if ( res != COL_OK )
     {
-      switch ( res )
-      {
-        case COL_REDEF:
-          usererr("error: function %s redefined at line %d "
-                  "(previous definition starts at line %d)\n",
-                  f->name.c_str(), f->line, prev->line);
-          break;
-        case COL_REDECL:
-          usererr("error: symbol %s redeclared as a function at line %d "
-                  "(previous declaration at line %d)\n",
-                  f->name.c_str(), f->line, prev->line);
-          break;
-        case COL_PARAMS:
-          usererr("error: parameters in definition of function %s at line %d "
-                  "do not match the parameters in its declaration at line %d\n",
-                  f->name.c_str(), f->line, prev->line);
-          break;
-        case COL_RET:
-          usererr("error: return type for function %s at line %d "
-                  "does not match the return type in its declaration at line %d\n",
-                  f->name.c_str(), f->line, prev->line);
-          break;
-        case COL_EXT:
-          usererr("error: function %s is defined at line %d "
-                  "but is declared extern at line %d\n",
-                  f->name.c_str(), f->line, prev->line);
-          break;
-        default:
-          INTERR(1012);
-      }
-      // these errors invalidate an entire function definition. we do not try to recover from them
+      process_col_err(res, *f, *prev);
+      // these errors invalidate an entire function definition.
+      // we do not try to recover from them
       purge_and_exit(FATAL_FUNCDEF);
     }
     // existing symbol for declaration is replaced with the definition
