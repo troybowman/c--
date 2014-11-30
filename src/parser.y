@@ -553,13 +553,17 @@ static seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type
   treenode_t *to_app = new treenode_t(type, cur, NULL);
 
   if ( seq.head == NULL )
+  {
     seq.head = to_app;
+    seq.head->val = 1;
+  }
   else
+  {
     seq.tail->children[SEQ_NEXT] = to_app;
+    seq.head->val++;
+  }
 
   seq.tail = to_app;
-
-  seq.head->val++;
   return seq;
 }
 
