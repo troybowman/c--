@@ -38,30 +38,23 @@
     void trash() { delete syms; setglobal(); }
   } ctx;
 
-  //---------------------------------------------------------------------------
-  static void process_var_list(symlist_t *list, primitive_t type);
-  static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern);
-
   // use a temporary symbol table to validate parameter declarations
   static inline void param_on() { ctx.setlocal(new symtab_t()); }
   static inline void param_off() { ctx.trash(); }
-
   static void f_enter(symbol_t *f, return_type_t rt); // initialize func def
   static void f_leave(symbol_t *f, treenode_t *tree);
-
-  static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
-
   static seq_t &seq_append(seq_t &seq, const treenode_t *app, treenode_type_t type);
-
-  static   symbol_t *process_stmt_id (const char *id, int line);
+  static       void  process_var_list(symlist_t *list, primitive_t type);
+  static       void  process_func_list(symlist_t *list, return_type_t rt, bool is_extern);
+  static   symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
+  static   symbol_t *process_stmt_id(const char *id, int line);
   static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line);
-
   static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line);
-
   static treenode_t *process_call(const symbol_t *sym, treenode_t *args, int line);
   static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr);
-
   static treenode_t *process_ret_stmt(treenode_t *expr, int line);
+  static treenode_t *process_bool_expr(treenode_t *lhs, treenode_type_t type, treenode_t *rhs, int line);
+  static treenode_t *process_if_stmt(treenode_t *cond, treenode_t *body, treenode_t *el, int line);
 
   //---------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -94,9 +87,12 @@
 %type<sym>      var_decl func_decl param_decl
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args ret_expr
+%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args ret_expr else
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
+
+%left EQ NEQ LEQ GEQ AND OR '<' '>'
+%right UNARY
 
 %start prog
 
@@ -279,9 +275,17 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
       ;
 
 /*---------------------------------------------------------------------------*/
-stmt : stmt_var '=' expr ';' { $$ = process_assg($1, $3, yylineno); }
-     | call ';'              { $$ = process_call_ctx($1, yylineno, false); }
-     | RETURN ret_expr ';'   { $$ = process_ret_stmt($2, yylineno); }
+stmt : stmt_var '=' expr ';'     { $$ = process_assg($1, $3, yylineno); }
+     | call ';'                  { $$ = process_call_ctx($1, yylineno, false); }
+     | RETURN ret_expr ';'       { $$ = process_ret_stmt($2, yylineno); }
+     | IF '(' expr ')' stmt else { $$ = process_if_stmt($3, $5, $6, yylineno); }
+     | '{' stmts '}'             { $$ = $2.head; }
+     | ';'                       { $$ = NULL; }
+     ;
+
+/*---------------------------------------------------------------------------*/
+else : ELSE stmt   { $$ = $2; }
+     | /* empty */ { $$ = NULL; }
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -342,9 +346,87 @@ expr : INT      { $$ = new treenode_t(TNT_INTCON, $1); }
      | STRING   { $$ = new treenode_t(TNT_STRCON, $1); }
      | call     { $$ = process_call_ctx($1, yylineno, true); }
      | stmt_var { $$ = $1; }
+     | expr EQ  expr  { $$ = process_bool_expr($1, TNT_EQ,  $3, yylineno); }
+     | expr NEQ expr  { $$ = process_bool_expr($1, TNT_NEQ, $3, yylineno); }
+     | expr '<' expr  { $$ = process_bool_expr($1, TNT_LT,  $3, yylineno); }
+     | expr LEQ expr  { $$ = process_bool_expr($1, TNT_LEQ, $3, yylineno); }
+     | expr '>' expr  { $$ = process_bool_expr($1, TNT_GT,  $3, yylineno); }
+     | expr GEQ expr  { $$ = process_bool_expr($1, TNT_GEQ, $3, yylineno); }
+     | expr AND expr  { $$ = process_bool_expr($1, TNT_AND, $3, yylineno); }
+     | expr OR  expr  { $$ = process_bool_expr($1, TNT_OR,  $3, yylineno); }
+     | '!' expr %prec UNARY { $$ = process_bool_expr(NULL, TNT_NOT, $2, yylineno); }
+     | '(' expr ')'         { $$ = $2; }
      ;
 
 %%
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_if_stmt(
+    treenode_t *cond,
+    treenode_t *body,
+    treenode_t *el,
+    int line)
+{
+  ASSERT(0, cond != NULL);
+
+  if ( !cond->is_bool_compat() )
+  {
+    usererr("error: expression in if condition is not of type bool, line %d\n", line);
+    if ( body != NULL ) delete body;
+    if ( el   != NULL ) delete el;
+    delete cond;
+    return ERRNODE;
+  }
+  return new treenode_t(TNT_IF, cond, body, el);
+}
+
+//-----------------------------------------------------------------------------
+static bool validate_bool_expr(
+    const treenode_t *lhs,
+    treenode_type_t type,
+    const treenode_t *rhs)
+{
+  ASSERT(1048, rhs != NULL);
+
+  switch ( type )
+  {
+    case TNT_NOT:
+      ASSERT(1049, lhs == NULL);
+      return rhs->is_bool_compat();
+    case TNT_EQ:
+    case TNT_NEQ:
+    case TNT_LT:
+    case TNT_LEQ:
+    case TNT_GT:
+    case TNT_GEQ:
+      ASSERT(1050, lhs != NULL);
+      return lhs->is_int_compat()
+          && rhs->is_int_compat();
+    case TNT_AND:
+    case TNT_OR:
+      ASSERT(1051, lhs != NULL);
+      return lhs->is_bool_compat()
+          && rhs->is_bool_compat();
+    default:
+      INTERR(1052);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_bool_expr(
+    treenode_t *lhs,
+    treenode_type_t type,
+    treenode_t *rhs,
+    int line)
+{
+  if ( !validate_bool_expr(lhs, type, rhs) )
+  {
+    usererr("error: incompatible boolean operands, line %d\n", line);
+    delete lhs; delete rhs;
+    return ERRNODE;
+  }
+  return new treenode_t(type, lhs, rhs);
+}
 
 //-----------------------------------------------------------------------------
 enum ret_res_t

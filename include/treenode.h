@@ -28,6 +28,9 @@ enum treenode_type_t
   TNT_OR,
 #define LHS 0
 #define RHS 1
+  TNT_NOT,
+  TNT_NEG,
+#define UNARY_OP  0
   TNT_ARRAY_LOOKUP,
 #define AL_OFFSET 0
   TNT_FOR,
@@ -43,6 +46,10 @@ enum treenode_type_t
 #define CALL_ARGS 0
   TNT_RET,
 #define RET_EXPR  0
+  TNT_IF,
+#define IF_COND   0
+#define IF_BODY   1
+#define IF_ELSE   2
 };
 
 //-----------------------------------------------------------------------------
@@ -62,6 +69,7 @@ struct treenode_t
   ~treenode_t();
 
   bool is_int_compat() const;
+  bool is_bool_compat() const;
 };
 
 //-----------------------------------------------------------------------------

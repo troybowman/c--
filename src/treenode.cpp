@@ -73,7 +73,13 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       ASSERT(1038, sym->type == ST_FUNCTION);
       break;
     case TNT_RET:
-      children[RET_EXPR]  = va_arg(va, treenode_t*);
+      children[RET_EXPR]  = va_arg(va, treenode_t *);
+      break;
+    case TNT_IF:
+      children[IF_COND]   = va_arg(va, treenode_t *);
+      children[IF_BODY]   = va_arg(va, treenode_t *);
+      children[IF_ELSE]   = va_arg(va, treenode_t *);
+      ASSERT(1051, children[IF_COND] != NULL);
       break;
     default:
       INTERR(1020);
@@ -110,6 +116,26 @@ bool treenode_t::is_int_compat() const
       return sym->type == ST_PRIMITIVE;
     case TNT_CALL:
       return sym->func.rt_type != RT_VOID;
+    default:
+      return false;
+  }
+}
+
+//-----------------------------------------------------------------------------
+bool treenode_t::is_bool_compat() const
+{
+  switch ( type )
+  {
+    case TNT_LT:
+    case TNT_GT:
+    case TNT_LEQ:
+    case TNT_GEQ:
+    case TNT_EQ:
+    case TNT_NEQ:
+    case TNT_AND:
+    case TNT_OR:
+    case TNT_NOT:
+      return true;
     default:
       return false;
   }
