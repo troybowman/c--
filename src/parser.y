@@ -182,7 +182,7 @@ func_decls : func_decl func_decl_list
 /*---------------------------------------------------------------------------*/
 func_decl : ID '(' { param_on(); } params { param_off(); } ')'
             {
-              ASSERT(0, $4 != NULL);
+              ASSERT(1039, $4 != NULL);
               $$ = new symbol_t($1, yylineno, ST_FUNCTION, RT_UNKNOWN,
                                 $4, NULL, NULL, false, false);
             }
@@ -359,7 +359,7 @@ enum ret_res_t
 //-----------------------------------------------------------------------------
 static ret_res_t validate_ret_stmt(const treenode_t *expr)
 {
-  ASSERT(0, ctx.rt != RT_UNKNOWN);
+  ASSERT(1040, ctx.rt != RT_UNKNOWN);
 
   if ( ctx.rt == RT_VOID )
     return expr != NULL ? RET_EXTRA : RET_OK;
@@ -391,7 +391,7 @@ static treenode_t *process_ret_stmt(treenode_t *expr, int line)
                 "with function's return type\n", line);
         break;
       default:
-        INTERR(0);
+        INTERR(1036);
     }
     delete expr;
     return ERRNODE;
@@ -404,14 +404,15 @@ static treenode_t *process_ret_stmt(treenode_t *expr, int line)
 }
 
 //-----------------------------------------------------------------------------
-struct arg_res_t
+struct call_res_t
 {
   int code;
-#define ARGS_OK       0
-#define ARGS_INCOMPAT 1
-#define ARGS_NUM      2
+#define CALL_OK       0
+#define CALL_BADARG   1
+#define CALL_NUMARGS  2
+#define CALL_NOFUNC   3
   int info;
-  arg_res_t(int c, int i = -1) : code(c), info(i) {}
+  call_res_t(int c, int i = -1) : code(c), info(i) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -442,47 +443,53 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
 }
 
 //-----------------------------------------------------------------------------
-static arg_res_t validate_call(const symbol_t &f, const treenode_t *args)
+static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
 {
-  ASSERT(0, f.type == ST_FUNCTION);
+  if ( f.type != ST_FUNCTION )
+    return call_res_t(CALL_NOFUNC);
+
   paramvec_t *params = f.func.params;
 
   int nparams = params->size();
   int nargs = args == NULL ? 0 : args->val;
 
   if ( nargs != nparams )
-    return arg_res_t(ARGS_NUM, nargs);
+    return call_res_t(CALL_NUMARGS, nargs);
 
   const treenode_t *curarg = args;
   for ( int i = 0; i < nparams; i++ )
   {
     if ( !check_arg(*params->at(i), *curarg->children[SEQ_CUR]) )
-      return arg_res_t(ARGS_INCOMPAT, i+1);
+      return call_res_t(CALL_BADARG, i+1);
 
     curarg = curarg->children[SEQ_NEXT];
   }
 
-  return arg_res_t(ARGS_OK);
+  return call_res_t(CALL_OK);
 }
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
 {
-  ASSERT(0, f != NULL);
+  ASSERT(1042, f != NULL);
 
-  arg_res_t res = validate_call(*f, args);
+  call_res_t res = validate_call(*f, args);
 
-  if ( res.code != ARGS_OK )
+  if ( res.code != CALL_OK )
   {
     switch ( res.code )
     {
-      case ARGS_NUM:
+      case CALL_NUMARGS:
         usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
                 f->func.params->size(), f->name.c_str(), res.info, line);
         break;
-      case ARGS_INCOMPAT:
+      case CALL_BADARG:
         usererr("error: argument %d to function %s is of incompatible type, line %d\n",
                 res.info, f->name.c_str(), line);
+        break;
+      case CALL_NOFUNC:
+        usererr("error: symbol %s used a function but is not of function type, line %d\n",
+                f->name.c_str(), line);
         break;
       default:
         INTERR(1032);
@@ -508,7 +515,7 @@ static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
   if ( call.type == TNT_ERROR )
     return CCTX_OK;
 
-  ASSERT(0, call.type == TNT_CALL);
+  ASSERT(1043, call.type == TNT_CALL);
 
   return_type_t rt = call.sym->func.rt_type;
   if ( expr )
@@ -520,7 +527,7 @@ static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
 //-----------------------------------------------------------------------------
 static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
 {
-  ASSERT(0, call != NULL);
+  ASSERT(1044, call != NULL);
 
   cctx_res_t res = validate_call_ctx(*call, expr);
 
@@ -604,7 +611,7 @@ static inline lookup_res_t validate_array_lookup(const symbol_t &sym, const tree
 //-----------------------------------------------------------------------------
 static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line)
 {
-  ASSERT(0, sym != NULL);
+  ASSERT(1045, sym != NULL);
 
   if ( idx == NULL )
     return new treenode_t(TNT_SYMBOL, sym);
@@ -647,8 +654,8 @@ static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
 //-----------------------------------------------------------------------------
 static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 {
-  ASSERT(0, lhs != NULL);
-  ASSERT(0, rhs != NULL);
+  ASSERT(1046, lhs != NULL);
+  ASSERT(1047, rhs != NULL);
 
   if ( !validate_assg(*lhs, *rhs) )
   {

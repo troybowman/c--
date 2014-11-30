@@ -25,7 +25,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
     case TNT_STRCON:
     case TNT_CHARCON:
       str = va_arg(va, char *);
-      ASSERT(0, str != NULL);
+      ASSERT(1037, str != NULL);
       break;
     case TNT_SYMBOL:
       sym = va_arg(va, symbol_t *);
@@ -70,7 +70,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       sym                 = va_arg(va, symbol_t *);
       children[CALL_ARGS] = va_arg(va, treenode_t *);
       ASSERT(1023, sym       != NULL);
-      ASSERT(0,    sym->type == ST_FUNCTION);
+      ASSERT(1038, sym->type == ST_FUNCTION);
       break;
     case TNT_RET:
       children[RET_EXPR]  = va_arg(va, treenode_t*);
