@@ -56,7 +56,7 @@
   static treenode_t *process_bool_expr(treenode_t *, treenode_type_t, treenode_t *, int);
   static treenode_t *process_if_stmt(treenode_t *, treenode_t *, treenode_t *, int);
   static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
-  static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *);
+  static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
 
   //---------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -90,7 +90,7 @@
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
 %type<tree>     func_body stmt stmt_var stmt_array_sfx expr call
-%type<tree>     args op_expr else assg
+%type<tree>     args op_expr else assg op_assg
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
 
@@ -286,8 +286,8 @@ stmt : assg ';'                  { $$ = $1; }
      | RETURN op_expr ';'        { $$ = process_ret_stmt($2, yylineno); }
      | IF '(' expr ')' stmt else { $$ = process_if_stmt($3, $5, $6, yylineno); }
      | WHILE '(' expr ')' stmt   { $$ = process_while_stmt($3, $5, yylineno); }
-     | FOR '(' assg ';' op_expr ';' assg ')' stmt
-                                 { $$ = process_for_stmt($3, $5, $7, $9); }
+     | FOR '(' op_assg ';' op_expr ';' op_assg ')' stmt
+                                 { $$ = process_for_stmt($3, $5, $7, $9, yylineno); }
      | '{' stmts '}'             { $$ = $2.head; }
      | ';'                       { $$ = NULL; }
      ;
@@ -298,8 +298,13 @@ assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
-else : ELSE stmt       { $$ = $2; }
-     | /* empty */     { $$ = NULL; }
+op_assg : assg        { $$ = $1; }
+        | /* empty */ { $$ = NULL; }
+        ;
+
+/*---------------------------------------------------------------------------*/
+else : ELSE stmt      { $$ = $2; }
+     | /* empty */    { $$ = NULL; }
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -380,9 +385,20 @@ static treenode_t *process_for_stmt(
     treenode_t *init,
     treenode_t *cond,
     treenode_t *inc,
-    treenode_t *body)
+    treenode_t *body,
+    int line)
 {
-  return NULL;
+  if ( cond != NULL && !cond->is_bool_compat() )
+  {
+    usererr("error: expression in for condition is not of type bool, line %d\n", line);
+    if ( init != NULL ) delete init;
+    if ( cond != NULL ) delete cond;
+    if ( inc  != NULL ) delete inc;
+    if ( body != NULL ) delete body;
+    return ERRNODE;
+  }
+
+  return new treenode_t(TNT_FOR, init, cond, inc, body);
 }
 
 //-----------------------------------------------------------------------------

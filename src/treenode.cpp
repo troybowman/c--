@@ -147,6 +147,7 @@ bool treenode_t::is_bool_compat() const
     case TNT_AND:
     case TNT_OR:
     case TNT_NOT:
+    case TNT_ERROR:
       return true;
     default:
       return false;
