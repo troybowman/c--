@@ -88,7 +88,7 @@
 %type<sym>      var_decl func_decl param_decl
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args ret_expr else
+%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args ret_expr else assg
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
 
@@ -279,13 +279,18 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
       ;
 
 /*---------------------------------------------------------------------------*/
-stmt : stmt_var '=' expr ';'     { $$ = process_assg($1, $3, yylineno); }
+stmt : assg ';'                  { $$ = $1; }
      | call ';'                  { $$ = process_call_ctx($1, yylineno, false); }
      | RETURN ret_expr ';'       { $$ = process_ret_stmt($2, yylineno); }
      | IF '(' expr ')' stmt else { $$ = process_if_stmt($3, $5, $6, yylineno); }
      | WHILE '(' expr ')' stmt   { $$ = process_while_stmt($3, $5, yylineno); }
      | '{' stmts '}'             { $$ = $2.head; }
      | ';'                       { $$ = NULL; }
+     ;
+
+
+/*---------------------------------------------------------------------------*/
+assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
      ;
 
 /*---------------------------------------------------------------------------*/

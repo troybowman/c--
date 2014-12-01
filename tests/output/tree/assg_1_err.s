@@ -8,5 +8,6 @@ syntax error, line: 18
 syntax error, line: 20
 syntax error, line: 22
 syntax error, line: 23
+error: invalid operand types for assignment, line 25
 syntax error, line: 25
 # c-- exited with code: 4
