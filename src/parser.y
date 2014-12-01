@@ -643,7 +643,6 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
 //-----------------------------------------------------------------------------
 static seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type)
 {
-  ASSERT(1028, cur != NULL);
   ASSERT(1029, is_seq_type(type));
 
   treenode_t *to_app = new treenode_t(type, cur, NULL);
