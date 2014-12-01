@@ -34,7 +34,7 @@ enum treenode_type_t
 #define AL_OFFSET  0
   TNT_FOR,
 #define FOR_INIT   0
-#define FOR_CHECK  1
+#define FOR_COND   1
 #define FOR_INC    2
 #define FOR_BODY   3
   TNT_STMT,

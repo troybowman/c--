@@ -163,7 +163,7 @@ static const char *child2str(treenode_type_t type, int child)
       return "AL_OFFSET";
     case TNT_FOR:
       return child == FOR_INIT  ? "FOR_INIT"
-           : child == FOR_CHECK ? "FOR_COND"
+           : child == FOR_COND  ? "FOR_COND"
            : child == FOR_INC   ? "FOR_INC"
            :                      "FOR_BODY";
     case TNT_STMT:
