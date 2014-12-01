@@ -57,6 +57,7 @@
   static treenode_t *process_if_stmt(treenode_t *, treenode_t *, treenode_t *, int);
   static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
   static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
+  static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
 
   //---------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -98,6 +99,8 @@
 %left AND
 %left EQ NEQ
 %left '<' LEQ '>' GEQ
+%left '-' '+'
+%left '/' '*'
 %right UNARY
 
 %start prog
@@ -366,19 +369,66 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
      | STRING               { $$ = new treenode_t(TNT_STRCON, $1); }
      | call                 { $$ = process_call_ctx($1, yylineno, true); }
      | stmt_var             { $$ = $1; }
-     | expr EQ  expr        { $$ = process_bool_expr($1, TNT_EQ,  $3, yylineno); }
-     | expr NEQ expr        { $$ = process_bool_expr($1, TNT_NEQ, $3, yylineno); }
-     | expr '<' expr        { $$ = process_bool_expr($1, TNT_LT,  $3, yylineno); }
-     | expr LEQ expr        { $$ = process_bool_expr($1, TNT_LEQ, $3, yylineno); }
-     | expr '>' expr        { $$ = process_bool_expr($1, TNT_GT,  $3, yylineno); }
-     | expr GEQ expr        { $$ = process_bool_expr($1, TNT_GEQ, $3, yylineno); }
-     | expr AND expr        { $$ = process_bool_expr($1, TNT_AND, $3, yylineno); }
-     | expr OR  expr        { $$ = process_bool_expr($1, TNT_OR,  $3, yylineno); }
+     | expr EQ  expr        { $$ = process_bool_expr($1, TNT_EQ,    $3, yylineno); }
+     | expr NEQ expr        { $$ = process_bool_expr($1, TNT_NEQ,   $3, yylineno); }
+     | expr '<' expr        { $$ = process_bool_expr($1, TNT_LT,    $3, yylineno); }
+     | expr LEQ expr        { $$ = process_bool_expr($1, TNT_LEQ,   $3, yylineno); }
+     | expr '>' expr        { $$ = process_bool_expr($1, TNT_GT,    $3, yylineno); }
+     | expr GEQ expr        { $$ = process_bool_expr($1, TNT_GEQ,   $3, yylineno); }
+     | expr AND expr        { $$ = process_bool_expr($1, TNT_AND,   $3, yylineno); }
+     | expr OR  expr        { $$ = process_bool_expr($1, TNT_OR,    $3, yylineno); }
+     | expr '+' expr        { $$ = process_math_expr($1, TNT_PLUS,  $3, yylineno); }
+     | expr '-' expr        { $$ = process_math_expr($1, TNT_MINUS, $3, yylineno); }
+     | expr '*' expr        { $$ = process_math_expr($1, TNT_MULT,  $3, yylineno); }
+     | expr '/' expr        { $$ = process_math_expr($1, TNT_DIV,   $3, yylineno); }
      | '!' expr %prec UNARY { $$ = process_bool_expr(NULL, TNT_NOT, $2, yylineno); }
+     | '-' expr %prec UNARY { $$ = process_math_expr(NULL, TNT_NEG, $2, yylineno); }
      | '(' expr ')'         { $$ = $2; }
      ;
 
 %%
+
+//-----------------------------------------------------------------------------
+static bool validate_math_expr(
+    const treenode_t *lhs,
+    treenode_type_t type,
+    const treenode_t *rhs)
+{
+  ASSERT(0, rhs != NULL);
+
+  switch ( type )
+  {
+    case TNT_NEG:
+      ASSERT(0, lhs == NULL);
+      return rhs->is_int_compat();
+    case TNT_PLUS:
+    case TNT_MINUS:
+    case TNT_MULT:
+    case TNT_DIV:
+      ASSERT(0, lhs != NULL);
+      return lhs->is_int_compat()
+          && rhs->is_int_compat();
+    default:
+      INTERR(0);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_math_expr(
+    treenode_t *lhs,
+    treenode_type_t type,
+    treenode_t *rhs,
+    int line)
+{
+  if ( !validate_math_expr(lhs, type, rhs) )
+  {
+    usererr("error: incompatible arithmetic operand, line %d\n", line);
+    delete lhs; delete rhs;
+    return ERRNODE;
+  }
+
+  return new treenode_t(type, lhs, rhs);
+}
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_for_stmt(
