@@ -41,21 +41,22 @@
   // use a temporary symbol table to validate parameter declarations
   static inline void param_on() { ctx.setlocal(new symtab_t()); }
   static inline void param_off() { ctx.trash(); }
-  static void f_enter(symbol_t *f, return_type_t rt); // initialize func def
-  static void f_leave(symbol_t *f, treenode_t *tree);
-  static seq_t &seq_append(seq_t &seq, const treenode_t *app, treenode_type_t type);
-  static       void  process_var_list(symlist_t *list, primitive_t type);
-  static       void  process_func_list(symlist_t *list, return_type_t rt, bool is_extern);
-  static   symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx);
-  static   symbol_t *process_stmt_id(const char *id, int line);
-  static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int line);
-  static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line);
-  static treenode_t *process_call(const symbol_t *sym, treenode_t *args, int line);
-  static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr);
-  static treenode_t *process_ret_stmt(treenode_t *expr, int line);
-  static treenode_t *process_bool_expr(treenode_t *lhs, treenode_type_t type, treenode_t *rhs, int line);
-  static treenode_t *process_if_stmt(treenode_t *cond, treenode_t *body, treenode_t *el, int line);
-  static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line);
+  static void f_enter(symbol_t *, return_type_t); // initialize func def
+  static void f_leave(symbol_t *, treenode_t *);
+  static seq_t &seq_append(seq_t &, const treenode_t *, treenode_type_t);
+  static       void  process_var_list(symlist_t *, primitive_t);
+  static       void  process_func_list(symlist_t *, return_type_t, bool);
+  static   symbol_t *process_var_decl(const char *, int, array_sfx_t);
+  static   symbol_t *process_stmt_id(const char *, int);
+  static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
+  static treenode_t *process_assg(treenode_t *, treenode_t *, int);
+  static treenode_t *process_call(const symbol_t *, treenode_t *, int);
+  static treenode_t *process_call_ctx(treenode_t *, int, bool);
+  static treenode_t *process_ret_stmt(treenode_t *, int line);
+  static treenode_t *process_bool_expr(treenode_t *, treenode_type_t, treenode_t *, int);
+  static treenode_t *process_if_stmt(treenode_t *, treenode_t *, treenode_t *, int);
+  static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
+  static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *);
 
   //---------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -88,7 +89,8 @@
 %type<sym>      var_decl func_decl param_decl
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list
 %type<paramvec> params param_decl_list
-%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args ret_expr else assg
+%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call
+%type<tree>     args op_expr else assg
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
 
@@ -281,9 +283,11 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
 /*---------------------------------------------------------------------------*/
 stmt : assg ';'                  { $$ = $1; }
      | call ';'                  { $$ = process_call_ctx($1, yylineno, false); }
-     | RETURN ret_expr ';'       { $$ = process_ret_stmt($2, yylineno); }
+     | RETURN op_expr ';'        { $$ = process_ret_stmt($2, yylineno); }
      | IF '(' expr ')' stmt else { $$ = process_if_stmt($3, $5, $6, yylineno); }
      | WHILE '(' expr ')' stmt   { $$ = process_while_stmt($3, $5, yylineno); }
+     | FOR '(' assg ';' op_expr ';' assg ')' stmt
+                                 { $$ = process_for_stmt($3, $5, $7, $9); }
      | '{' stmts '}'             { $$ = $2.head; }
      | ';'                       { $$ = NULL; }
      ;
@@ -294,13 +298,14 @@ assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
-else : ELSE stmt   { $$ = $2; }
-     | /* empty */ { $$ = NULL; }
+else : ELSE stmt       { $$ = $2; }
+     | /* empty */     { $$ = NULL; }
      ;
 
 /*---------------------------------------------------------------------------*/
-ret_expr : expr        { $$ = $1; }
-         | /* empty */ { $$ = NULL; }
+op_expr : expr        { $$ = $1; }
+        | /* empty */ { $$ = NULL; }
+        ;
 
 /*---------------------------------------------------------------------------*/
 call : ID '(' args ')'
@@ -369,6 +374,16 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
      ;
 
 %%
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_for_stmt(
+    treenode_t *init,
+    treenode_t *cond,
+    treenode_t *inc,
+    treenode_t *body)
+{
+  return NULL;
+}
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line)

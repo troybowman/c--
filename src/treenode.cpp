@@ -64,7 +64,7 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       break;
     case TNT_FOR:
       children[FOR_INIT]  = va_arg(va, treenode_t *);
-      children[FOR_CHECK] = va_arg(va, treenode_t *);
+      children[FOR_COND]  = va_arg(va, treenode_t *);
       children[FOR_INC]   = va_arg(va, treenode_t *);
       children[FOR_BODY]  = va_arg(va, treenode_t *);
       break;
