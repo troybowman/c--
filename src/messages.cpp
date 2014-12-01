@@ -130,6 +130,7 @@ static const char *tnt2str(treenode_type_t tnt)
     case TNT_IF:           return "TNT_IF";
     case TNT_NOT:          return "TNT_NOT";
     case TNT_NEG:          return "TNT_NEG";
+    case TNT_WHILE:        return "TNT_WHILE";
     default:
       INTERR(1030);
   }
@@ -173,13 +174,16 @@ static const char *child2str(treenode_type_t type, int child)
       ASSERT(1034, child == CALL_ARGS);
       return "CALL_ARGS";
     case TNT_RET:
-      ASSERT(1035, child == RET_EXPR);
+      ASSERT(1036, child == RET_EXPR);
       return "RET_EXPR";
     case TNT_IF:
       ASSERT(0, child != 3);
       return child == IF_COND ? "IF_COND"
            : child == IF_BODY ? "IF_BODY"
            :                    "IF_ELSE";
+    case TNT_WHILE:
+      ASSERT(0, child == WHILE_COND || child == WHILE_BODY);
+      return child == WHILE_COND ? "WHILE_COND" : "WHILE_BODY";
     default:
       INTERR(1035);
   }

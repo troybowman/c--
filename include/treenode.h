@@ -31,24 +31,27 @@ enum treenode_type_t
 #define LHS 0
 #define RHS 1
   TNT_ARRAY_LOOKUP,
-#define AL_OFFSET 0
+#define AL_OFFSET  0
   TNT_FOR,
-#define FOR_INIT  0
-#define FOR_CHECK 1
-#define FOR_INC   2
-#define FOR_BODY  3
+#define FOR_INIT   0
+#define FOR_CHECK  1
+#define FOR_INC    2
+#define FOR_BODY   3
   TNT_STMT,
   TNT_ARG,
-#define SEQ_CUR   0
-#define SEQ_NEXT  1
+#define SEQ_CUR    0
+#define SEQ_NEXT   1
   TNT_CALL,
-#define CALL_ARGS 0
+#define CALL_ARGS  0
   TNT_RET,
-#define RET_EXPR  0
+#define RET_EXPR   0
   TNT_IF,
-#define IF_COND   0
-#define IF_BODY   1
-#define IF_ELSE   2
+#define IF_COND    0
+#define IF_BODY    1
+#define IF_ELSE    2
+  TNT_WHILE,
+#define WHILE_COND 0
+#define WHILE_BODY 1
 };
 
 //-----------------------------------------------------------------------------

@@ -88,6 +88,11 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       children[IF_ELSE]   = va_arg(va, treenode_t *);
       ASSERT(1051, children[IF_COND] != NULL);
       break;
+    case TNT_WHILE:
+      children[WHILE_COND] = va_arg(va, treenode_t *);
+      children[WHILE_BODY] = va_arg(va, treenode_t *);
+      ASSERT(0, children[WHILE_COND] != NULL);
+      break;
     default:
       INTERR(1020);
   }

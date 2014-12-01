@@ -55,6 +55,7 @@
   static treenode_t *process_ret_stmt(treenode_t *expr, int line);
   static treenode_t *process_bool_expr(treenode_t *lhs, treenode_type_t type, treenode_t *rhs, int line);
   static treenode_t *process_if_stmt(treenode_t *cond, treenode_t *body, treenode_t *el, int line);
+  static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line);
 
   //---------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -282,6 +283,7 @@ stmt : stmt_var '=' expr ';'     { $$ = process_assg($1, $3, yylineno); }
      | call ';'                  { $$ = process_call_ctx($1, yylineno, false); }
      | RETURN ret_expr ';'       { $$ = process_ret_stmt($2, yylineno); }
      | IF '(' expr ')' stmt else { $$ = process_if_stmt($3, $5, $6, yylineno); }
+     | WHILE '(' expr ')' stmt   { $$ = process_while_stmt($3, $5, yylineno); }
      | '{' stmts '}'             { $$ = $2.head; }
      | ';'                       { $$ = NULL; }
      ;
@@ -362,6 +364,21 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
      ;
 
 %%
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line)
+{
+  ASSERT(0, cond != NULL);
+
+  if ( !cond->is_bool_compat() )
+  {
+    usererr("error: expression in while condition is not of type bool, line %d\n", line);
+    if ( body != NULL ) delete body;
+    delete cond;
+    return ERRNODE;
+  }
+  return new treenode_t(TNT_WHILE, cond, body);
+}
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_if_stmt(
