@@ -5,10 +5,8 @@
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(const char *_name, int _line, symbol_type_t _type, ...)
-  : off(0), line(_line), type(_type)
+  : name(_name), line(_line), type(_type)
 {
-  name.assign(_name);
-
   va_list va;
   va_start(va, _type);
   switch ( _type )
@@ -29,8 +27,7 @@ symbol_t::symbol_t(const char *_name, int _line, symbol_type_t _type, ...)
       func.defined     = va_arg(va, bool);
       break;
     default:
-      type = ST_UNKNOWN;
-      break;
+      INTERR(0);
   }
   va_end(va);
 }
