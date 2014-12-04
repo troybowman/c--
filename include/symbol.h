@@ -43,26 +43,27 @@ enum symloc_type_t
 //-----------------------------------------------------------------------------
 class symloc_t
 {
-  symloc_type_t type;
+  symloc_type_t _type;
   union
   {
-    int off;
-    const char *regname;
+    int _off;
+    const char *_reg;
   };
 
 public:
-  symloc_t() : type(SLT_UNKNOWN) {}
+  symloc_t() : _type(SLT_UNKNOWN) {}
 
-  bool is_stkoff() const { return type == SLT_STACK;  }
-  bool is_reg()    const { return type == SLT_REG; }
-  bool is_global() const { return type == SLT_GLOBAL; }
+  bool is_stkoff() const { return _type == SLT_STACK;  }
+  bool is_reg()    const { return _type == SLT_REG; }
+  bool is_global() const { return _type == SLT_GLOBAL; }
 
-  void set_stkoff(int _off)          { type = SLT_STACK; off = _off; }
-  void set_reg(const char *_regname) { type = SLT_REG;   regname = _regname; }
-  void set_global()                  { type = SLT_GLOBAL; }
+  void set_stkoff(int off)      { _type = SLT_STACK; _off = off; }
+  void set_reg(const char *reg) { _type = SLT_REG;   _reg = reg; }
+  void set_global()             { _type = SLT_GLOBAL; }
 
-  int stkoff()      const { return off;  }
-  const char *reg() const { return regname; }
+  symloc_type_t type() const { return _type; }
+  int stkoff()         const { return _off;  }
+  const char *reg()    const { return _reg;  }
 };
 
 //-----------------------------------------------------------------------------
