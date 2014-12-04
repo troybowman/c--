@@ -223,10 +223,10 @@ param_decl : type ID param_array_sfx
                symbol_t *sym = process_var_decl($2, yylineno, $3);
                if ( sym != NULL )
                {
-                 if ( sym->type == ST_PRIMITIVE )
-                   sym->prim = $1;
+                 if ( sym->is_prim() )
+                   sym->set_prim($1);
                  else
-                   sym->array.type = $1;
+                   sym->set_base($1);
                }
                $$ = sym;
                free($2);
@@ -607,7 +607,7 @@ struct call_res_t
 static bool check_arg(const symbol_t &param, const treenode_t &expr)
 {
   bool ok = false;
-  switch ( param.type )
+  switch ( param.type() )
   {
     case ST_PRIMITIVE:
       ok = expr.is_int_compat();
@@ -615,13 +615,12 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
     case ST_ARRAY:
       if ( expr.type == TNT_STRCON )
       {
-        ok = param.array.type == PRIM_CHAR;
+        ok = param.base() == PRIM_CHAR;
       }
       else if ( expr.type == TNT_SYMBOL )
       {
         const symbol_t *sym = expr.sym;
-        ok = sym->type == ST_ARRAY
-          && sym->array.type == param.array.type;
+        ok = sym->is_array() && sym->base() == param.base();
       }
       break;
     default:
@@ -633,12 +632,10 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
 //-----------------------------------------------------------------------------
 static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
 {
-  if ( f.type != ST_FUNCTION )
+  if ( !f.is_func() )
     return call_res_t(CALL_NOFUNC);
 
-  paramvec_t *params = f.func.params;
-
-  int nparams = params->size();
+  int nparams = f.params()->size();
   int nargs = args == NULL ? 0 : args->val;
 
   if ( nargs != nparams )
@@ -647,7 +644,7 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
   const treenode_t *curarg = args;
   for ( int i = 0; i < nparams; i++ )
   {
-    if ( !check_arg(*params->at(i), *curarg->children[SEQ_CUR]) )
+    if ( !check_arg(*f.params()->at(i), *curarg->children[SEQ_CUR]) )
       return call_res_t(CALL_BADARG, i+1);
 
     curarg = curarg->children[SEQ_NEXT];
@@ -669,15 +666,15 @@ static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
     {
       case CALL_NUMARGS:
         usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
-                f->func.params->size(), f->name.c_str(), res.info, line);
+                f->params()->size(), f->c_str(), res.info, line);
         break;
       case CALL_BADARG:
         usererr("error: argument %d to function %s is of incompatible type, line %d\n",
-                res.info, f->name.c_str(), line);
+                res.info, f->c_str(), line);
         break;
       case CALL_NOFUNC:
         usererr("error: symbol %s used a function but is not of function type, line %d\n",
-                f->name.c_str(), line);
+                f->c_str(), line);
         break;
       default:
         INTERR(1032);
@@ -705,7 +702,7 @@ static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
 
   ASSERT(1043, call.type == TNT_CALL);
 
-  return_type_t rt = call.sym->func.rt_type;
+  return_type_t rt = call.sym->rt();
   if ( expr )
     return rt == RT_VOID ? CCTX_EXPR : CCTX_OK;
   else
@@ -726,12 +723,12 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
       case CCTX_EXPR:
         usererr("error: line %d - function %s called as part of an expression "
                 "but does not return a value\n",
-                line, call->sym->name.c_str());
+                line, call->sym->c_str());
         break;
       case CCTX_STMT:
         usererr("error: line %d - function %s called as a standalone statement "
                 "but does not have return type void\n",
-                line, call->sym->name.c_str());
+                line, call->sym->c_str());
         break;
       default:
         INTERR(1033);
@@ -790,7 +787,7 @@ enum lookup_res_t
 //-----------------------------------------------------------------------------
 static inline lookup_res_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
 {
-  return sym.type != ST_ARRAY ? AL_ERR_BASE
+  return !sym.is_array()      ? AL_ERR_BASE
        : !idx.is_int_compat() ? AL_ERR_IDX
        : AL_OK;
 }
@@ -811,7 +808,7 @@ static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int li
     {
       case AL_ERR_BASE:
         usererr("error: symbol %s used as an array but is not of array type, line %d\n",
-                sym->name.c_str(), line);
+                sym->c_str(), line);
         break;
       case AL_ERR_IDX:
         usererr("error: expression for array index is not of integer type, line %d\n", line);
@@ -832,7 +829,7 @@ static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
   if ( lhs.type == TNT_ERROR || rhs.type == TNT_ERROR )
     return true;
 
-  bool lhs_valid = (lhs.type == TNT_SYMBOL && lhs.sym->type == ST_PRIMITIVE)
+  bool lhs_valid = (lhs.type == TNT_SYMBOL && lhs.sym->is_prim())
                  || lhs.type == TNT_ARRAY_LOOKUP;
 
   return lhs_valid ? rhs.is_int_compat() : false;
@@ -864,7 +861,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
   if ( prev != NULL )
   {
     usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
-            prev->name.c_str(), yylineno, prev->line);
+            prev->c_str(), yylineno, prev->line());
     return NULL;
   }
 
@@ -887,14 +884,14 @@ static bool check_params(const paramvec_t &p1, const paramvec_t &p2)
     symbol_t *s1 = p1[i];
     symbol_t *s2 = p2[i];
 
-    switch ( s1->type )
+    switch ( s1->type() )
     {
       case ST_PRIMITIVE:
-        if ( s2->type != ST_PRIMITIVE || s2->prim != s1->prim )
+        if ( !s2->is_prim() || s2->prim() != s1->prim() )
           return false;
         break;
       case ST_ARRAY:
-        if ( s2->type != ST_ARRAY || s2->array.type != s1->array.type )
+        if ( !s2->is_array() || s2->base() != s1->base() )
           return false;
         break;
       default:
@@ -918,30 +915,27 @@ enum col_res_t
 //-----------------------------------------------------------------------------
 static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
 {
-  ASSERT(1001, prev.name == sym.name);
+  ASSERT(1001, prev.name() == sym.name());
 
-  return prev.type != ST_FUNCTION                           ? COL_REDECL
-       : prev.func.is_extern                                ? COL_EXT
-       : prev.func.defined                                  ? COL_REDEF
-       : !check_params(*prev.func.params, *sym.func.params) ? COL_PARAMS
-       : prev.func.rt_type != sym.func.rt_type              ? COL_RET
-       : COL_OK;
+  return !prev.is_func()                              ? COL_REDECL
+       :  prev.is_extern()                            ? COL_EXT
+       :  prev.defined()                              ? COL_REDEF
+       : !check_params(*prev.params(), *sym.params()) ? COL_PARAMS
+       :  prev.rt() != sym.rt()                       ? COL_RET
+       :  COL_OK;
 }
 
 //-----------------------------------------------------------------------------
 static void init_lsyms(symbol_t &f)
 {
-  f.func.symbols = new symtab_t();
+  f.set_symbols(new symtab_t());
 
-  symtab_t *syms = f.func.symbols;
-  paramvec_t *params = f.func.params;
-
-  int size = params->size();
+  int size = f.params()->size();
   for ( int i = 0; i < size; i++ )
   {
-    symbol_t *p = params->at(i);
-    ASSERT(1003, syms->get(p->name) == NULL);
-    syms->insert(p);
+    symbol_t *p = f.params()->at(i);
+    ASSERT(1003, f.symbols()->get(p->name()) == NULL);
+    f.symbols()->insert(p);
   }
 }
 
@@ -953,27 +947,27 @@ static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &pr
     case COL_REDEF:
       usererr("error: function %s redefined at line %d "
               "(previous definition starts at line %d)\n",
-              f.name.c_str(), f.line, prev.line);
+              f.c_str(), f.line(), prev.line());
       break;
     case COL_REDECL:
       usererr("error: symbol %s redeclared as a function at line %d "
               "(previous declaration at line %d)\n",
-              f.name.c_str(), f.line, prev.line);
+              f.c_str(), f.line(), prev.line());
       break;
     case COL_PARAMS:
       usererr("error: parameters in definition of function %s at line %d "
               "do not match the parameters in its declaration at line %d\n",
-              f.name.c_str(), f.line, prev.line);
+              f.c_str(), f.line(), prev.line());
       break;
     case COL_RET:
       usererr("error: return type for function %s at line %d "
               "does not match the return type in its declaration at line %d\n",
-              f.name.c_str(), f.line, prev.line);
+              f.c_str(), f.line(), prev.line());
       break;
     case COL_EXT:
       usererr("error: function %s is defined at line %d "
               "but is declared extern at line %d\n",
-              f.name.c_str(), f.line, prev.line);
+              f.c_str(), f.line(), prev.line());
       break;
     default:
       INTERR(1012);
@@ -984,11 +978,11 @@ static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &pr
 static void f_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
-  ASSERT(1000, f->type == ST_FUNCTION);
+  ASSERT(1000, f->is_func());
 
-  f->func.rt_type = rt;
+  f->set_rt(rt);
 
-  symbol_t *prev = ctx.syms->get(f->name);
+  symbol_t *prev = ctx.syms->get(f->name());
   if ( prev != NULL )
   {
     col_res_t res = validate_collision(*prev, *f);
@@ -1006,7 +1000,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
   init_lsyms(*f);
   ctx.syms->insert(f);
 
-  ctx.setlocal(f->func.symbols, f->func.rt_type);
+  ctx.setlocal(f->symbols(), f->rt());
 }
 
 //-----------------------------------------------------------------------------
@@ -1014,11 +1008,11 @@ static void f_leave(symbol_t *f, treenode_t *tree)
 {
   ASSERT(1005, f != NULL);
 
-  f->func.syntax_tree = tree;
-  f->func.defined = true;
+  f->set_tree(tree);
+  f->set_defined();
 
   if ( !ctx.ret_resolved )
-    usererr("error: non-void funcion %s must return a value\n", f->name.c_str());
+    usererr("error: non-void funcion %s must return a value\n", f->c_str());
 
   functions.push_back(f);
 
@@ -1035,13 +1029,13 @@ static void process_var_list(symlist_t *list, primitive_t prim)
   {
     ASSERT(1008, *i != NULL);
     symbol_t *sym = *i;
-    switch ( sym->type )
+    switch ( sym->type() )
     {
       case ST_PRIMITIVE:
-        sym->prim = prim;
+        sym->set_prim(prim);
         break;
       case ST_ARRAY:
-        sym->array.type = prim;
+        sym->set_base(prim);
         break;
       default:
         INTERR(1022);
@@ -1061,17 +1055,17 @@ static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_ex
     ASSERT(1011, *i != NULL);
 
     symbol_t *sym = *i;
-    symbol_t *prev = ctx.syms->get(sym->name);
+    symbol_t *prev = ctx.syms->get(sym->name());
     if ( prev != NULL )
     {
       usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
-              sym->name.c_str(), sym->line, prev->line);
+              sym->c_str(), sym->line(), prev->line());
       delete sym;
       continue;
     }
 
-    sym->func.rt_type = rt_type;
-    sym->func.is_extern = is_extern;
+    sym->set_rt(rt_type);
+    sym->set_extern(is_extern);
     ctx.syms->insert(sym);
   }
 }

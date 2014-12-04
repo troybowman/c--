@@ -1,7 +1,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
-struct symbol_t;
+class symbol_t;
 struct treenode_t;
 
 //-----------------------------------------------------------------------------

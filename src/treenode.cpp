@@ -76,8 +76,8 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
     case TNT_CALL:
       sym                 = va_arg(va, symbol_t *);
       children[CALL_ARGS] = va_arg(va, treenode_t *);
-      ASSERT(1023, sym       != NULL);
-      ASSERT(1038, sym->type == ST_FUNCTION);
+      ASSERT(1023, sym != NULL);
+      ASSERT(1038, sym->is_func());
       break;
     case TNT_RET:
       children[RET_EXPR]  = va_arg(va, treenode_t *);
@@ -125,9 +125,9 @@ bool treenode_t::is_int_compat() const
     case TNT_CHARCON:
       return true;
     case TNT_SYMBOL:
-      return sym->type == ST_PRIMITIVE;
+      return sym->is_prim();
     case TNT_CALL:
-      return sym->func.rt_type != RT_VOID;
+      return sym->rt() != RT_VOID;
     default:
       return false;
   }

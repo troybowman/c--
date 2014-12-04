@@ -199,46 +199,46 @@ void print_syms(const symtab_t &syms)
   {
     int indent = 0;
     const symbol_t *s = i->second;
-    cmtout(indent, "sym: %s\n", s->name.c_str());
-    cmtout(++indent, "line: %d\n", s->line);
+    cmtout(indent, "sym: %s\n", s->c_str());
+    cmtout(++indent, "line: %d\n", s->line());
 
     cmtout(indent, "type: ");
-    switch ( s->type )
+    switch ( s->type() )
     {
       case ST_PRIMITIVE:
         fprintf(stdout,  "ST_PRIMITIVE\n");
-        cmtout(++indent, "base: %s\n", prim2str(s->prim));
+        cmtout(++indent, "base: %s\n", prim2str(s->prim()));
         break;
       case ST_ARRAY:
         fprintf(stdout,  "ST_ARRAY\n");
-        cmtout(++indent, "base: %s\n", prim2str(s->array.type));
-        cmtout(indent,   "size: 0x%x\n", s->array.size);
+        cmtout(++indent, "base: %s\n", prim2str(s->base()));
+        cmtout(indent,   "size: 0x%x\n", s->size());
         break;
       case ST_FUNCTION:
         fprintf(stdout,  "ST_FUNCTION\n");
-        cmtout(++indent, "rt_type: %s\n", rt2str(s->func.rt_type));
+        cmtout(++indent, "rt_type: %s\n", rt2str(s->rt()));
         cmtout(indent,   "params:\n");
-        if ( s->func.params->size() < 1 )
+        if ( s->params()->size() < 1 )
           cmtout(indent+1, "none\n");
         else
         {
-          paramvec_t *params = s->func.params;
+          paramvec_t *params = s->params();
           int size = params->size();
           for ( int i = 0; i < size; i++ )
           {
             symbol_t *p = params->at(i);
             int pindent = indent+1;
-            cmtout(pindent, "%d: %s\n", i, p->name.c_str());
+            cmtout(pindent, "%d: %s\n", i, p->c_str());
             cmtout(++pindent, "type: ");
-            switch ( p->type )
+            switch ( p->type() )
             {
               case ST_PRIMITIVE:
                 fprintf(stdout, "ST_PRIMITIVE\n");
-                cmtout(++pindent, "base: %s\n", prim2str(p->prim));
+                cmtout(++pindent, "base: %s\n", prim2str(p->prim()));
                 break;
               case ST_ARRAY:
                 fprintf(stdout, "ST_ARRAY\n");
-                cmtout(++pindent, "base: %s\n", prim2str(p->array.type));
+                cmtout(++pindent, "base: %s\n", prim2str(p->base()));
                 break;
               default:
                 fprintf(stdout, "ST_UNKNOWN\n");
@@ -246,7 +246,7 @@ void print_syms(const symtab_t &syms)
             }
           }
         }
-        cmtout(indent, "is_extern: %s\n", s->func.is_extern ? "yes" : "no");
+        cmtout(indent, "is_extern: %s\n", s->is_extern() ? "yes" : "no");
         break;
       default:
         fprintf(stdout, "ST_UNKNOWN\n");
@@ -283,7 +283,7 @@ void print_tree(const treenode_t *node, int *cnt)
     case TNT_SYMBOL:
     case TNT_ARRAY_LOOKUP:
     case TNT_CALL:
-      fprintf(stdout, " sym: %s", node->sym->name.c_str());
+      fprintf(stdout, " sym: %s", node->sym->c_str());
       break;
     default:
       break;
@@ -307,17 +307,17 @@ void walk_funcs(dbg_flags_t flags)
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     symbol_t *f = *i;
-    ASSERT(1012, f->type == ST_FUNCTION);
+    ASSERT(1012, f->is_func());
     if ( (flags & dbg_lsyms) != 0 )
     {
-      fprintf(stdout, header, "LOCAL SYMBOLS FOR FUNCTION: ", f->name.c_str());
-      print_syms(*f->func.symbols);
+      fprintf(stdout, header, "LOCAL SYMBOLS FOR FUNCTION: ", f->c_str());
+      print_syms(*f->symbols());
     }
     if ( (flags & dbg_tree) != 0 )
     {
       int cnt = 0;
-      fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->name.c_str());
-      print_tree(f->func.syntax_tree, &cnt);
+      fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->c_str());
+      print_tree(f->tree(), &cnt);
     }
   }
 }

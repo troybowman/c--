@@ -8,10 +8,10 @@
 
 #include <messages.h>
 
-struct symbol_t;
 struct function_t;
 struct array_t;
 struct treenode_t;
+class symbol_t;
 class symtab_t;
 class symloc_t;
 
@@ -104,29 +104,64 @@ struct function_t
 };
 
 //-----------------------------------------------------------------------------
-struct symbol_t
+class symbol_t
 {
-  std::string name;
-  int line;  // src line
-  symloc_t loc;
+  std::string _name;
+  int _line;
+  symloc_t _loc;
 
-  symbol_type_t type;
+  symbol_type_t _type;
   union
   {
-    const char *str;
-    primitive_t prim;
-    array_t array;
-    function_t func;
+    const char  *_str;
+    primitive_t _prim;
+    array_t    _array;
+    function_t  _func;
   };
 
+public:
   symbol_t(const char *, int, symbol_type_t, ...);
 
-  symbol_t(const char * _name, const char *_str)
-    : name(_name), type(ST_STRCON) { str = _str; }
+  symbol_t(const char * name, const char *str)
+    : _name(name), _type(ST_STRCON) { _str = str; }
 
-  symbol_t() : type(ST_TEMPORARY) {}
+  symbol_t() : _type(ST_TEMPORARY) {}
 
   ~symbol_t();
+
+  bool is_prim()       const { return _type == ST_PRIMITIVE; }
+  bool is_array()      const { return _type == ST_ARRAY; }
+  bool is_func()       const { return _type == ST_FUNCTION; }
+  bool is_strcon()     const { return _type == ST_STRCON; }
+  bool is_temp()       const { return _type == ST_TEMPORARY; }
+
+  primitive_t prim()   const { return _prim; }
+
+  primitive_t base()   const { return _array.type; }
+  asize_t size()       const { return _array.size; }
+
+  return_type_t rt()   const { return _func.rt_type; }
+  paramvec_t *params() const { return _func.params; }
+  symtab_t *symbols()  const { return _func.symbols; }
+  treenode_t *tree()   const { return _func.syntax_tree; }
+  bool is_extern()     const { return _func.is_extern; }
+  bool defined()       const { return _func.defined; }
+  const char *c_str()  const { return _name.c_str(); }
+
+  std::string name()   const { return _name; }
+  int line()           const { return _line; }
+  symbol_type_t type() const { return _type; }
+
+  void set_prim(primitive_t prim) { _prim = prim; }
+
+  void set_base(primitive_t base)  { _array.type = base; }
+  void set_size(asize_t size)      { _array.size = size; }
+
+  void set_rt(return_type_t rt)    { _func.rt_type = rt; }
+  void set_symbols(symtab_t *syms) { _func.symbols = syms; }
+  void set_tree(treenode_t *tree)  { _func.syntax_tree = tree; }
+  void set_extern(bool is_extern = true) { _func.is_extern = is_extern; }
+  void set_defined(bool defined = true)  { _func.defined = defined; }
 };
 
 //-----------------------------------------------------------------------------
@@ -146,7 +181,7 @@ public:
   void insert(symbol_t *value)
   {
     ASSERT(1013, value != NULL);
-    map[value->name] = value;
+    map[value->name()] = value;
   }
 
   typedef smap_t::iterator iterator;
