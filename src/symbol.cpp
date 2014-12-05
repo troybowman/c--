@@ -12,19 +12,21 @@ symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
   switch ( _type )
   {
     case ST_PRIMITIVE:
-      _prim = va_arg(va, primitive_t);
+      _prim = PRIM_UNKNOWN;
       break;
     case ST_ARRAY:
-      _array.type = va_arg(va, primitive_t);
+      _array.type = PRIM_UNKNOWN;
       _array.size = va_arg(va, asize_t);
       break;
     case ST_FUNCTION:
-      _func.rt_type     = va_arg(va, return_type_t);
+      _func.rt_type     = RT_UNKNOWN;
+      _func.symbols     = NULL;
+      _func.syntax_tree = NULL;
+      _func.code        = NULL;
+      _func.is_extern   = false;
+      _func.defined     = false;
+      _func.max_temps   = 0;
       _func.params      = va_arg(va, paramvec_t *);
-      _func.symbols     = va_arg(va, symtab_t *);
-      _func.syntax_tree = va_arg(va, treenode_t *);
-      _func.is_extern   = va_arg(va, bool);
-      _func.defined     = va_arg(va, bool);
       break;
     default:
       INTERR(0);

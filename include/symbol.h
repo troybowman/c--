@@ -11,6 +11,7 @@
 struct function_t;
 struct array_t;
 struct treenode_t;
+struct codenode_t;
 class symbol_t;
 class symtab_t;
 class symloc_t;
@@ -30,7 +31,8 @@ enum symbol_type_t
   ST_TEMPORARY,
   ST_STRCON,
   ST_LABEL,
-  ST_IMMEDIATE
+  ST_IMMEDIATE,
+  ST_ANONYMOUS,
 };
 
 //-----------------------------------------------------------------------------
@@ -102,6 +104,8 @@ struct function_t
   paramvec_t *params;
   symtab_t *symbols;
   treenode_t *syntax_tree;
+  codenode_t *code;
+  int max_temps;
   bool is_extern;
   bool defined;
 };
@@ -111,7 +115,6 @@ class symbol_t
 {
   std::string _name;
   int _line;
-  symloc_t _loc;
 
   symbol_type_t _type;
   union
@@ -124,16 +127,15 @@ class symbol_t
   };
 
 public:
+  symloc_t loc;
+
   symbol_t(const char *, int, symbol_type_t, ...);
 
-  symbol_t(const char * name, const char *str)
-    : _name(name), _type(ST_STRCON) { _str = str; }
+  symbol_t(const char *str) : _type(ST_STRCON) { _str = str; }
 
   symbol_t(int val) : _type(ST_IMMEDIATE) { _val = val; }
 
-  symbol_t(const char *lbl) : _name(lbl), _type(ST_LABEL) {}
-
-  symbol_t() : _type(ST_TEMPORARY) {}
+  symbol_t(symbol_type_t type) : _type(type) {}
 
   ~symbol_t();
 
@@ -163,6 +165,8 @@ public:
   treenode_t *tree()   const { return _func.syntax_tree; }
   bool is_extern()     const { return _func.is_extern; }
   bool defined()       const { return _func.defined; }
+
+  void set_name(const char *name) { _name.assign(name); }
 
   void set_prim(primitive_t prim) { _prim = prim; }
 
