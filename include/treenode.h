@@ -78,7 +78,7 @@ struct treenode_t
 #define ERRNODE new treenode_t(TNT_ERROR)
 
 //-----------------------------------------------------------------------------
-// helpes build linear sequences of related treenodes
+// helps build linear sequences of related treenodes
 // (like statements, argument lists, etc)
 struct seq_t
 {

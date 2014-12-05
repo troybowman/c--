@@ -29,7 +29,8 @@ enum symbol_type_t
   ST_FUNCTION,
   ST_TEMPORARY,
   ST_STRCON,
-  ST_LABEL
+  ST_LABEL,
+  ST_IMMEDIATE
 };
 
 //-----------------------------------------------------------------------------
@@ -115,6 +116,7 @@ class symbol_t
   symbol_type_t _type;
   union
   {
+    int _val;
     const char *_str;
     primitive_t _prim;
     array_t _array;
@@ -127,6 +129,8 @@ public:
   symbol_t(const char * name, const char *str)
     : _name(name), _type(ST_STRCON) { _str = str; }
 
+  symbol_t(int val) : _type(ST_IMMEDIATE) { _val = val; }
+
   symbol_t(const char *lbl) : _name(lbl), _type(ST_LABEL) {}
 
   symbol_t() : _type(ST_TEMPORARY) {}
@@ -138,12 +142,15 @@ public:
   bool is_func()       const { return _type == ST_FUNCTION; }
   bool is_strcon()     const { return _type == ST_STRCON; }
   bool is_temp()       const { return _type == ST_TEMPORARY; }
+  bool is_label()      const { return _type == ST_LABEL; }
+  bool is_imm()        const { return _type == ST_IMMEDIATE; }
 
   std::string name()   const { return _name; }
   const char *c_str()  const { return _name.c_str(); }
-  const char *str()    const { return _str; }
   symbol_type_t type() const { return _type; }
   int line()           const { return _line; }
+  const char *str()    const { return _str; }
+  int val()            const { return _val; }
 
   primitive_t prim()   const { return _prim; }
 
