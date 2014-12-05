@@ -29,6 +29,7 @@ enum symbol_type_t
   ST_FUNCTION,
   ST_TEMPORARY,
   ST_STRCON,
+  ST_LABEL
 };
 
 //-----------------------------------------------------------------------------
@@ -114,10 +115,10 @@ class symbol_t
   symbol_type_t _type;
   union
   {
-    const char  *_str;
+    const char *_str;
     primitive_t _prim;
-    array_t    _array;
-    function_t  _func;
+    array_t _array;
+    function_t _func;
   };
 
 public:
@@ -125,6 +126,8 @@ public:
 
   symbol_t(const char * name, const char *str)
     : _name(name), _type(ST_STRCON) { _str = str; }
+
+  symbol_t(const char *lbl) : _name(lbl), _type(ST_LABEL) {}
 
   symbol_t() : _type(ST_TEMPORARY) {}
 
@@ -135,6 +138,12 @@ public:
   bool is_func()       const { return _type == ST_FUNCTION; }
   bool is_strcon()     const { return _type == ST_STRCON; }
   bool is_temp()       const { return _type == ST_TEMPORARY; }
+
+  std::string name()   const { return _name; }
+  const char *c_str()  const { return _name.c_str(); }
+  const char *str()    const { return _str; }
+  symbol_type_t type() const { return _type; }
+  int line()           const { return _line; }
 
   primitive_t prim()   const { return _prim; }
 
@@ -147,11 +156,6 @@ public:
   treenode_t *tree()   const { return _func.syntax_tree; }
   bool is_extern()     const { return _func.is_extern; }
   bool defined()       const { return _func.defined; }
-  const char *c_str()  const { return _name.c_str(); }
-
-  std::string name()   const { return _name; }
-  int line()           const { return _line; }
-  symbol_type_t type() const { return _type; }
 
   void set_prim(primitive_t prim) { _prim = prim; }
 
