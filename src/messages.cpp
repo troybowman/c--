@@ -241,16 +241,14 @@ void print_syms(const symtab_t &syms)
                 cmtout(++pindent, "base: %s\n", prim2str(p->base()));
                 break;
               default:
-                fprintf(stdout, "ST_UNKNOWN\n");
-                break;
+                INTERR(0);
             }
           }
         }
         cmtout(indent, "is_extern: %s\n", s->is_extern() ? "yes" : "no");
         break;
       default:
-        fprintf(stdout, "ST_UNKNOWN\n");
-        break;
+        INTERR(0);
     }
   }
 }

@@ -24,15 +24,16 @@ extern symlist_t functions;
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_UNKNOWN = -1,
   ST_PRIMITIVE,
   ST_ARRAY,
   ST_FUNCTION,
   ST_TEMPORARY,
+  ST_SAVED_TEMPORARY,
+  ST_IMMEDIATE_INT,
+  ST_IMMEDIATE_CHAR,
+  ST_ANONYMOUS,
   ST_STRCON,
   ST_LABEL,
-  ST_IMMEDIATE,
-  ST_ANONYMOUS,
 };
 
 //-----------------------------------------------------------------------------
@@ -105,7 +106,6 @@ struct function_t
   symtab_t *symbols;
   treenode_t *syntax_tree;
   codenode_t *code;
-  int max_temps;
   bool is_extern;
   bool defined;
 };
@@ -131,9 +131,9 @@ public:
 
   symbol_t(const char *, int, symbol_type_t, ...);
 
-  symbol_t(const char *str) : _type(ST_STRCON) { _str = str; }
+  symbol_t(int val) : _type(ST_IMMEDIATE_INT) { _val = val; }
 
-  symbol_t(int val) : _type(ST_IMMEDIATE) { _val = val; }
+  symbol_t(symbol_type_t type, const char *str) : _type(type) { _str = str; }
 
   symbol_t(symbol_type_t type) : _type(type) {}
 
@@ -142,10 +142,6 @@ public:
   bool is_prim()       const { return _type == ST_PRIMITIVE; }
   bool is_array()      const { return _type == ST_ARRAY; }
   bool is_func()       const { return _type == ST_FUNCTION; }
-  bool is_strcon()     const { return _type == ST_STRCON; }
-  bool is_temp()       const { return _type == ST_TEMPORARY; }
-  bool is_label()      const { return _type == ST_LABEL; }
-  bool is_imm()        const { return _type == ST_IMMEDIATE; }
 
   std::string name()   const { return _name; }
   const char *c_str()  const { return _name.c_str(); }
