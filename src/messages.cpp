@@ -207,7 +207,7 @@ void print_syms(const symtab_t &syms)
     {
       case ST_PRIMITIVE:
         fprintf(stdout,  "ST_PRIMITIVE\n");
-        cmtout(++indent, "base: %s\n", prim2str(s->prim()));
+        cmtout(++indent, "base: %s\n", prim2str(s->base()));
         break;
       case ST_ARRAY:
         fprintf(stdout,  "ST_ARRAY\n");
@@ -222,19 +222,19 @@ void print_syms(const symtab_t &syms)
           cmtout(indent+1, "none\n");
         else
         {
-          paramvec_t *params = s->params();
-          int size = params->size();
-          for ( int i = 0; i < size; i++ )
+          symlist_t *params = s->params();
+          symlist_t::const_iterator i;
+          for ( i = params->begin(); i != params->end(); i++ )
           {
-            symbol_t *p = params->at(i);
+            symbol_t *p = *i;
             int pindent = indent+1;
-            cmtout(pindent, "%d: %s\n", i, p->c_str());
+            cmtout(pindent, "%d: %s\n", PARAM_IDX(i, params), p->c_str());
             cmtout(++pindent, "type: ");
             switch ( p->type() )
             {
               case ST_PRIMITIVE:
                 fprintf(stdout, "ST_PRIMITIVE\n");
-                cmtout(++pindent, "base: %s\n", prim2str(p->prim()));
+                cmtout(++pindent, "base: %s\n", prim2str(p->base()));
                 break;
               case ST_ARRAY:
                 fprintf(stdout, "ST_ARRAY\n");

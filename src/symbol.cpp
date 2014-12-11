@@ -25,7 +25,7 @@ symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
       _func.code        = NULL;
       _func.is_extern   = false;
       _func.defined     = false;
-      _func.params      = va_arg(va, paramvec_t *);
+      _func.params      = va_arg(va, symlist_t *);
       break;
     default:
       INTERR(0);
@@ -38,8 +38,8 @@ symbol_t::~symbol_t()
 {
   if ( _type == ST_FUNCTION )
   {
-    int size = _func.params->size();
-    for ( int i = 0; i < size; i++ )
-      delete _func.params->at(i);
+    symlist_t::iterator i = params()->begin();
+    for ( ; i != params()->end(); i++ )
+      delete *i;
   }
 }

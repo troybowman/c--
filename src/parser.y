@@ -13,10 +13,10 @@
   extern "C" int yylineno;
   int yyerror(const char *s);
 
+  //---------------------------------------------------------------------------
   symtab_t gsyms;      // global symbol table
   symlist_t functions; // functions, in order as they appear in the source file
 
-  //---------------------------------------------------------------------------
   static struct
   {
     symtab_t *syms;    // pointer to currently active symbol table
@@ -38,6 +38,7 @@
     void trash() { delete syms; setglobal(); }
   } ctx;
 
+  //---------------------------------------------------------------------------
   // use a temporary symbol table to validate parameter declarations
   static inline void param_on() { ctx.setlocal(new symtab_t()); }
   static inline void param_off() { ctx.trash(); }
@@ -58,6 +59,9 @@
   static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
   static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
   static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
+  static symlist_t  *process_sym_list(symlist_t *, symbol_t *);
+  static symlist_t  *process_first_sym(symbol_t *, symlist_t *);
+  static array_sfx_t process_array_sfx(int, int);
 
   //---------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -72,7 +76,6 @@
   primitive_t prim;
   symbol_t *sym;
   symlist_t *symlist;
-  paramvec_t *paramvec;
   treenode_t *tree;
   symtab_t *symtab;
   array_sfx_t asfx;
@@ -88,10 +91,8 @@
 
 %type<prim>     type
 %type<sym>      var_decl func_decl param_decl
-%type<symlist>  var_decls var_decl_list func_decls func_decl_list
-%type<paramvec> params param_decl_list
-%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call
-%type<tree>     args op_expr else assg op_assg
+%type<symlist>  var_decls var_decl_list func_decls func_decl_list params param_decl_list
+%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
 
@@ -122,22 +123,14 @@ decl :        type var_decls  { process_var_list ($2, $1);                      
      |        VOID func_decls { process_func_list($2, RT_VOID,           false); delete $2; }
      ;
 
-/*---------------------------------------------------------------------------*/
 type : INT_TYPE  { $$ = PRIM_INT; }
      | CHAR_TYPE { $$ = PRIM_CHAR; }
      ;
 
 /*---------------------------------------------------------------------------*/
-var_decls : var_decl var_decl_list
-            {
-              symlist_t *list = $2 == NULL ? new symlist_t() : $2;
-              if ( $1 != NULL )
-                list->insert(list->begin(), $1);
-              $$ = list;
-            }
+var_decls : var_decl var_decl_list { $$ = process_first_sym($1, $2); }
           ;
 
-/*---------------------------------------------------------------------------*/
 var_decl : ID decl_array_sfx
            {
              $$ = process_var_decl($1, yylineno, $2);
@@ -145,46 +138,18 @@ var_decl : ID decl_array_sfx
            }
          ;
 
-/*---------------------------------------------------------------------------*/
-decl_array_sfx : '[' INT ']'
-            {
-              if ( $2 >= 0 )
-              {
-                $$.code = ASFX_OK;
-                $$.size = $2;
-              }
-              else
-              {
-                usererr("error: line %d: arrays must have non-negative size\n", yylineno);
-                $$.code = ASFX_ERROR;
-              }
-            }
-          | /* empty */ { $$.code = ASFX_NONE; }
-          ;
+decl_array_sfx : '[' INT ']' { $$ = process_array_sfx($2, yylineno); }
+               | /* empty */ { $$.code = ASFX_NONE; }
+               ;
 
-/*---------------------------------------------------------------------------*/
-var_decl_list : var_decl_list ',' var_decl
-                {
-                  symlist_t *symlist = $1;
-                  if ( symlist == NULL )
-                    symlist = new symlist_t();
-                  if ( $3 != NULL )
-                    symlist->push_back($3);
-                  $$ = symlist;
-                }
-              | /* empty */ { $$ = NULL; }
+var_decl_list : var_decl_list ',' var_decl { $$ = process_sym_list($1, $3); }
+              | /* empty */                { $$ = NULL; }
               ;
 
 /*---------------------------------------------------------------------------*/
-func_decls : func_decl func_decl_list
-             {
-               symlist_t *list = $2 == NULL ? new symlist_t() : $2;
-               list->insert(list->begin(), $1);
-               $$ = list;
-             }
+func_decls : func_decl func_decl_list { $$ = process_first_sym($1, $2); }
            ;
 
-/*---------------------------------------------------------------------------*/
 func_decl : ID '(' { param_on(); } params { param_off(); } ')'
             {
               ASSERT(1039, $4 != NULL);
@@ -192,62 +157,31 @@ func_decl : ID '(' { param_on(); } params { param_off(); } ')'
             }
           ;
 
-/*---------------------------------------------------------------------------*/
-func_decl_list : func_decl_list ',' func_decl
-                 {
-                   symlist_t *symlist = $1;
-                   if ( symlist == NULL )
-                     symlist = new symlist_t();
-                   symlist->push_back($3);
-                   $$ = symlist;
-                 }
-               | /* empty */ { $$ = NULL; }
+func_decl_list : func_decl_list ',' func_decl { $$ = process_sym_list($1, $3); }
+               | /* empty */                  { $$ = NULL; }
                ;
 
 /*---------------------------------------------------------------------------*/
-params : param_decl param_decl_list /* TODO: no idea why i did this backwards */
-         {
-           paramvec_t *params = $2 == NULL
-                              ? new paramvec_t()
-                              : $2;
-           params->insert(params->begin(), $1);
-           $$ = params;
-         }
-       | VOID { $$ = new paramvec_t(); }
+params : param_decl param_decl_list { $$ = process_first_sym($1, $2); }
+       | VOID                       { $$ = new symlist_t(); }
        ;
 
-/*---------------------------------------------------------------------------*/
 param_decl : type ID param_array_sfx
              {
                symbol_t *sym = process_var_decl($2, yylineno, $3);
                if ( sym != NULL )
-               {
-                 if ( sym->is_prim() )
-                   sym->set_prim($1);
-                 else
-                   sym->set_base($1);
-               }
+                 sym->set_base($1);
                $$ = sym;
                free($2);
              }
            ;
 
-/*---------------------------------------------------------------------------*/
 param_array_sfx : '[' ']'     { $$.code = ASFX_OK; $$.size = -1; }
                 | /* empty */ { $$.code = ASFX_NONE; }
                 ;
 
-/*---------------------------------------------------------------------------*/
-param_decl_list : param_decl_list ',' param_decl
-                  {
-                    paramvec_t *params = $1;
-                    if ( params == NULL )
-                      params = new paramvec_t();
-                    if ( $3 != NULL )
-                      params->push_back($3);
-                    $$ = params;
-                  }
-                | /* empty */ { $$ = NULL; }
+param_decl_list : param_decl_list ',' param_decl { $$ = process_sym_list($1, $3); }
+                | /* empty */                    { $$ = NULL; }
                 ;
 
 /*---------------------------------------------------------------------------*/
@@ -267,17 +201,14 @@ func : type func_decl
      | error '}' { yyerrok; }  /* function never began, start over at '}' */
      ;
 
-/*---------------------------------------------------------------------------*/
 func_body : local_decls stmts { $$ = $2.head; }
           ;
 
-/*---------------------------------------------------------------------------*/
 local_decls : local_decls type var_decls ';' { process_var_list($3, $2); }
             | local_decls error          ';' { yyerrok; } /* TODO: this handles errors in statements as well */
             | /* empty */
             ;
 
-/*---------------------------------------------------------------------------*/
 stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
       | /* empty */ { $$.head = NULL; $$.tail = NULL; }
       ;
@@ -295,24 +226,21 @@ stmt : assg ';'                  { $$ = $1; }
      ;
 
 
-/*---------------------------------------------------------------------------*/
-assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
-     ;
-
-/*---------------------------------------------------------------------------*/
 op_assg : assg        { $$ = $1; }
         | /* empty */ { $$ = NULL; }
         ;
 
-/*---------------------------------------------------------------------------*/
 else : ELSE stmt      { $$ = $2; }
      | /* empty */    { $$ = NULL; }
      ;
 
-/*---------------------------------------------------------------------------*/
 op_expr : expr        { $$ = $1; }
         | /* empty */ { $$ = NULL; }
         ;
+
+/*---------------------------------------------------------------------------*/
+assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
+     ;
 
 /*---------------------------------------------------------------------------*/
 call : ID '(' args ')'
@@ -325,7 +253,6 @@ call : ID '(' args ')'
        }
      ;
 
-/*---------------------------------------------------------------------------*/
 args : expr arg_list
        {
          // append arg_list to 1st arg
@@ -341,7 +268,6 @@ args : expr arg_list
      | /* empty */ { $$ = NULL; }
      ;
 
-/*---------------------------------------------------------------------------*/
 arg_list : arg_list ',' expr { $$ = seq_append($1, $3, TNT_ARG); }
          | /* empty */       { $$.head = NULL; $$.tail = NULL; }
          ;
@@ -357,7 +283,6 @@ stmt_var : ID stmt_array_sfx
            }
          ;
 
-/*---------------------------------------------------------------------------*/
 stmt_array_sfx : '[' expr ']' { $$ = $2; }
                | /* empty */  { $$ = NULL; }
                ;
@@ -386,6 +311,41 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
      ;
 
 %%
+
+//-----------------------------------------------------------------------------
+static array_sfx_t process_array_sfx(int size, int line)
+{
+  array_sfx_t ret;
+  if ( size >= 0 )
+  {
+    ret.code = ASFX_OK;
+    ret.size = size;
+  }
+  else
+  {
+    usererr("error: line %d: arrays must have non-negative size\n", line);
+    ret.code = ASFX_ERROR;
+  }
+  return ret;
+}
+
+//-----------------------------------------------------------------------------
+static symlist_t *process_first_sym(symbol_t *first, symlist_t *rest)
+{
+  symlist_t *list = rest == NULL ? new symlist_t() : rest;
+  if ( first != NULL )
+    list->insert(list->begin(), first);
+  return list;
+}
+
+//-----------------------------------------------------------------------------
+static symlist_t *process_sym_list(symlist_t *prev, symbol_t *to_ins)
+{
+  symlist_t *symlist = prev == NULL ? new symlist_t() : prev;
+  if ( to_ins != NULL )
+    symlist->push_back(to_ins);
+  return symlist;
+}
 
 //-----------------------------------------------------------------------------
 static bool validate_math_expr(
@@ -446,7 +406,6 @@ static treenode_t *process_for_stmt(
     if ( body != NULL ) delete body;
     return ERRNODE;
   }
-
   return new treenode_t(TNT_FOR, init, cond, inc, body);
 }
 
@@ -634,17 +593,19 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
   if ( !f.is_func() )
     return call_res_t(CALL_NOFUNC);
 
-  int nparams = f.params()->size();
-  int nargs = args == NULL ? 0 : args->val;
+  symlist_t *params = f.params();
 
-  if ( nargs != nparams )
+  int nargs = args == NULL ? 0 : args->val;
+  if ( nargs != params->size() )
     return call_res_t(CALL_NUMARGS, nargs);
 
+  symlist_t::const_iterator i;
   const treenode_t *curarg = args;
-  for ( int i = 0; i < nparams; i++ )
+
+  for ( i = params->begin(); i != params->end(); i++ )
   {
-    if ( !check_arg(*f.params()->at(i), *curarg->children[SEQ_CUR]) )
-      return call_res_t(CALL_BADARG, i+1);
+    if ( !check_arg(**i, *curarg->children[SEQ_CUR]) )
+      return call_res_t(CALL_BADARG, PARAM_IDX(i, params)+1);
 
     curarg = curarg->children[SEQ_NEXT];
   }
@@ -872,29 +833,25 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
 }
 
 //-----------------------------------------------------------------------------
-static bool check_params(const paramvec_t &p1, const paramvec_t &p2)
+static bool check_params(const symlist_t &p1, const symlist_t &p2)
 {
   if ( p1.size() != p2.size() )
     return false;
 
-  int size = p1.size();
-  for ( int i = 0; i < size; i++ )
-  {
-    symbol_t *s1 = p1[i];
-    symbol_t *s2 = p2[i];
+  symlist_t::const_iterator i1;
+  symlist_t::const_iterator i2;
 
-    switch ( s1->type() )
+  for ( i1  = p1.begin(), i2  = p2.begin();
+        i1 != p1.end() && i2 != p2.end();
+        i1++, i2++)
+  {
+    symbol_t *s1 = *i1;
+    symbol_t *s2 = *i2;
+
+    if ( s1->type() != s2->type()
+      || s1->base() != s2->base() )
     {
-      case ST_PRIMITIVE:
-        if ( !s2->is_prim() || s2->prim() != s1->prim() )
-          return false;
-        break;
-      case ST_ARRAY:
-        if ( !s2->is_array() || s2->base() != s1->base() )
-          return false;
-        break;
-      default:
-        INTERR(1021);
+      return false;
     }
   }
   return true;
@@ -929,10 +886,10 @@ static void init_lsyms(symbol_t &f)
 {
   f.set_symbols(new symtab_t());
 
-  int size = f.params()->size();
-  for ( int i = 0; i < size; i++ )
+  symlist_t::const_iterator i;
+  for ( i = f.params()->begin(); i != f.params()->end(); i++ )
   {
-    symbol_t *p = f.params()->at(i);
+    symbol_t *p = *i;
     ASSERT(1003, f.symbols()->get(p->name()) == NULL);
     f.symbols()->insert(p);
   }
@@ -1027,18 +984,7 @@ static void process_var_list(symlist_t *list, primitive_t prim)
   for ( i = list->begin(); i != list->end(); i++ )
   {
     ASSERT(1008, *i != NULL);
-    symbol_t *sym = *i;
-    switch ( sym->type() )
-    {
-      case ST_PRIMITIVE:
-        sym->set_prim(prim);
-        break;
-      case ST_ARRAY:
-        sym->set_base(prim);
-        break;
-      default:
-        INTERR(1022);
-    }
+    (*i)->set_base(prim);
   }
 }
 

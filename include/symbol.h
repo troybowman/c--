@@ -16,7 +16,9 @@ class symbol_t;
 class symtab_t;
 class symloc_t;
 
+//-----------------------------------------------------------------------------
 typedef std::list<symbol_t *> symlist_t;
+#define PARAM_IDX(i, params) std::distance(static_cast<symlist_t::const_iterator>(params->begin()), i)
 
 extern symtab_t gsyms;
 extern symlist_t functions;
@@ -97,12 +99,10 @@ enum return_type_t
   RT_VOID
 };
 
-typedef std::vector<symbol_t *> paramvec_t;
-
 struct function_t
 {
   return_type_t rt_type;
-  paramvec_t *params;
+  symlist_t *params;
   symtab_t *symbols;
   treenode_t *syntax_tree;
   codenode_t *code;
@@ -150,13 +150,11 @@ public:
   const char *str()    const { return _str; }
   int val()            const { return _val; }
 
-  primitive_t prim()   const { return _prim; }
-
-  primitive_t base()   const { return _array.type; }
+  primitive_t base()   const { return _type == ST_PRIMITIVE ? _prim : _array.type; }
   asize_t size()       const { return _array.size; }
 
   return_type_t rt()   const { return _func.rt_type; }
-  paramvec_t *params() const { return _func.params; }
+  symlist_t *params()  const { return _func.params; }
   symtab_t *symbols()  const { return _func.symbols; }
   treenode_t *tree()   const { return _func.syntax_tree; }
   bool is_extern()     const { return _func.is_extern; }
@@ -164,9 +162,14 @@ public:
 
   void set_name(const char *name) { _name.assign(name); }
 
-  void set_prim(primitive_t prim) { _prim = prim; }
+  void set_base(primitive_t base)
+  {
+    if ( _type == ST_PRIMITIVE )
+      _prim = base;
+    else
+      _array.type = base;
+  }
 
-  void set_base(primitive_t base)  { _array.type = base; }
   void set_size(asize_t size)      { _array.size = size; }
 
   void set_rt(return_type_t rt)    { _func.rt_type = rt; }
