@@ -6,6 +6,7 @@
 
   #include <symbol.h>
   #include <treenode.h>
+  #include <codenode.h>
   #include <messages.h>
 
   extern "C" FILE *yyin;
@@ -354,22 +355,22 @@ static bool validate_math_expr(
     treenode_type_t type,
     const treenode_t *rhs)
 {
-  ASSERT(0, rhs != NULL);
+  ASSERT(1069, rhs != NULL);
 
   switch ( type )
   {
     case TNT_NEG:
-      ASSERT(0, lhs == NULL);
+      ASSERT(1070, lhs == NULL);
       return rhs->is_int_compat();
     case TNT_PLUS:
     case TNT_MINUS:
     case TNT_MULT:
     case TNT_DIV:
-      ASSERT(0, lhs != NULL);
+      ASSERT(1071, lhs != NULL);
       return lhs->is_int_compat()
           && rhs->is_int_compat();
     default:
-      INTERR(0);
+      INTERR(1064);
   }
 }
 
@@ -413,7 +414,7 @@ static treenode_t *process_for_stmt(
 //-----------------------------------------------------------------------------
 static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line)
 {
-  ASSERT(0, cond != NULL);
+  ASSERT(1072, cond != NULL);
 
   if ( !cond->is_bool_compat() )
   {
@@ -432,7 +433,7 @@ static treenode_t *process_if_stmt(
     treenode_t *el,
     int line)
 {
-  ASSERT(0, cond != NULL);
+  ASSERT(1073, cond != NULL);
 
   if ( !cond->is_bool_compat() )
   {
@@ -1064,26 +1065,34 @@ int main(int argc, char **argv)
   if ( !parseargs(argc, argv) )
     usage(argv[0]);
 
-  //---------------------------------------------------------------------------
-  // parse, generate syntax tree
   CHECK_PHASE_FLAG(dbg_no_parse);
 
+  //---------------------------------------------------------------------------
+  // parse, generate syntax tree
   ctx.setglobal();
   parse();
   checkerr();
 
   DBG_PARSE_RESULTS();
+  CHECK_PHASE_FLAG(dbg_no_ir);
 
   //---------------------------------------------------------------------------
   // generate intermediate representation
-  CHECK_PHASE_FLAG(dbg_no_ir);
-  // ir_engine_t engine(functions);
-  // engine.start();
+  symtab_t *strings = new symtab_t();
+  symlist_t *labels = new symlist_t();
+
+  symlist_t::iterator i;
+  for ( i = functions.begin(); i != functions.end(); i++ )
+  {
+    ir_engine_t e(*i, &gsyms, strings, labels);
+    e.generate();
+  }
+
   DBG_IR();
+  CHECK_PHASE_FLAG(dbg_no_code)
 
   //---------------------------------------------------------------------------
   // generate code
-  CHECK_PHASE_FLAG(dbg_no_code)
 
   return 0;
 }

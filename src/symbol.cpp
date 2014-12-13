@@ -28,7 +28,7 @@ symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
       _func.params      = va_arg(va, symlist_t *);
       break;
     default:
-      INTERR(0);
+      INTERR(1065);
   }
   va_end(va);
 }

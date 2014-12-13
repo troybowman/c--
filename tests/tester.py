@@ -10,17 +10,17 @@ class Tester:
     DBG_DUMP_TREE  = 0x08
     DBG_NO_IR      = 0x10
     DBG_DUMP_IR    = 0x20
-    DBG_NO_CODE    = 0x30
+    DBG_NO_CODE    = 0x40
 
-    DBG_ALL_SYMS = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS
-    DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE
-    DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR
+    DBG_ALL_SYMS = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
+    DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
+    DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
 
     phases = {
-        "syms" : DBG_ALL_SYMS | DBG_NO_IR,
-        "tree" : DBG_ALL_TREE | DBG_NO_IR,
-        "ir"   : DBG_ALL_IR   | DBG_NO_CODE,
-        "code" : DBG_ALL_IR,
+        "syms" : DBG_ALL_SYMS | DBG_NO_IR,          # 0x16
+        "tree" : DBG_ALL_TREE | DBG_NO_IR,          # 0x1e
+        "ir"   : DBG_ALL_IR   | DBG_NO_CODE,        # 0x6e
+        "code" : DBG_ALL_IR,                        # 0x2e
         }
 
     def __init__(self, argv):

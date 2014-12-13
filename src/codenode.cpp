@@ -4,7 +4,11 @@
 #include <codenode.h>
 
 //-----------------------------------------------------------------------------
-static inline bool is_temp(symbol_t *sym)
+#define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
+#define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
+
+//-----------------------------------------------------------------------------
+inline bool is_temp(symbol_t *sym)
 {
   return sym == NULL ? false : sym->is_temp();
 }
@@ -25,23 +29,19 @@ static bool has_call(treenode_t *tree)
 }
 
 //-----------------------------------------------------------------------------
-static inline codenode_type_t cntload(const symbol_t &sym)
+ir_engine_t::ir_engine_t(symbol_t *f, symtab_t *g, symtab_t *s, symlist_t *l)
 {
-  return sym.base() == PRIM_INT ? CNT_LW : CNT_LB;
-}
-
-static inline codenode_type_t cntstore(const symbol_t &sym)
-{
-  return sym.base() == PRIM_INT ? CNT_SW : CNT_SB;
-}
-
-//-----------------------------------------------------------------------------
-ir_engine_t::it_engine_t(symlist_t *_functions) : functions(_functions)
-{
-  head = NULL;
-  tail = head;
-  tmpcnt = 0;
-  strings = new symtab_t();
+  func    = f;
+  gsyms   = g;
+  strings = s;
+  labels  = l;
+  head    = NULL;
+  tail    = head;
+  tmpcnt  = 0;
+  ASSERT(1055, f != NULL);
+  ASSERT(1056, g != NULL);
+  ASSERT(1057, s != NULL);
+  ASSERT(1058, l != NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ symbol_t *ir_engine_t::gen_rval(uint32_t ctx)
 
 //-----------------------------------------------------------------------------
 void ir_engine_t::append(
-    codenode_type_t *type,
+    codenode_type_t type,
     symbol_t *dest,
     symbol_t *src1,
     symbol_t *src2)
@@ -86,6 +86,10 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
 
   switch ( tree->type )
   {
+    case TNT_STMT:
+      generate(tree->children[SEQ_CUR], 0);
+      generate(tree->children[SEQ_NEXT], 0);
+      break;
     case TNT_INTCON:
     case TNT_CHARCON:
       {
@@ -101,10 +105,10 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
         treenode_t *rhs = tree->children[RHS];
         treenode_t *lhs = tree->children[LHS];
 
-        symbol_t *src1 = generate(rhs, has_call(lhs) ? CTX_SV_TEMP : 0);
+        symbol_t *src1 = generate(rhs, has_call(lhs) ? CTX_SV_RVAL : 0);
         symbol_t *dest = generate(lhs, CTX_LVAL);
 
-        append(cntstore(*lhs->sym), dest, src1, NULL);
+        append(CNT_STORE(lhs->sym), dest, src1, NULL);
       }
       break;
     case TNT_SYMBOL:
@@ -115,7 +119,7 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
 
         symbol_t *dest = gen_rval(ctx);
 
-        append(cntload(*sym), dest, sym, NULL);
+        append(CNT_LOAD(sym), dest, sym, NULL);
         return dest;
       }
     case TNT_ARRAY_LOOKUP:
@@ -123,7 +127,7 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
         symbol_t *base = new symbol_t(ST_TEMPORARY);
         append(CNT_LEA, base, tree->sym, NULL);
 
-        treenode_t *idxtree = tree->children[AL_LOOKUP];
+        treenode_t *idxtree = tree->children[AL_OFFSET];
         symbol_t *idx = generate(idxtree, 0);
 
         symbol_t *dest;
@@ -137,12 +141,21 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
           dest = gen_rval(ctx);
           symbol_t *loc = new symbol_t(ST_TEMPORARY);
           append(CNT_ADD, loc, base, idx);
-          append(cntload(*tree->sym), dest, loc, NULL);
+          append(CNT_LOAD(tree->sym), dest, loc, NULL);
         }
         return dest;
       }
     default:
-      INTERR(0);
+      INTERR(1059);
   }
+
+  tmpcnt = 0;
+  return NULL;
 }
 
+//-----------------------------------------------------------------------------
+void ir_engine_t::generate()
+{
+  generate(func->tree(), 0);
+  func->set_code(head);
+}

@@ -79,7 +79,7 @@ do                                          \
   if ( (dbg_flags & dbg_dump_lsyms) != 0    \
     || (dbg_flags & dbg_dump_tree)  != 0 )  \
   {                                         \
-    walk_funcs(dbg_flags);                  \
+    walk_funcs(dbg_flags & 0xC);            \
   }                                         \
 } while ( false );
 

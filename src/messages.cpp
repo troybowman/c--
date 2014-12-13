@@ -55,6 +55,7 @@ void checkerr()
 
 #include <symbol.h>
 #include <treenode.h>
+#include <codenode.h>
 
 //-----------------------------------------------------------------------------
 static const char *header =
@@ -177,17 +178,119 @@ static const char *child2str(treenode_type_t type, int child)
       ASSERT(1036, child == RET_EXPR);
       return "RET_EXPR";
     case TNT_IF:
-      ASSERT(0, child != 3);
+      ASSERT(1066, child != 3);
       return child == IF_COND ? "IF_COND"
            : child == IF_BODY ? "IF_BODY"
            :                    "IF_ELSE";
     case TNT_WHILE:
-      ASSERT(0, child == WHILE_COND || child == WHILE_BODY);
+      ASSERT(1067, child == WHILE_COND || child == WHILE_BODY);
       return child == WHILE_COND ? "WHILE_COND" : "WHILE_BODY";
     default:
       INTERR(1035);
   }
 }
+
+//-----------------------------------------------------------------------------
+static const char *cnt2str(codenode_type_t type)
+{
+  switch ( type )
+  {
+    case CNT_MOV:  return "CNT_MOV\n# ------";
+    case CNT_LW:   return "CNT_LW\n# ------";
+    case CNT_LB:   return "CNT_LB\n# ------";
+    case CNT_SW:   return "CNT_SW\n# ------";
+    case CNT_SB:   return "CNT_SB\n# ------";
+    case CNT_ADD:  return "CNT_ADD\n# ------";
+    case CNT_LEA:  return "CNT_LEA\n# ------";
+    case CNT_ARG:  return "CNT_ARG\n# ------";
+    case CNT_CALL: return "CNT_CALL\n# ------";
+    default:
+      INTERR(1060);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static const char *st2str(symbol_type_t type)
+{
+  switch( type )
+  {
+    case ST_PRIMITIVE:       return "ST_PRIMITIVE";
+    case ST_ARRAY:           return "ST_ARRAY";
+    case ST_FUNCTION:        return "ST_FUNCTION";
+    case ST_TEMPORARY:       return "ST_TEMPORARY";
+    case ST_SAVED_TEMPORARY: return "ST_SAVED_TEMPORARY";
+    case ST_IMMEDIATE_INT:   return "ST_IMMEDIATE_INT";
+    case ST_IMMEDIATE_CHAR:  return "ST_IMMEDIATE_CHAR";
+    case ST_ANONYMOUS:       return "ST_ANONYMOUS";
+    case ST_STRCON:          return "ST_STRCON";
+    case ST_LABEL:           return "ST_LABEL";
+    default:
+      INTERR(1061);
+  }
+}
+
+//-----------------------------------------------------------------------------
+class tempmap_t
+{
+  typedef std::map<const symbol_t *, int> tmap_t;
+  tmap_t map;
+
+  int cnt;
+
+public:
+  int get(const symbol_t *ptr)
+  {
+    try
+    {
+      return map.at(ptr);
+    }
+    catch ( const std::out_of_range & )
+    {
+      cnt++;
+      map[ptr] = cnt;
+      return cnt;
+    }
+  }
+
+  tempmap_t() : cnt(-1) {}
+};
+
+//-----------------------------------------------------------------------------
+static const char *addr2str(const symbol_t *addr)
+{
+#define MAXADDRSTR 32
+  static char buf[MAXADDRSTR];
+  static tempmap_t temps;
+
+  const char *type = st2str(addr->type());
+
+  switch ( addr->type() )
+  {
+    case ST_PRIMITIVE:
+    case ST_ARRAY:
+    case ST_FUNCTION:
+      snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->c_str());
+      return buf;
+    case ST_IMMEDIATE_INT:
+      snprintf(buf, MAXADDRSTR, "%s (%d)", type, addr->val());
+      return buf;
+    case ST_IMMEDIATE_CHAR:
+    case ST_STRCON:
+      snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->str());
+      return buf;
+    case ST_LABEL:
+      snprintf(buf, MAXADDRSTR, "%s", type);
+      return buf;
+    case ST_TEMPORARY:
+    case ST_SAVED_TEMPORARY:
+    case ST_ANONYMOUS:
+      snprintf(buf, MAXADDRSTR, "%s (%d)", type, temps.get(addr));
+      return buf;
+    default:
+      INTERR(0);
+  }
+}
+
 
 //-----------------------------------------------------------------------------
 void print_syms(const symtab_t &syms)
@@ -241,14 +344,14 @@ void print_syms(const symtab_t &syms)
                 cmtout(++pindent, "base: %s\n", prim2str(p->base()));
                 break;
               default:
-                INTERR(0);
+                INTERR(1062);
             }
           }
         }
         cmtout(indent, "is_extern: %s\n", s->is_extern() ? "yes" : "no");
         break;
       default:
-        INTERR(0);
+        INTERR(1063);
     }
   }
 }
@@ -265,7 +368,7 @@ void print_tree(const treenode_t *node, int *cnt)
 {
   if ( node == NULL )
     return;
-  ASSERT(0, cnt != NULL);
+  ASSERT(1068, cnt != NULL);
   (*cnt)++;
   int curnode = *cnt;
   cmtout(0, "node %d: type: %s", curnode, tnt2str(node->type));
@@ -299,6 +402,28 @@ void print_tree(const treenode_t *node, int *cnt)
 }
 
 //-----------------------------------------------------------------------------
+static void print_ir(const codenode_t *node)
+{
+  const codenode_t *ptr = node;
+  while ( ptr != NULL )
+  {
+    cmtout(0, "%s\n", cnt2str(ptr->type));
+
+    if ( ptr->dest != NULL )
+      cmtout(0, "dest -> %s\n", addr2str(ptr->dest));
+    if ( ptr->src1 != NULL )
+      cmtout(0, "src1 -> %s\n", addr2str(ptr->src1));
+    if ( ptr->src2 != NULL )
+      cmtout(0, "src2 -> %s\n", addr2str(ptr->src2));
+
+    ptr = ptr->next;
+
+    if ( ptr != NULL )
+      cmtout(0, "|\n# >\n");
+  }
+}
+
+//-----------------------------------------------------------------------------
 void walk_funcs(dbg_flags_t flags)
 {
   symlist_t::const_iterator i;
@@ -320,7 +445,7 @@ void walk_funcs(dbg_flags_t flags)
     if ( (flags & dbg_dump_ir) != 0 )
     {
       fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->c_str());
-      // print code
+      print_ir(f->code());
     }
   }
 }

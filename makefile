@@ -1,6 +1,6 @@
 CC = g++
 
-I = ./include/
+I   = ./include/
 SRC = ./src/
 BIN = ./bin/
 OBJ = ./obj/
@@ -19,8 +19,11 @@ else
   LIBFLEX = -lfl
 endif
 
-OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbol.o $(OBJ)treenode.o $(OBJ)messages.o
-HFILES   = $(I)symbol.h $(I)treenode.h $(I)messages.h
+OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o \
+					 $(OBJ)symbol.o $(OBJ)treenode.o $(OBJ)codenode.o \
+					 $(OBJ)messages.o
+
+HFILES   = $(I)symbol.h $(I)treenode.h $(I)codenode.h $(I)messages.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
@@ -49,6 +52,9 @@ $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
 
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
+
+$(OBJ)codenode.o: $(SRC)codenode.cpp $(HFILES)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 #------------------------------------------------------------------------------
 .PHONY: clean
