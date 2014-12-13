@@ -124,11 +124,11 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
       }
     case TNT_ARRAY_LOOKUP:
       {
-        symbol_t *base = new symbol_t(ST_TEMPORARY);
-        append(CNT_LEA, base, tree->sym, NULL);
-
         treenode_t *idxtree = tree->children[AL_OFFSET];
         symbol_t *idx = generate(idxtree, 0);
+
+        symbol_t *base = new symbol_t(ST_TEMPORARY);
+        append(CNT_LEA, base, tree->sym, NULL);
 
         symbol_t *dest;
         if ( (ctx & CTX_LVAL) != 0 )

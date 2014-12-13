@@ -43,13 +43,10 @@ class Tester:
 
     def compile(self, infile, flags):
         print "compiling: %s" % infile
-
         args = [ self.cmm, "-v", hex(flags), infile ]
-
         outname = re.sub("input/", "output/",
                     re.sub("\.c", ".s",
                       infile))
-
         with open(outname, "w") as outfile:
             try:
                 code = subprocess.call(args, stdout=outfile, stderr=outfile)
