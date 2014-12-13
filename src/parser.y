@@ -226,7 +226,7 @@ stmt : assg ';'                  { $$ = $1; }
      | ';'                       { $$ = NULL; }
      ;
 
-
+/*---------------------------------------------------------------------------*/
 op_assg : assg        { $$ = $1; }
         | /* empty */ { $$ = NULL; }
         ;
@@ -842,7 +842,7 @@ static bool check_params(const symlist_t &p1, const symlist_t &p2)
   symlist_t::const_iterator i1;
   symlist_t::const_iterator i2;
 
-  for ( i1  = p1.begin(), i2  = p2.begin();
+  for ( i1 =  p1.begin(), i2 =  p2.begin();
         i1 != p1.end() && i2 != p2.end();
         i1++, i2++)
   {

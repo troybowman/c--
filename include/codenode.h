@@ -1,30 +1,53 @@
 #ifndef CODENODE_H
 #define CODENODE_H
 
-#include <symbol.h>
+#include <stdint.h>
 
-// intermediate code summary
-struct ir_summary_t
+struct symbol_t;
+struct treenode_t;
+struct codenode_t;
+
+//-----------------------------------------------------------------------------
+class ir_engine_t
 {
-  symtab_t  *gsyms;
-  symlist_t *labels;
-  symlist_t *strings;
-  symlist_t *functions;
-};
+  codenode_t *head;
+  codenode_t *tail;
 
+  int tmpcnt;
+  symtab_t *strings;
+
+private:
+  symbol_t *gen_rval();
+
+  void append(
+      codenode_type_t type,
+      symbol_t *dest,
+      symbol_t *src1,
+      symbol_t *src2);
+
+  symbol_t *generate(treenode_t *tree, uint32_t ctx);
+#define CTX_LVAL     0x1
+#define CTX_SV_RVAL  0x2
+
+public:
+  ir_engine_t(symlist_t *functions);
+  void start();
+}
+
+//-----------------------------------------------------------------------------
 enum codenode_type_t
 {
-  CNT_PROLOGUE,
-  CNT_EPILOGUE,
-  CNT_PLUS,
-  CNT_MINUS,
-  CNT_MULT,
-  CNT_DIV,
-  CNT_BRANCH,
-  CNT_CALL,
-  CNT_ARG
+  CNT_MOV,
+  CNT_LW,
+  CNT_LB,
+  CNT_SW,
+  CNT_SB,
+  CNT_ADD,
+  CNT_ARG,
+  CNT_CALL
 };
 
+//-----------------------------------------------------------------------------
 struct codenode_t
 {
   codenode_type_t type;
@@ -32,6 +55,9 @@ struct codenode_t
   symbol_t *src1;
   symbol_t *src2;
   codenode_t *next;
+
+  codenode_t(codenode_type_t t, symbol_t *d, symbol_t *s1, symbol_t *s2)
+    : type(t), dest(d), src1(s1), src2(s2) {}
 };
 
 #endif // CODENODE_H
