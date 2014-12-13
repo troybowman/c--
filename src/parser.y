@@ -12,6 +12,7 @@
   extern "C" int yylex();
   extern "C" int yylineno;
   int yyerror(const char *s);
+  #define parse yyparse
 
   //---------------------------------------------------------------------------
   symtab_t gsyms;      // global symbol table
@@ -1042,7 +1043,7 @@ static bool parseargs(int argc, char **argv)
 #ifndef NDEBUG
     if ( argc != 4 || strcmp("-v", argv[1]) != 0 )
       return false;
-    dbg_flags |= dbg_flags_t(atoi(argv[2]));
+    dbg_flags |= dbg_flags_t(strtoul(argv[2], NULL, 0));
     infile = argv[3];
 #else
     return false;
@@ -1063,12 +1064,26 @@ int main(int argc, char **argv)
   if ( !parseargs(argc, argv) )
     usage(argv[0]);
 
+  //---------------------------------------------------------------------------
+  // parse, generate syntax tree
+  CHECK_PHASE_FLAG(dbg_no_parse);
+
   ctx.setglobal();
-  yyparse();
+  parse();
   checkerr();
 
-  DBG_SUMMARY(dbg_flags);
-  CHECK_CODEGEN_FLAGS(dbg_flags);
+  DBG_PARSE_RESULTS();
+
+  //---------------------------------------------------------------------------
+  // generate intermediate representation
+  CHECK_PHASE_FLAG(dbg_no_ir);
+  // ir_engine_t engine(functions);
+  // engine.start();
+  DBG_IR();
+
+  //---------------------------------------------------------------------------
+  // generate code
+  CHECK_PHASE_FLAG(dbg_no_code)
 
   return 0;
 }

@@ -50,13 +50,13 @@ extern dbg_flags_t dbg_flags;
 //-----------------------------------------------------------------------------
 enum dbg_flag_t
 {
-  dbg_gsyms     = 1 << 0,
-  dbg_lsyms     = 1 << 1,
-  dbg_tree      = 1 << 2,
-  dbg_nocode    = 1 << 3,
-  dbg_gvars     = 1 << 4,
-  dbg_insert    = 1 << 5,
-  dbg_decl_list = 1 << 6,
+  dbg_no_parse    = 1 << 0,
+  dbg_dump_gsyms  = 1 << 1,
+  dbg_dump_lsyms  = 1 << 2,
+  dbg_dump_tree   = 1 << 3,
+  dbg_no_ir       = 1 << 4,
+  dbg_dump_ir     = 1 << 5,
+  dbg_no_code     = 1 << 6,
 };
 
 //-----------------------------------------------------------------------------
@@ -71,33 +71,42 @@ void print_gsyms();
 void walk_funcs(dbg_flags_t flags);
 
 //-----------------------------------------------------------------------------
-#define DBG_SUMMARY(flags)         \
-do                                 \
-{                                  \
-  if ( (flags & dbg_gsyms) != 0 )  \
-    print_gsyms();                 \
-  if ( (flags & dbg_lsyms) != 0    \
-    || (flags & dbg_tree)  != 0 )  \
-  {                                \
-    walk_funcs(flags);             \
-  }                                \
+#define DBG_PARSE_RESULTS()                 \
+do                                          \
+{                                           \
+  if ( (dbg_flags & dbg_dump_gsyms) != 0 )  \
+    print_gsyms();                          \
+  if ( (dbg_flags & dbg_dump_lsyms) != 0    \
+    || (dbg_flags & dbg_dump_tree)  != 0 )  \
+  {                                         \
+    walk_funcs(dbg_flags);                  \
+  }                                         \
 } while ( false );
 
 //-----------------------------------------------------------------------------
-#define CHECK_CODEGEN_FLAGS(flags) \
+#define CHECK_PHASE_FLAG(flag)     \
 do                                 \
 {                                  \
-  if ( (flags & dbg_nocode) != 0 ) \
+  if ( (dbg_flags & flag) != 0 )   \
     exit(0);                       \
+} while ( false );
+
+//-----------------------------------------------------------------------------
+#define DBG_IR()                        \
+do                                      \
+{                                       \
+  if ( (dbg_flags & dbg_dump_ir) != 0 ) \
+    walk_funcs(dbg_dump_ir);            \
 } while ( false );
 
 #else
 
 //-----------------------------------------------------------------------------
 #define DBG(flag, ...)             // nothing
-#define DBG_SUMMARY(flags)         // nothing
 #define ASSERT(code, cond)         // nothing
-#define CHECK_CODEGEN_FLAGS(flags) // nothing
+#define DBG_PARSE_RESULTS()        // nothing
+#define DBG_IR()                   // nothing
+#define CHECK_PHASE_FLAG(flags)    // nothing
 
 #endif // DEBUG
 

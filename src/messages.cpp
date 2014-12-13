@@ -8,7 +8,7 @@
 //-----------------------------------------------------------------------------
 
 #define MAXERRS   50
-#define MAXERRLEN 250
+#define MAXERRLEN 1024
 
 typedef std::list<std::string> errlist_t;
 
@@ -306,16 +306,21 @@ void walk_funcs(dbg_flags_t flags)
   {
     symbol_t *f = *i;
     ASSERT(1012, f->is_func());
-    if ( (flags & dbg_lsyms) != 0 )
+    if ( (flags & dbg_dump_lsyms) != 0 )
     {
       fprintf(stdout, header, "LOCAL SYMBOLS FOR FUNCTION: ", f->c_str());
       print_syms(*f->symbols());
     }
-    if ( (flags & dbg_tree) != 0 )
+    if ( (flags & dbg_dump_tree) != 0 )
     {
       int cnt = 0;
       fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->c_str());
       print_tree(f->tree(), &cnt);
+    }
+    if ( (flags & dbg_dump_ir) != 0 )
+    {
+      fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->c_str());
+      // print code
     }
   }
 }
