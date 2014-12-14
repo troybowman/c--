@@ -65,6 +65,9 @@ void ir_engine_t::append(
   if ( is_temp(dest) )
     tmpcnt++;
 
+  if ( tmpcnt > func->max_temps() )
+    func->set_max_temps(tmpcnt);
+
   if ( is_temp(src1) )
     tmpcnt--;
   if ( is_temp(src2) )

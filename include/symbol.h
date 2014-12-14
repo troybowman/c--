@@ -106,6 +106,7 @@ struct function_t
   symtab_t *symbols;
   treenode_t *syntax_tree;
   codenode_t *code;
+  int max_temps;
   bool is_extern;
   bool defined;
 };
@@ -160,6 +161,7 @@ public:
   symtab_t *symbols()  const { return _func.symbols; }
   treenode_t *tree()   const { return _func.syntax_tree; }
   codenode_t *code()   const { return _func.code; }
+  int max_temps()      const { return _func.max_temps; }
   bool is_extern()     const { return _func.is_extern; }
   bool defined()       const { return _func.defined; }
 
@@ -179,6 +181,7 @@ public:
   void set_symbols(symtab_t *syms) { _func.symbols = syms; }
   void set_tree(treenode_t *tree)  { _func.syntax_tree = tree; }
   void set_code(codenode_t *code)  { _func.code = code; }
+  void set_max_temps(int mt)       { _func.max_temps = mt; }
   void set_extern(bool is_extern = true) { _func.is_extern = is_extern; }
   void set_defined(bool defined = true)  { _func.defined = defined; }
 };

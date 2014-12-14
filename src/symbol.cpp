@@ -23,6 +23,7 @@ symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
       _func.symbols     = NULL;
       _func.syntax_tree = NULL;
       _func.code        = NULL;
+      _func.max_temps   = 0;
       _func.is_extern   = false;
       _func.defined     = false;
       _func.params      = va_arg(va, symlist_t *);

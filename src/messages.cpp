@@ -291,7 +291,6 @@ static const char *addr2str(const symbol_t *addr)
   }
 }
 
-
 //-----------------------------------------------------------------------------
 void print_syms(const symtab_t &syms)
 {
@@ -445,6 +444,7 @@ void walk_funcs(dbg_flags_t flags)
     if ( (flags & dbg_dump_ir) != 0 )
     {
       fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->c_str());
+      cmtout(0, "max temps: %d\n", f->max_temps());
       print_ir(f->code());
     }
   }
