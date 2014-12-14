@@ -18,7 +18,8 @@ enum codenode_type_t
   CNT_ADD,
   CNT_LEA,
   CNT_ARG,
-  CNT_CALL
+  CNT_CALL,
+  CNT_RET,
 };
 
 //-----------------------------------------------------------------------------
@@ -56,7 +57,7 @@ private:
       symbol_t *src1,
       symbol_t *src2);
 
-  symbol_t *generate(treenode_t *tree, uint32_t ctx);
+  symbol_t *generate(treenode_t *tree, uint32_t ctx = 0);
 #define CTX_LVAL     0x1
 #define CTX_SV_RVAL  0x2
 

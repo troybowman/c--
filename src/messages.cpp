@@ -204,6 +204,7 @@ static const char *cnt2str(codenode_type_t type)
     case CNT_LEA:  return "CNT_LEA\n# ------";
     case CNT_ARG:  return "CNT_ARG\n# ------";
     case CNT_CALL: return "CNT_CALL\n# ------";
+    case CNT_RET:  return "CNT_RET\n# ------";
     default:
       INTERR(1060);
   }

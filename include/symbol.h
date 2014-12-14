@@ -206,6 +206,12 @@ public:
     map[value->name()] = value;
   }
 
+  void insert(const std::string &key, symbol_t *value)
+  {
+    ASSERT(0, key.size() > 0 && value != NULL);
+    map[key] = value;
+  }
+
   typedef smap_t::iterator iterator;
   typedef smap_t::const_iterator const_iterator;
 

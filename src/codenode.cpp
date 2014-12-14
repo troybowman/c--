@@ -90,9 +90,11 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
   switch ( tree->type )
   {
     case TNT_STMT:
-      generate(tree->children[SEQ_CUR], 0);
-      generate(tree->children[SEQ_NEXT], 0);
-      break;
+      {
+        generate(tree->children[SEQ_CUR]);
+        generate(tree->children[SEQ_NEXT]);
+        break;
+      }
     case TNT_INTCON:
     case TNT_CHARCON:
       {
@@ -101,6 +103,19 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
                        ? new symbol_t(ST_IMMEDIATE_CHAR, tree->str)
                        : new symbol_t(tree->val);
         append(CNT_MOV, dest, src1, NULL);
+        return dest;
+      }
+    case TNT_STRCON:
+      {
+        std::string key(tree->str);
+        symbol_t *sym = strings->get(key);
+        if ( sym == NULL )
+        {
+          sym = new symbol_t(ST_STRCON, tree->str);
+          strings->insert(key, sym);
+        }
+        symbol_t *dest = gen_rval(ctx);
+        append(CNT_LEA, dest, sym, NULL);
         return dest;
       }
     case TNT_ASSG:
@@ -112,8 +127,8 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
         symbol_t *dest = generate(lhs, CTX_LVAL);
 
         append(CNT_STORE(lhs->sym), dest, src1, NULL);
+        break;
       }
-      break;
     case TNT_SYMBOL:
       {
         symbol_t *sym = tree->sym;
@@ -128,7 +143,7 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
     case TNT_ARRAY_LOOKUP:
       {
         treenode_t *idxtree = tree->children[AL_OFFSET];
-        symbol_t *idx = generate(idxtree, 0);
+        symbol_t *idx = generate(idxtree);
 
         symbol_t *base = new symbol_t(ST_TEMPORARY);
         append(CNT_LEA, base, tree->sym, NULL);
@@ -148,6 +163,53 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
         }
         return dest;
       }
+    case TNT_ARG:
+      {
+        treenode_t *cur  = tree->children[SEQ_CUR];
+        treenode_t *next = tree->children[SEQ_NEXT];
+
+        symbol_t *arg  = generate(cur);
+        symbol_t *dest = new symbol_t(ST_ANONYMOUS);
+        append(CNT_ARG, dest, arg, NULL);
+
+        generate(next);
+        break;
+      }
+    case TNT_CALL:
+      {
+        generate(tree->children[CALL_ARGS]);
+
+        symbol_t *f = tree->sym;
+        if ( f->rt() != RT_VOID )
+        {
+          symbol_t *ret = new symbol_t(ST_ANONYMOUS);
+          append(CNT_CALL, ret, f, NULL);
+
+          symbol_t *temp = gen_rval(ctx);
+          append(CNT_MOV, temp, ret, NULL);
+          return temp;
+        }
+        else
+        {
+          append(CNT_CALL, NULL, f, NULL);
+          break;
+        }
+      }
+    case TNT_RET:
+      {
+        symbol_t *retval = generate(tree->children[RET_EXPR]);
+        if ( retval != NULL )
+        {
+          symbol_t *ret = new symbol_t(ST_ANONYMOUS);
+          append(CNT_RET, ret, retval, NULL);
+          return ret;
+        }
+        else
+        {
+          append(CNT_RET, NULL, NULL, NULL);
+          break;
+        }
+      }
     default:
       INTERR(1059);
   }
@@ -159,6 +221,6 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, uint32_t ctx)
 //-----------------------------------------------------------------------------
 void ir_engine_t::generate()
 {
-  generate(func->tree(), 0);
+  generate(func->tree());
   func->set_code(head);
 }
