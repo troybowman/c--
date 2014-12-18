@@ -15,10 +15,7 @@ struct codenode_t;
 class symbol_t;
 class symtab_t;
 class symloc_t;
-
-//-----------------------------------------------------------------------------
-typedef std::list<symbol_t *> symlist_t;
-#define PARAM_IDX(i, params) std::distance(static_cast<symlist_t::const_iterator>(params->begin()), i)
+class symlist_t;
 
 extern symtab_t gsyms;
 extern symlist_t functions;
@@ -217,14 +214,19 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class symvec_t : public std::vector<symbol_t *>
+class symlist_t : public std::list<symbol_t *>
 {
-  typedef std::vector<symbol_t *> inherited;
+  typedef std::list<symbol_t *> inherited;
 
 public:
 
   typedef inherited::iterator iterator;
   typedef inherited::const_iterator const_iterator;
+
+  int dist(const_iterator i)
+  {
+    return std::distance(static_cast<const_iterator>(begin()), i);
+  }
 
   bool has(const symbol_t *s)
   {

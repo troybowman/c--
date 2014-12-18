@@ -607,7 +607,7 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
   for ( i = params->begin(); i != params->end(); i++ )
   {
     if ( !check_arg(**i, *curarg->children[SEQ_CUR]) )
-      return call_res_t(CALL_BADARG, PARAM_IDX(i, params)+1);
+      return call_res_t(CALL_BADARG, params->dist(i)+1);
 
     curarg = curarg->children[SEQ_NEXT];
   }

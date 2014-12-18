@@ -42,8 +42,8 @@ class resource_manager_t
   int _cnt;
   symbol_type_t _type;
 
-  symvec_t *_free;
-  symvec_t *_used;
+  symlist_t *_free;
+  symlist_t *_used;
 
   resource_manager_t() {} // No.
 
@@ -51,8 +51,8 @@ public:
 
   resource_manager_t(symbol_type_t type) : _cnt(0), _type(type)
   {
-    _free = new symvec_t();
-    _used = new symvec_t();
+    _free = new symlist_t();
+    _used = new symlist_t();
   }
 
   symbol_t *gen_resource()
@@ -65,13 +65,13 @@ public:
 
   void free(symbol_t *s) { _free->push(s); }
   void add_used(symbol_t *s) { _used->add_unique(s); }
-  symvec_t *get_used() { return _used; }
+  symlist_t *get_used() { return _used; }
   void clear() { _free->clear(); }
 
   void reset()
   {
     clear();
-    symvec_t::iterator i;
+    symlist_t::iterator i;
     for ( i = _used->begin(); i != _used->end(); i++ )
       free(*i);
   }
@@ -83,12 +83,12 @@ struct ir_func_t
 {
   symbol_t *func;
   codenode_t *code;
-  symvec_t *temps;
-  symvec_t *svtemps;
-  symvec_t *args;
+  symlist_t *temps;
+  symlist_t *svtemps;
+  symlist_t *args;
 
-  ir_func_t(symbol_t *f, codenode_t *c, symvec_t *t,
-    symvec_t *svt, symvec_t *a)
+  ir_func_t(symbol_t *f, codenode_t *c, symlist_t *t,
+    symlist_t *svt, symlist_t *a)
       : func(f), code(c), temps(t), svtemps(svt), args(a) {}
 };
 
