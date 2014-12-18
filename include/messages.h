@@ -68,21 +68,25 @@ do                                 \
 } while ( false );
 
 struct codenode_t;
+class symtab_t;
+class symlist_t;
 struct ir_t;
-void print_gsyms();
-void walk_funcs(dbg_flags_t flags);
+void print_syms(const symtab_t &syms, const char *title, const char *extra);
+void walk_funcs(const symlist_t &functions, dbg_flags_t flags);
 void print_ir(const ir_t &ir);
 
 //-----------------------------------------------------------------------------
-#define DBG_PARSE_RESULTS()                 \
+#define DBG_PARSE_RESULTS(gsyms, functions) \
 do                                          \
 {                                           \
   if ( (dbg_flags & dbg_dump_gsyms) != 0 )  \
-    print_gsyms();                          \
+    print_syms(gsyms,                       \
+               "GLOBAL SYMBOL TABLE",       \
+               "");                         \
   if ( (dbg_flags & dbg_dump_lsyms) != 0    \
     || (dbg_flags & dbg_dump_tree)  != 0 )  \
   {                                         \
-    walk_funcs(dbg_flags & 0xC);            \
+    walk_funcs(functions, dbg_flags & 0xC); \
   }                                         \
 } while ( false );
 

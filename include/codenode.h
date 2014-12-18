@@ -153,4 +153,8 @@ struct ir_t
     retloc = new symbol_t(ST_RETLOC);
   }
 };
+
+//-----------------------------------------------------------------------------
+void generate(ir_t *ir, const symlist_t &functions);
+
 #endif // CODENODE_H

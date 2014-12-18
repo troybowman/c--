@@ -13,7 +13,7 @@
   extern "C" int yylex();
   extern "C" int yylineno;
   int yyerror(const char *s);
-  /*#define parse yyparse*/
+  #define parse yyparse
 
   //---------------------------------------------------------------------------
   symtab_t gsyms;      // global symbol table
@@ -1065,23 +1065,16 @@ int main(int argc, char **argv)
   //---------------------------------------------------------------------------
   // parse, generate syntax tree
   ctx.setglobal();
-  yyparse();
+  parse();
   checkerr();
 
-  DBG_PARSE_RESULTS();
+  DBG_PARSE_RESULTS(gsyms, functions);
   CHECK_PHASE_FLAG(dbg_no_ir);
 
   //---------------------------------------------------------------------------
   // generate intermediate representation
   ir_t ir(&gsyms);
-
-  symlist_t::iterator i;
-  for ( i = functions.begin(); i != functions.end(); i++ )
-  {
-    ir_engine_t e(*i, ir.strings, ir.labels, ir.retloc);
-    ir_func_t *irf = e.generate();
-    ir.funcs.push_back(irf);
-  }
+  generate(&ir, functions);
 
   DBG_IR(ir);
   CHECK_PHASE_FLAG(dbg_no_code)

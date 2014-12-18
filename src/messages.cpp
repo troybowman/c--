@@ -266,8 +266,9 @@ static const char *addr2str(const symbol_t *addr)
 }
 
 //-----------------------------------------------------------------------------
-void print_syms(const symtab_t &syms)
+void print_syms(const symtab_t &syms, const char *title, const char *extra)
 {
+  fprintf(stdout, header, title, extra);
   cmtout(0, "size: %d\n", syms.size());
 
   symtab_t::const_iterator i;
@@ -327,13 +328,6 @@ void print_syms(const symtab_t &syms)
         INTERR(1063);
     }
   }
-}
-
-//-----------------------------------------------------------------------------
-void print_gsyms()
-{
-  fprintf(stdout, header, "GLOBAL SYMBOL TABLE", "");
-  print_syms(gsyms);
 }
 
 //-----------------------------------------------------------------------------
@@ -426,18 +420,17 @@ void print_ir(const ir_t &ir)
 }
 
 //-----------------------------------------------------------------------------
-void walk_funcs(dbg_flags_t flags)
+void walk_funcs(const symlist_t &functions, dbg_flags_t flags)
 {
   symlist_t::const_iterator i;
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     symbol_t *f = *i;
     ASSERT(1012, f->is_func());
+
     if ( (flags & dbg_dump_lsyms) != 0 )
-    {
-      fprintf(stdout, header, "LOCAL SYMBOLS FOR FUNCTION: ", f->c_str());
-      print_syms(*f->symbols());
-    }
+      print_syms(*f->symbols(), "LOCAL SYMBOLS FOR FUNCTION: ", f->c_str());
+
     if ( (flags & dbg_dump_tree) != 0 )
     {
       int cnt = 0;

@@ -1,7 +1,6 @@
 #include <stdarg.h>
 
 #include <symbol.h>
-#include <treenode.h>
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)

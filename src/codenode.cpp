@@ -253,3 +253,15 @@ ir_func_t *ir_engine_t::generate()
   return new ir_func_t(func, head, temps.get_used(),
                        svtemps.get_used(), args.get_used());
 }
+
+//-----------------------------------------------------------------------------
+void generate(ir_t *ir, const symlist_t &functions)
+{
+  symlist_t::const_iterator i;
+  for ( i = functions.begin(); i != functions.end(); i++ )
+  {
+    ir_engine_t e(*i, ir->strings, ir->labels, ir->retloc);
+    ir_func_t *irf = e.generate();
+    ir->funcs.push_back(irf);
+  }
+}

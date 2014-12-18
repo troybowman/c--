@@ -8,17 +8,8 @@
 
 #include <messages.h>
 
-struct function_t;
-struct array_t;
 struct treenode_t;
-struct codenode_t;
-class symbol_t;
 class symtab_t;
-class symloc_t;
-class symlist_t;
-
-extern symtab_t gsyms;
-extern symlist_t functions;
 
 //-----------------------------------------------------------------------------
 enum symbol_type_t
