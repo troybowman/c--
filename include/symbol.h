@@ -181,7 +181,6 @@ public:
 class symtab_t // symbol table
 {
   typedef std::map<std::string, symbol_t *> smap_t;
-
   smap_t map;
 
 public:
@@ -190,13 +189,11 @@ public:
     try { return map.at(key); }
     catch ( const std::out_of_range & ) { return NULL; }
   }
-
   void insert(symbol_t *value)
   {
     ASSERT(1013, value != NULL);
     map[value->name()] = value;
   }
-
   void insert(const std::string &key, symbol_t *value)
   {
     ASSERT(1075, key.size() > 0 && value != NULL);
@@ -219,7 +216,6 @@ class symlist_t : public std::list<symbol_t *>
   typedef std::list<symbol_t *> inherited;
 
 public:
-
   typedef inherited::iterator iterator;
   typedef inherited::const_iterator const_iterator;
 
@@ -227,25 +223,21 @@ public:
   {
     return std::distance(static_cast<const_iterator>(begin()), i);
   }
-
   bool has(const symbol_t *s)
   {
     return std::find(begin(), end(), s) != end();
   }
-
   void add_unique(symbol_t *s)
   {
     if ( !has(s) )
       push_back(s);
   }
-
   symbol_t *pop()
   {
     symbol_t *s = back();
     pop_back();
     return s;
   }
-
   void push(symbol_t *s) { push_back(s); }
 };
 

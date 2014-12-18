@@ -566,27 +566,22 @@ struct call_res_t
 //-----------------------------------------------------------------------------
 static bool check_arg(const symbol_t &param, const treenode_t &expr)
 {
-  bool ok = false;
   switch ( param.type() )
   {
     case ST_PRIMITIVE:
-      ok = expr.is_int_compat();
-      break;
+      return expr.is_int_compat();
     case ST_ARRAY:
       if ( expr.type == TNT_STRCON )
-      {
-        ok = param.base() == PRIM_CHAR;
-      }
+        return param.base() == PRIM_CHAR;
+
       else if ( expr.type == TNT_SYMBOL )
-      {
-        const symbol_t *sym = expr.sym;
-        ok = sym->is_array() && sym->base() == param.base();
-      }
-      break;
+        return expr.sym->is_array()
+            && expr.sym->base() == param.base();
+      else
+        return false;
     default:
       INTERR(1031);
   }
-  return ok;
 }
 
 //-----------------------------------------------------------------------------
