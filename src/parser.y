@@ -1078,6 +1078,7 @@ int main(int argc, char **argv)
 
   DBG_IR(ir);
   CHECK_PHASE_FLAG(dbg_no_code)
+
   //---------------------------------------------------------------------------
   // generate code
 

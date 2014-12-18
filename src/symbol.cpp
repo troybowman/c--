@@ -39,5 +39,8 @@ symbol_t::~symbol_t()
     symlist_t::iterator i = params()->begin();
     for ( ; i != params()->end(); i++ )
       delete *i;
+    delete params();
+    ASSERT(0, tree() == NULL);
+    ASSERT(0, symbols() == NULL);
   }
 }
