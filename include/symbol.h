@@ -33,9 +33,10 @@ enum symbol_type_t
   ST_SAVED_TEMPORARY,
   ST_IMMEDIATE_INT,
   ST_IMMEDIATE_CHAR,
-  ST_ANONYMOUS,
   ST_STRCON,
   ST_LABEL,
+  ST_RETLOC,
+  ST_ARGUMENT,
 };
 
 //-----------------------------------------------------------------------------
@@ -101,14 +102,11 @@ enum return_type_t
 
 struct function_t
 {
-  return_type_t rt_type;
+  return_type_t rt;
   symlist_t *params;
   symtab_t *symbols;
-  treenode_t *syntax_tree;
-  codenode_t *code;
-  int max_temps;
-  bool is_extern;
-  bool defined;
+  treenode_t *tree;
+  bool is_extern, defined;
 };
 
 //-----------------------------------------------------------------------------
@@ -132,7 +130,7 @@ public:
 
   symbol_t(const char *, int, symbol_type_t, ...);
 
-  symbol_t(int val) : _type(ST_IMMEDIATE_INT) { _val = val; }
+  symbol_t(symbol_type_t type, int val) : _type(type) { _val = val; }
 
   symbol_t(symbol_type_t type, const char *str) : _type(type) { _str = str; }
 
@@ -156,12 +154,10 @@ public:
   primitive_t base()   const { return _type == ST_PRIMITIVE ? _prim : _array.type; }
   asize_t size()       const { return _array.size; }
 
-  return_type_t rt()   const { return _func.rt_type; }
+  return_type_t rt()   const { return _func.rt; }
   symlist_t *params()  const { return _func.params; }
   symtab_t *symbols()  const { return _func.symbols; }
-  treenode_t *tree()   const { return _func.syntax_tree; }
-  codenode_t *code()   const { return _func.code; }
-  int max_temps()      const { return _func.max_temps; }
+  treenode_t *tree()   const { return _func.tree; }
   bool is_extern()     const { return _func.is_extern; }
   bool defined()       const { return _func.defined; }
 
@@ -177,11 +173,9 @@ public:
 
   void set_size(asize_t size)      { _array.size = size; }
 
-  void set_rt(return_type_t rt)    { _func.rt_type = rt; }
+  void set_rt(return_type_t rt)    { _func.rt = rt; }
   void set_symbols(symtab_t *syms) { _func.symbols = syms; }
-  void set_tree(treenode_t *tree)  { _func.syntax_tree = tree; }
-  void set_code(codenode_t *code)  { _func.code = code; }
-  void set_max_temps(int mt)       { _func.max_temps = mt; }
+  void set_tree(treenode_t *tree)  { _func.tree = tree; }
   void set_extern(bool is_extern = true) { _func.is_extern = is_extern; }
   void set_defined(bool defined = true)  { _func.defined = defined; }
 };
@@ -208,7 +202,7 @@ public:
 
   void insert(const std::string &key, symbol_t *value)
   {
-    ASSERT(0, key.size() > 0 && value != NULL);
+    ASSERT(1075, key.size() > 0 && value != NULL);
     map[key] = value;
   }
 
@@ -220,6 +214,37 @@ public:
   const_iterator begin() const { return map.begin(); }
   const_iterator end()   const { return map.end(); }
   size_t size()          const { return map.size(); }
+};
+
+//-----------------------------------------------------------------------------
+class symvec_t : public std::vector<symbol_t *>
+{
+  typedef std::vector<symbol_t *> inherited;
+
+public:
+
+  typedef inherited::iterator iterator;
+  typedef inherited::const_iterator const_iterator;
+
+  bool has(const symbol_t *s)
+  {
+    return std::find(begin(), end(), s) != end();
+  }
+
+  void add_unique(symbol_t *s)
+  {
+    if ( !has(s) )
+      push_back(s);
+  }
+
+  symbol_t *pop()
+  {
+    symbol_t *s = back();
+    pop_back();
+    return s;
+  }
+
+  void push(symbol_t *s) { push_back(s); }
 };
 
 //-----------------------------------------------------------------------------

@@ -13,7 +13,7 @@
   extern "C" int yylex();
   extern "C" int yylineno;
   int yyerror(const char *s);
-  #define parse yyparse
+  /*#define parse yyparse*/
 
   //---------------------------------------------------------------------------
   symtab_t gsyms;      // global symbol table
@@ -991,10 +991,10 @@ static void process_var_list(symlist_t *list, primitive_t prim)
 }
 
 //-----------------------------------------------------------------------------
-static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_extern)
+static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
 {
   ASSERT(1010, list != NULL);
-  ASSERT(1025, rt_type != RT_UNKNOWN);
+  ASSERT(1025, rt != RT_UNKNOWN);
 
   symlist_t::iterator i;
   for ( i = list->begin(); i != list->end(); i++ )
@@ -1011,7 +1011,7 @@ static void process_func_list(symlist_t *list, return_type_t rt_type, bool is_ex
       continue;
     }
 
-    sym->set_rt(rt_type);
+    sym->set_rt(rt);
     sym->set_extern(is_extern);
     ctx.syms->insert(sym);
   }
@@ -1070,7 +1070,7 @@ int main(int argc, char **argv)
   //---------------------------------------------------------------------------
   // parse, generate syntax tree
   ctx.setglobal();
-  parse();
+  yyparse();
   checkerr();
 
   DBG_PARSE_RESULTS();
@@ -1078,19 +1078,18 @@ int main(int argc, char **argv)
 
   //---------------------------------------------------------------------------
   // generate intermediate representation
-  symtab_t *strings = new symtab_t();
-  symlist_t *labels = new symlist_t();
+  ir_t ir(&gsyms);
 
   symlist_t::iterator i;
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
-    ir_engine_t e(*i, &gsyms, strings, labels);
-    e.generate();
+    ir_engine_t e(*i, ir.strings, ir.labels, ir.retloc);
+    ir_func_t *irf = e.generate();
+    ir.funcs.push_back(irf);
   }
 
-  DBG_IR();
+  DBG_IR(ir);
   CHECK_PHASE_FLAG(dbg_no_code)
-
   //---------------------------------------------------------------------------
   // generate code
 

@@ -67,8 +67,11 @@ do                                 \
     fprintf(stdout, __VA_ARGS__);  \
 } while ( false );
 
+struct codenode_t;
+struct ir_t;
 void print_gsyms();
 void walk_funcs(dbg_flags_t flags);
+void print_ir(const ir_t &ir);
 
 //-----------------------------------------------------------------------------
 #define DBG_PARSE_RESULTS()                 \
@@ -92,11 +95,11 @@ do                                 \
 } while ( false );
 
 //-----------------------------------------------------------------------------
-#define DBG_IR()                        \
+#define DBG_IR(ir)                      \
 do                                      \
 {                                       \
   if ( (dbg_flags & dbg_dump_ir) != 0 ) \
-    walk_funcs(dbg_dump_ir);            \
+    print_ir(ir);                       \
 } while ( false );
 
 #else
@@ -105,7 +108,7 @@ do                                      \
 #define DBG(flag, ...)             // nothing
 #define ASSERT(code, cond)         // nothing
 #define DBG_PARSE_RESULTS()        // nothing
-#define DBG_IR()                   // nothing
+#define DBG_IR(code)               // nothing
 #define CHECK_PHASE_FLAG(flags)    // nothing
 
 #endif // DEBUG

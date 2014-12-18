@@ -72,9 +72,14 @@
 # child AL_OFFSET for node 18
 # node 19: type: TNT_INTCON val: 3
 #-----------------------------------------------------------------------------
+# STRING CONSTANTS
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# max temps: 4
+# temps used:   4
+# svtemps used: 0
+# args used:    0
 # CNT_MOV
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -89,93 +94,93 @@
 # >
 # CNT_MOV
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_IMMEDIATE_CHAR ('a')
 # |
 # >
 # CNT_MOV
 # ------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_IMMEDIATE_INT (0)
 # |
 # >
 # CNT_LEA
 # ------
-# dest -> ST_TEMPORARY (3)
+# dest -> ST_TEMPORARY (2)
 # src1 -> ST_ARRAY (g2)
 # |
 # >
 # CNT_ADD
 # ------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_TEMPORARY (3)
-# src2 -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (2)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_SB
 # ------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_MOV
 # ------
-# dest -> ST_TEMPORARY (5)
+# dest -> ST_TEMPORARY (3)
 # src1 -> ST_IMMEDIATE_INT (5555)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (l1)
-# src1 -> ST_TEMPORARY (5)
+# src1 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_MOV
 # ------
-# dest -> ST_TEMPORARY (6)
+# dest -> ST_TEMPORARY (3)
 # src1 -> ST_IMMEDIATE_INT (3)
 # |
 # >
 # CNT_LEA
 # ------
-# dest -> ST_TEMPORARY (7)
+# dest -> ST_TEMPORARY (2)
 # src1 -> ST_ARRAY (g2)
 # |
 # >
 # CNT_ADD
 # ------
-# dest -> ST_TEMPORARY (8)
-# src1 -> ST_TEMPORARY (7)
-# src2 -> ST_TEMPORARY (6)
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (2)
+# src2 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_LB
 # ------
-# dest -> ST_TEMPORARY (9)
-# src1 -> ST_TEMPORARY (8)
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_MOV
 # ------
-# dest -> ST_TEMPORARY (10)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_IMMEDIATE_INT (10)
 # |
 # >
 # CNT_LEA
 # ------
-# dest -> ST_TEMPORARY (11)
+# dest -> ST_TEMPORARY (2)
 # src1 -> ST_ARRAY (l2)
 # |
 # >
 # CNT_ADD
 # ------
-# dest -> ST_TEMPORARY (12)
-# src1 -> ST_TEMPORARY (11)
-# src2 -> ST_TEMPORARY (10)
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (2)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_SW
 # ------
-# dest -> ST_TEMPORARY (12)
-# src1 -> ST_TEMPORARY (9)
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (3)
 # c-- exited with code: 0

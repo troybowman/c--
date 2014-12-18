@@ -88,9 +88,9 @@ static const char *prim2str(primitive_t p)
 }
 
 //-----------------------------------------------------------------------------
-static const char *rt2str(return_type_t rt_type)
+static const char *rt2str(return_type_t rt)
 {
-  switch ( rt_type )
+  switch ( rt )
   {
     case RT_INT:  return "RT_INT";
     case RT_CHAR: return "RT_CHAR";
@@ -222,46 +222,20 @@ static const char *st2str(symbol_type_t type)
     case ST_SAVED_TEMPORARY: return "ST_SAVED_TEMPORARY";
     case ST_IMMEDIATE_INT:   return "ST_IMMEDIATE_INT";
     case ST_IMMEDIATE_CHAR:  return "ST_IMMEDIATE_CHAR";
-    case ST_ANONYMOUS:       return "ST_ANONYMOUS";
     case ST_STRCON:          return "ST_STRCON";
     case ST_LABEL:           return "ST_LABEL";
+    case ST_ARGUMENT:        return "ST_ARGUMENT";
+    case ST_RETLOC:          return "ST_RETLOC";
     default:
       INTERR(1061);
   }
 }
 
 //-----------------------------------------------------------------------------
-class tempmap_t
-{
-  typedef std::map<const symbol_t *, int> tmap_t;
-  tmap_t map;
-
-  int cnt;
-
-public:
-  int get(const symbol_t *ptr)
-  {
-    try
-    {
-      return map.at(ptr);
-    }
-    catch ( const std::out_of_range & )
-    {
-      cnt++;
-      map[ptr] = cnt;
-      return cnt;
-    }
-  }
-
-  tempmap_t() : cnt(-1) {}
-};
-
-//-----------------------------------------------------------------------------
 static const char *addr2str(const symbol_t *addr)
 {
 #define MAXADDRSTR 32
   static char buf[MAXADDRSTR];
-  static tempmap_t temps;
 
   const char *type = st2str(addr->type());
 
@@ -272,6 +246,8 @@ static const char *addr2str(const symbol_t *addr)
     case ST_FUNCTION:
       snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->c_str());
       return buf;
+    case ST_TEMPORARY:
+    case ST_SAVED_TEMPORARY:
     case ST_IMMEDIATE_INT:
       snprintf(buf, MAXADDRSTR, "%s (%d)", type, addr->val());
       return buf;
@@ -280,15 +256,12 @@ static const char *addr2str(const symbol_t *addr)
       snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->str());
       return buf;
     case ST_LABEL:
+    case ST_RETLOC:
+    case ST_ARGUMENT:
       snprintf(buf, MAXADDRSTR, "%s", type);
       return buf;
-    case ST_TEMPORARY:
-    case ST_SAVED_TEMPORARY:
-    case ST_ANONYMOUS:
-      snprintf(buf, MAXADDRSTR, "%s (%d)", type, temps.get(addr));
-      return buf;
     default:
-      INTERR(0);
+      INTERR(1078);
   }
 }
 
@@ -402,9 +375,21 @@ void print_tree(const treenode_t *node, int *cnt)
 }
 
 //-----------------------------------------------------------------------------
-static void print_ir(const codenode_t *node)
+static void print_ir_strings(const symtab_t *strings)
 {
-  const codenode_t *ptr = node;
+  fprintf(stdout, header, "STRING CONSTANTS", "");
+  symtab_t::const_iterator i;
+  for ( i = strings->begin(); i != strings->end(); i++ )
+  {
+    std::string string = i->first;
+    cmtout(0, "%s\n", string.c_str());
+  }
+}
+
+//-----------------------------------------------------------------------------
+static void print_ir_code(const codenode_t *code)
+{
+  const codenode_t *ptr = code;
   while ( ptr != NULL )
   {
     cmtout(0, "%s\n", cnt2str(ptr->type));
@@ -420,6 +405,23 @@ static void print_ir(const codenode_t *node)
 
     if ( ptr != NULL )
       cmtout(0, "|\n# >\n");
+  }
+}
+
+//-----------------------------------------------------------------------------
+void print_ir(const ir_t &ir)
+{
+  print_ir_strings(ir.strings);
+
+  ir_funcs_t::const_iterator i;
+  for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
+  {
+    ir_func_t *irf = *i;
+    fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->func->c_str());
+    cmtout(0, "temps used:   %d\n", irf->temps->size());
+    cmtout(0, "svtemps used: %d\n", irf->svtemps->size());
+    cmtout(0, "args used:    %d\n", irf->args->size());
+    print_ir_code(irf->code);
   }
 }
 
@@ -441,12 +443,6 @@ void walk_funcs(dbg_flags_t flags)
       int cnt = 0;
       fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->c_str());
       print_tree(f->tree(), &cnt);
-    }
-    if ( (flags & dbg_dump_ir) != 0 )
-    {
-      fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->c_str());
-      cmtout(0, "max temps: %d\n", f->max_temps());
-      print_ir(f->code());
     }
   }
 }
