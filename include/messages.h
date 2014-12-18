@@ -71,6 +71,7 @@ struct codenode_t;
 class symtab_t;
 class symlist_t;
 struct ir_t;
+
 void print_syms(const symtab_t &syms, const char *title, const char *extra);
 void walk_funcs(const symlist_t &functions, dbg_flags_t flags);
 void print_ir(const ir_t &ir);

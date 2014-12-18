@@ -31,13 +31,13 @@ void ir_engine_t::check_dest(symbol_t *sym)
   switch ( sym->type() )
   {
     case ST_TEMPORARY:
-      temps.add_used(sym);
+      temps.used(sym);
       break;
     case ST_SAVED_TEMPORARY:
-      svtemps.add_used(sym);
+      svtemps.used(sym);
       break;
     case ST_ARGUMENT:
-      args.add_used(sym);
+      args.used(sym);
       break;
     default:
       break;
@@ -168,9 +168,17 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
         if ( ctx == IRCTX_LVAL )
           return sym;
 
-        symbol_t *dest = gen_temp(ctx);
-
-        append(CNT_LOAD(sym), dest, sym, NULL);
+        symbol_t *dest;
+        if ( sym->is_array() )
+        {
+          dest = gen_temp();
+          append(CNT_LEA, dest, sym, NULL);
+        }
+        else
+        {
+          dest = gen_temp(ctx);
+          append(CNT_LOAD(sym), dest, sym, NULL);
+        }
         return dest;
       }
     case TNT_ARRAY_LOOKUP:
@@ -250,8 +258,8 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
 ir_func_t *ir_engine_t::generate()
 {
   generate(func->tree());
-  return new ir_func_t(func, head, temps.get_used(),
-                       svtemps.get_used(), args.get_used());
+  return new ir_func_t(func, head, temps.get_union(),
+                       svtemps.get_union(), args.get_union());
 }
 
 //-----------------------------------------------------------------------------

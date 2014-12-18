@@ -101,7 +101,7 @@
 # svtemps used: 0
 # args used:    0
 # CNT_RET
-# ------
+# -------
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: gimme5
 #-----------------------------------------------------------------------------
@@ -109,13 +109,13 @@
 # svtemps used: 0
 # args used:    0
 # CNT_MOV
-# ------
+# -------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_IMMEDIATE_INT (5)
 # |
 # >
 # CNT_RET
-# ------
+# -------
 # dest -> ST_RETLOC
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
@@ -125,23 +125,23 @@
 # svtemps used: 0
 # args used:    0
 # CNT_CALL
-# ------
+# --------
 # src1 -> ST_FUNCTION (empty1)
 # |
 # >
 # CNT_CALL
-# ------
+# --------
 # src1 -> ST_FUNCTION (empty2)
 # |
 # >
 # CNT_CALL
-# ------
+# --------
 # dest -> ST_RETLOC
 # src1 -> ST_FUNCTION (gimme5)
 # |
 # >
 # CNT_MOV
-# ------
+# -------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_RETLOC
 # |

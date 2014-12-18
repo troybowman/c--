@@ -195,16 +195,16 @@ static const char *cnt2str(codenode_type_t type)
 {
   switch ( type )
   {
-    case CNT_MOV:  return "CNT_MOV\n# ------";
+    case CNT_MOV:  return "CNT_MOV\n# -------";
     case CNT_LW:   return "CNT_LW\n# ------";
     case CNT_LB:   return "CNT_LB\n# ------";
     case CNT_SW:   return "CNT_SW\n# ------";
     case CNT_SB:   return "CNT_SB\n# ------";
-    case CNT_ADD:  return "CNT_ADD\n# ------";
-    case CNT_LEA:  return "CNT_LEA\n# ------";
-    case CNT_ARG:  return "CNT_ARG\n# ------";
-    case CNT_CALL: return "CNT_CALL\n# ------";
-    case CNT_RET:  return "CNT_RET\n# ------";
+    case CNT_ADD:  return "CNT_ADD\n# -------";
+    case CNT_LEA:  return "CNT_LEA\n# -------";
+    case CNT_ARG:  return "CNT_ARG\n# -------";
+    case CNT_CALL: return "CNT_CALL\n# --------";
+    case CNT_RET:  return "CNT_RET\n# -------";
     default:
       INTERR(1060);
   }
@@ -248,6 +248,7 @@ static const char *addr2str(const symbol_t *addr)
       return buf;
     case ST_TEMPORARY:
     case ST_SAVED_TEMPORARY:
+    case ST_ARGUMENT:
     case ST_IMMEDIATE_INT:
       snprintf(buf, MAXADDRSTR, "%s (%d)", type, addr->val());
       return buf;
@@ -257,7 +258,6 @@ static const char *addr2str(const symbol_t *addr)
       return buf;
     case ST_LABEL:
     case ST_RETLOC:
-    case ST_ARGUMENT:
       snprintf(buf, MAXADDRSTR, "%s", type);
       return buf;
     default:

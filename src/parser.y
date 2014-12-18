@@ -818,7 +818,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
   if ( prev != NULL )
   {
     usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
-            prev->c_str(), yylineno, prev->line());
+            prev->c_str(), line, prev->line());
     return NULL;
   }
 

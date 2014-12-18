@@ -223,13 +223,6 @@ public:
     if ( !has(s) )
       push_back(s);
   }
-  symbol_t *pop()
-  {
-    symbol_t *s = back();
-    pop_back();
-    return s;
-  }
-  void push(symbol_t *s) { push_back(s); }
 };
 
 //-----------------------------------------------------------------------------

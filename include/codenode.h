@@ -1,8 +1,7 @@
 #ifndef CODENODE_H
 #define CODENODE_H
 
-#include <stdint.h>
-#include <vector>
+#include <map>
 
 class symbol_t;
 struct treenode_t;
@@ -42,37 +41,41 @@ class resource_manager_t
   int _cnt;
   symbol_type_t _type;
 
-  symlist_t *_free;
-  symlist_t *_used;
+  typedef std::map<int, symbol_t *> rmap_t;
+
+  rmap_t _free;
+  symlist_t *_union;
 
   resource_manager_t() {} // No.
 
 public:
 
-  resource_manager_t(symbol_type_t type) : _cnt(0), _type(type)
-  {
-    _free = new symlist_t();
-    _used = new symlist_t();
-  }
+  resource_manager_t(symbol_type_t type)
+    : _cnt(0), _type(type), _union(new symlist_t()) {}
 
   symbol_t *gen_resource()
   {
-    if ( _free->size() > 0 )
-      return _free->pop();
+    if ( _free.size() > 0 )
+    {
+      symbol_t *ret = _free.begin()->second;
+      _free.erase(_free.begin());
+      return ret;
+    }
     else
       return new symbol_t(_type, _cnt++);
   }
 
-  void free(symbol_t *s) { _free->push(s); }
-  void add_used(symbol_t *s) { _used->add_unique(s); }
-  symlist_t *get_used() { return _used; }
-  void clear() { _free->clear(); }
+  void free(symbol_t *s) { _free[s->val()] = s; }
+  void used(symbol_t *s) { _union->add_unique(s); }
+
+  symlist_t *get_union() { return _union; }
+  void clear() { _free.clear(); }
 
   void reset()
   {
     clear();
     symlist_t::iterator i;
-    for ( i = _used->begin(); i != _used->end(); i++ )
+    for ( i = _union->begin(); i != _union->end(); i++ )
       free(*i);
   }
 };

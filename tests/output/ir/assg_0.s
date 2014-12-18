@@ -81,7 +81,7 @@
 # svtemps used: 0
 # args used:    0
 # CNT_MOV
-# ------
+# -------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_IMMEDIATE_INT (5)
 # |
@@ -93,25 +93,25 @@
 # |
 # >
 # CNT_MOV
-# ------
+# -------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_IMMEDIATE_CHAR ('a')
 # |
 # >
 # CNT_MOV
-# ------
+# -------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_IMMEDIATE_INT (0)
 # |
 # >
 # CNT_LEA
-# ------
+# -------
 # dest -> ST_TEMPORARY (2)
 # src1 -> ST_ARRAY (g2)
 # |
 # >
 # CNT_ADD
-# ------
+# -------
 # dest -> ST_TEMPORARY (3)
 # src1 -> ST_TEMPORARY (2)
 # src2 -> ST_TEMPORARY (1)
@@ -124,63 +124,63 @@
 # |
 # >
 # CNT_MOV
-# ------
-# dest -> ST_TEMPORARY (3)
+# -------
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_IMMEDIATE_INT (5555)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (l1)
-# src1 -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_MOV
-# ------
-# dest -> ST_TEMPORARY (3)
+# -------
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_IMMEDIATE_INT (3)
 # |
 # >
 # CNT_LEA
-# ------
-# dest -> ST_TEMPORARY (2)
+# -------
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_ARRAY (g2)
 # |
 # >
 # CNT_ADD
-# ------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (3)
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_LB
 # ------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_MOV
-# ------
+# -------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_IMMEDIATE_INT (10)
 # |
 # >
 # CNT_LEA
-# ------
+# -------
 # dest -> ST_TEMPORARY (2)
 # src1 -> ST_ARRAY (l2)
 # |
 # >
 # CNT_ADD
-# ------
-# dest -> ST_TEMPORARY (0)
+# -------
+# dest -> ST_TEMPORARY (3)
 # src1 -> ST_TEMPORARY (2)
 # src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_SW
 # ------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_TEMPORARY (3)
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (0)
 # c-- exited with code: 0
