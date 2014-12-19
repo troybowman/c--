@@ -23,6 +23,20 @@ static bool has_call(treenode_t *tree)
 }
 
 //-----------------------------------------------------------------------------
+static codenode_type_t tnt2cnt(treenode_type_t type)
+{
+  switch ( type )
+  {
+    case TNT_PLUS:  return CNT_ADD;
+    case TNT_MINUS: return CNT_SUB;
+    case TNT_DIV:   return CNT_DIV;
+    case TNT_MULT:  return CNT_MUL;
+    default:
+      INTERR(0);
+  }
+}
+
+//-----------------------------------------------------------------------------
 void ir_engine_t::check_dest(symbol_t *sym)
 {
   if ( sym == NULL )
@@ -242,6 +256,21 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
         else
           append(CNT_RET, NULL, NULL, NULL);
         break;
+      }
+    case TNT_PLUS:
+    case TNT_MINUS:
+    case TNT_DIV:
+    case TNT_MULT:
+      {
+        treenode_t *lhs = tree->children[LHS];
+        treenode_t *rhs = tree->children[RHS];
+
+        symbol_t *src1 = generate(lhs, has_call(rhs) ? IRCTX_SV_RVAL : IRCTX_NONE);
+        symbol_t *src2 = generate(rhs);
+        symbol_t *dest = gen_temp(ctx);
+
+        append(tnt2cnt(tree->type), dest, src1, src2);
+        return dest;
       }
     default:
       INTERR(1059);

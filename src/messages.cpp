@@ -201,6 +201,9 @@ static const char *cnt2str(codenode_type_t type)
     case CNT_SW:   return "CNT_SW\n# ------";
     case CNT_SB:   return "CNT_SB\n# ------";
     case CNT_ADD:  return "CNT_ADD\n# -------";
+    case CNT_SUB:  return "CNT_SUB\n# -------";
+    case CNT_DIV:  return "CNT_DIV\n# -------";
+    case CNT_MUL:  return "CNT_MUL\n# -------";
     case CNT_LEA:  return "CNT_LEA\n# -------";
     case CNT_ARG:  return "CNT_ARG\n# -------";
     case CNT_CALL: return "CNT_CALL\n# --------";
