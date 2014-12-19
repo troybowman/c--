@@ -50,7 +50,7 @@
 
 
 [0-9]+ {
-         yylval.i = atoi(yytext);
+         yylval.i = strtol(yytext, NULL, 10);
          return INT;
        }
 

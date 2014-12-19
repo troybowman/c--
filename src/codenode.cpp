@@ -199,7 +199,7 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
         {
           symbol_t *loc = gen_temp();
           append(CNT_ADD, loc, base, idx);
-          dest = gen_temp(ctx); // TODO
+          dest = gen_temp(ctx);
           append(CNT_LOAD(tree->sym), dest, loc, NULL);
         }
         return dest;

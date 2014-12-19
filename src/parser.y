@@ -178,7 +178,7 @@ param_decl : type ID param_array_sfx
              }
            ;
 
-param_array_sfx : '[' ']'     { $$.code = ASFX_OK; $$.size = -1; }
+param_array_sfx : '[' ']'     { $$.code = ASFX_OK; $$.size = BADSIZE; }
                 | /* empty */ { $$.code = ASFX_NONE; }
                 ;
 

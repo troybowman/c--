@@ -1,6 +1,8 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
+#include <stdint.h>
+
 #include <vector>
 #include <string>
 #include <list>
@@ -71,7 +73,8 @@ enum primitive_t
 };
 
 //-----------------------------------------------------------------------------
-typedef int asize_t; // array size
+typedef uint32_t asize_t;   // array size
+#define BADSIZE asize_t(-1) // invalid array size
 
 //-----------------------------------------------------------------------------
 enum return_type_t
