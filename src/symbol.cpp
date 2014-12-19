@@ -10,20 +10,18 @@ symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
   va_start(va, _type);
   switch ( _type )
   {
-    case ST_PRIMITIVE:
-      _prim = PRIM_UNKNOWN;
-      break;
     case ST_ARRAY:
-      _array.type = PRIM_UNKNOWN;
-      _array.size = va_arg(va, asize_t);
+      _size = va_arg(va, asize_t);
+    case ST_PRIMITIVE:
+      _base = PRIM_UNKNOWN;
       break;
     case ST_FUNCTION:
-      _func.rt          = RT_UNKNOWN;
-      _func.symbols     = NULL;
-      _func.tree        = NULL;
-      _func.is_extern   = false;
-      _func.defined     = false;
-      _func.params      = va_arg(va, symlist_t *);
+      _rt          = RT_UNKNOWN;
+      _symbols     = NULL;
+      _tree        = NULL;
+      _is_extern   = false;
+      _defined     = false;
+      _params      = va_arg(va, symlist_t *);
       break;
     default:
       INTERR(1065);

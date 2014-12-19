@@ -19,8 +19,8 @@ enum symbol_type_t
   ST_FUNCTION,
   ST_TEMPORARY,
   ST_SAVED_TEMPORARY,
-  ST_IMMEDIATE_INT,
-  ST_IMMEDIATE_CHAR,
+  ST_INTCON,
+  ST_CHARCON,
   ST_STRCON,
   ST_LABEL,
   ST_RETLOC,
@@ -73,12 +73,6 @@ enum primitive_t
 //-----------------------------------------------------------------------------
 typedef int asize_t; // array size
 
-struct array_t
-{
-  asize_t size;
-  primitive_t type;
-};
-
 //-----------------------------------------------------------------------------
 enum return_type_t
 {
@@ -86,15 +80,6 @@ enum return_type_t
   RT_INT     = PRIM_INT,
   RT_CHAR    = PRIM_CHAR,
   RT_VOID
-};
-
-struct function_t
-{
-  return_type_t rt;
-  symlist_t *params;
-  symtab_t *symbols;
-  treenode_t *tree;
-  bool is_extern, defined;
 };
 
 //-----------------------------------------------------------------------------
@@ -106,11 +91,27 @@ class symbol_t
   symbol_type_t _type;
   union
   {
-    int _val;
-    const char *_str;
-    primitive_t _prim;
-    array_t _array;
-    function_t _func;
+    int _val;             // ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_ARGUMENT, ST_INTCON
+
+    const char *_str;     // ST_STRCON, ST_CHARCON, ST_LABEL
+
+    primitive_t _base;    // ST_PRIMITIVE
+
+    struct                // ST_ARRAY
+    {
+      primitive_t _eltype;
+      asize_t _size;
+    };
+
+    struct                // ST_FUNCTION
+    {
+      return_type_t _rt;
+      symlist_t *_params;
+      symtab_t *_symbols;
+      treenode_t *_tree;
+      bool _is_extern;
+      bool _defined;
+    };
   };
 
 public:
@@ -129,8 +130,6 @@ public:
   bool is_prim()       const { return _type == ST_PRIMITIVE; }
   bool is_array()      const { return _type == ST_ARRAY; }
   bool is_func()       const { return _type == ST_FUNCTION; }
-  bool is_temp()       const { return _type == ST_TEMPORARY
-                                   || _type == ST_SAVED_TEMPORARY; }
 
   std::string name()   const { return _name; }
   const char *c_str()  const { return _name.c_str(); }
@@ -139,33 +138,26 @@ public:
   const char *str()    const { return _str; }
   int val()            const { return _val; }
 
-  primitive_t base()   const { return _type == ST_PRIMITIVE ? _prim : _array.type; }
-  asize_t size()       const { return _array.size; }
+  primitive_t base()   const { return _base; }
+  asize_t size()       const { return _size; }
 
-  return_type_t rt()   const { return _func.rt; }
-  symlist_t *params()  const { return _func.params; }
-  symtab_t *symbols()  const { return _func.symbols; }
-  treenode_t *tree()   const { return _func.tree; }
-  bool is_extern()     const { return _func.is_extern; }
-  bool defined()       const { return _func.defined; }
+  return_type_t rt()   const { return _rt; }
+  symlist_t *params()  const { return _params; }
+  symtab_t *symbols()  const { return _symbols; }
+  treenode_t *tree()   const { return _tree; }
+  bool is_extern()     const { return _is_extern; }
+  bool defined()       const { return _defined; }
 
-  void set_name(const char *name) { _name.assign(name); }
+  void set_name(const char *name)  { _name.assign(name); }
 
-  void set_base(primitive_t base)
-  {
-    if ( _type == ST_PRIMITIVE )
-      _prim = base;
-    else
-      _array.type = base;
-  }
+  void set_base(primitive_t base)  { _base = base; }
+  void set_size(asize_t size)      { _size = size; }
 
-  void set_size(asize_t size)      { _array.size = size; }
-
-  void set_rt(return_type_t rt)    { _func.rt = rt; }
-  void set_symbols(symtab_t *syms) { _func.symbols = syms; }
-  void set_tree(treenode_t *tree)  { _func.tree = tree; }
-  void set_extern(bool is_extern = true) { _func.is_extern = is_extern; }
-  void set_defined(bool defined = true)  { _func.defined = defined; }
+  void set_rt(return_type_t rt)    { _rt = rt; }
+  void set_symbols(symtab_t *syms) { _symbols = syms; }
+  void set_tree(treenode_t *tree)  { _tree = tree; }
+  void set_extern(bool is_extern = true) { _is_extern = is_extern; }
+  void set_defined(bool defined = true)  { _defined = defined; }
 };
 
 //-----------------------------------------------------------------------------

@@ -455,7 +455,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (5)
+# src1 -> ST_INTCON (5)
 # |
 # >
 # CNT_ARG
@@ -485,7 +485,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_CHAR ('a')
+# src1 -> ST_CHARCON ('a')
 # |
 # >
 # CNT_ARG
@@ -527,7 +527,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (6)
+# src1 -> ST_INTCON (6)
 # |
 # >
 # CNT_ARG
@@ -569,7 +569,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (16)
+# src1 -> ST_INTCON (16)
 # |
 # >
 # CNT_ARG
@@ -623,7 +623,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_CHAR ('3')
+# src1 -> ST_CHARCON ('3')
 # |
 # >
 # CNT_ARG
@@ -635,7 +635,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (4)
+# src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_ARG
@@ -659,7 +659,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (6)
+# src1 -> ST_INTCON (6)
 # |
 # >
 # CNT_ARG
@@ -671,7 +671,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (7)
+# src1 -> ST_INTCON (7)
 # |
 # >
 # CNT_ARG
@@ -683,7 +683,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_CHAR ('8')
+# src1 -> ST_CHARCON ('8')
 # |
 # >
 # CNT_ARG
@@ -707,7 +707,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (10)
+# src1 -> ST_INTCON (10)
 # |
 # >
 # CNT_ARG
@@ -724,7 +724,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (500000)
+# src1 -> ST_INTCON (500000)
 # |
 # >
 # CNT_ARG

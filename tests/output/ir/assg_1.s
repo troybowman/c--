@@ -149,7 +149,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (3)
+# src1 -> ST_INTCON (3)
 # |
 # >
 # CNT_LEA

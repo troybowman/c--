@@ -220,8 +220,8 @@ static const char *st2str(symbol_type_t type)
     case ST_FUNCTION:        return "ST_FUNCTION";
     case ST_TEMPORARY:       return "ST_TEMPORARY";
     case ST_SAVED_TEMPORARY: return "ST_SAVED_TEMPORARY";
-    case ST_IMMEDIATE_INT:   return "ST_IMMEDIATE_INT";
-    case ST_IMMEDIATE_CHAR:  return "ST_IMMEDIATE_CHAR";
+    case ST_INTCON:          return "ST_INTCON";
+    case ST_CHARCON:         return "ST_CHARCON";
     case ST_STRCON:          return "ST_STRCON";
     case ST_LABEL:           return "ST_LABEL";
     case ST_ARGUMENT:        return "ST_ARGUMENT";
@@ -249,10 +249,10 @@ static const char *addr2str(const symbol_t *addr)
     case ST_TEMPORARY:
     case ST_SAVED_TEMPORARY:
     case ST_ARGUMENT:
-    case ST_IMMEDIATE_INT:
+    case ST_INTCON:
       snprintf(buf, MAXADDRSTR, "%s (%d)", type, addr->val());
       return buf;
-    case ST_IMMEDIATE_CHAR:
+    case ST_CHARCON:
     case ST_STRCON:
       snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->str());
       return buf;

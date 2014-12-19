@@ -38,10 +38,10 @@ struct codenode_t
 //-----------------------------------------------------------------------------
 class resource_manager_t
 {
+  typedef std::map<int, symbol_t *> rmap_t;
+
   int _cnt;
   symbol_type_t _type;
-
-  typedef std::map<int, symbol_t *> rmap_t;
 
   rmap_t _free;
   symlist_t *_union;
@@ -65,11 +65,11 @@ public:
       return new symbol_t(_type, _cnt++);
   }
 
+  void clear()           { _free.clear(); }
   void free(symbol_t *s) { _free[s->val()] = s; }
   void used(symbol_t *s) { _union->add_unique(s); }
 
   symlist_t *get_union() { return _union; }
-  void clear() { _free.clear(); }
 
   void reset()
   {

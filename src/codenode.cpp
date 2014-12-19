@@ -133,8 +133,8 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
       {
         symbol_t *dest = gen_temp(ctx);
         symbol_t *src1 = tree->type == TNT_CHARCON
-                       ? new symbol_t(ST_IMMEDIATE_CHAR, tree->str)
-                       : new symbol_t(ST_IMMEDIATE_INT, tree->val);
+                       ? new symbol_t(ST_CHARCON, tree->str)
+                       : new symbol_t(ST_INTCON, tree->val);
         append(CNT_MOV, dest, src1, NULL);
         return dest;
       }

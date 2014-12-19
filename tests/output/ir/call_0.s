@@ -111,7 +111,7 @@
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_IMMEDIATE_INT (5)
+# src1 -> ST_INTCON (5)
 # |
 # >
 # CNT_RET
