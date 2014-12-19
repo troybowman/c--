@@ -230,11 +230,9 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
           append(CNT_MOV, temp, retloc, NULL);
           return temp;
         }
-        else
-        {
-          append(CNT_CALL, NULL, f, NULL);
-          break;
-        }
+
+        append(CNT_CALL, NULL, f, NULL);
+        break;
       }
     case TNT_RET:
       {

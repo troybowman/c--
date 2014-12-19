@@ -92,17 +92,13 @@ class symbol_t
   union
   {
     int _val;             // ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_ARGUMENT, ST_INTCON
-
-    const char *_str;     // ST_STRCON, ST_CHARCON, ST_LABEL
-
+    const char *_str;     // ST_STRCON, ST_CHARCON
     primitive_t _base;    // ST_PRIMITIVE
-
     struct                // ST_ARRAY
     {
-      primitive_t _eltype;
+      primitive_t _eltyp;
       asize_t _size;
     };
-
     struct                // ST_FUNCTION
     {
       return_type_t _rt;

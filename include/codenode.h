@@ -152,8 +152,8 @@ struct ir_t
   ir_t(symtab_t *_gsyms) : gsyms(_gsyms)
   {
     strings = new symtab_t();
-    labels = new symlist_t();
-    retloc = new symbol_t(ST_RETLOC);
+    labels  = new symlist_t();
+    retloc  = new symbol_t(ST_RETLOC);
   }
 };
 

@@ -16,8 +16,8 @@
   #define parse yyparse
 
   //---------------------------------------------------------------------------
-  symtab_t gsyms;      // global symbol table
-  symlist_t functions; // functions, in order as they appear in the source file
+  static symtab_t gsyms;      // global symbol table
+  static symlist_t functions; // functions, in order as they appear in the source file
 
   static struct
   {
