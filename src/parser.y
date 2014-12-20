@@ -71,6 +71,7 @@
 #endif
 %}
 
+/*---------------------------------------------------------------------------*/
 %union
 {
   int i;
@@ -98,12 +99,20 @@
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
 
+/*---------------------------------------------------------------------------*/
+/* precedence increases as we go down the list */
 %left OR
 %left AND
-%left EQ NEQ
-%left '<' LEQ '>' GEQ
-%left '-' '+'
-%left '/' '*'
+%left NEQ
+%left EQ
+%left GEQ
+%left '>'
+%left LEQ
+%left '<'
+%left '-'
+%left '+'
+%left '/'
+%left '*'
 %right UNARY
 
 %start prog
