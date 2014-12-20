@@ -218,21 +218,26 @@ symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
         }
         return dest;
       }
-    case TNT_ARG:
-      {
-        treenode_t *cur  = tree->children[SEQ_CUR];
-        treenode_t *next = tree->children[SEQ_NEXT];
-
-        symbol_t *argval = generate(cur);
-        symbol_t *argloc = args.gen_resource();
-        append(CNT_ARG, argloc, argval, NULL);
-
-        generate(next);
-        break;
-      }
     case TNT_CALL:
       {
-        generate(tree->children[CALL_ARGS]);
+        symlist_t argvals;
+        symlist_t arglocs;
+
+        tree_iterator_t ti(tree->children[CALL_ARGS]);
+
+        for ( ; ti.tree() != NULL; ti++ )
+          argvals.push_back(generate(ti.tree()));
+
+        int size = argvals.size();
+        for ( int i = 0; i < size; i++ )
+          arglocs.push_back(args.gen_resource());
+
+        symlist_t::reverse_iterator val = argvals.rbegin();
+        symlist_t::reverse_iterator loc = arglocs.rbegin();
+
+        for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
+          append(CNT_ARG, *loc, *val, NULL);
+
         args.reset();
 
         symbol_t *f = tree->sym;

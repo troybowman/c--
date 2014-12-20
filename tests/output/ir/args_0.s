@@ -449,7 +449,7 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: stuff
 #-----------------------------------------------------------------------------
-# temps used:   1
+# temps used:   10
 # svtemps used: 0
 # args used:    10
 # CNT_MOV
@@ -518,21 +518,21 @@
 # src1 -> ST_ARRAY (larray)
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (6)
 # |
 # >
 # CNT_ARG
 # -------
 # dest -> ST_ARGUMENT (1)
+# src1 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -560,21 +560,21 @@
 # src1 -> ST_STRCON ("hello")
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (16)
 # |
 # >
 # CNT_ARG
 # -------
 # dest -> ST_ARGUMENT (1)
+# src1 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -602,117 +602,117 @@
 # src1 -> ST_STRCON ("one")
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_ARRAY (larray)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (1)
-# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (2)
 # src1 -> ST_CHARCON ('3')
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (2)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (3)
 # src1 -> ST_INTCON (4)
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (3)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (4)
 # src1 -> ST_ARRAY (larray)
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (4)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (5)
 # src1 -> ST_INTCON (6)
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (5)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (6)
 # src1 -> ST_INTCON (7)
 # |
 # >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (6)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (7)
 # src1 -> ST_CHARCON ('8')
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (7)
-# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (8)
 # src1 -> ST_STRCON ("nine")
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_ARGUMENT (8)
-# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMPORARY (9)
 # src1 -> ST_INTCON (10)
 # |
 # >
 # CNT_ARG
 # -------
 # dest -> ST_ARGUMENT (9)
+# src1 -> ST_TEMPORARY (9)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (8)
+# src1 -> ST_TEMPORARY (8)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (7)
+# src1 -> ST_TEMPORARY (7)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (6)
+# src1 -> ST_TEMPORARY (6)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (5)
+# src1 -> ST_TEMPORARY (5)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (4)
+# src1 -> ST_TEMPORARY (4)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (3)
+# src1 -> ST_TEMPORARY (3)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (2)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (1)
+# src1 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
