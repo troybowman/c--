@@ -133,7 +133,7 @@ private:
   void append(codenode_type_t type, symbol_t *dest,
     symbol_t *src1, symbol_t *src2);
 
-  symbol_t *generate(treenode_t *tree, ir_ctx_t ctx = IRCTX_NONE);
+  symbol_t *generate(const treenode_t *tree, ir_ctx_t ctx = IRCTX_NONE);
 
 public:
   ir_engine_t(symbol_t *func, symtab_t *strings,

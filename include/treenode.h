@@ -95,15 +95,15 @@ bool is_seq_type(treenode_type_t type);
 //-----------------------------------------------------------------------------
 class tree_iterator_t
 {
-  treenode_t *ptr;
+  const treenode_t *ptr;
 
 public:
-  tree_iterator_t(treenode_t *root) : ptr(root)
+  tree_iterator_t(const treenode_t *root) : ptr(root)
   {
     ASSERT(0, root == NULL || is_seq_type(root->type));
   }
 
-  treenode_t *tree() { return ptr != NULL ? ptr->children[SEQ_CUR] : NULL; }
+  const treenode_t *tree() { return ptr != NULL ? ptr->children[SEQ_CUR] : NULL; }
 
   tree_iterator_t &operator++()
   {

@@ -561,6 +561,16 @@ static treenode_t *process_ret_stmt(treenode_t *expr, int line)
 }
 
 //-----------------------------------------------------------------------------
+static int count_args(const treenode_t *args)
+{
+  int ret = 0;
+  tree_iterator_t ti(args);
+  for ( ; ti.tree() != NULL; ti++ )
+    ret++;
+  return ret;
+}
+
+//-----------------------------------------------------------------------------
 struct call_res_t
 {
   int code;
@@ -601,20 +611,17 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
 
   symlist_t *params = f.params();
 
-  int nargs = args == NULL ? 0 : args->val;
-  if ( nargs != params->size() )
-    return call_res_t(CALL_NUMARGS, nargs);
+  tree_iterator_t ti(args);
+  symlist_t::const_iterator i = params->begin();
 
-  symlist_t::const_iterator i;
-  const treenode_t *curarg = args;
-
-  for ( i = params->begin(); i != params->end(); i++ )
+  for ( ; ti.tree() != NULL && i != params->end(); ti++, i++ )
   {
-    if ( !check_arg(**i, *curarg->children[SEQ_CUR]) )
+    if ( !check_arg(**i, *ti.tree()) )
       return call_res_t(CALL_BADARG, params->dist(i)+1);
-
-    curarg = curarg->children[SEQ_NEXT];
   }
+
+  if ( ti.tree() != NULL || i != params->end() )
+    return call_res_t(CALL_NUMARGS, count_args(args));
 
   return call_res_t(CALL_OK);
 }
@@ -714,15 +721,9 @@ static seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type
   treenode_t *to_app = new treenode_t(type, cur, NULL);
 
   if ( seq.head == NULL )
-  {
     seq.head = to_app;
-    seq.head->val = 1;
-  }
   else
-  {
     seq.tail->children[SEQ_NEXT] = to_app;
-    seq.head->val++;
-  }
 
   seq.tail = to_app;
   return seq;

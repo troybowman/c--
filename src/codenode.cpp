@@ -129,7 +129,7 @@ void ir_engine_t::append(
 }
 
 //-----------------------------------------------------------------------------
-symbol_t *ir_engine_t::generate(treenode_t *tree, ir_ctx_t ctx)
+symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
 {
   if ( tree == NULL )
     return NULL;
