@@ -10,19 +10,14 @@ struct codenode_t;
 //-----------------------------------------------------------------------------
 enum codenode_type_t
 {
-  CNT_MOV,
-  CNT_LW,
-  CNT_LB,
-  CNT_SW,
-  CNT_SB,
-  CNT_ADD,
-  CNT_SUB,
-  CNT_DIV,
-  CNT_MUL,
-  CNT_LEA,
-  CNT_ARG,
-  CNT_CALL,
-  CNT_RET,
+  CNT_LW,   CNT_OR,   CNT_MOV,
+  CNT_LB,   CNT_AND,  CNT_ARG,
+  CNT_SW,   CNT_SLT,  CNT_CALL,
+  CNT_SB,   CNT_SGT,  CNT_RET,
+  CNT_ADD,  CNT_SGE,  CNT_LEA,
+  CNT_SUB,  CNT_SLE,  CNT_BNE,
+  CNT_DIV,  CNT_SEQ,  CNT_LABEL,
+  CNT_MUL,  CNT_SNE,  CNT_JUMP,
 };
 
 //-----------------------------------------------------------------------------
@@ -64,8 +59,7 @@ public:
       _free.erase(_free.begin());
       return ret;
     }
-    else
-      return new symbol_t(_type, _cnt++);
+    else { return new symbol_t(_type, _cnt++); }
   }
 
   void clear()           { _free.clear(); }
@@ -129,6 +123,7 @@ private:
   void check_src(symbol_t *src);
 
   symbol_t *gen_temp(ir_ctx_t ctx = IRCTX_NONE);
+  symbol_t *gen_label();
 
   void append(codenode_type_t type, symbol_t *dest,
     symbol_t *src1, symbol_t *src2);

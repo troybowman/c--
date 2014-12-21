@@ -1,0 +1,29 @@
+/* simple if statements */
+
+void f1(void) {}
+void f2(void) {}
+void f3(void) {}
+void f4(void) {}
+void f5(void) {}
+void f6(void) {}
+void f7(void) {}
+
+void main(void)
+{
+  if ( 111 < 222 )
+    f1();
+
+  if ( 333 == 444 )
+    f2();
+  else
+    f3();
+
+  if ( 555 != 666 )
+    f4();
+  else if ( 777 >= 888 )
+    f5();
+  else if ( 999 <= 1000 )
+    f6();
+  else
+    f7();
+}

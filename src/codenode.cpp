@@ -31,6 +31,14 @@ static codenode_type_t tnt2cnt(treenode_type_t type)
     case TNT_MINUS: return CNT_SUB;
     case TNT_DIV:   return CNT_DIV;
     case TNT_MULT:  return CNT_MUL;
+    case TNT_OR:    return CNT_OR;
+    case TNT_AND:   return CNT_AND;
+    case TNT_LT:    return CNT_SLT;
+    case TNT_GT:    return CNT_SGT;
+    case TNT_GEQ:   return CNT_SGE;
+    case TNT_LEQ:   return CNT_SLE;
+    case TNT_EQ:    return CNT_SEQ;
+    case TNT_NEQ:   return CNT_SNE;
     default:
       INTERR(0);
   }
@@ -72,6 +80,9 @@ void ir_engine_t::check_src(symbol_t *sym)
     case ST_SAVED_TEMPORARY:
       svtemps.free(sym);
       break;
+    case ST_LABEL:
+      labels->push_back(sym);
+      break;
     case ST_ARGUMENT:
       INTERR(1079);
     default:
@@ -81,14 +92,9 @@ void ir_engine_t::check_src(symbol_t *sym)
 
 //-----------------------------------------------------------------------------
 ir_engine_t::ir_engine_t(symbol_t *f, symtab_t *s, symlist_t *l, symbol_t *r)
-  : temps(ST_TEMPORARY), svtemps(ST_SAVED_TEMPORARY), args(ST_ARGUMENT)
+  : temps(ST_TEMPORARY), svtemps(ST_SAVED_TEMPORARY), args(ST_ARGUMENT),
+    func(f), strings(s), labels(l), retloc(r), head(NULL), tail(NULL)
 {
-  func     = f;
-  strings  = s;
-  labels   = l;
-  retloc   = r;
-  head     = NULL;
-  tail     = head;
   ASSERT(1055, f != NULL);
   ASSERT(1056, s != NULL);
   ASSERT(1057, l != NULL);
@@ -107,6 +113,17 @@ symbol_t *ir_engine_t::gen_temp(ir_ctx_t ctx)
     default:
       INTERR(1080);
   }
+}
+
+//-----------------------------------------------------------------------------
+symbol_t *ir_engine_t::gen_label()
+{
+#ifndef NDEBUG
+  static int cnt = 0;
+  return new symbol_t(ST_LABEL, cnt++);
+#else
+  return new symbol_t(ST_LABEL);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -266,6 +283,14 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
     case TNT_MINUS:
     case TNT_DIV:
     case TNT_MULT:
+    case TNT_OR:
+    case TNT_AND:
+    case TNT_LT:
+    case TNT_GT:
+    case TNT_GEQ:
+    case TNT_LEQ:
+    case TNT_EQ:
+    case TNT_NEQ:
       {
         treenode_t *lhs = tree->children[LHS];
         treenode_t *rhs = tree->children[RHS];
@@ -276,6 +301,29 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
 
         append(tnt2cnt(tree->type), dest, src1, src2);
         return dest;
+      }
+    case TNT_IF:
+      {
+        symbol_t *cond = generate(tree->children[IF_COND]);
+        symbol_t *lbl1 = gen_label();
+
+        append(CNT_BNE, lbl1, cond, new symbol_t(ST_INTCON, 1));
+        generate(tree->children[IF_BODY]);
+
+        treenode_t *elsetree = tree->children[IF_ELSE];
+        if ( elsetree != NULL )
+        {
+          symbol_t *lbl2 = gen_label();
+          append(CNT_JUMP, lbl2, NULL, NULL);
+
+          append(CNT_LABEL, NULL, lbl1, NULL);
+          generate(elsetree);
+
+          append(CNT_LABEL, NULL, lbl2, NULL);
+        }
+        else { append(CNT_LABEL, NULL, lbl1, NULL); }
+
+        break;
       }
     default:
       INTERR(1059);
