@@ -166,7 +166,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         symbol_t *src1 = tree->type == TNT_CHARCON
                        ? new symbol_t(ST_CHARCON, tree->str)
                        : new symbol_t(ST_INTCON, tree->val);
-        append(CNT_MOV, dest, src1, NULL);
+        append(CNT_MOV, dest, src1);
         return dest;
       }
     case TNT_STRCON:
@@ -179,7 +179,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
           strings->insert(key, sym);
         }
         symbol_t *dest = gen_temp(ctx);
-        append(CNT_LEA, dest, sym, NULL);
+        append(CNT_LEA, dest, sym);
         return dest;
       }
     case TNT_ASSG:
@@ -190,7 +190,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         symbol_t *src1 = generate(rhs, has_call(lhs) ? IRCTX_SV_RVAL : IRCTX_NONE);
         symbol_t *dest = generate(lhs, IRCTX_LVAL);
 
-        append(CNT_STORE(lhs->sym), dest, src1, NULL);
+        append(CNT_STORE(lhs->sym), dest, src1);
         break;
       }
     case TNT_SYMBOL:
@@ -203,12 +203,12 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         if ( sym->is_array() )
         {
           dest = gen_temp();
-          append(CNT_LEA, dest, sym, NULL);
+          append(CNT_LEA, dest, sym);
         }
         else
         {
           dest = gen_temp(ctx);
-          append(CNT_LOAD(sym), dest, sym, NULL);
+          append(CNT_LOAD(sym), dest, sym);
         }
         return dest;
       }
@@ -231,7 +231,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
           symbol_t *loc = gen_temp();
           append(CNT_ADD, loc, base, idx);
           dest = gen_temp(ctx);
-          append(CNT_LOAD(tree->sym), dest, loc, NULL);
+          append(CNT_LOAD(tree->sym), dest, loc);
         }
         return dest;
       }
@@ -253,30 +253,30 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         symlist_t::reverse_iterator loc = arglocs.rbegin();
 
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
-          append(CNT_ARG, *loc, *val, NULL);
+          append(CNT_ARG, *loc, *val);
 
         args.reset();
 
         symbol_t *f = tree->sym;
         if ( f->rt() != RT_VOID )
         {
-          append(CNT_CALL, retloc, f, NULL);
+          append(CNT_CALL, retloc, f);
 
           symbol_t *temp = gen_temp(ctx);
-          append(CNT_MOV, temp, retloc, NULL);
+          append(CNT_MOV, temp, retloc);
           return temp;
         }
 
-        append(CNT_CALL, NULL, f, NULL);
+        append(CNT_CALL, NULL, f);
         break;
       }
     case TNT_RET:
       {
         symbol_t *retval = generate(tree->children[RET_EXPR]);
         if ( retval != NULL )
-          append(CNT_RET, retloc, retval, NULL);
+          append(CNT_RET, retloc, retval);
         else
-          append(CNT_RET, NULL, NULL, NULL);
+          append(CNT_RET);
         break;
       }
     case TNT_PLUS:
@@ -314,14 +314,14 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         if ( elsetree != NULL )
         {
           symbol_t *lbl2 = gen_label();
-          append(CNT_JUMP, lbl2, NULL, NULL);
+          append(CNT_JUMP, lbl2);
 
-          append(CNT_LABEL, NULL, lbl1, NULL);
+          append(CNT_LABEL, NULL, lbl1);
           generate(elsetree);
 
-          append(CNT_LABEL, NULL, lbl2, NULL);
+          append(CNT_LABEL, NULL, lbl2);
         }
-        else { append(CNT_LABEL, NULL, lbl1, NULL); }
+        else { append(CNT_LABEL, NULL, lbl1); }
 
         break;
       }

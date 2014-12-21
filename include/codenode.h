@@ -125,8 +125,11 @@ private:
   symbol_t *gen_temp(ir_ctx_t ctx = IRCTX_NONE);
   symbol_t *gen_label();
 
-  void append(codenode_type_t type, symbol_t *dest,
-    symbol_t *src1, symbol_t *src2);
+  void append(
+      codenode_type_t type,
+      symbol_t *dest = NULL,
+      symbol_t *src1 = NULL,
+      symbol_t *src2 = NULL);
 
   symbol_t *generate(const treenode_t *tree, ir_ctx_t ctx = IRCTX_NONE);
 
