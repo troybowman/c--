@@ -157,6 +157,8 @@ public:
   void set_tree(treenode_t *tree)  { _tree = tree; }
   void set_extern(bool is_extern = true) { _is_extern = is_extern; }
   void set_defined(bool defined = true)  { _defined = defined; }
+
+  void set_val(int val) { _val = val; }
 };
 
 //-----------------------------------------------------------------------------

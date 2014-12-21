@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
-# size: 8
+# size: 10
 # sym: f1
 #   line: 3
 #   type: ST_FUNCTION
@@ -51,8 +51,22 @@
 #     params:
 #       none
 #     is_extern: no
-# sym: main
+# sym: f8
+#   line: 10
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       none
+#     is_extern: no
+# sym: f9
 #   line: 11
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       none
+#     is_extern: no
+# sym: main
+#   line: 13
 #   type: ST_FUNCTION
 #     rt_type: RT_VOID
 #     params:
@@ -106,6 +120,20 @@
 # size: 0
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: f7
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# LOCAL SYMBOLS FOR FUNCTION: f8
+#-----------------------------------------------------------------------------
+# size: 0
+#-----------------------------------------------------------------------------
+# SYNTAX TREE FOR FUNCTION: f8
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# LOCAL SYMBOLS FOR FUNCTION: f9
+#-----------------------------------------------------------------------------
+# size: 0
+#-----------------------------------------------------------------------------
+# SYNTAX TREE FOR FUNCTION: f9
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
@@ -173,6 +201,28 @@
 # node 29: type: TNT_CALL sym: f6
 # child IF_ELSE for node 25
 # node 30: type: TNT_CALL sym: f7
+# child SEQ_NEXT for node 14
+# node 31: type: TNT_STMT
+# child SEQ_CUR for node 31
+# node 32: type: TNT_IF
+# child IF_COND for node 32
+# node 33: type: TNT_EQ
+# child LHS for node 33
+# node 34: type: TNT_INTCON val: 1001
+# child RHS for node 33
+# node 35: type: TNT_INTCON val: 1002
+# child IF_BODY for node 32
+# node 36: type: TNT_CALL sym: f8
+# child IF_ELSE for node 32
+# node 37: type: TNT_IF
+# child IF_COND for node 37
+# node 38: type: TNT_NEQ
+# child LHS for node 38
+# node 39: type: TNT_INTCON val: 1003
+# child RHS for node 38
+# node 40: type: TNT_INTCON val: 1004
+# child IF_BODY for node 37
+# node 41: type: TNT_CALL sym: f9
 #-----------------------------------------------------------------------------
 # STRING CONSTANTS
 #-----------------------------------------------------------------------------
@@ -219,6 +269,18 @@
 # svtemps used: 0
 # args used:    0
 #-----------------------------------------------------------------------------
+# INTERMEDIATE CODE FOR FUNCTION: f8
+#-----------------------------------------------------------------------------
+# temps used:   0
+# svtemps used: 0
+# args used:    0
+#-----------------------------------------------------------------------------
+# INTERMEDIATE CODE FOR FUNCTION: f9
+#-----------------------------------------------------------------------------
+# temps used:   0
+# svtemps used: 0
+# args used:    0
+#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # temps used:   3
@@ -243,11 +305,10 @@
 # src2 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_BNE
-# -------
+# CNT_CNDJMP
+# ----------
 # dest -> ST_LABEL (0)
 # src1 -> ST_TEMPORARY (2)
-# src2 -> ST_INTCON (1)
 # |
 # >
 # CNT_CALL
@@ -279,11 +340,10 @@
 # src2 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_BNE
-# -------
+# CNT_CNDJMP
+# ----------
 # dest -> ST_LABEL (1)
 # src1 -> ST_TEMPORARY (2)
-# src2 -> ST_INTCON (1)
 # |
 # >
 # CNT_CALL
@@ -330,11 +390,10 @@
 # src2 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_BNE
-# -------
+# CNT_CNDJMP
+# ----------
 # dest -> ST_LABEL (3)
 # src1 -> ST_TEMPORARY (2)
-# src2 -> ST_INTCON (1)
 # |
 # >
 # CNT_CALL
@@ -344,7 +403,7 @@
 # >
 # CNT_JUMP
 # --------
-# dest -> ST_LABEL (4)
+# dest -> ST_LABEL (6)
 # |
 # >
 # CNT_LABEL
@@ -371,11 +430,10 @@
 # src2 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_BNE
-# -------
-# dest -> ST_LABEL (5)
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (4)
 # src1 -> ST_TEMPORARY (2)
-# src2 -> ST_INTCON (1)
 # |
 # >
 # CNT_CALL
@@ -390,7 +448,7 @@
 # >
 # CNT_LABEL
 # ---------
-# src1 -> ST_LABEL (5)
+# src1 -> ST_LABEL (4)
 # |
 # >
 # CNT_MOV
@@ -412,16 +470,65 @@
 # src2 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_BNE
-# -------
-# dest -> ST_LABEL (7)
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (5)
 # src1 -> ST_TEMPORARY (2)
-# src2 -> ST_INTCON (1)
 # |
 # >
 # CNT_CALL
 # --------
 # src1 -> ST_FUNCTION (f6)
+# |
+# >
+# CNT_JUMP
+# --------
+# dest -> ST_LABEL (6)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (5)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (f7)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (6)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_INTCON (1001)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (1002)
+# |
+# >
+# CNT_SEQ
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (7)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (f8)
 # |
 # >
 # CNT_JUMP
@@ -434,22 +541,37 @@
 # src1 -> ST_LABEL (7)
 # |
 # >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_INTCON (1003)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (1004)
+# |
+# >
+# CNT_SNE
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (8)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (f7)
+# src1 -> ST_FUNCTION (f9)
 # |
 # >
 # CNT_LABEL
 # ---------
 # src1 -> ST_LABEL (8)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (6)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (4)
 # c-- exited with code: 0

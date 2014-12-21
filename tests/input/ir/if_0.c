@@ -7,6 +7,8 @@ void f4(void) {}
 void f5(void) {}
 void f6(void) {}
 void f7(void) {}
+void f8(void) {}
+void f9(void) {}
 
 void main(void)
 {
@@ -26,4 +28,9 @@ void main(void)
     f6();
   else
     f7();
+
+  if ( 1001 == 1002 )
+    f8();
+  else if ( 1003 != 1004 )
+    f9();
 }

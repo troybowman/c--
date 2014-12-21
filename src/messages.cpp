@@ -195,30 +195,30 @@ static const char *cnt2str(codenode_type_t type)
 {
   switch ( type )
   {
-    case CNT_MOV:   return "CNT_MOV\n# -------";
-    case CNT_LW:    return "CNT_LW\n# ------";
-    case CNT_LB:    return "CNT_LB\n# ------";
-    case CNT_SW:    return "CNT_SW\n# ------";
-    case CNT_SB:    return "CNT_SB\n# ------";
-    case CNT_ADD:   return "CNT_ADD\n# -------";
-    case CNT_SUB:   return "CNT_SUB\n# -------";
-    case CNT_DIV:   return "CNT_DIV\n# -------";
-    case CNT_MUL:   return "CNT_MUL\n# -------";
-    case CNT_LEA:   return "CNT_LEA\n# -------";
-    case CNT_ARG:   return "CNT_ARG\n# -------";
-    case CNT_CALL:  return "CNT_CALL\n# --------";
-    case CNT_RET:   return "CNT_RET\n# -------";
-    case CNT_OR:    return "CNT_OR\n# ------";
-    case CNT_AND:   return "CNT_AND\n# -------";
-    case CNT_SLT:   return "CNT_SLT\n# -------";
-    case CNT_SGT:   return "CNT_SGT\n# -------";
-    case CNT_SGE:   return "CNT_SGE\n# -------";
-    case CNT_SLE:   return "CNT_SLE\n# -------";
-    case CNT_SEQ:   return "CNT_SEQ\n# -------";
-    case CNT_SNE:   return "CNT_SNE\n# -------";
-    case CNT_BNE:   return "CNT_BNE\n# -------";
-    case CNT_LABEL: return "CNT_LABEL\n# ---------";
-    case CNT_JUMP:  return "CNT_JUMP\n# --------";
+    case CNT_MOV:    return "CNT_MOV\n# -------";
+    case CNT_LW:     return "CNT_LW\n# ------";
+    case CNT_LB:     return "CNT_LB\n# ------";
+    case CNT_SW:     return "CNT_SW\n# ------";
+    case CNT_SB:     return "CNT_SB\n# ------";
+    case CNT_ADD:    return "CNT_ADD\n# -------";
+    case CNT_SUB:    return "CNT_SUB\n# -------";
+    case CNT_DIV:    return "CNT_DIV\n# -------";
+    case CNT_MUL:    return "CNT_MUL\n# -------";
+    case CNT_LEA:    return "CNT_LEA\n# -------";
+    case CNT_ARG:    return "CNT_ARG\n# -------";
+    case CNT_CALL:   return "CNT_CALL\n# --------";
+    case CNT_RET:    return "CNT_RET\n# -------";
+    case CNT_OR:     return "CNT_OR\n# ------";
+    case CNT_AND:    return "CNT_AND\n# -------";
+    case CNT_SLT:    return "CNT_SLT\n# -------";
+    case CNT_SGT:    return "CNT_SGT\n# -------";
+    case CNT_SGE:    return "CNT_SGE\n# -------";
+    case CNT_SLE:    return "CNT_SLE\n# -------";
+    case CNT_SEQ:    return "CNT_SEQ\n# -------";
+    case CNT_SNE:    return "CNT_SNE\n# -------";
+    case CNT_CNDJMP: return "CNT_CNDJMP\n# ----------";
+    case CNT_LABEL:  return "CNT_LABEL\n# ---------";
+    case CNT_JUMP:   return "CNT_JUMP\n# --------";
     default:
       INTERR(1060);
   }

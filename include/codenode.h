@@ -15,7 +15,7 @@ enum codenode_type_t
   CNT_SW,   CNT_SLT,  CNT_CALL,
   CNT_SB,   CNT_SGT,  CNT_RET,
   CNT_ADD,  CNT_SGE,  CNT_LEA,
-  CNT_SUB,  CNT_SLE,  CNT_BNE,
+  CNT_SUB,  CNT_SLE,  CNT_CNDJMP,
   CNT_DIV,  CNT_SEQ,  CNT_LABEL,
   CNT_MUL,  CNT_SNE,  CNT_JUMP,
 };
@@ -94,13 +94,24 @@ struct ir_func_t
 
 typedef std::list<ir_func_t *> ir_funcs_t;
 
+//-----------------------------------------------------------------------------
+enum ctx_type_t
+{
+  CTX_NONE,
+  CTX_LVAL,
+  CTX_SAVE,
+  CTX_ELSE,
+};
 
 //-----------------------------------------------------------------------------
-enum ir_ctx_t
+struct ir_ctx_t
 {
-  IRCTX_NONE,
-  IRCTX_LVAL,
-  IRCTX_SV_RVAL,
+  ctx_type_t type;
+  symbol_t *endif;
+
+  ir_ctx_t() : type(CTX_NONE), endif(NULL) {}
+  ir_ctx_t(ctx_type_t _type, symbol_t *_endif = NULL)
+    : type(_type), endif(_endif) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -122,8 +133,7 @@ private:
   void check_dest(symbol_t *src);
   void check_src(symbol_t *src);
 
-  symbol_t *gen_temp(ir_ctx_t ctx = IRCTX_NONE);
-  symbol_t *gen_label();
+  symbol_t *gen_temp(ctx_type_t ctxt = CTX_NONE);
 
   void append(
       codenode_type_t type,
@@ -131,7 +141,7 @@ private:
       symbol_t *src1 = NULL,
       symbol_t *src2 = NULL);
 
-  symbol_t *generate(const treenode_t *tree, ir_ctx_t ctx = IRCTX_NONE);
+  symbol_t *generate(const treenode_t *tree, ir_ctx_t ctx = ir_ctx_t());
 
 public:
   ir_engine_t(symbol_t *func, symtab_t *strings,
