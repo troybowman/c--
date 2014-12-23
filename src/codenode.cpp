@@ -149,8 +149,8 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
   {
     case TNT_STMT:
       {
-        generate(tree->children[SEQ_CUR]);
-        generate(tree->children[SEQ_NEXT]);
+        generate(tree->children[SEQ_CUR], ctx);
+        generate(tree->children[SEQ_NEXT], ctx);
         break;
       }
     case TNT_INTCON:
