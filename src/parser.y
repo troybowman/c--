@@ -565,7 +565,7 @@ static int count_args(const treenode_t *args)
 {
   int ret = 0;
   tree_iterator_t ti(args);
-  for ( ; ti.tree() != NULL; ti++ )
+  for ( ; ti.cur() != NULL; ti++ )
     ret++;
   return ret;
 }
@@ -612,15 +612,15 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
   symlist_t *params = f.params();
 
   tree_iterator_t ti(args);
-  symlist_t::const_iterator i = params->begin();
+  symlist_t::const_iterator si = params->begin();
 
-  for ( ; ti.tree() != NULL && i != params->end(); ti++, i++ )
+  for ( ; ti.cur() != NULL && si != params->end(); ti++, si++ )
   {
-    if ( !check_arg(**i, *ti.tree()) )
-      return call_res_t(CALL_BADARG, params->dist(i)+1);
+    if ( !check_arg(**si, *ti.cur()) )
+      return call_res_t(CALL_BADARG, params->dist(si)+1);
   }
 
-  if ( ti.tree() != NULL || i != params->end() )
+  if ( ti.cur() != NULL || si != params->end() )
     return call_res_t(CALL_NUMARGS, count_args(args));
 
   return call_res_t(CALL_OK);
@@ -855,11 +855,8 @@ static bool check_params(const symlist_t &p1, const symlist_t &p2)
     symbol_t *s1 = *i1;
     symbol_t *s2 = *i2;
 
-    if ( s1->type() != s2->type()
-      || s1->base() != s2->base() )
-    {
+    if ( s1->type() != s2->type() || s1->base() != s2->base() )
       return false;
-    }
   }
   return true;
 }

@@ -236,8 +236,8 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
 
         tree_iterator_t ti(tree->children[CALL_ARGS]);
 
-        for ( ; ti.tree() != NULL; ti++ )
-          argvals.push_back(generate(ti.tree()));
+        for ( ; ti.cur() != NULL; ti++ )
+          argvals.push_back(generate(ti.cur()));
 
         int size = argvals.size();
         for ( int i = 0; i < size; i++ )
@@ -298,26 +298,25 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
       }
     case TNT_IF:
       {
-        symbol_t *endif = ctx.type != CTX_ELSE
-                        ? new symbol_t(ST_LABEL)
-                        : ctx.endif;
-        symbol_t *cond  = generate(tree->children[IF_COND]);
+        symbol_t *cond = generate(tree->children[IF_COND]);
         treenode_t *elsetree = tree->children[IF_ELSE];
 
-        if ( elsetree == NULL )
-        {
-          append(CNT_CNDJMP, endif, cond);
-          generate(tree->children[IF_BODY]);
-        }
-        else
-        {
-          symbol_t *lbl = new symbol_t(ST_LABEL);
-          append(CNT_CNDJMP, lbl, cond);
+        symbol_t *endif = ctx.type == CTX_ELSE
+                        ? ctx.endif
+                        : new symbol_t(ST_LABEL);
 
-          generate(tree->children[IF_BODY]);
+        symbol_t *cond_target = elsetree == NULL
+                              ? endif
+                              : new symbol_t(ST_LABEL);
+
+        append(CNT_CNDJMP, cond_target, cond);
+        generate(tree->children[IF_BODY]);
+
+        if ( elsetree != NULL )
+        {
           append(CNT_JUMP, endif);
 
-          append(CNT_LABEL, NULL, lbl);
+          append(CNT_LABEL, NULL, cond_target);
           generate(elsetree, ir_ctx_t(CTX_ELSE, endif));
         }
 

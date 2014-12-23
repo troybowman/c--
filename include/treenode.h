@@ -102,7 +102,7 @@ public:
   {
     ASSERT(0, root == NULL || is_seq_type(root->type));
   }
-  const treenode_t *tree()
+  const treenode_t *cur()
   {
     return ptr != NULL ? ptr->children[SEQ_CUR] : NULL;
   }
