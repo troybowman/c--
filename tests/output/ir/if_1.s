@@ -417,7 +417,7 @@
 # >
 # CNT_JUMP
 # --------
-# dest -> ST_LABEL (6)
+# dest -> ST_LABEL (8)
 # |
 # >
 # CNT_LABEL
@@ -457,7 +457,7 @@
 # >
 # CNT_JUMP
 # --------
-# dest -> ST_LABEL (6)
+# dest -> ST_LABEL (7)
 # |
 # >
 # CNT_LABEL
@@ -515,6 +515,16 @@
 # src1 -> ST_LABEL (6)
 # |
 # >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (7)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (8)
+# |
+# >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
@@ -536,7 +546,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (7)
+# dest -> ST_LABEL (9)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -547,12 +557,12 @@
 # >
 # CNT_JUMP
 # --------
-# dest -> ST_LABEL (8)
+# dest -> ST_LABEL (11)
 # |
 # >
 # CNT_LABEL
 # ---------
-# src1 -> ST_LABEL (7)
+# src1 -> ST_LABEL (9)
 # |
 # >
 # CNT_MOV
@@ -576,7 +586,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (8)
+# dest -> ST_LABEL (10)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -587,5 +597,10 @@
 # >
 # CNT_LABEL
 # ---------
-# src1 -> ST_LABEL (8)
+# src1 -> ST_LABEL (10)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (11)
 # c-- exited with code: 0
