@@ -284,7 +284,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (11)
+# dest -> ST_LABEL (3)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -309,7 +309,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (10)
+# dest -> ST_LABEL (3)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -334,7 +334,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (9)
+# dest -> ST_LABEL (3)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -359,7 +359,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (8)
+# dest -> ST_LABEL (3)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -384,7 +384,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (3)
+# dest -> ST_LABEL (1)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -409,7 +409,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (2)
+# dest -> ST_LABEL (0)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -434,7 +434,7 @@
 # >
 # CNT_CNDJMP
 # ----------
-# dest -> ST_LABEL (1)
+# dest -> ST_LABEL (0)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
@@ -486,9 +486,125 @@
 # src1 -> ST_LABEL (0)
 # |
 # >
+# CNT_CALL
+# --------
+# dest -> ST_RETLOC
+# src1 -> ST_FUNCTION (f2)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_RETLOC
+# |
+# >
+# CNT_SW
+# ------
+# dest -> ST_PRIMITIVE (x)
+# src1 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_JUMP
+# --------
+# dest -> ST_LABEL (3)
+# |
+# >
 # CNT_LABEL
 # ---------
 # src1 -> ST_LABEL (1)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (9)
+# |
+# >
+# CNT_SEQ
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (2)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (10)
+# |
+# >
+# CNT_SEQ
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (2)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (11)
+# |
+# >
+# CNT_SEQ
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (2)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_CALL
+# --------
+# dest -> ST_RETLOC
+# src1 -> ST_FUNCTION (f1)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_RETLOC
+# |
+# >
+# CNT_SW
+# ------
+# dest -> ST_PRIMITIVE (x)
+# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_LABEL
@@ -514,165 +630,9 @@
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_JUMP
-# --------
-# dest -> ST_LABEL (7)
-# |
-# >
 # CNT_LABEL
 # ---------
 # src1 -> ST_LABEL (3)
-# |
-# >
-# CNT_LW
-# ------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_PRIMITIVE (x)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_INTCON (9)
-# |
-# >
-# CNT_SEQ
-# -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
-# |
-# >
-# CNT_CNDJMP
-# ----------
-# dest -> ST_LABEL (6)
-# src1 -> ST_TEMPORARY (2)
-# |
-# >
-# CNT_LW
-# ------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_PRIMITIVE (x)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_INTCON (10)
-# |
-# >
-# CNT_SEQ
-# -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
-# |
-# >
-# CNT_CNDJMP
-# ----------
-# dest -> ST_LABEL (5)
-# src1 -> ST_TEMPORARY (2)
-# |
-# >
-# CNT_LW
-# ------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_PRIMITIVE (x)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_INTCON (11)
-# |
-# >
-# CNT_SEQ
-# -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
-# |
-# >
-# CNT_CNDJMP
-# ----------
-# dest -> ST_LABEL (4)
-# src1 -> ST_TEMPORARY (2)
-# |
-# >
-# CNT_CALL
-# --------
-# dest -> ST_RETLOC
-# src1 -> ST_FUNCTION (f1)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
-# |
-# >
-# CNT_SW
-# ------
-# dest -> ST_PRIMITIVE (x)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (4)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (5)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (6)
-# |
-# >
-# CNT_CALL
-# --------
-# dest -> ST_RETLOC
-# src1 -> ST_FUNCTION (f2)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
-# |
-# >
-# CNT_SW
-# ------
-# dest -> ST_PRIMITIVE (x)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (7)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (8)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (9)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (10)
-# |
-# >
-# CNT_LABEL
-# ---------
-# src1 -> ST_LABEL (11)
 # |
 # >
 # CNT_CALL

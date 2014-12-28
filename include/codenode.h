@@ -95,23 +95,21 @@ struct ir_func_t
 typedef std::list<ir_func_t *> ir_funcs_t;
 
 //-----------------------------------------------------------------------------
-enum ctx_type_t
-{
-  CTX_NONE,
-  CTX_LVAL,
-  CTX_SAVE,
-  CTX_ELSE,
-};
-
-//-----------------------------------------------------------------------------
 struct ir_ctx_t
 {
-  ctx_type_t type;
-  symbol_t *endif;
+  uint32_t flags;
+#define CTX_LVAL 0x1
+#define CTX_SAVE 0x2
+#define CTX_IF   0x4
 
-  ir_ctx_t() : type(CTX_NONE), endif(NULL) {}
-  ir_ctx_t(ctx_type_t _type, symbol_t *_endif = NULL)
-    : type(_type), endif(_endif) {}
+  union
+  {
+    symbol_t *endif;
+  };
+
+  ir_ctx_t() : flags(0) {}
+  ir_ctx_t(symbol_t *_endif) : flags(CTX_IF), endif(_endif) {}
+  ir_ctx_t(uint32_t _flags) : flags(_flags) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -133,7 +131,7 @@ private:
   void check_dest(symbol_t *src);
   void check_src(symbol_t *src);
 
-  symbol_t *gen_temp(ctx_type_t ctxt = CTX_NONE);
+  symbol_t *gen_temp(uint32_t flags = 0);
 
   void append(
       codenode_type_t type,

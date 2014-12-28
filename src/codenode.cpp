@@ -107,17 +107,11 @@ ir_engine_t::ir_engine_t(symbol_t *f, symtab_t *s, symlist_t *l, symbol_t *r)
 }
 
 //-----------------------------------------------------------------------------
-symbol_t *ir_engine_t::gen_temp(ctx_type_t ctxt)
+symbol_t *ir_engine_t::gen_temp(uint32_t flags)
 {
-  switch ( ctxt )
-  {
-    case CTX_SAVE:
-      return svtemps.gen_resource();
-    case CTX_NONE:
-      return temps.gen_resource();
-    default:
-      INTERR(1080);
-  }
+  return (flags & CTX_SAVE) != 0
+        ? svtemps.gen_resource()
+        : temps.gen_resource();
 }
 
 //-----------------------------------------------------------------------------
@@ -156,7 +150,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
     case TNT_INTCON:
     case TNT_CHARCON:
       {
-        symbol_t *dest = gen_temp(ctx.type);
+        symbol_t *dest = gen_temp(ctx.flags);
         symbol_t *src1 = tree->type == TNT_CHARCON
                        ? new symbol_t(ST_CHARCON, tree->str)
                        : new symbol_t(ST_INTCON, tree->val);
@@ -172,7 +166,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
           sym = new symbol_t(ST_STRCON, tree->str);
           strings->insert(key, sym);
         }
-        symbol_t *dest = gen_temp(ctx.type);
+        symbol_t *dest = gen_temp(ctx.flags);
         append(CNT_LEA, dest, sym);
         return dest;
       }
@@ -181,7 +175,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         treenode_t *rhs = tree->children[RHS];
         treenode_t *lhs = tree->children[LHS];
 
-        symbol_t *src1 = generate(rhs, has_call(lhs) ? CTX_SAVE : CTX_NONE);
+        symbol_t *src1 = generate(rhs, has_call(lhs) ? CTX_SAVE : 0);
         symbol_t *dest = generate(lhs, CTX_LVAL);
 
         append(CNT_STORE(lhs->sym), dest, src1);
@@ -190,7 +184,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
     case TNT_SYMBOL:
       {
         symbol_t *sym = tree->sym;
-        if ( ctx.type == CTX_LVAL )
+        if ( (ctx.flags & CTX_LVAL) != 0 )
           return sym;
 
         symbol_t *dest;
@@ -201,7 +195,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         }
         else
         {
-          dest = gen_temp(ctx.type);
+          dest = gen_temp(ctx.flags);
           append(CNT_LOAD(sym), dest, sym);
         }
         return dest;
@@ -215,7 +209,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         append(CNT_LEA, base, tree->sym, NULL);
 
         symbol_t *dest;
-        if ( ctx.type == CTX_LVAL )
+        if ( (ctx.flags & CTX_LVAL) != 0 )
         {
           dest = gen_temp();
           append(CNT_ADD, dest, base, idx);
@@ -224,7 +218,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         {
           symbol_t *loc = gen_temp();
           append(CNT_ADD, loc, base, idx);
-          dest = gen_temp(ctx.type);
+          dest = gen_temp(ctx.flags);
           append(CNT_LOAD(tree->sym), dest, loc);
         }
         return dest;
@@ -256,7 +250,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         {
           append(CNT_CALL, retloc, f);
 
-          symbol_t *temp = gen_temp(ctx.type);
+          symbol_t *temp = gen_temp(ctx.flags);
           append(CNT_MOV, temp, retloc);
           return temp;
         }
@@ -289,9 +283,9 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         treenode_t *lhs = tree->children[LHS];
         treenode_t *rhs = tree->children[RHS];
 
-        symbol_t *src1 = generate(lhs, has_call(rhs) ? CTX_SAVE : CTX_NONE);
+        symbol_t *src1 = generate(lhs, has_call(rhs) ? CTX_SAVE : 0);
         symbol_t *src2 = generate(rhs);
-        symbol_t *dest = gen_temp(ctx.type);
+        symbol_t *dest = gen_temp(ctx.flags);
 
         append(tnt2cnt(tree->type), dest, src1, src2);
         return dest;
@@ -301,26 +295,28 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         symbol_t *cond = generate(tree->children[IF_COND]);
         treenode_t *elsetree = tree->children[IF_ELSE];
 
-        symbol_t *endif = ctx.type == CTX_ELSE
-                        ? ctx.endif
-                        : new symbol_t(ST_LABEL);
+        symbol_t *endif = (ctx.flags & CTX_IF) != 0
+                         ? ctx.endif
+                         : new symbol_t(ST_LABEL);
 
         symbol_t *cond_target = elsetree == NULL
                               ? endif
                               : new symbol_t(ST_LABEL);
 
         append(CNT_CNDJMP, cond_target, cond);
-        generate(tree->children[IF_BODY]);
+
+        ir_ctx_t ifctx(endif);
+        generate(tree->children[IF_BODY], ifctx);
 
         if ( elsetree != NULL )
         {
           append(CNT_JUMP, endif);
 
           append(CNT_LABEL, NULL, cond_target);
-          generate(elsetree, ir_ctx_t(CTX_ELSE, endif));
+          generate(elsetree, ifctx);
         }
 
-        if ( ctx.type != CTX_ELSE )
+        if ( (ctx.flags & CTX_IF) == 0 )
           append(CNT_LABEL, NULL, endif);
         break;
       }
