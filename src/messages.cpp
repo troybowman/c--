@@ -383,11 +383,11 @@ void print_tree(const treenode_t *node, int *cnt)
 }
 
 //-----------------------------------------------------------------------------
-static void print_ir_strings(const symtab_t *strings)
+static void print_ir_strings(const symtab_t &strings)
 {
   fprintf(stdout, header, "STRING CONSTANTS", "");
   symtab_t::const_iterator i;
-  for ( i = strings->begin(); i != strings->end(); i++ )
+  for ( i = strings.begin(); i != strings.end(); i++ )
   {
     std::string string = i->first;
     cmtout(0, "%s\n", string.c_str());
@@ -425,10 +425,10 @@ void print_ir(const ir_t &ir)
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
     ir_func_t *irf = *i;
-    fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->func->c_str());
-    cmtout(0, "temps used:   %d\n", irf->temps->size());
-    cmtout(0, "svtemps used: %d\n", irf->svtemps->size());
-    cmtout(0, "args used:    %d\n", irf->args->size());
+    fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->func.c_str());
+    cmtout(0, "temps used:   %d\n", irf->temps.size());
+    cmtout(0, "svtemps used: %d\n", irf->svtemps.size());
+    cmtout(0, "args used:    %d\n", irf->args.size());
     print_ir_code(irf->code);
   }
 }

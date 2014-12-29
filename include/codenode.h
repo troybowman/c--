@@ -44,10 +44,7 @@ class resource_manager_t
   rmap_t _free;
   symlist_t *_union;
 
-  resource_manager_t() {} // No.
-
 public:
-
   resource_manager_t(symbol_type_t type)
     : _cnt(0), _type(type), _union(new symlist_t()) {}
 
@@ -81,15 +78,14 @@ public:
 //-----------------------------------------------------------------------------
 struct ir_func_t
 {
-  symbol_t *func;
+  symbol_t &func;
   codenode_t *code;
-  symlist_t *temps;
-  symlist_t *svtemps;
-  symlist_t *args;
+  symlist_t &temps;
+  symlist_t &svtemps;
+  symlist_t &args;
 
-  ir_func_t(symbol_t *f, codenode_t *c, symlist_t *t,
-    symlist_t *svt, symlist_t *a)
-      : func(f), code(c), temps(t), svtemps(svt), args(a) {}
+  ir_func_t(symbol_t &f, codenode_t *c, symlist_t &t, symlist_t &svt, symlist_t &a)
+    : func(f), code(c), temps(t), svtemps(svt), args(a) {}
 };
 
 typedef std::list<ir_func_t *> ir_funcs_t;
@@ -119,10 +115,10 @@ class ir_engine_t
   resource_manager_t svtemps;
   resource_manager_t args;
 
-  symbol_t *func;
-  symtab_t *strings;
-  symlist_t *labels;
-  symbol_t *retloc;
+  symbol_t  &func;
+  symtab_t  &strings;
+  symlist_t &labels;
+  symbol_t  &retloc;
 
   codenode_t *head;
   codenode_t *tail;
@@ -142,8 +138,9 @@ private:
   symbol_t *generate(const treenode_t *tree, ir_ctx_t ctx = ir_ctx_t());
 
 public:
-  ir_engine_t(symbol_t *func, symtab_t *strings,
-    symlist_t *labels, symbol_t *retloc);
+  ir_engine_t(symbol_t &f, symtab_t &s, symlist_t &l, symbol_t &r)
+    : temps(ST_TEMPORARY), svtemps(ST_SAVED_TEMPORARY), args(ST_ARGUMENT),
+      func(f), strings(s), labels(l), retloc(r), head(NULL), tail(NULL) {}
 
   ir_func_t *generate();
 };
@@ -151,21 +148,16 @@ public:
 //-----------------------------------------------------------------------------
 struct ir_t
 {
-  symtab_t *gsyms;
-  symtab_t *strings;
-  symlist_t *labels;
-  symbol_t *retloc;
+  symtab_t gsyms;
+  symtab_t strings;
+  symlist_t labels;
+  symbol_t retloc;
   ir_funcs_t funcs;
 
-  ir_t(symtab_t *_gsyms) : gsyms(_gsyms)
-  {
-    strings = new symtab_t();
-    labels  = new symlist_t();
-    retloc  = new symbol_t(ST_RETLOC);
-  }
+  ir_t(symtab_t &_gsyms) : retloc(ST_RETLOC) { gsyms.swap(_gsyms); }
 };
 
 //-----------------------------------------------------------------------------
-void generate(ir_t *ir, const symlist_t &functions);
+void generate(ir_t &ir, const symlist_t &functions);
 
 #endif // CODENODE_H

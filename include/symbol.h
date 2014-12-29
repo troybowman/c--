@@ -162,47 +162,30 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class symtab_t // symbol table
+class symtab_t : public std::map<std::string, symbol_t *>
 {
-  typedef std::map<std::string, symbol_t *> smap_t;
-  smap_t map;
-
 public:
   symbol_t *get(const std::string &key)
   {
-    try { return map.at(key); }
-    catch ( const std::out_of_range & ) { return NULL; }
+    iterator i = find(key);
+    return i != end() ? i->second : NULL;
   }
   void insert(symbol_t *value)
   {
     ASSERT(1013, value != NULL);
-    map[value->name()] = value;
+    operator[](value->name()) = value;
   }
   void insert(const std::string &key, symbol_t *value)
   {
     ASSERT(1075, key.size() > 0 && value != NULL);
-    map[key] = value;
+    operator[](key) = value;
   }
-
-  typedef smap_t::iterator iterator;
-  typedef smap_t::const_iterator const_iterator;
-
-  iterator begin() { return map.begin(); }
-  iterator end()   { return map.end(); }
-  const_iterator begin() const { return map.begin(); }
-  const_iterator end()   const { return map.end(); }
-  size_t size()          const { return map.size(); }
 };
 
 //-----------------------------------------------------------------------------
 class symlist_t : public std::list<symbol_t *>
 {
-  typedef std::list<symbol_t *> inherited;
-
 public:
-  typedef inherited::iterator iterator;
-  typedef inherited::const_iterator const_iterator;
-
   int dist(const_iterator i)
   {
     return std::distance(static_cast<const_iterator>(begin()), i);

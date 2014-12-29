@@ -86,7 +86,7 @@ void ir_engine_t::check_src(symbol_t *sym)
 #ifndef NDEBUG
       sym->set_val(lblcnt++);
 #endif
-      labels->push_back(sym);
+      labels.push_back(sym);
       break;
     case ST_ARGUMENT:
       INTERR(1079);
@@ -96,22 +96,9 @@ void ir_engine_t::check_src(symbol_t *sym)
 }
 
 //-----------------------------------------------------------------------------
-ir_engine_t::ir_engine_t(symbol_t *f, symtab_t *s, symlist_t *l, symbol_t *r)
-  : temps(ST_TEMPORARY), svtemps(ST_SAVED_TEMPORARY), args(ST_ARGUMENT),
-    func(f), strings(s), labels(l), retloc(r), head(NULL), tail(NULL)
+inline symbol_t *ir_engine_t::gen_temp(uint32_t flags)
 {
-  ASSERT(1055, f != NULL);
-  ASSERT(1056, s != NULL);
-  ASSERT(1057, l != NULL);
-  ASSERT(1058, r != NULL);
-}
-
-//-----------------------------------------------------------------------------
-symbol_t *ir_engine_t::gen_temp(uint32_t flags)
-{
-  return (flags & CTX_SAVE) != 0
-        ? svtemps.gen_resource()
-        : temps.gen_resource();
+  return (flags & CTX_SAVE) != 0 ? svtemps.gen_resource() : temps.gen_resource();
 }
 
 //-----------------------------------------------------------------------------
@@ -160,11 +147,11 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
     case TNT_STRCON:
       {
         std::string key(tree->str);
-        symbol_t *sym = strings->get(key);
+        symbol_t *sym = strings.get(key);
         if ( sym == NULL )
         {
           sym = new symbol_t(ST_STRCON, tree->str);
-          strings->insert(key, sym);
+          strings.insert(key, sym);
         }
         symbol_t *dest = gen_temp(ctx.flags);
         append(CNT_LEA, dest, sym);
@@ -248,10 +235,10 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
         symbol_t *f = tree->sym;
         if ( f->rt() != RT_VOID )
         {
-          append(CNT_CALL, retloc, f);
+          append(CNT_CALL, &retloc, f);
 
           symbol_t *temp = gen_temp(ctx.flags);
-          append(CNT_MOV, temp, retloc);
+          append(CNT_MOV, temp, &retloc);
           return temp;
         }
 
@@ -262,7 +249,7 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
       {
         symbol_t *retval = generate(tree->children[RET_EXPR]);
         if ( retval != NULL )
-          append(CNT_RET, retloc, retval);
+          append(CNT_RET, &retloc, retval);
         else
           append(CNT_RET);
         break;
@@ -332,19 +319,19 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
 //-----------------------------------------------------------------------------
 ir_func_t *ir_engine_t::generate()
 {
-  generate(func->tree());
-  return new ir_func_t(func, head, temps.get_union(),
-                       svtemps.get_union(), args.get_union());
+  generate(func.tree());
+  return new ir_func_t(func, head, *temps.get_union(),
+                       *svtemps.get_union(), *args.get_union());
 }
 
 //-----------------------------------------------------------------------------
-void generate(ir_t *ir, const symlist_t &functions)
+void generate(ir_t &ir, const symlist_t &functions)
 {
   symlist_t::const_iterator i;
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
-    ir_engine_t e(*i, ir->strings, ir->labels, ir->retloc);
+    ir_engine_t e(**i, ir.strings, ir.labels, ir.retloc);
     ir_func_t *irf = e.generate();
-    ir->funcs.push_back(irf);
+    ir.funcs.push_back(irf);
   }
 }

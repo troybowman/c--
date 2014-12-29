@@ -1080,8 +1080,8 @@ int main(int argc, char **argv)
 
   //---------------------------------------------------------------------------
   // generate intermediate representation
-  ir_t ir(&gsyms);
-  generate(&ir, functions);
+  ir_t ir(gsyms);
+  generate(ir, functions);
 
   DBG_IR(ir);
   CHECK_PHASE_FLAG(dbg_no_code)
