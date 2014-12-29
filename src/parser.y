@@ -268,12 +268,8 @@ args : expr arg_list
        {
          // append arg_list to 1st arg
          treenode_t *head = new treenode_t(TNT_ARG, $1, NULL);
-         head->val = 1;
          if ( $2.head != NULL )
-         {
            head->children[SEQ_NEXT] = $2.head;
-           head->val += $2.head->val;
-         }
          $$ = head;
        }
      | /* empty */ { $$ = NULL; }
