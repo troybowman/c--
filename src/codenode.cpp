@@ -279,17 +279,17 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
       }
     case TNT_IF:
       {
-        symbol_t *cond = generate(tree->children[IF_COND]);
-        treenode_t *elsetree = tree->children[IF_ELSE];
-
         symbol_t *endif = (ctx.flags & CTX_IF) != 0
                          ? ctx.endif
                          : new symbol_t(ST_LABEL);
+
+        treenode_t *elsetree = tree->children[IF_ELSE];
 
         symbol_t *cond_target = elsetree == NULL
                               ? endif
                               : new symbol_t(ST_LABEL);
 
+        symbol_t *cond = generate(tree->children[IF_COND]);
         append(CNT_CNDJMP, cond_target, cond);
 
         ir_ctx_t ifctx(endif);

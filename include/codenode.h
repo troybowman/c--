@@ -139,8 +139,11 @@ private:
 
 public:
   ir_engine_t(symbol_t &f, symtab_t &s, symlist_t &l, symbol_t &r)
-    : temps(ST_TEMPORARY), svtemps(ST_SAVED_TEMPORARY), args(ST_ARGUMENT),
-      func(f), strings(s), labels(l), retloc(r), head(NULL), tail(NULL) {}
+    : temps(ST_TEMPORARY),
+      svtemps(ST_SAVED_TEMPORARY),
+      args(ST_ARGUMENT),
+      func(f), strings(s), labels(l), retloc(r),
+      head(NULL), tail(NULL) {}
 
   ir_func_t *generate();
 };
