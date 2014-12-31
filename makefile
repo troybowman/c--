@@ -57,7 +57,6 @@ $(OBJ)codenode.o: $(SRC)codenode.cpp $(HFILES)
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
 
-#------------------------------------------------------------------------------
 $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 

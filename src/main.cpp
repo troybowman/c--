@@ -52,19 +52,18 @@ static bool parseargs(FILE **fp, int argc, char **argv)
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  FILE *fp;
-  if ( !parseargs(&fp, argc, argv) )
+  FILE *infile;
+  if ( !parseargs(&infile, argc, argv) )
     usage(argv[0]);
 
   CHECK_PHASE_FLAG(dbg_no_parse);
 
   //---------------------------------------------------------------------------
-  // parse, generate syntax tree
+  // parse, generate syntax trees
   symtab_t gsyms;
   symlist_t functions;
 
-  parse(*fp, gsyms, functions);
-  checkerr();
+  parse(gsyms, functions, *infile);
 
   DBG_PARSE_RESULTS(gsyms, functions);
   CHECK_PHASE_FLAG(dbg_no_ir);

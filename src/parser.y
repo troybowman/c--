@@ -41,16 +41,6 @@
   } ctx;
 
   //---------------------------------------------------------------------------
-  void parse(FILE &fp, symtab_t &_gsyms, symlist_t &_functions)
-  {
-    yyin = &fp;
-    ctx.setglobal();
-    yyparse();
-    _gsyms.swap(gsyms);
-    _functions.swap(functions);
-  }
-
-  //---------------------------------------------------------------------------
   // use a temporary symbol table to validate parameter declarations
   static inline void param_on() { ctx.setlocal(new symtab_t()); }
   static inline void param_off() { ctx.trash(); }
@@ -1030,4 +1020,17 @@ int yyerror(const char *s)
 {
   usererr("%s, line: %d\n", s, yylineno);
   return 3;
+}
+
+//---------------------------------------------------------------------------
+void parse(symtab_t &_gsyms, symlist_t &_functions, FILE &infile)
+{
+  yyin = &infile;
+  ctx.setglobal();
+
+  yyparse();
+  checkerr();
+
+  _gsyms.swap(gsyms);
+  _functions.swap(functions);
 }

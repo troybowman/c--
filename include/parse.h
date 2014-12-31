@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include <symbol.h>
 
-void parse(FILE &fp, symtab_t &_gsyms, symlist_t &_functions);
+void parse(symtab_t &_gsyms, symlist_t &_functions, FILE &infile);
 
 #endif // PARSE_H
