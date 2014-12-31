@@ -1,5 +1,4 @@
 #include <stdarg.h>
-
 #include <symbol.h>
 
 //-----------------------------------------------------------------------------
@@ -7,7 +6,7 @@ symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
   : _name(name), _line(line), _type(type)
 {
   va_list va;
-  va_start(va, _type);
+  va_start(va, type);
   switch ( _type )
   {
     case ST_ARRAY:
