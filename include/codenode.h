@@ -56,7 +56,8 @@ public:
       _free.erase(_free.begin());
       return ret;
     }
-    else { return new symbol_t(_type, _cnt++); }
+    else
+      return new symbol_t(_type, _cnt++);
   }
 
   void clear()           { _free.clear(); }

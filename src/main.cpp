@@ -33,7 +33,7 @@ inline bool is_path_sep(char c)
 }
 
 //-----------------------------------------------------------------------------
-static char *gen_outfile_name(const char *path)
+static char *gen_outpath(const char *path)
 {
   int len = strlen(path);
   const char *const end = path + len;
@@ -75,27 +75,29 @@ do                            \
 }
 
 //-----------------------------------------------------------------------------
-struct args_res_t
+struct args_t
 {
   int code;
-#define ARGS_OK       0
-#define ARGS_BADOPT   1
-#define ARGS_MISSING  2
-#define ARGS_INFILE   3
-#define ARGS_NOINPUT  5
-#define ARGS_CONFLICT 6
+#define ARGS_OK      0
+#define ARGS_BADOPT  1
+#define ARGS_MISSING 2
+#define ARGS_INFILE  3
+#define ARGS_NOINPUT 4
+  FILE *infile;
   union
   {
     char c;
     const char *str;
   };
-  args_res_t(int _code) : code(_code) {}
-  args_res_t(int _code, char _c) : code(_code), c(_c) {}
-  args_res_t(int _code, const char *_str) : code(_code), str(_str) {}
+  args_t(int _code) : code(_code) {}
+  args_t(int _code, char _c) : code(_code), c(_c) {}
+  args_t(int _code, const char *_str) : code(_code), str(_str) {}
+  args_t(FILE *_infile, const char *_str)
+    : code(ARGS_OK), infile(_infile), str(_str) {}
 };
 
 //-----------------------------------------------------------------------------
-static void process_args_error(args_res_t res, const char *prog)
+static void process_args_error(args_t res, const char *prog)
 {
   switch ( res.code )
   {
@@ -111,9 +113,6 @@ static void process_args_error(args_res_t res, const char *prog)
     case ARGS_NOINPUT:
       fprintf(stderr, "error: no input source file specified\n");
       break;
-    case ARGS_CONFLICT:
-      fprintf(stderr, "error: input file and output file cannot have the same name\n");
-      break;
     default:
       INTERR(0);
   }
@@ -122,7 +121,7 @@ static void process_args_error(args_res_t res, const char *prog)
 }
 
 //-----------------------------------------------------------------------------
-static args_res_t parseargs(FILE **infile, int argc, char **argv)
+static args_t parseargs(int argc, char **argv)
 {
   char *outpath = NULL;
 
@@ -145,30 +144,27 @@ static args_res_t parseargs(FILE **infile, int argc, char **argv)
         outpath = optarg;
         break;
       case '?':
-        return args_res_t(ARGS_BADOPT, optopt);
+        return args_t(ARGS_BADOPT, optopt);
       case ':':
-        return args_res_t(ARGS_MISSING, optopt);
+        return args_t(ARGS_MISSING, optopt);
       default:
         INTERR(0);
     }
   }
 
   if ( optind >= argc )
-    return args_res_t(ARGS_NOINPUT);
+    return args_t(ARGS_NOINPUT);
 
   const char *inpath = argv[optind];
 
-  if ( strcmp(inpath, outpath) == 0 )
-    return args_res_t(ARGS_CONFLICT);
-
-  *infile = fopen(inpath, "r");
-  if ( *infile == NULL )
-    return args_res_t(ARGS_INFILE, strerror(errno));
+  FILE *infile = fopen(inpath, "r");
+  if ( infile == NULL )
+    return args_t(ARGS_INFILE, strerror(errno));
 
   if ( outpath == NULL )
-    outpath = gen_outfile_name(inpath);
+    outpath = gen_outpath(inpath);
 
-  return args_res_t(ARGS_OK, outpath);
+  return args_t(infile, outpath);
 }
 
 //-----------------------------------------------------------------------------
@@ -186,22 +182,20 @@ void open_outfile(FILE **outfile, const char *outpath)
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  FILE *infile;
-  args_res_t res = parseargs(&infile, argc, argv);
-
-  if ( res.code != ARGS_OK )
-    process_args_error(res, argv[0]);
+  args_t args = parseargs(argc, argv);
+  if ( args.code != ARGS_OK )
+    process_args_error(args, argv[0]);
 
   //---------------------------------------------------------------------------
-  // generate syntax tree for each function
+  // parse, generate syntax tree
   symtab_t gsyms;
   symlist_t functions;
-
-  parse(gsyms, functions, infile);
+  parse(gsyms, functions, args.infile);
+  fclose(args.infile);
 
   //---------------------------------------------------------------------------
   FILE *outfile;
-  open_outfile(&outfile, res.str);
+  open_outfile(&outfile, args.str);
 
   DBG_PARSE_RESULTS(gsyms, functions);
   CHECK_PHASE_FLAG(dbg_no_ir);
@@ -212,7 +206,7 @@ int main(int argc, char **argv)
   generate(ir, functions);
 
   DBG_IR(ir);
-  CHECK_PHASE_FLAG(dbg_no_code)
+  CHECK_PHASE_FLAG(dbg_no_code);
 
   //---------------------------------------------------------------------------
   // generate code
