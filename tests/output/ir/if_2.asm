@@ -245,4 +245,3 @@
 # CNT_CALL
 # --------
 # src1 -> ST_FUNCTION (f4)
-# c-- exited with code: 0

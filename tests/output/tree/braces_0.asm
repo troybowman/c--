@@ -114,4 +114,3 @@
 # node 44: type: TNT_SYMBOL sym: x
 # child RHS for node 43
 # node 45: type: TNT_SYMBOL sym: x
-# c-- exited with code: 0

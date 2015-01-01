@@ -637,4 +637,3 @@
 # ------
 # dest -> ST_PRIMITIVE (x)
 # src1 -> ST_TEMPORARY (1)
-# c-- exited with code: 0

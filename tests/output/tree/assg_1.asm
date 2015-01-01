@@ -44,4 +44,3 @@
 # node 4: type: TNT_INTCON val: 0
 # child RHS for node 2
 # node 5: type: TNT_CHARCON str: '\0'
-# c-- exited with code: 0

@@ -39,4 +39,3 @@
 # node 11: type: TNT_INTCON val: 6
 # child IF_BODY for node 8
 # node 12: type: TNT_RET
-# c-- exited with code: 0

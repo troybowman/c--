@@ -117,4 +117,3 @@
 # node 10: type: TNT_STMT
 # child SEQ_CUR for node 10
 # node 11: type: TNT_RET
-# c-- exited with code: 0

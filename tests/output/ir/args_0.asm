@@ -736,4 +736,3 @@
 # CNT_CALL
 # --------
 # src1 -> ST_FUNCTION (blip)
-# c-- exited with code: 0

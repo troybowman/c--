@@ -9,4 +9,3 @@ error: function func6 redeclared at line 24 (previous declaration at line 13)
 error: variable func7 redeclared at line 26 (previous declaration at line 15)
 syntax error, line: 30
 syntax error, line: 32
-# c-- exited with code: 2

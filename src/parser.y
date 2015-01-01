@@ -64,11 +64,6 @@
   static symlist_t  *process_sym_list(symlist_t *, symbol_t *);
   static symlist_t  *process_first_sym(symbol_t *, symlist_t *);
   static array_sfx_t process_array_sfx(int, int);
-
-  //---------------------------------------------------------------------------
-#ifndef NDEBUG
-  dbg_flags_t dbg_flags = 0;
-#endif
 %}
 
 /*---------------------------------------------------------------------------*/
@@ -1023,11 +1018,11 @@ int yyerror(const char *s)
 }
 
 //---------------------------------------------------------------------------
-void parse(symtab_t &_gsyms, symlist_t &_functions, FILE &infile)
+void parse(symtab_t &_gsyms, symlist_t &_functions, FILE *infile)
 {
-  yyin = &infile;
-  ctx.setglobal();
+  yyin = infile;
 
+  ctx.setglobal();
   yyparse();
   checkerr();
 

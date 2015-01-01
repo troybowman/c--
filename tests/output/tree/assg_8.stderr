@@ -9,4 +9,3 @@ error: invalid operand types for assignment, line 25
 error: invalid operand types for assignment, line 27
 error: expression for array index is not of integer type, line 28
 error: expression for array index is not of integer type, line 29
-# c-- exited with code: 4

@@ -92,4 +92,3 @@
 # node 27: type: TNT_SYMBOL sym: y
 # child RHS for node 26
 # node 28: type: TNT_SYMBOL sym: z
-# c-- exited with code: 0

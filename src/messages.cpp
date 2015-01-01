@@ -58,6 +58,11 @@ void checkerr()
 #include <codenode.h>
 
 //-----------------------------------------------------------------------------
+static FILE *dbgfile;
+
+void set_dbgfile(FILE *_dbgfile) { dbgfile = _dbgfile; }
+
+//-----------------------------------------------------------------------------
 static const char *header =
 "#-----------------------------------------------------------------------------\n"
 "# %s%s\n"
@@ -72,7 +77,7 @@ static void cmtout(int indent, const char *fmt, ...)
   line += fmt;
   va_list va;
   va_start(va, fmt);
-  vfprintf(stdout, line.c_str(), va);
+  vfprintf(dbgfile, line.c_str(), va);
   va_end(va);
 }
 
@@ -282,7 +287,7 @@ static const char *addr2str(const symbol_t *addr)
 //-----------------------------------------------------------------------------
 void print_syms(const symtab_t &syms, const char *title, const char *extra)
 {
-  fprintf(stdout, header, title, extra);
+  fprintf(dbgfile, header, title, extra);
   cmtout(0, "size: %d\n", syms.size());
 
   symtab_t::const_iterator i;
@@ -297,16 +302,16 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
     switch ( s->type() )
     {
       case ST_PRIMITIVE:
-        fprintf(stdout,  "ST_PRIMITIVE\n");
+        fprintf(dbgfile,  "ST_PRIMITIVE\n");
         cmtout(++indent, "base: %s\n", prim2str(s->base()));
         break;
       case ST_ARRAY:
-        fprintf(stdout,  "ST_ARRAY\n");
+        fprintf(dbgfile,  "ST_ARRAY\n");
         cmtout(++indent, "base: %s\n", prim2str(s->base()));
         cmtout(indent,   "size: 0x%x\n", s->size());
         break;
       case ST_FUNCTION:
-        fprintf(stdout,  "ST_FUNCTION\n");
+        fprintf(dbgfile,  "ST_FUNCTION\n");
         cmtout(++indent, "rt_type: %s\n", rt2str(s->rt()));
         cmtout(indent,   "params:\n");
         if ( s->params()->size() < 1 )
@@ -324,11 +329,11 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
             switch ( p->type() )
             {
               case ST_PRIMITIVE:
-                fprintf(stdout, "ST_PRIMITIVE\n");
+                fprintf(dbgfile, "ST_PRIMITIVE\n");
                 cmtout(++pindent, "base: %s\n", prim2str(p->base()));
                 break;
               case ST_ARRAY:
-                fprintf(stdout, "ST_ARRAY\n");
+                fprintf(dbgfile, "ST_ARRAY\n");
                 cmtout(++pindent, "base: %s\n", prim2str(p->base()));
                 break;
               default:
@@ -356,21 +361,21 @@ void print_tree(const treenode_t *node, int *cnt)
   switch ( node->type )
   {
     case TNT_INTCON:
-      fprintf(stdout, " val: %d", node->val);
+      fprintf(dbgfile, " val: %d", node->val);
       break;
     case TNT_CHARCON:
     case TNT_STRCON:
-      fprintf(stdout, " str: %s", node->str);
+      fprintf(dbgfile, " str: %s", node->str);
       break;
     case TNT_SYMBOL:
     case TNT_ARRAY_LOOKUP:
     case TNT_CALL:
-      fprintf(stdout, " sym: %s", node->sym->c_str());
+      fprintf(dbgfile, " sym: %s", node->sym->c_str());
       break;
     default:
       break;
   }
-  fprintf(stdout, "\n");
+  fprintf(dbgfile, "\n");
   for ( int i = 0; i < 4; i++ )
   {
     treenode_t *child = node->children[i];
@@ -385,7 +390,7 @@ void print_tree(const treenode_t *node, int *cnt)
 //-----------------------------------------------------------------------------
 static void print_ir_strings(const symtab_t &strings)
 {
-  fprintf(stdout, header, "STRING CONSTANTS", "");
+  fprintf(dbgfile, header, "STRING CONSTANTS", "");
   symtab_t::const_iterator i;
   for ( i = strings.begin(); i != strings.end(); i++ )
   {
@@ -425,7 +430,7 @@ void print_ir(const ir_t &ir)
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
     ir_func_t *irf = *i;
-    fprintf(stdout, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->func.c_str());
+    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->func.c_str());
     cmtout(0, "temps used:   %d\n", irf->temps.size());
     cmtout(0, "svtemps used: %d\n", irf->svtemps.size());
     cmtout(0, "args used:    %d\n", irf->args.size());
@@ -448,7 +453,7 @@ void walk_funcs(const symlist_t &functions, dbg_flags_t flags)
     if ( (flags & dbg_dump_tree) != 0 )
     {
       int cnt = 0;
-      fprintf(stdout, header, "SYNTAX TREE FOR FUNCTION: ", f->c_str());
+      fprintf(dbgfile, header, "SYNTAX TREE FOR FUNCTION: ", f->c_str());
       print_tree(f->tree(), &cnt);
     }
   }

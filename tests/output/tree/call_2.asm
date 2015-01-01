@@ -118,4 +118,3 @@
 # node 25: type: TNT_ARG
 # child SEQ_CUR for node 25
 # node 26: type: TNT_STRCON str: "test"
-# c-- exited with code: 0

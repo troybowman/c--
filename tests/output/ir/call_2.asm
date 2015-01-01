@@ -1211,4 +1211,3 @@
 # ------
 # dest -> ST_TEMPORARY (2)
 # src1 -> ST_SAVED_TEMPORARY (0)
-# c-- exited with code: 0

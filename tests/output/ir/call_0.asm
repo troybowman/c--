@@ -150,4 +150,3 @@
 # ------
 # dest -> ST_PRIMITIVE (x)
 # src1 -> ST_TEMPORARY (0)
-# c-- exited with code: 0

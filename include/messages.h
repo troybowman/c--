@@ -10,10 +10,11 @@
 //-----------------------------------------------------------------------------
 
 // exit codes
+#define FATAL_NORMAL  0
 #define FATAL_USAGE   1
 #define FATAL_FUNCDEF 2
 #define FATAL_MAXERR  3
-#define FATAL_NORMAL  4
+#define FATAL_OUTFILE 4
 
 void checkerr();
 void purge_and_exit(int code);
@@ -75,6 +76,10 @@ struct ir_t;
 void print_syms(const symtab_t &syms, const char *title, const char *extra);
 void walk_funcs(const symlist_t &functions, dbg_flags_t flags);
 void print_ir(const ir_t &ir);
+void set_dbgfile(FILE *dbgfile);
+
+//-----------------------------------------------------------------------------
+#define SET_DBGFILE(dbgfile) do { set_dbgfile(dbgfile); } while ( false );
 
 //-----------------------------------------------------------------------------
 #define DBG_PARSE_RESULTS(gsyms, functions) \
@@ -115,6 +120,7 @@ do                                      \
 #define DBG_PARSE_RESULTS()        // nothing
 #define DBG_IR(code)               // nothing
 #define CHECK_PHASE_FLAG(flags)    // nothing
+#define SET_DBGFILE(dbgfile)       // nothing
 
 #endif // DEBUG
 

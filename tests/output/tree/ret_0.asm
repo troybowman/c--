@@ -57,4 +57,3 @@
 # node 1: type: TNT_STMT
 # child SEQ_CUR for node 1
 # node 2: type: TNT_RET
-# c-- exited with code: 0

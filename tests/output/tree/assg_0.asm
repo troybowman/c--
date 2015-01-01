@@ -31,4 +31,3 @@
 # node 3: type: TNT_SYMBOL sym: x
 # child RHS for node 2
 # node 4: type: TNT_INTCON val: 5
-# c-- exited with code: 0

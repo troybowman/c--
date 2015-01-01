@@ -187,4 +187,3 @@
 # node 41: type: TNT_ARG
 # child SEQ_CUR for node 41
 # node 42: type: TNT_SYMBOL sym: d
-# c-- exited with code: 0

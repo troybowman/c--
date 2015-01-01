@@ -574,4 +574,3 @@
 # CNT_LABEL
 # ---------
 # src1 -> ST_LABEL (8)
-# c-- exited with code: 0

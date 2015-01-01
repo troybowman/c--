@@ -190,4 +190,3 @@
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
-# c-- exited with code: 0

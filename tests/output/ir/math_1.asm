@@ -506,4 +506,3 @@
 # ------
 # dest -> ST_PRIMITIVE (x6)
 # src1 -> ST_TEMPORARY (2)
-# c-- exited with code: 0

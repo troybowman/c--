@@ -113,4 +113,3 @@
 # node 46: type: TNT_RET
 # child RET_EXPR for node 46
 # node 47: type: TNT_INTCON val: 17
-# c-- exited with code: 0

@@ -69,4 +69,3 @@
 # node 24: type: TNT_INTCON val: 5
 # child WHILE_BODY for node 21
 # node 25: type: TNT_RET
-# c-- exited with code: 0

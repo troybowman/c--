@@ -156,4 +156,3 @@
 # node 47: type: TNT_ARG
 # child SEQ_CUR for node 47
 # node 48: type: TNT_INTCON val: 777
-# c-- exited with code: 0

@@ -164,4 +164,3 @@
 # node 39: type: TNT_ARG
 # child SEQ_CUR for node 39
 # node 40: type: TNT_INTCON val: 4
-# c-- exited with code: 0

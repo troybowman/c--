@@ -603,4 +603,3 @@
 # CNT_LABEL
 # ---------
 # src1 -> ST_LABEL (11)
-# c-- exited with code: 0

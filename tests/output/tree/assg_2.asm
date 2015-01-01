@@ -150,4 +150,3 @@
 # node 24: type: TNT_INTCON val: 4
 # child RHS for node 22
 # node 25: type: TNT_CHARCON str: 'o'
-# c-- exited with code: 0

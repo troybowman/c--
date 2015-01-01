@@ -12,4 +12,3 @@ error: expected 3 arguments for function bunch, 0 were provided. line 31
 error: expected 3 arguments for function bunch, 0 were provided. line 32
 error: expected 3 arguments for function bunch, 2 were provided. line 33
 error: argument 1 to function print_string is of incompatible type, line 34
-# c-- exited with code: 4

@@ -1,69 +1,207 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
+#include <string.h>
 
 #include <parse.h>
 #include <symbol.h>
 #include <codenode.h>
 #include <messages.h>
 
-//-----------------------------------------------------------------------------
-static void usage(const char *prog)
-{
-  const char *msg =
+#define OUTFILE_EXT "asm"
+
 #ifndef NDEBUG
-    "usage: %s [-v dbg_flags] filename\n";
+dbg_flags_t dbg_flags = 0;
+static const char *argdesc  = ":v:o:";
+static const char *usagestr =
+    "usage: %s [-v dbg_flags] [-o outfile] filename\n";
 #else
-    "usage: %s filename\n";
+static const char *argdesc  = ":o:";
+static const char *usagestr =
+    "usage: %s [-o outfile] filename\n";
 #endif
-  fprintf(stderr, msg, prog);
+
+//-----------------------------------------------------------------------------
+inline bool is_path_sep(char c)
+{
+#ifdef __NT__
+  return c == '\\' || c == '/';
+#else
+  return c == '/';
+#endif
+}
+
+//-----------------------------------------------------------------------------
+static char *gen_outfile_name(const char *path)
+{
+  int len = strlen(path);
+  const char *const end = path + len;
+
+  const char *ptr1 = end;
+  for ( ; ptr1 != path; ptr1-- )
+    if ( is_path_sep(*(ptr1-1)) )
+      break;
+
+  const char *ptr2 = end;
+  for ( ; ptr2 != ptr1; ptr2-- )
+    if ( *ptr2 == '.' )
+      break;
+
+  if ( ptr2 == ptr1 )
+    ptr2 = end;
+
+  int baselen = ptr2-ptr1;
+  int extlen  = strlen(OUTFILE_EXT);
+
+  char *buf = (char *)malloc(baselen+extlen+2);
+  char *ptr = buf;
+
+#define APPSTR(ptr, str, len) \
+do                            \
+{                             \
+  strncpy(ptr, str, len);     \
+  ptr += len;                 \
+} while ( false )
+
+  APPSTR(ptr, ptr1, baselen);
+  APPSTR(ptr, ".", 1);
+  APPSTR(ptr, OUTFILE_EXT, extlen);
+  *ptr = '\0';
+
+#undef APPSTR
+
+  return buf;
+}
+
+//-----------------------------------------------------------------------------
+struct args_res_t
+{
+  int code;
+#define ARGS_OK       0
+#define ARGS_BADOPT   1
+#define ARGS_MISSING  2
+#define ARGS_INFILE   3
+#define ARGS_NOINPUT  5
+#define ARGS_CONFLICT 6
+  union
+  {
+    char c;
+    const char *str;
+  };
+  args_res_t(int _code) : code(_code) {}
+  args_res_t(int _code, char _c) : code(_code), c(_c) {}
+  args_res_t(int _code, const char *_str) : code(_code), str(_str) {}
+};
+
+//-----------------------------------------------------------------------------
+static void process_args_error(args_res_t res, const char *prog)
+{
+  switch ( res.code )
+  {
+    case ARGS_BADOPT:
+      fprintf(stderr, "error: unknown option '-%c'\n", res.c);
+      break;
+    case ARGS_MISSING:
+      fprintf(stderr, "error: option '-%c' requires an argument\n", res.c);
+      break;
+    case ARGS_INFILE:
+      fprintf(stderr, "error: could not open input file: %s\n", res.str);
+      break;
+    case ARGS_NOINPUT:
+      fprintf(stderr, "error: no input source file specified\n");
+      break;
+    case ARGS_CONFLICT:
+      fprintf(stderr, "error: input file and output file cannot have the same name\n");
+      break;
+    default:
+      INTERR(0);
+  }
+  fprintf(stderr, usagestr, prog);
   exit(FATAL_USAGE);
 }
 
 //-----------------------------------------------------------------------------
-static bool parseargs(FILE **fp, int argc, char **argv)
+static args_res_t parseargs(FILE **infile, int argc, char **argv)
 {
-  const char *infile = NULL;
+  char *outpath = NULL;
 
-  if ( argc == 2 )
+  int c, prev_ind;
+  while ( prev_ind = optind, (c = getopt(argc, argv, argdesc)) != -1 )
   {
-    infile = argv[1];
-  }
-  else
-  {
+    if ( optind == prev_ind + 2 && *optarg == '-' )
+    {
+      c = ':';
+      optind--;
+    }
+    switch ( c )
+    {
 #ifndef NDEBUG
-    if ( argc != 4 || strcmp("-v", argv[1]) != 0 )
-      return false;
-    dbg_flags |= dbg_flags_t(strtoul(argv[2], NULL, 0));
-    infile = argv[3];
-#else
-    return false;
+      case 'v':
+        dbg_flags |= dbg_flags_t(strtoul(optarg, NULL, 0));
+        break;
 #endif
+      case 'o':
+        outpath = optarg;
+        break;
+      case '?':
+        return args_res_t(ARGS_BADOPT, optopt);
+      case ':':
+        return args_res_t(ARGS_MISSING, optopt);
+      default:
+        INTERR(0);
+    }
   }
-  *fp = fopen(infile, "r");
-  if ( *fp == NULL )
+
+  if ( optind >= argc )
+    return args_res_t(ARGS_NOINPUT);
+
+  const char *inpath = argv[optind];
+
+  if ( strcmp(inpath, outpath) == 0 )
+    return args_res_t(ARGS_CONFLICT);
+
+  *infile = fopen(inpath, "r");
+  if ( *infile == NULL )
+    return args_res_t(ARGS_INFILE, strerror(errno));
+
+  if ( outpath == NULL )
+    outpath = gen_outfile_name(inpath);
+
+  return args_res_t(ARGS_OK, outpath);
+}
+
+//-----------------------------------------------------------------------------
+void open_outfile(FILE **outfile, const char *outpath)
+{
+  *outfile = fopen(outpath, "w");
+  if ( *outfile == NULL )
   {
-    fprintf(stderr, "cannot open file %s: %s\n" , infile, strerror(errno));
-    return false;
+    fprintf(stderr, "error: could not open output file for writing: %s\n", strerror(errno));
+    exit(FATAL_OUTFILE);
   }
-  return true;
+  SET_DBGFILE(*outfile);
 }
 
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
   FILE *infile;
-  if ( !parseargs(&infile, argc, argv) )
-    usage(argv[0]);
+  args_res_t res = parseargs(&infile, argc, argv);
 
-  CHECK_PHASE_FLAG(dbg_no_parse);
+  if ( res.code != ARGS_OK )
+    process_args_error(res, argv[0]);
 
   //---------------------------------------------------------------------------
-  // parse, generate syntax trees
+  // generate syntax tree for each function
   symtab_t gsyms;
   symlist_t functions;
 
-  parse(gsyms, functions, *infile);
+  parse(gsyms, functions, infile);
+
+  //---------------------------------------------------------------------------
+  FILE *outfile;
+  open_outfile(&outfile, res.str);
 
   DBG_PARSE_RESULTS(gsyms, functions);
   CHECK_PHASE_FLAG(dbg_no_ir);

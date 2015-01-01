@@ -130,4 +130,3 @@
 # node 37: type: TNT_STMT
 # child SEQ_CUR for node 37
 # node 38: type: TNT_RET
-# c-- exited with code: 0

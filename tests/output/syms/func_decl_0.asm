@@ -343,4 +343,3 @@
 #         type: ST_ARRAY
 #           base: PRIM_CHAR
 #     is_extern: no
-# c-- exited with code: 0

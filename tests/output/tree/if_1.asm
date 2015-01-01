@@ -131,4 +131,3 @@
 # node 52: type: TNT_SYMBOL sym: x
 # child RHS for node 51
 # node 53: type: TNT_CHARCON str: 'z'
-# c-- exited with code: 0

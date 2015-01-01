@@ -380,4 +380,3 @@
 # ------
 # dest -> ST_PRIMITIVE (argc)
 # src1 -> ST_TEMPORARY (2)
-# c-- exited with code: 0

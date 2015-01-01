@@ -124,4 +124,3 @@
 # node 26: type: TNT_RET
 # child RET_EXPR for node 26
 # node 27: type: TNT_INTCON val: 0
-# c-- exited with code: 0

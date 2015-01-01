@@ -42,27 +42,29 @@ class Tester:
             print "error, can't find c-- binary"
             exit()
 
-    def compile(self, infile, flags):
-        print "compiling: %s" % infile
-        args = [ self.cmm, "-v", hex(flags), infile ]
-        outname = re.sub("input/", "output/",
-                    re.sub("\.c", ".s",
-                      infile))
-        with open(outname, "w") as outfile:
+    def compile(self, inpath, flags):
+        print "compiling: %s" % inpath
+        outpath = re.sub("input/", "output/",
+                    re.sub("\.c", ".asm",
+                      inpath))
+        args = [ self.cmm, "-v", hex(flags), "-o", outpath, inpath ]
+        errpath = re.sub("\.asm", ".stderr", outpath)
+        with open(errpath, "w") as errfile:
             try:
-                code = subprocess.call(args, stdout=outfile, stderr=outfile)
-                outfile.write("# c-- exited with code: %d\n" % code)
+                subprocess.call(args, stdout=errfile, stderr=errfile)
             except OSError as e:
-                outfile.write("couldn't launch c--: %s\n" % e.strerror)
+                errfile.write("couldn't launch c--: %s\n" % e.strerror)
             except:
-                outfile.write("idk wtf happened\n")
+                errfile.write("idk wtf happened\n")
                 raise
+        if os.path.getsize(errpath) == 0:
+            os.remove(errpath)
 
     def run(self):
         for p in self.phase_spec:
             path = os.path.join("input", p, "*.c")
-            for infile in glob.iglob(path):
-                self.compile(infile, self.phases[p])
+            for inpath in glob.iglob(path):
+                self.compile(inpath, self.phases[p])
 
 
 #------------------------------------------------------------------------------

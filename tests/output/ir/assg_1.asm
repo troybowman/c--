@@ -327,4 +327,3 @@
 # ------
 # dest -> ST_TEMPORARY (3)
 # src1 -> ST_TEMPORARY (0)
-# c-- exited with code: 0
