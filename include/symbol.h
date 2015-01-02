@@ -163,15 +163,17 @@ public:
   void set_defined(bool defined = true)  { _defined = defined; }
 
   void set_val(int val) { _val = val; }
+
+  void make_asm_name() { _name.insert(0, 1, '_'); }
 };
 
 //-----------------------------------------------------------------------------
 class symtab_t : public std::map<std::string, symbol_t *>
 {
 public:
-  symbol_t *get(const std::string &key)
+  symbol_t *get(const std::string &key) const
   {
-    iterator i = find(key);
+    const_iterator i = find(key);
     return i != end() ? i->second : NULL;
   }
   void insert(symbol_t *value)

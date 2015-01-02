@@ -9,6 +9,8 @@
 #include <codenode.h>
 #include <messages.h>
 
+#include "mips_asm.h"
+
 #define OUTFILE_EXT "asm"
 
 #ifndef NDEBUG
@@ -128,7 +130,7 @@ static args_t parseargs(int argc, char **argv)
   int c, prev_ind;
   while ( prev_ind = optind, (c = getopt(argc, argv, argdesc)) != -1 )
   {
-    if ( optind == prev_ind + 2 && *optarg == '-' )
+    if ( optind == prev_ind + 2 && optarg != NULL && *optarg == '-' )
     {
       c = ':';
       optind--;
@@ -168,15 +170,16 @@ static args_t parseargs(int argc, char **argv)
 }
 
 //-----------------------------------------------------------------------------
-void open_outfile(FILE **outfile, const char *outpath)
+FILE *init_outfile(const char *outpath)
 {
-  *outfile = fopen(outpath, "w");
-  if ( *outfile == NULL )
+  FILE *outfile = fopen(outpath, "w");
+  if ( outfile == NULL )
   {
     fprintf(stderr, "error: could not open output file for writing: %s\n", strerror(errno));
     exit(FATAL_OUTFILE);
   }
-  SET_DBGFILE(*outfile);
+  SET_DBGFILE(outfile);
+  return outfile;
 }
 
 //-----------------------------------------------------------------------------
@@ -194,8 +197,7 @@ int main(int argc, char **argv)
   fclose(args.infile);
 
   //---------------------------------------------------------------------------
-  FILE *outfile;
-  open_outfile(&outfile, args.str);
+  FILE *outfile = init_outfile(args.str);
 
   DBG_PARSE_RESULTS(gsyms, functions);
   CHECK_PHASE_FLAG(dbg_no_ir);
@@ -209,7 +211,9 @@ int main(int argc, char **argv)
   CHECK_PHASE_FLAG(dbg_no_code);
 
   //---------------------------------------------------------------------------
-  // generate code
+  // backend
+  mips_asm_generate(ir, outfile);
 
+  fclose(outfile);
   return 0;
 }

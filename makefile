@@ -19,12 +19,12 @@ else
   LIBFLEX = -lfl
 endif
 
-OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o \
-					 $(OBJ)symbol.o   $(OBJ)treenode.o $(OBJ)codenode.o \
-					 $(OBJ)messages.o $(OBJ)main.o
+OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o  $(OBJ)symbol.o \
+					 $(OBJ)treenode.o $(OBJ)codenode.o $(OBJ)messages.o \
+					 $(OBJ)main.o     $(OBJ)mips_asm.o
 
-HFILES   = $(I)symbol.h $(I)treenode.h $(I)codenode.h $(I)messages.h \
-					 $(I)parse.h
+HFILES   = $(I)symbol.h   $(I)treenode.h $(I)codenode.h \
+					 $(I)messages.h $(I)parse.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
@@ -58,6 +58,10 @@ $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
 
 $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+#------------------------------------------------------------------------------
+$(OBJ)mips_asm.o: $(SRC)mips_asm.cpp $(SRC)mips_asm.h $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 #------------------------------------------------------------------------------
