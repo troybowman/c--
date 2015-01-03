@@ -945,9 +945,11 @@ static void f_enter(symbol_t *f, return_type_t rt)
       // we do not try to recover from them
       purge_and_exit(FATAL_FUNCDEF);
     }
-    // existing symbol for declaration is replaced with the definition
+    // existing symbol for decl replaced with definition
+    ctx.syms->erase(prev->name());
     delete prev;
   }
+
   init_lsyms(*f);
   ctx.syms->insert(f);
 

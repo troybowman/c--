@@ -445,7 +445,7 @@ void walk_funcs(const symlist_t &functions, dbg_flags_t flags)
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     symbol_t *f = *i;
-    ASSERT(1012, f->is_func());
+    ASSERT(1080, f->is_func());
 
     if ( (flags & dbg_dump_lsyms) != 0 )
       print_syms(*f->symbols(), "LOCAL SYMBOLS FOR FUNCTION: ", f->c_str());
