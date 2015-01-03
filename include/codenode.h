@@ -79,14 +79,14 @@ public:
 //-----------------------------------------------------------------------------
 struct ir_func_t
 {
-  symbol_t &func;
+  symbol_t &sym;
   codenode_t *code;
   symlist_t &temps;
   symlist_t &svtemps;
   symlist_t &args;
 
-  ir_func_t(symbol_t &f, codenode_t *c, symlist_t &t, symlist_t &svt, symlist_t &a)
-    : func(f), code(c), temps(t), svtemps(svt), args(a) {}
+  ir_func_t(symbol_t &s, codenode_t *c, symlist_t &t, symlist_t &svt, symlist_t &a)
+    : sym(s), code(c), temps(t), svtemps(svt), args(a) {}
 };
 
 typedef std::list<ir_func_t *> ir_funcs_t;

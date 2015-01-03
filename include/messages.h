@@ -58,6 +58,7 @@ enum dbg_flag_t
   dbg_no_ir       = 1 << 4,
   dbg_dump_ir     = 1 << 5,
   dbg_no_code     = 1 << 6,
+  dbg_asm_cmts    = 1 << 7,
 };
 
 //-----------------------------------------------------------------------------
@@ -72,11 +73,13 @@ struct codenode_t;
 class symtab_t;
 class symlist_t;
 struct ir_t;
+struct ir_func_t;
 
 void print_syms(const symtab_t &syms, const char *title, const char *extra);
 void walk_funcs(const symlist_t &functions, dbg_flags_t flags);
 void print_ir(const ir_t &ir);
 void set_dbgfile(FILE *dbgfile);
+void print_frame_summary(const ir_func_t &func);
 
 //-----------------------------------------------------------------------------
 #define SET_DBGFILE(dbgfile) do { set_dbgfile(dbgfile); } while ( false );
@@ -112,6 +115,14 @@ do                                      \
     print_ir(ir);                       \
 } while ( false );
 
+//-----------------------------------------------------------------------------
+#define DBG_FRAME_SUMMARY(func)          \
+do                                       \
+{                                        \
+  if ( (dbg_flags & dbg_asm_cmts) != 0 ) \
+    print_frame_summary(func);           \
+} while ( false );
+
 #else
 
 //-----------------------------------------------------------------------------
@@ -121,6 +132,7 @@ do                                      \
 #define DBG_IR(code)               // nothing
 #define CHECK_PHASE_FLAG(flags)    // nothing
 #define SET_DBGFILE(dbgfile)       // nothing
+#define DBG_FRAME_SUMMARY(func)    // nothing
 
 #endif // DEBUG
 

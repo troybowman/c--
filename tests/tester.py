@@ -21,11 +21,13 @@ class Tester:
         "syms" : DBG_ALL_SYMS | DBG_NO_IR,          # 0x16
         "tree" : DBG_ALL_TREE | DBG_NO_IR,          # 0x1e
         "ir"   : DBG_ALL_IR   | DBG_NO_CODE,        # 0x6e
-        "code" : DBG_ALL_IR,                        # 0x2e
+        "mips" : DBG_ALL_IR,                        # 0x2e
         }
 
+    all_phases = [ "syms", "tree", "ir", "mips" ]
+
     def __init__(self, argv):
-        self.phase_spec = ["*"] if len(argv) == 0 else argv[1].split(',')
+        self.phase_spec = self.all_phases if len(argv) == 1 else argv[1].split(',')
         # TODO:
         #cwd = os.getcwd()
         #last_child = cwd

@@ -130,7 +130,9 @@ static args_t parseargs(int argc, char **argv)
   int c, prev_ind;
   while ( prev_ind = optind, (c = getopt(argc, argv, argdesc)) != -1 )
   {
-    if ( optind == prev_ind + 2 && optarg != NULL && *optarg == '-' )
+    if ( optind == prev_ind + 2
+     &&  optarg != NULL
+     && *optarg == '-' )
     {
       c = ':';
       optind--;
@@ -193,7 +195,9 @@ int main(int argc, char **argv)
   // parse, generate syntax tree
   symtab_t gsyms;
   symlist_t functions;
+
   parse(gsyms, functions, args.infile);
+
   fclose(args.infile);
 
   //---------------------------------------------------------------------------

@@ -836,10 +836,7 @@ static bool check_params(const symlist_t &p1, const symlist_t &p2)
   if ( p1.size() != p2.size() )
     return false;
 
-  symlist_t::const_iterator i1;
-  symlist_t::const_iterator i2;
-
-  for ( i1 =  p1.begin(), i2 =  p2.begin();
+  for ( symlist_t::const_iterator i1 = p1.begin(), i2 = p2.begin();
         i1 != p1.end() && i2 != p2.end();
         i1++, i2++)
   {
@@ -884,9 +881,8 @@ static void init_lsyms(symbol_t &f)
   symlist_t::const_iterator i;
   for ( i = f.params()->begin(); i != f.params()->end(); i++ )
   {
-    symbol_t *p = *i;
-    ASSERT(1003, f.symbols()->get(p->name()) == NULL);
-    f.symbols()->insert(p);
+    ASSERT(1003, f.symbols()->get((*i)->name()) == NULL);
+    f.symbols()->insert(*i);
   }
 }
 
@@ -995,7 +991,6 @@ static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
   for ( i = list->begin(); i != list->end(); i++ )
   {
     ASSERT(1011, *i != NULL);
-
     symbol_t *sym = *i;
     symbol_t *prev = ctx.syms->get(sym->name());
     if ( prev != NULL )
@@ -1005,7 +1000,6 @@ static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
       delete sym;
       continue;
     }
-
     sym->set_rt(rt);
     sym->set_extern(is_extern);
     ctx.syms->insert(sym);
