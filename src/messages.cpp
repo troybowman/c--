@@ -294,7 +294,7 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
   for ( i = syms.begin(); i != syms.end(); i++ )
   {
     int indent = 0;
-    const symbol_t *s = i->second;
+    const symbol_t *s = *i;
     cmtout(indent, "sym: %s\n", s->c_str());
     cmtout(++indent, "line: %d\n", s->line());
 
@@ -388,18 +388,6 @@ void print_tree(const treenode_t *node, int *cnt)
 }
 
 //-----------------------------------------------------------------------------
-static void print_ir_strings(const symtab_t &strings)
-{
-  fprintf(dbgfile, header, "STRING CONSTANTS", "");
-  symtab_t::const_iterator i;
-  for ( i = strings.begin(); i != strings.end(); i++ )
-  {
-    std::string string = i->first;
-    cmtout(0, "%s\n", string.c_str());
-  }
-}
-
-//-----------------------------------------------------------------------------
 static void print_ir_code(const codenode_t *code)
 {
   const codenode_t *ptr = code;
@@ -424,8 +412,6 @@ static void print_ir_code(const codenode_t *code)
 //-----------------------------------------------------------------------------
 void print_ir(const ir_t &ir)
 {
-  print_ir_strings(ir.strings);
-
   ir_funcs_t::const_iterator i;
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {

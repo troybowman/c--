@@ -2,13 +2,33 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 6
-# sym: main
-#   line: 13
+# sym: print_string
+#   line: 3
 #   type: ST_FUNCTION
 #     rt_type: RT_VOID
 #     params:
-#       none
-#     is_extern: no
+#       0: str
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: yes
+# sym: print_strings
+#   line: 8
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: str1
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       1: str2
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       2: str3
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       3: str4
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: yes
 # sym: print_int
 #   line: 9
 #   type: ST_FUNCTION
@@ -51,33 +71,13 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: print_string
-#   line: 3
+# sym: main
+#   line: 13
 #   type: ST_FUNCTION
 #     rt_type: RT_VOID
 #     params:
-#       0: str
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: yes
-# sym: print_strings
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: str1
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: str2
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       2: str3
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       3: str4
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: yes
+#       none
+#     is_extern: no
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------

@@ -168,27 +168,6 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class symtab_t : public std::map<std::string, symbol_t *>
-{
-public:
-  symbol_t *get(const std::string &key) const
-  {
-    const_iterator i = find(key);
-    return i != end() ? i->second : NULL;
-  }
-  void insert(symbol_t *value)
-  {
-    ASSERT(1013, value != NULL);
-    operator[](value->name()) = value;
-  }
-  void insert(const std::string &key, symbol_t *value)
-  {
-    ASSERT(1075, key.size() > 0 && value != NULL);
-    operator[](key) = value;
-  }
-};
-
-//-----------------------------------------------------------------------------
 class symlist_t : public std::list<symbol_t *>
 {
 public:
@@ -204,6 +183,56 @@ public:
   {
     if ( !has(s) )
       push_back(s);
+  }
+};
+
+//-----------------------------------------------------------------------------
+// symbol table
+class symtab_t
+{
+  typedef std::map<std::string, symbol_t*> symmap_t;
+
+  symmap_t map;   // fast lookups...
+  symlist_t list; // ...while maintaining insertion order
+
+public:
+  symbol_t *get(const std::string &key) const
+  {
+    symmap_t::const_iterator i = map.find(key);
+    return i != map.end() ? i->second : NULL;
+  }
+  void insert(const std::string &key, symbol_t *value)
+  {
+    ASSERT(1075, key.size() > 0 && value != NULL);
+    map[key] = value;
+    list.push_back(value);
+  }
+  void insert(symbol_t *value)
+  {
+    insert(value->name(), value);
+  }
+  void erase(const std::string &key)
+  {
+    symbol_t *sym = map.find(key)->second;
+    map.erase(key);
+    list.remove(sym);
+  }
+
+  // always iterate in insertion order
+  typedef symlist_t::iterator iterator;
+  typedef symlist_t::const_iterator const_iterator;
+
+  iterator begin() { return list.begin(); }
+  iterator end() { return list.end(); }
+  const_iterator begin() const { return list.begin(); }
+  const_iterator end() const { return list.end(); }
+
+  size_t size() const { return list.size(); }
+
+  void swap(symtab_t &r)
+  {
+    map.swap(r.map);
+    list.swap(r.list);
   }
 };
 

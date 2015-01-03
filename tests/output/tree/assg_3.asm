@@ -2,6 +2,10 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 2
+# sym: one
+#   line: 3
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 # sym: main
 #   line: 5
 #   type: ST_FUNCTION
@@ -14,10 +18,6 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: no
-# sym: one
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------

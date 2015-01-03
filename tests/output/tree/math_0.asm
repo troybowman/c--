@@ -2,13 +2,6 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 2
-# sym: main
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       none
-#     is_extern: no
 # sym: sum
 #   line: 3
 #   type: ST_FUNCTION
@@ -20,6 +13,13 @@
 #       1: y
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
+#     is_extern: no
+# sym: main
+#   line: 5
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       none
 #     is_extern: no
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: sum

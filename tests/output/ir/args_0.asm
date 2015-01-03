@@ -2,12 +2,36 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 8
-# sym: blip
-#   line: 18
+# sym: right_back
+#   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: RT_INT
 #     params:
 #       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
+# sym: num_at
+#   line: 4
+#   type: ST_FUNCTION
+#     rt_type: RT_INT
+#     params:
+#       0: array
+#         type: ST_ARRAY
+#           base: PRIM_INT
+#       1: idx
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
+# sym: char_at
+#   line: 5
+#   type: ST_FUNCTION
+#     rt_type: RT_CHAR
+#     params:
+#       0: string
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       1: idx
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
@@ -47,47 +71,23 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: no
-# sym: char_at
-#   line: 5
+# sym: blip
+#   line: 18
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
-#     params:
-#       0: string
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: gchar
-#   line: 21
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: gint
-#   line: 20
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: num_at
-#   line: 4
-#   type: ST_FUNCTION
-#     rt_type: RT_INT
-#     params:
-#       0: array
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#       1: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: right_back
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: RT_VOID
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
+# sym: gint
+#   line: 20
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: gchar
+#   line: 21
+#   type: ST_PRIMITIVE
+#     base: PRIM_CHAR
 # sym: stuff
 #   line: 23
 #   type: ST_FUNCTION
@@ -138,15 +138,15 @@
 # LOCAL SYMBOLS FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
 # size: 2
-# sym: idx
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 # sym: string
 #   line: 5
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
+# sym: idx
+#   line: 5
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
@@ -161,50 +161,50 @@
 # LOCAL SYMBOLS FOR FUNCTION: bunch
 #-----------------------------------------------------------------------------
 # size: 10
-# sym: eight
-#   line: 14
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: five
-#   line: 11
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xffffffff
-# sym: four
-#   line: 10
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: nine
-#   line: 15
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
 # sym: one
 #   line: 7
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
-# sym: seven
-#   line: 13
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: six
-#   line: 12
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: ten
-#   line: 16
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: three
-#   line: 9
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
 # sym: two
 #   line: 8
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
+# sym: three
+#   line: 9
+#   type: ST_PRIMITIVE
+#     base: PRIM_CHAR
+# sym: four
+#   line: 10
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: five
+#   line: 11
+#   type: ST_ARRAY
+#     base: PRIM_INT
+#     size: 0xffffffff
+# sym: six
+#   line: 12
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: seven
+#   line: 13
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: eight
+#   line: 14
+#   type: ST_PRIMITIVE
+#     base: PRIM_CHAR
+# sym: nine
+#   line: 15
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0xffffffff
+# sym: ten
+#   line: 16
+#   type: ST_PRIMITIVE
+#     base: PRIM_CHAR
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: bunch
 #-----------------------------------------------------------------------------
@@ -342,12 +342,6 @@
 # node 53: type: TNT_ARG
 # child SEQ_CUR for node 53
 # node 54: type: TNT_INTCON val: 500000
-#-----------------------------------------------------------------------------
-# STRING CONSTANTS
-#-----------------------------------------------------------------------------
-# "hello"
-# "nine"
-# "one"
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: right_back
 #-----------------------------------------------------------------------------

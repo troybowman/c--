@@ -38,15 +38,15 @@
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # size: 2
+# sym: x
+#   line: 7
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 # sym: s
 #   line: 8
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xa
-# sym: x
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------

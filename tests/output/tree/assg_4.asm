@@ -6,6 +6,11 @@
 #   line: 3
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
+# sym: x
+#   line: 4
+#   type: ST_ARRAY
+#     base: PRIM_INT
+#     size: 0xa
 # sym: test
 #   line: 6
 #   type: ST_FUNCTION
@@ -18,11 +23,6 @@
 #         type: ST_ARRAY
 #           base: PRIM_CHAR
 #     is_extern: no
-# sym: x
-#   line: 4
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xa
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: test
 #-----------------------------------------------------------------------------

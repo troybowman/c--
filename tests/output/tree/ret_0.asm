@@ -9,17 +9,17 @@
 #     params:
 #       none
 #     is_extern: no
-# sym: get_nothing
-#   line: 7
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       none
-#     is_extern: no
 # sym: getc
 #   line: 5
 #   type: ST_FUNCTION
 #     rt_type: RT_CHAR
+#     params:
+#       none
+#     is_extern: no
+# sym: get_nothing
+#   line: 7
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
 #     params:
 #       none
 #     is_extern: no

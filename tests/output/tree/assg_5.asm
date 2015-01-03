@@ -2,6 +2,34 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 7
+# sym: x
+#   line: 3
+#   type: ST_ARRAY
+#     base: PRIM_INT
+#     size: 0x5
+# sym: y
+#   line: 4
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0x4
+# sym: x_at
+#   line: 6
+#   type: ST_FUNCTION
+#     rt_type: RT_INT
+#     params:
+#       0: idx
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
+# sym: y_at
+#   line: 8
+#   type: ST_FUNCTION
+#     rt_type: RT_CHAR
+#     params:
+#       0: idx
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
 # sym: char_at
 #   line: 10
 #   type: ST_FUNCTION
@@ -13,13 +41,6 @@
 #       1: idx
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
-#     is_extern: no
-# sym: main
-#   line: 17
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       none
 #     is_extern: no
 # sym: sum
 #   line: 15
@@ -36,33 +57,12 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: x
-#   line: 3
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0x5
-# sym: x_at
-#   line: 6
+# sym: main
+#   line: 17
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: RT_VOID
 #     params:
-#       0: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: y
-#   line: 4
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0x4
-# sym: y_at
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: RT_CHAR
-#     params:
-#       0: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
+#       none
 #     is_extern: no
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: x_at
@@ -104,15 +104,15 @@
 # LOCAL SYMBOLS FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
 # size: 2
-# sym: idx
-#   line: 10
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 # sym: string
 #   line: 10
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
+# sym: idx
+#   line: 10
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------

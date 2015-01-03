@@ -2,6 +2,18 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 6
+# sym: sum
+#   line: 3
+#   type: ST_FUNCTION
+#     rt_type: RT_INT
+#     params:
+#       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#       1: y
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
 # sym: diff
 #   line: 4
 #   type: ST_FUNCTION
@@ -44,6 +56,10 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
+# sym: x
+#   line: 9
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 # sym: main
 #   line: 11
 #   type: ST_FUNCTION
@@ -51,22 +67,6 @@
 #     params:
 #       none
 #     is_extern: no
-# sym: sum
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: RT_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: x
-#   line: 9
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: sum
 #-----------------------------------------------------------------------------
@@ -139,15 +139,11 @@
 # LOCAL SYMBOLS FOR FUNCTION: lots
 #-----------------------------------------------------------------------------
 # size: 5
-# sym: five
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: four
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 # sym: one
+#   line: 7
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: two
 #   line: 7
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
@@ -155,7 +151,11 @@
 #   line: 7
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
-# sym: two
+# sym: four
+#   line: 7
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: five
 #   line: 7
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
@@ -293,9 +293,6 @@
 # node 59: type: TNT_ARG
 # child SEQ_CUR for node 59
 # node 60: type: TNT_INTCON val: 1001
-#-----------------------------------------------------------------------------
-# STRING CONSTANTS
-#-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: sum
 #-----------------------------------------------------------------------------

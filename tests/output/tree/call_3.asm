@@ -20,13 +20,6 @@
 #     params:
 #       none
 #     is_extern: no
-# sym: main
-#   line: 11
-#   type: ST_FUNCTION
-#     rt_type: RT_INT
-#     params:
-#       none
-#     is_extern: no
 # sym: print_int
 #   line: 9
 #   type: ST_FUNCTION
@@ -36,6 +29,13 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
+# sym: main
+#   line: 11
+#   type: ST_FUNCTION
+#     rt_type: RT_INT
+#     params:
+#       none
+#     is_extern: no
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: get5
 #-----------------------------------------------------------------------------

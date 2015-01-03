@@ -2,6 +2,60 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 10
+# sym: print_int
+#   line: 3
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: yes
+# sym: print_char
+#   line: 4
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: c
+#         type: ST_PRIMITIVE
+#           base: PRIM_CHAR
+#     is_extern: yes
+# sym: print_string
+#   line: 5
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: str
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: yes
+# sym: print_array
+#   line: 6
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: a
+#         type: ST_ARRAY
+#           base: PRIM_INT
+#     is_extern: yes
+# sym: print_misc
+#   line: 7
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: a
+#         type: ST_ARRAY
+#           base: PRIM_INT
+#       1: b
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       2: c
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#       3: d
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: yes
 # sym: a
 #   line: 9
 #   type: ST_PRIMITIVE
@@ -29,60 +83,6 @@
 #         type: ST_ARRAY
 #           base: PRIM_INT
 #     is_extern: no
-# sym: print_array
-#   line: 6
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: a
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: print_char
-#   line: 4
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: c
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#     is_extern: yes
-# sym: print_int
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: print_misc
-#   line: 7
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: a
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#       1: b
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       2: c
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       3: d
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: yes
-# sym: print_string
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: str
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: yes
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------

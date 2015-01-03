@@ -2,6 +2,11 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 3
+# sym: x
+#   line: 1
+#   type: ST_ARRAY
+#     base: PRIM_INT
+#     size: 0x6
 # sym: func1
 #   line: 3
 #   type: ST_FUNCTION
@@ -18,11 +23,6 @@
 #         type: ST_ARRAY
 #           base: PRIM_CHAR
 #     is_extern: no
-# sym: x
-#   line: 1
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0x6
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: func1
 #-----------------------------------------------------------------------------

@@ -2,6 +2,34 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 8
+# sym: x
+#   line: 3
+#   type: ST_ARRAY
+#     base: PRIM_INT
+#     size: 0x5
+# sym: y
+#   line: 4
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0x5
+# sym: x_at
+#   line: 7
+#   type: ST_FUNCTION
+#     rt_type: RT_INT
+#     params:
+#       0: idx
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
+# sym: y_at
+#   line: 10
+#   type: ST_FUNCTION
+#     rt_type: RT_CHAR
+#     params:
+#       0: idx
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
 # sym: char_at
 #   line: 13
 #   type: ST_FUNCTION
@@ -14,22 +42,6 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: main
-#   line: 25
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: print_int
-#   line: 22
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
 # sym: set_x
 #   line: 19
 #   type: ST_FUNCTION
@@ -51,33 +63,21 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: x
-#   line: 3
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0x5
-# sym: x_at
-#   line: 7
+# sym: print_int
+#   line: 22
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: RT_VOID
 #     params:
-#       0: idx
+#       0: x
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
-#     is_extern: no
-# sym: y
-#   line: 4
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0x5
-# sym: y_at
-#   line: 10
+#     is_extern: yes
+# sym: main
+#   line: 25
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: RT_VOID
 #     params:
-#       0: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
+#       none
 #     is_extern: no
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: x_at
@@ -119,15 +119,15 @@
 # LOCAL SYMBOLS FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
 # size: 2
-# sym: idx
-#   line: 13
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 # sym: string
 #   line: 13
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
+# sym: idx
+#   line: 13
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------

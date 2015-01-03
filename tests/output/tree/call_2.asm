@@ -2,18 +2,11 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 4
-# sym: main
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: argc
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#       1: argv
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: no
+# sym: x
+#   line: 3
+#   type: ST_ARRAY
+#     base: PRIM_INT
+#     size: 0xa
 # sym: print_int
 #   line: 5
 #   type: ST_FUNCTION
@@ -41,11 +34,18 @@
 #         type: ST_ARRAY
 #           base: PRIM_CHAR
 #     is_extern: yes
-# sym: x
-#   line: 3
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xa
+# sym: main
+#   line: 8
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: argc
+#         type: ST_PRIMITIVE
+#           base: PRIM_CHAR
+#       1: argv
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: no
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------

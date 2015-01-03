@@ -2,6 +2,67 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 9
+# sym: ignoreme
+#   line: 3
+#   type: ST_FUNCTION
+#     rt_type: RT_INT
+#     params:
+#       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#       1: y
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#       2: z
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: yes
+# sym: func7
+#   line: 11
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: aa
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: no
+# sym: func6
+#   line: 12
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       none
+#     is_extern: no
+# sym: func5
+#   line: 13
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: aa
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#       1: bb
+#         type: ST_PRIMITIVE
+#           base: PRIM_CHAR
+#     is_extern: no
+# sym: func4
+#   line: 14
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: aa
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#       1: bb
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       2: cc
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       3: dd
+#         type: ST_PRIMITIVE
+#           base: PRIM_CHAR
+#     is_extern: no
 # sym: emp
 #   line: 16
 #   type: ST_FUNCTION
@@ -43,67 +104,6 @@
 #         type: ST_ARRAY
 #           base: PRIM_CHAR
 #     is_extern: no
-# sym: func4
-#   line: 14
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: aa
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: bb
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       2: cc
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       3: dd
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#     is_extern: no
-# sym: func5
-#   line: 13
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: aa
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: bb
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#     is_extern: no
-# sym: func6
-#   line: 12
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: func7
-#   line: 11
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: aa
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: no
-# sym: ignoreme
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: RT_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       2: z
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: func7
 #-----------------------------------------------------------------------------
@@ -163,24 +163,24 @@
 # LOCAL SYMBOLS FOR FUNCTION: func2
 #-----------------------------------------------------------------------------
 # size: 4
-# sym: four
-#   line: 19
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
 # sym: one
 #   line: 19
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
+# sym: two
+#   line: 19
+#   type: ST_PRIMITIVE
+#     base: PRIM_CHAR
 # sym: three
 #   line: 19
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
-# sym: two
+# sym: four
 #   line: 19
-#   type: ST_PRIMITIVE
+#   type: ST_ARRAY
 #     base: PRIM_CHAR
+#     size: 0xffffffff
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: func3
 #-----------------------------------------------------------------------------

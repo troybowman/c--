@@ -13,16 +13,6 @@
 # LOCAL SYMBOLS FOR FUNCTION: func
 #-----------------------------------------------------------------------------
 # size: 5
-# sym: string
-#   line: 6
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xa
-# sym: vec
-#   line: 7
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0x5
 # sym: x
 #   line: 3
 #   type: ST_PRIMITIVE
@@ -35,3 +25,13 @@
 #   line: 5
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
+# sym: string
+#   line: 6
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0xa
+# sym: vec
+#   line: 7
+#   type: ST_ARRAY
+#     base: PRIM_INT
+#     size: 0x5

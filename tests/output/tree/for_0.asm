@@ -25,15 +25,15 @@
 # LOCAL SYMBOLS FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
 # size: 2
-# sym: idx
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 # sym: string
 #   line: 3
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
+# sym: idx
+#   line: 3
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
