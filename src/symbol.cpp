@@ -100,8 +100,8 @@ symbol_t::~symbol_t()
     for ( ; i != params()->end(); i++ )
       delete *i;
     delete params();
-    ASSERT(0, tree() == NULL);
-    ASSERT(0, symbols() == NULL);
+    ASSERT(0, _tree == NULL);
+    ASSERT(0, _symbols == NULL);
   }
 }
 

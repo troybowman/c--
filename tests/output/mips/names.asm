@@ -2,6 +2,27 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 9
+# sym: print_int
+#   line: 1
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: yes
+# sym: char_at
+#   line: 3
+#   type: ST_FUNCTION
+#     rt_type: RT_CHAR
+#     params:
+#       0: string
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       1: idx
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
 # sym: L0
 #   line: 5
 #   type: ST_FUNCTION
@@ -29,34 +50,6 @@
 #         type: ST_ARRAY
 #           base: PRIM_CHAR
 #     is_extern: no
-# sym: char_at
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: RT_CHAR
-#     params:
-#       0: string
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: main
-#   line: 13
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: print_int
-#   line: 1
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
 # sym: str1
 #   line: 9
 #   type: ST_PRIMITIVE
@@ -69,19 +62,26 @@
 #   line: 11
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
+# sym: main
+#   line: 13
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       none
+#     is_extern: no
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
 # size: 2
-# sym: idx
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 # sym: string
 #   line: 3
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
+# sym: idx
+#   line: 3
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
@@ -233,12 +233,6 @@
 # node 29: type: TNT_ARG
 # child SEQ_CUR for node 29
 # node 30: type: TNT_SYMBOL sym: str5
-#-----------------------------------------------------------------------------
-# STRING CONSTANTS
-#-----------------------------------------------------------------------------
-# "test one"
-# "test three"
-# "test two"
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
@@ -560,27 +554,27 @@
 
 .data
 
-	_str0:
-		.asciiz "test one"
-		.align 2
-
 	_str1:
 		.space 1
-		.align 2
-
-	_str2:
-		.asciiz "test three"
 		.align 2
 
 	_str3:
 		.space 1
 		.align 2
 
-	_str4:
+	_str5:
+		.space 1
+		.align 2
+
+	_str0:
+		.asciiz "test one"
+		.align 2
+
+	_str2:
 		.asciiz "test two"
 		.align 2
 
-	_str5:
-		.space 1
+	_str4:
+		.asciiz "test three"
 		.align 2
 

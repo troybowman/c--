@@ -226,18 +226,22 @@ public:
   typedef symlist_t::iterator iterator;
   typedef symlist_t::const_iterator const_iterator;
 
+  typedef symlist_t::reverse_iterator reverse_iterator;
+  typedef symlist_t::const_reverse_iterator const_reverse_iterator;
+
   iterator begin() { return list.begin(); }
-  iterator end() { return list.end(); }
+  iterator end()   { return list.end(); }
   const_iterator begin() const { return list.begin(); }
-  const_iterator end() const { return list.end(); }
+  const_iterator end()   const { return list.end(); }
 
-  size_t size() const { return list.size(); }
+  reverse_iterator rbegin() { return list.rbegin(); }
+  reverse_iterator rend()   { return list.rend(); }
+  const_reverse_iterator rbegin() const { return list.rbegin(); }
+  const_reverse_iterator rend()   const { return list.rend(); }
 
-  void swap(symtab_t &r)
-  {
-    map.swap(r.map);
-    list.swap(r.list);
-  }
+  size_t size() const    { return list.size(); }
+  void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }
+  void clear()           { map.clear(); list.clear(); }
 
   void make_asm_names();
 };

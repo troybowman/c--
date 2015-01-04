@@ -77,13 +77,36 @@ public:
 
 
 //-----------------------------------------------------------------------------
+struct frame_summary_t
+{
+  int size;
+
+  int lvars;
+  int ra;
+  int temps;
+  int svregs;
+  int args;
+
+  void set_lvars (int _lvars)  { lvars  = _lvars;  size += lvars; }
+  void set_ra    (int _ra)     { ra     = _ra;     size += ra; }
+  void set_temps (int _temps)  { temps  = _temps;  size += temps; }
+  void set_svregs(int _svregs) { svregs = _svregs; size += svregs; }
+  void set_args  (int _args)   { args   = _args;   size += args; }
+
+  frame_summary_t() : size(0) {}
+};
+
+//-----------------------------------------------------------------------------
 struct ir_func_t
 {
   symbol_t &sym;
   codenode_t *code;
+
   symlist_t &temps;
   symlist_t &svtemps;
   symlist_t &args;
+
+  frame_summary_t frame;
 
   ir_func_t(symbol_t &s, codenode_t *c, symlist_t &t, symlist_t &svt, symlist_t &a)
     : sym(s), code(c), temps(t), svtemps(svt), args(a) {}
@@ -104,9 +127,8 @@ struct ir_ctx_t
     symbol_t *endif;
   };
 
-  ir_ctx_t() : flags(0) {}
   ir_ctx_t(symbol_t *_endif) : flags(CTX_IF), endif(_endif) {}
-  ir_ctx_t(uint32_t _flags) : flags(_flags) {}
+  ir_ctx_t(uint32_t _flags = 0) : flags(_flags) {}
 };
 
 //-----------------------------------------------------------------------------

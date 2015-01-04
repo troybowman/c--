@@ -16,7 +16,7 @@ static const char *tregs[TREGQTY] =
   { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9" };
 
 #define SVREGQTY 8
-static const char **svregs[SVREGQTY] =
+static const char *svregs[SVREGQTY] =
   { "$s0", "$s1", "$s2", "$s3", "$s4", "$s5", "$s6", "$s7" };
 
 #define ARGREGQTY 4
@@ -24,46 +24,14 @@ static const char *argregs[ARGREGQTY] =
   { "$a0", "$a1", "$a2", "$a3" };
 
 //-----------------------------------------------------------------------------
-static void init_gsyms(symtab_t &gsyms)
-{
-  symlist_t list;
-  for ( symtab_t::iterator i = gsyms.begin(); i != gsyms.end(); i++ )
-  {
-    list.push_back(i->second);
-    gsyms.erase(i);
-  }
-  for ( symlist_t::iterator i = list.begin(); i != list.end(); i++)
-  {
-    symbol_t *sym = *i;
-
-    if ( !sym->is_func() || sym->name() != "main" )
-      sym->make_asm_name();
-
-    sym->loc.set_global();
-    gsyms.insert(sym);
-  }
-}
-
-//-----------------------------------------------------------------------------
-struct list_accessor_t
-{
-  symbol_t *get(symlist_t::iterator i) { return *i; }
-};
-
-struct table_accessor_t
-{
-  symbol_t *get(symtab_t::iterator i) { return i->second; }
-};
-
-template<typename T, typename V>
-static void init_syms(T &syms, symtab_t &gsyms, const char *pfx)
+template<class T>
+static void gen_asm_names(T &syms, symtab_t &gsyms, const char *pfx)
 {
   size_t counter = 0;
   char buf[MAXNAMELEN];
   for ( typename T::iterator i = syms.begin(); i != syms.end(); i++ )
   {
-    V accessor;
-    symbol_t *sym = accessor.get(i);
+    symbol_t *sym = *i;
     do
     {
       snprintf(buf, MAXNAMELEN, "%s%lu", pfx, counter);
@@ -71,17 +39,24 @@ static void init_syms(T &syms, symtab_t &gsyms, const char *pfx)
       counter++;
     }
     while ( gsyms.get(sym->name()) != NULL );
-    sym->loc.set_global();
+
     gsyms.insert(sym);
   }
 }
 
 //-----------------------------------------------------------------------------
-static void init_names(symtab_t &gsyms, symtab_t &strings, symlist_t &labels)
+static void init_gsyms(symtab_t &gsyms, symtab_t &strings, symlist_t &labels)
 {
-  init_gsyms(gsyms);
-  init_syms<symtab_t, table_accessor_t>(strings, gsyms, "_str");
-  init_syms<symlist_t, list_accessor_t>(labels,  gsyms, "_L");
+  gsyms.make_asm_names();
+
+  gen_asm_names<symtab_t>(strings, gsyms, "_str");
+  gen_asm_names<symlist_t>(labels, gsyms, "_L");
+
+  for ( symtab_t::iterator i = gsyms.begin(); i != gsyms.end(); i++ )
+    (*i)->loc.set_global();
+
+  strings.clear();
+  labels.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -89,11 +64,9 @@ static void gen_data_section(FILE *outfile, const symtab_t &gsyms)
 {
   fprintf(outfile, "\n.data\n\n");
 
-  symtab_t::const_iterator i = gsyms.begin();
-
-  while ( i != gsyms.end() )
+  for ( symtab_t::const_iterator i = gsyms.begin(); i != gsyms.end(); i++ )
   {
-    symbol_t *sym = i->second;
+    symbol_t *sym = *i;
 
     if ( sym->type() == ST_FUNCTION || sym->type() == ST_LABEL )
       continue;
@@ -124,38 +97,15 @@ static void gen_data_section(FILE *outfile, const symtab_t &gsyms)
         INTERR(0);
     }
 
-    if ( ++i != gsyms.end() )
-      fprintf(outfile, "\n");
+    fprintf(outfile, "\n");
   }
 }
-
-//-----------------------------------------------------------------------------
-static void init_frame_data(const ir_func_t &func)
-{
-  symlist_t &temps = func.temps;
-  for ( symlist_t::iterator i = temps.begin(); i != temps.end(); i++ )
-  {
-    if ( )
-  }
-}
-
-//-----------------------------------------------------------------------------
-struct frame_summary_t
-{
-  uint32_t lvars;
-  uint32_t ra;
-  uint32_t temps;
-  uint32_t svregs;
-  uint32_t args;
-  frame_summary_t() : ra(WORDSIZE) {}
-};
-
+/*
 //-----------------------------------------------------------------------------
 static void init_params(symlist_t &params, int used_args)
 {
   int off = 0;
-  symlist_t *params = func.sym.params();
-  for ( symlist_t::iterator i = params->begin(); i != params->end(); i++ )
+  for ( symlist_t::iterator i = params.begin(); i != params.end(); i++ )
   {
     symbol_t *sym = *i;
     int idx = params->dist(i);
@@ -165,49 +115,81 @@ static void init_params(symlist_t &params, int used_args)
     else
       sym->loc.set_stkoff(off);
 
-    off -= WORDSIZE;
+    off += WORDSIZE;
   }
 }
 
 //-----------------------------------------------------------------------------
-static uint32_t init_lvars(symtab_t &lvars)
+static int init_lvars(symtab_t &lvars)
 {
-  uint32_t off = 0;
-
-  for ( symtab_t::iterator i = lvars.begin(); i != lvars.end(); i++ )
+  int size = 0;
+  for ( symtab_t::reverse_iterator i = lvars.rbegin(); i != lvars.rend(); i++ )
   {
     symbol_t *sym = *i;
-
-    if ( sym->loc.type() != SLT_UNKNOWN )
-      continue;
-
-    sym->loc.set_stkoff(off);
-
     switch ( sym->type() )
     {
       case ST_PRIMITIVE:
-
+        size += sym->base() == PRIM_INT ? WORDSIZE : 1;
+        break;
+      case ST_ARRAY:
+        size += sym->base() == PRIM_INT ? (WORDSIZE * sym->size()) : sym->size();
+        break;
+      default:
+        INTERR(0);
     }
+    size += size % WORDSIZE;
+    sym->loc.set_stkoff(-size);
   }
+  return size;
 }
 
 //-----------------------------------------------------------------------------
-static void build_stack_frame(frame_summary_t &frame, ir_func_t &func)
+static int init_temps(symlist_t &temps, int start)
 {
-  frame.lvars = init_lvars(*func.sym.symbols());
+  int off = start;
+  for ( symlist::reverse_iterator i = temps.rbegin(); i != temps.rend(); i++ )
+  {
+    off += WORDSIZE;
 
+    symbol_t *sym = *i;
+    int idx = temps.dist(i);
+
+    if ( idx < TREGQTY && idx >= temps.size() )
+      sym->loc.set_reg(tempregs[idx]);
+    else
+      sym->loc.set_stkoff(-off);
+  }
+  return off;
 }
 
 //-----------------------------------------------------------------------------
-static gen_prologue(const ir_func_t &func)
+static int init_svregs(symlist_t &svtemps)
+
+//-----------------------------------------------------------------------------
+static void build_stack_frame(ir_func_t &func)
 {
   // TODO: must set up parameter locations before processing local vars. meh
   init_params(*func.sym.params(), func.args.size());
 
+  func.frame.set_lvars(init_lvars(*func.sym.symbols());
+  func.frame.set_ra(WORDSIZE);
+  func.frame.set_temps(init_temps(func.temps));
+  func.frame.set_svregs(init_svregs(func.svtemps));
+  func.frame.set_args(init_args(func.args));
+}
+
+//-----------------------------------------------------------------------------
+static void gen_prologue(ir_func_t &func)
+{
+  fprintf(outfile, TAB1"la $fp, 0($sp)\n");
+
   frame_summary_t frame;
   build_stack_frame(frame, func);
+  DBG_FRAME_SUMMARY(frame);
+  fprintf(outfile, TAB1"la $sp, -%d($sp)\n", frame.size);
 
-  fprintf(outfile, TAB1"la $fp, 0($sp)\n");
+  save_svregs(frame, func.svtemps);
+
   // ...
 }
 
@@ -223,11 +205,11 @@ static void gen_text_section(FILE *outfile, const ir_funcs_t &funcs);
     gen_prologue(func);
   }
 }
-
+*/
 //-----------------------------------------------------------------------------
 void mips_asm_generate(ir_t &ir, FILE *outfile)
 {
-  init_names(ir.gsyms, ir.strings, ir.labels);
-  print_data_section(outfile, ir.gsyms);
-  print_text_section(outfile, ir.funcs);
+  init_gsyms(ir.gsyms, ir.strings, ir.labels);
+  gen_data_section(outfile, ir.gsyms);
+  //print_text_section(outfile, ir.funcs);
 }

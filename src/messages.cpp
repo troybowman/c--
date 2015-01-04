@@ -416,7 +416,7 @@ void print_ir(const ir_t &ir)
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
     ir_func_t *irf = *i;
-    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->func.c_str());
+    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->sym.c_str());
     cmtout(0, "temps used:   %d\n", irf->temps.size());
     cmtout(0, "svtemps used: %d\n", irf->svtemps.size());
     cmtout(0, "args used:    %d\n", irf->args.size());
