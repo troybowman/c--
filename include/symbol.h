@@ -10,7 +10,6 @@
 
 #include <messages.h>
 
-struct treenode_t;
 class symtab_t;
 
 //-----------------------------------------------------------------------------
@@ -109,7 +108,6 @@ class symbol_t
       return_type_t _rt;
       symlist_t *_params;
       symtab_t *_symbols;
-      treenode_t *_tree;
       bool _is_extern;
       bool _defined;
     };
@@ -149,7 +147,6 @@ public:
   return_type_t rt()   const { return _rt; }
   symlist_t *params()  const { return _params; }
   symtab_t *symbols()  const { return _symbols; }
-  treenode_t *tree()   const { return _tree; }
   bool is_extern()     const { return _is_extern; }
   bool defined()       const { return _defined; }
 
@@ -160,7 +157,6 @@ public:
 
   void set_rt(return_type_t rt)    { _rt = rt; }
   void set_symbols(symtab_t *syms) { _symbols = syms; }
-  void set_tree(treenode_t *tree)  { _tree = tree; }
   void set_extern(bool is_extern = true) { _is_extern = is_extern; }
   void set_defined(bool defined = true)  { _defined = defined; }
 

@@ -138,7 +138,7 @@ class ir_engine_t
   resource_manager_t svtemps;
   resource_manager_t args;
 
-  symbol_t  &func;
+  treefunc_t &func;
   symtab_t  &strings;
   symlist_t &labels;
   symbol_t  &retloc;
@@ -161,7 +161,7 @@ private:
   symbol_t *generate(const treenode_t *tree, ir_ctx_t ctx = ir_ctx_t());
 
 public:
-  ir_engine_t(symbol_t &f, symtab_t &s, symlist_t &l, symbol_t &r)
+  ir_engine_t(treefunc_t &f, symtab_t &s, symlist_t &l, symbol_t &r)
     : temps(ST_TEMPORARY),
       svtemps(ST_SAVED_TEMPORARY),
       args(ST_ARGUMENT),
@@ -184,6 +184,6 @@ struct ir_t
 };
 
 //-----------------------------------------------------------------------------
-void generate(ir_t &ir, const symlist_t &functions);
+void generate(ir_t &ir, const treefuncs_t &functions);
 
 #endif // CODENODE_H

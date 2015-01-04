@@ -74,9 +74,12 @@ class symtab_t;
 class symlist_t;
 struct ir_t;
 struct ir_func_t;
+struct treefunc_t;
+#include <list>
+typedef std::list<treefunc_t> treefuncs_t;
 
 void print_syms(const symtab_t &syms, const char *title, const char *extra);
-void walk_funcs(const symlist_t &functions, dbg_flags_t flags);
+void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags);
 void print_ir(const ir_t &ir);
 void set_dbgfile(FILE *dbgfile);
 void print_frame_summary(const ir_func_t &func);

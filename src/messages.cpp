@@ -425,22 +425,25 @@ void print_ir(const ir_t &ir)
 }
 
 //-----------------------------------------------------------------------------
-void walk_funcs(const symlist_t &functions, dbg_flags_t flags)
+void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags)
 {
-  symlist_t::const_iterator i;
+  treefuncs_t::const_iterator i;
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
-    symbol_t *f = *i;
-    ASSERT(1080, f->is_func());
+    treefunc_t tf = *i;
+    symbol_t &f = tf.sym;
+    treenode_t *tree = tf.tree;
+
+    ASSERT(1080, f.is_func());
 
     if ( (flags & dbg_dump_lsyms) != 0 )
-      print_syms(*f->symbols(), "LOCAL SYMBOLS FOR FUNCTION: ", f->c_str());
+      print_syms(*f.symbols(), "LOCAL SYMBOLS FOR FUNCTION: ", f.c_str());
 
     if ( (flags & dbg_dump_tree) != 0 )
     {
       int cnt = 0;
-      fprintf(dbgfile, header, "SYNTAX TREE FOR FUNCTION: ", f->c_str());
-      print_tree(f->tree(), &cnt);
+      fprintf(dbgfile, header, "SYNTAX TREE FOR FUNCTION: ", f.c_str());
+      print_tree(tree, &cnt);
     }
   }
 }

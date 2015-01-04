@@ -1,6 +1,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
+#include <list>
 #include <messages.h>
 
 class symbol_t;
@@ -75,6 +76,16 @@ struct treenode_t
   bool is_int_compat() const;
   bool is_bool_compat() const;
 };
+
+//-----------------------------------------------------------------------------
+struct treefunc_t
+{
+  symbol_t &sym;
+  treenode_t *tree;
+  treefunc_t(symbol_t &_sym, treenode_t *_tree) : sym(_sym), tree(_tree) {}
+};
+
+typedef std::list<treefunc_t> treefuncs_t;
 
 //-----------------------------------------------------------------------------
 #define ERRNODE new treenode_t(TNT_ERROR)

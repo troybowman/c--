@@ -319,18 +319,19 @@ symbol_t *ir_engine_t::generate(const treenode_t *tree, ir_ctx_t ctx)
 //-----------------------------------------------------------------------------
 ir_func_t *ir_engine_t::generate()
 {
-  generate(func.tree());
-  return new ir_func_t(func, head, *temps.get_union(),
+  generate(func.tree);
+  return new ir_func_t(func.sym, head, *temps.get_union(),
                        *svtemps.get_union(), *args.get_union());
 }
 
 //-----------------------------------------------------------------------------
-void generate(ir_t &ir, const symlist_t &functions)
+void generate(ir_t &ir, const treefuncs_t &functions)
 {
-  symlist_t::const_iterator i;
+  treefuncs_t::const_iterator i;
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
-    ir_engine_t e(**i, ir.strings, ir.labels, ir.retloc);
+    treefunc_t tf = *i;
+    ir_engine_t e(tf, ir.strings, ir.labels, ir.retloc);
     ir_func_t *irf = e.generate();
     ir.funcs.push_back(irf);
   }

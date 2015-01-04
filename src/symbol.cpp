@@ -17,7 +17,6 @@ symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
     case ST_FUNCTION:
       _rt          = RT_UNKNOWN;
       _symbols     = NULL;
-      _tree        = NULL;
       _is_extern   = false;
       _defined     = false;
       _params      = va_arg(va, symlist_t *);
@@ -57,7 +56,6 @@ symbol_t::symbol_t(const symbol_t &sym)
       _rt        = sym._rt;
       _params    = sym._params;
       _symbols   = sym._symbols;
-      _tree      = sym._tree;
       _is_extern = sym._is_extern;
       _defined   = sym._defined;
       break;
@@ -99,7 +97,6 @@ symbol_t::~symbol_t()
     for ( ; i != params()->end(); i++ )
       delete *i;
     delete params();
-    ASSERT(0, _tree == NULL);
     ASSERT(0, _symbols == NULL);
   }
 }
@@ -114,5 +111,6 @@ void symtab_t::make_asm_names()
     cpy->make_asm_name();
     temp.insert(cpy);
   }
+  // TODO: leaking old symbols
   swap(temp);
 }

@@ -16,9 +16,9 @@
   int yyerror(const char *s);
 
   //---------------------------------------------------------------------------
-  static symtab_t gsyms;      // global symbol table
-  static symlist_t functions; // functions, in order as they appear in the source file
-
+  static symtab_t gsyms;        // global symbol table
+  static treefuncs_t functions; // functions, (along with their syntax trees)
+                                // in order as they appear in the source file
   static struct
   {
     symtab_t *syms;    // pointer to currently active symbol table
@@ -37,12 +37,13 @@
       rt = _rt;
       ret_resolved = _rt == RT_VOID;
     }
+    void settemp() { setlocal(new symtab_t()); }
     void trash() { delete syms; setglobal(); }
   } ctx;
 
   //---------------------------------------------------------------------------
   // use a temporary symbol table to validate parameter declarations
-  static inline void param_on() { ctx.setlocal(new symtab_t()); }
+  static inline void param_on() { ctx.settemp(); }
   static inline void param_off() { ctx.trash(); }
   static void f_enter(symbol_t *, return_type_t); // initialize func def
   static void f_leave(symbol_t *, treenode_t *);
@@ -61,8 +62,8 @@
   static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
   static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
   static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
-  static symlist_t  *process_sym_list(symlist_t *, symbol_t *);
-  static symlist_t  *process_first_sym(symbol_t *, symlist_t *);
+  static  symlist_t *process_sym_list(symlist_t *, symbol_t *);
+  static  symlist_t *process_first_sym(symbol_t *, symlist_t *);
   static array_sfx_t process_array_sfx(int, int);
 %}
 
@@ -960,13 +961,12 @@ static void f_leave(symbol_t *f, treenode_t *tree)
 {
   ASSERT(1005, f != NULL);
 
-  f->set_tree(tree);
   f->set_defined();
 
   if ( !ctx.ret_resolved )
     usererr("error: non-void funcion %s must return a value\n", f->c_str());
 
-  functions.push_back(f);
+  functions.push_back(treefunc_t(*f, tree));
 
   ctx.setglobal();
 }
@@ -1017,7 +1017,7 @@ int yyerror(const char *s)
 }
 
 //---------------------------------------------------------------------------
-void parse(symtab_t &_gsyms, symlist_t &_functions, FILE *infile)
+void parse(symtab_t &_gsyms, treefuncs_t &_functions, FILE *infile)
 {
   yyin = infile;
 

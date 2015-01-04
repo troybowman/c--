@@ -6,6 +6,7 @@
 
 #include <parse.h>
 #include <symbol.h>
+#include <treenode.h>
 #include <codenode.h>
 #include <messages.h>
 
@@ -194,7 +195,7 @@ int main(int argc, char **argv)
   //---------------------------------------------------------------------------
   // parse, generate syntax tree
   symtab_t gsyms;
-  symlist_t functions;
+  treefuncs_t functions;
 
   parse(gsyms, functions, args.infile);
 
