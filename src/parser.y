@@ -49,7 +49,7 @@
   static seq_t &seq_append(seq_t &, const treenode_t *, treenode_type_t);
   static       void  process_var_list(symlist_t *, primitive_t);
   static       void  process_func_list(symlist_t *, return_type_t, bool);
-  static   symbol_t *process_var_decl(const char *, int, array_sfx_t);
+  static   symbol_t *process_var_decl(const char *, int, array_sfx_t, bool param = false);
   static   symbol_t *process_stmt_id(const char *, int);
   static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
   static treenode_t *process_assg(treenode_t *, treenode_t *, int);
@@ -174,7 +174,7 @@ params : param_decl param_decl_list { $$ = process_first_sym($1, $2); }
 
 param_decl : type ID param_array_sfx
              {
-               symbol_t *sym = process_var_decl($2, yylineno, $3);
+               symbol_t *sym = process_var_decl($2, yylineno, $3, true);
                if ( sym != NULL )
                  sym->set_base($1);
                $$ = sym;
@@ -810,7 +810,7 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 }
 
 //-----------------------------------------------------------------------------
-static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
+static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, bool param)
 {
   if ( asfx.code == ASFX_ERROR )
     return NULL;
@@ -823,9 +823,12 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx)
     return NULL;
   }
 
+  uint32_t pf = param ? SF_PARAMETER : 0;
+
   symbol_t *sym = asfx.code == ASFX_NONE
-                ? new symbol_t(name, line, ST_PRIMITIVE)
-                : new symbol_t(name, line, ST_ARRAY, asfx.size);
+                ? new symbol_t(name, line, ST_PRIMITIVE | pf)
+                : new symbol_t(name, line, ST_ARRAY | pf, asfx.size);
+
   ctx.syms->insert(sym);
   return sym;
 }

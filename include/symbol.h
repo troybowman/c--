@@ -78,34 +78,32 @@ class symbol_t
   int _line;
 
   uint32_t _flags;
-#define ST_PRIMITIVE       0x001
-#define ST_ARRAY           0x002
-#define ST_FUNCTION        0x004
-#define ST_TEMPORARY       0x008
-#define ST_SAVED_TEMPORARY 0x010
-#define ST_INTCON          0x020
-#define ST_CHARCON         0x040
-#define ST_STRCON          0x080
-#define ST_LABEL           0x100
-#define ST_RETLOC          0x200
-#define ST_ARGUMENT        0x400
+// symbol types
+#define ST_PRIMITIVE       0x001 // source level primitive type (int/char)
+#define ST_ARRAY           0x002 // source level array - base type is a primitive
+#define ST_FUNCTION        0x004 // source level function
+#define ST_TEMPORARY       0x008 // asm temporary value
+#define ST_SAVED_TEMPORARY 0x010 // a temporary that must persist across a function call
+#define ST_INTCON          0x020 // integer constant
+#define ST_CHARCON         0x040 // character constant
+#define ST_STRCON          0x080 // string constant
+#define ST_LABEL           0x100 // asm label
+#define ST_RETLOC          0x200 // identifies asm return value location
+#define ST_ARGUMENT        0x400 // asm function argument location
 #define ST_TYPEMASK        0x7FF
-#define ST_PARAMETER       0x800
+// additional properties
+#define SF_PARAMETER       0x800 // symbol is a source level function parameter
 
   union
   {
     int _val;             // ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_ARGUMENT, ST_INTCON
-
     const char *_str;     // ST_STRCON, ST_CHARCON
-
-    primitive_t _base;    // ST_PRIMITIVE
-
+    primitive_t _base;    // ST_PRIMITIVE/ST_ARRAY
     struct                // ST_ARRAY
     {
       primitive_t _eltyp;
       asize_t _size;
     };
-
     struct                // ST_FUNCTION
     {
       return_type_t _rt;
@@ -135,7 +133,7 @@ public:
   bool is_prim()       const { return (_flags & ST_PRIMITIVE) != 0; }
   bool is_array()      const { return (_flags & ST_ARRAY) != 0; }
   bool is_func()       const { return (_flags & ST_FUNCTION) != 0; }
-  bool is_param()      const { return (_flags & ST_PARAMETER) != 0; }
+  bool is_param()      const { return (_flags & SF_PARAMETER) != 0; }
 
   std::string name()   const { return _name; }
   const char *c_str()  const { return _name.c_str(); }
