@@ -173,7 +173,7 @@ public:
 class symlist_t : public std::list<symbol_t *>
 {
 public:
-  int dist(const_iterator i)
+  int idx(const_iterator i)
   {
     return std::distance(static_cast<const_iterator>(begin()), i);
   }
@@ -224,18 +224,10 @@ public:
   typedef symlist_t::iterator iterator;
   typedef symlist_t::const_iterator const_iterator;
 
-  typedef symlist_t::reverse_iterator reverse_iterator;
-  typedef symlist_t::const_reverse_iterator const_reverse_iterator;
-
   iterator begin() { return list.begin(); }
   iterator end()   { return list.end(); }
   const_iterator begin() const { return list.begin(); }
   const_iterator end()   const { return list.end(); }
-
-  reverse_iterator rbegin() { return list.rbegin(); }
-  reverse_iterator rend()   { return list.rend(); }
-  const_reverse_iterator rbegin() const { return list.rbegin(); }
-  const_reverse_iterator rend()   const { return list.rend(); }
 
   size_t size() const    { return list.size(); }
   void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }

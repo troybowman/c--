@@ -608,7 +608,7 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
   for ( ; ti.cur() != NULL && si != params->end(); ti++, si++ )
   {
     if ( !check_arg(**si, *ti.cur()) )
-      return call_res_t(CALL_BADARG, params->dist(si)+1);
+      return call_res_t(CALL_BADARG, params->idx(si)+1);
   }
 
   if ( ti.cur() != NULL || si != params->end() )

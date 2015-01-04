@@ -90,8 +90,8 @@ static void gen_data_section(FILE *outfile, const symtab_t &gsyms)
                            TAB2".align 2\n", sym->size());
         break;
       case ST_STRCON:
-        fprintf(outfile, TAB2".asciiz %s\n"
-                         TAB2".align 2\n", sym->str());
+        fprintf(outfile,   TAB2".asciiz %s\n"
+                           TAB2".align 2\n", sym->str());
         break;
       default:
         INTERR(0);

@@ -324,7 +324,7 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
           {
             symbol_t *p = *i;
             int pindent = indent+1;
-            cmtout(pindent, "%d: %s\n", params->dist(i), p->c_str());
+            cmtout(pindent, "%d: %s\n", params->idx(i), p->c_str());
             cmtout(++pindent, "type: ");
             switch ( p->type() )
             {
