@@ -85,18 +85,16 @@ void print_frame_summary(const ir_func_t &func);
 #define SET_DBGFILE(dbgfile) do { set_dbgfile(dbgfile); } while ( false );
 
 //-----------------------------------------------------------------------------
-#define DBG_PARSE_RESULTS(gsyms, functions) \
-do                                          \
-{                                           \
-  if ( (dbg_flags & dbg_dump_gsyms) != 0 )  \
-    print_syms(gsyms,                       \
-               "GLOBAL SYMBOL TABLE",       \
-               "");                         \
-  if ( (dbg_flags & dbg_dump_lsyms) != 0    \
-    || (dbg_flags & dbg_dump_tree)  != 0 )  \
-  {                                         \
-    walk_funcs(functions, dbg_flags & 0xC); \
-  }                                         \
+#define DBG_PARSE_RESULTS(gsyms, functions)       \
+do                                                \
+{                                                 \
+  if ( (dbg_flags & dbg_dump_gsyms) != 0 )        \
+    print_syms(gsyms, "GLOBAL SYMBOL TABLE", ""); \
+  if ( (dbg_flags & dbg_dump_lsyms) != 0          \
+    || (dbg_flags & dbg_dump_tree)  != 0 )        \
+  {                                               \
+    walk_funcs(functions, dbg_flags & 0xC);       \
+  }                                               \
 } while ( false );
 
 //-----------------------------------------------------------------------------
@@ -126,13 +124,13 @@ do                                       \
 #else
 
 //-----------------------------------------------------------------------------
-#define DBG(flag, ...)             // nothing
-#define ASSERT(code, cond)         // nothing
-#define DBG_PARSE_RESULTS()        // nothing
-#define DBG_IR(code)               // nothing
-#define CHECK_PHASE_FLAG(flags)    // nothing
-#define SET_DBGFILE(dbgfile)       // nothing
-#define DBG_FRAME_SUMMARY(func)    // nothing
+#define DBG(flag, ...)          // nothing
+#define ASSERT(code, cond)      // nothing
+#define DBG_PARSE_RESULTS()     // nothing
+#define DBG_IR(code)            // nothing
+#define CHECK_PHASE_FLAG(flags) // nothing
+#define SET_DBGFILE(dbgfile)    // nothing
+#define DBG_FRAME_SUMMARY(func) // nothing
 
 #endif // DEBUG
 

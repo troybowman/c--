@@ -72,8 +72,7 @@ static const char *header =
 static void cmtout(int indent, const char *fmt, ...)
 {
   std::string line("# ");
-  while ( --indent >= 0 )
-    line.append("  ");
+  while ( --indent >= 0 ) line.append("  ");
   line += fmt;
   va_list va;
   va_start(va, fmt);
@@ -254,7 +253,7 @@ static const char *st2str(uint32_t type)
 static const char *addr2str(const symbol_t *addr)
 {
 #define MAXADDRSTR 32
-  static char buf[MAXADDRSTR];
+  char *buf = (char *)malloc(MAXADDRSTR);
 
   const char *type = st2str(addr->type());
 
@@ -264,24 +263,25 @@ static const char *addr2str(const symbol_t *addr)
     case ST_ARRAY:
     case ST_FUNCTION:
       snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->c_str());
-      return buf;
+      break;
     case ST_TEMPORARY:
     case ST_SAVED_TEMPORARY:
     case ST_ARGUMENT:
     case ST_INTCON:
     case ST_LABEL:
       snprintf(buf, MAXADDRSTR, "%s (%d)", type, addr->val());
-      return buf;
+      break;
     case ST_CHARCON:
     case ST_STRCON:
       snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->str());
-      return buf;
+      break;
     case ST_RETLOC:
       snprintf(buf, MAXADDRSTR, "%s", type);
-      return buf;
+      break;
     default:
       INTERR(1078);
   }
+  return buf;
 }
 
 //-----------------------------------------------------------------------------
