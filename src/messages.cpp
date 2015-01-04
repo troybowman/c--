@@ -230,7 +230,7 @@ static const char *cnt2str(codenode_type_t type)
 }
 
 //-----------------------------------------------------------------------------
-static const char *st2str(symbol_type_t type)
+static const char *st2str(uint32_t type)
 {
   switch( type )
   {

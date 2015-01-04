@@ -2,12 +2,12 @@
 #include <symbol.h>
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
-  : _name(name), _line(line), _type(type)
+symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
+  : _name(name), _line(line), _flags(flags)
 {
   va_list va;
-  va_start(va, type);
-  switch ( _type )
+  va_start(va, flags);
+  switch ( flags & ST_TYPEMASK )
   {
     case ST_ARRAY:
       _size = va_arg(va, asize_t);
@@ -30,11 +30,9 @@ symbol_t::symbol_t(const char *name, int line, symbol_type_t type, ...)
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(const symbol_t &sym)
+  : _name(sym._name), _line(sym._line), _flags(sym._flags)
 {
-  _name.assign(sym._name);
-  _line = sym._line;
-  _type = sym._type;
-  switch ( _type )
+  switch ( _flags & ST_TYPEMASK )
   {
     case ST_LABEL:
 #ifdef NDEBUG
@@ -94,7 +92,8 @@ void symloc_t::assign(const symloc_t &loc)
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()
 {
-  if ( _type == ST_FUNCTION )
+  // TODO switch and take appropriate action
+  if ( is_func() )
   {
     symlist_t::iterator i = params()->begin();
     for ( ; i != params()->end(); i++ )

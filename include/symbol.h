@@ -14,22 +14,6 @@ struct treenode_t;
 class symtab_t;
 
 //-----------------------------------------------------------------------------
-enum symbol_type_t
-{
-  ST_PRIMITIVE,
-  ST_ARRAY,
-  ST_FUNCTION,
-  ST_TEMPORARY,
-  ST_SAVED_TEMPORARY,
-  ST_INTCON,
-  ST_CHARCON,
-  ST_STRCON,
-  ST_LABEL,
-  ST_RETLOC,
-  ST_ARGUMENT,
-};
-
-//-----------------------------------------------------------------------------
 enum symloc_type_t
 {
   SLT_UNKNOWN,
@@ -69,7 +53,7 @@ public:
 //-----------------------------------------------------------------------------
 enum primitive_t
 {
-  PRIM_UNKNOWN = -1,
+  PRIM_UNKNOWN,
   PRIM_INT,
   PRIM_CHAR
 };
@@ -93,7 +77,21 @@ class symbol_t
   std::string _name;
   int _line;
 
-  symbol_type_t _type;
+  uint32_t _flags;
+#define ST_PRIMITIVE       0x001
+#define ST_ARRAY           0x002
+#define ST_FUNCTION        0x004
+#define ST_TEMPORARY       0x008
+#define ST_SAVED_TEMPORARY 0x010
+#define ST_INTCON          0x020
+#define ST_CHARCON         0x040
+#define ST_STRCON          0x080
+#define ST_LABEL           0x100
+#define ST_RETLOC          0x200
+#define ST_ARGUMENT        0x400
+#define ST_TYPEMASK        0x7FF
+#define ST_PARAMETER       0x800
+
   union
   {
     int _val;             // ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_ARGUMENT, ST_INTCON
@@ -122,25 +120,27 @@ class symbol_t
 public:
   symloc_t loc;
 
-  symbol_t(const char *, int, symbol_type_t, ...);
+  symbol_t(const char *name, int line, uint32_t flags, ...);
 
-  symbol_t(symbol_type_t type, int val) : _type(type) { _val = val; }
+  symbol_t(uint32_t flags, int val) : _flags(flags) { _val = val; }
 
-  symbol_t(symbol_type_t type, const char *str) : _type(type) { _str = str; }
+  symbol_t(uint32_t flags, const char *str) : _flags(flags) { _str = str; }
 
-  symbol_t(symbol_type_t type) : _type(type) {}
+  symbol_t(uint32_t flags) : _flags(flags) {}
 
   symbol_t(const symbol_t &sym);
 
   ~symbol_t();
 
-  bool is_prim()       const { return _type == ST_PRIMITIVE; }
-  bool is_array()      const { return _type == ST_ARRAY; }
-  bool is_func()       const { return _type == ST_FUNCTION; }
+  bool is_prim()       const { return (_flags & ST_PRIMITIVE) != 0; }
+  bool is_array()      const { return (_flags & ST_ARRAY) != 0; }
+  bool is_func()       const { return (_flags & ST_FUNCTION) != 0; }
+  bool is_param()      const { return (_flags & ST_PARAMETER) != 0; }
 
   std::string name()   const { return _name; }
   const char *c_str()  const { return _name.c_str(); }
-  symbol_type_t type() const { return _type; }
+  uint32_t flags()     const { return _flags; }
+  uint32_t type()      const { return _flags & ST_TYPEMASK; }
   int line()           const { return _line; }
   const char *str()    const { return _str; }
   int val()            const { return _val; }

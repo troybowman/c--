@@ -39,14 +39,14 @@ class resource_manager_t
   typedef std::map<int, symbol_t *> rmap_t;
 
   int _cnt;
-  symbol_type_t _type;
+  uint32_t _type;
 
   rmap_t _free;
   symlist_t *_union;
 
 public:
-  resource_manager_t(symbol_type_t type)
-    : _cnt(0), _type(type), _union(new symlist_t()) {}
+  resource_manager_t(uint32_t type)
+    : _cnt(0), _type(type & ST_TYPEMASK), _union(new symlist_t()) {}
 
   symbol_t *gen_resource()
   {
