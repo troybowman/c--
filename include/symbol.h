@@ -34,8 +34,6 @@ class symloc_t
 public:
   symloc_t() : _type(SLT_UNKNOWN) {}
 
-  void assign(const symloc_t &loc);
-
   bool is_stkoff() const { return _type == SLT_STACK;  }
   bool is_reg()    const { return _type == SLT_REG; }
   bool is_global() const { return _type == SLT_GLOBAL; }
@@ -124,8 +122,6 @@ public:
   symbol_t(uint32_t flags, const char *str) : _flags(flags) { _str = str; }
 
   symbol_t(uint32_t flags) : _flags(flags) {}
-
-  symbol_t(const symbol_t &sym);
 
   ~symbol_t();
 

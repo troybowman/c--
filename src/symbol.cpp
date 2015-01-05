@@ -26,64 +26,6 @@ symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
 }
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(const symbol_t &sym)
-  : _name(sym._name), _line(sym._line), _flags(sym._flags)
-{
-  switch ( _flags & ST_TYPEMASK )
-  {
-    case ST_LABEL:
-#ifdef NDEBUG
-      break;
-#endif
-    case ST_TEMPORARY:
-    case ST_SAVED_TEMPORARY:
-    case ST_ARGUMENT:
-    case ST_INTCON:
-      _val = sym._val;
-      break;
-    case ST_STRCON:
-    case ST_CHARCON:
-      _str = sym._str;
-      break;
-    case ST_ARRAY:
-      _size = sym._size;
-    case ST_PRIMITIVE:
-      _base = sym._base;
-      break;
-    case ST_FUNCTION:
-      _rt        = sym._rt;
-      _params    = sym._params;
-      _symbols   = sym._symbols;
-      break;
-    case ST_RETLOC:
-      break;
-    default:
-      INTERR(0);
-  }
-  loc.assign(sym.loc);
-}
-
-//-----------------------------------------------------------------------------
-void symloc_t::assign(const symloc_t &loc)
-{
-  _type = loc._type;
-  switch ( _type )
-  {
-    case SLT_UNKNOWN:
-    case SLT_GLOBAL:
-      break;
-    case SLT_REG:
-      _reg = loc._reg;
-      break;
-    case SLT_STACK:
-      _off = loc._off;
-      break;
-    default:
-      INTERR(0);
-  }
-}
-
-//-----------------------------------------------------------------------------
 symbol_t::~symbol_t()
 {
   // TODO switch and take appropriate action
@@ -103,10 +45,9 @@ void symtab_t::make_asm_names()
   symtab_t temp;
   for ( iterator i = begin(); i != end(); i++ )
   {
-    symbol_t *cpy = new symbol_t(**i);
-    cpy->make_asm_name();
-    temp.insert(cpy);
+    symbol_t *sym = *i;
+    sym->make_asm_name();
+    temp.insert(sym);
   }
-  // TODO: leaking old symbols
   swap(temp);
 }
