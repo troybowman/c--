@@ -15,9 +15,10 @@ symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
       _base = PRIM_UNKNOWN;
       break;
     case ST_FUNCTION:
-      _rt          = RT_UNKNOWN;
-      _symbols     = NULL;
-      _params      = va_arg(va, symlist_t *);
+      _rt      = RT_UNKNOWN;
+      _symbols = new symtab_t();
+      _params  = va_arg(va, symlist_t *);
+      ASSERT(0, _params != NULL);
       break;
     default:
       INTERR(1065);
@@ -28,14 +29,15 @@ symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()
 {
-  // TODO switch and take appropriate action
   if ( is_func() )
   {
-    symlist_t::iterator i = params()->begin();
-    for ( ; i != params()->end(); i++ )
+    for ( symlist_t::iterator i = _params->begin(); i != _params->end(); i++ )
       delete *i;
-    delete params();
-    ASSERT(0, _symbols == NULL);
+    delete _params;
+
+    for ( symtab_t::iterator i = _symbols->begin(); i != _symbols->end(); i++ )
+      delete *i;
+    delete _symbols;
   }
 }
 

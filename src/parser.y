@@ -836,7 +836,6 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, 
   symbol_t *sym = asfx.code == ASFX_NONE
                 ? new symbol_t(name, line, ST_PRIMITIVE | flags)
                 : new symbol_t(name, line, ST_ARRAY | flags, asfx.size);
-
   ctx.insert(sym);
   return sym;
 }
@@ -887,8 +886,6 @@ static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
 //-----------------------------------------------------------------------------
 static void init_lsyms(symbol_t &f)
 {
-  f.set_symbols(new symtab_t());
-
   symlist_t::const_iterator i;
   for ( i = f.params()->begin(); i != f.params()->end(); i++ )
   {

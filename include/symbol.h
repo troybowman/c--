@@ -154,7 +154,6 @@ public:
   void set_size(asize_t size)      { _size = size; }
 
   void set_rt(return_type_t rt)    { _rt = rt; if ( _rt == RT_VOID ) set_ret_resolved(); }
-  void set_symbols(symtab_t *syms) { _symbols = syms; }
   void set_extern()                { _flags |= SF_EXTERN; }
   void set_defined()               { _flags |= SF_DEFINED; }
   void set_ret_resolved()          { _flags |= SF_RET_RESOLVED; }
