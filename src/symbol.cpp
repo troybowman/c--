@@ -17,8 +17,6 @@ symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
     case ST_FUNCTION:
       _rt          = RT_UNKNOWN;
       _symbols     = NULL;
-      _is_extern   = false;
-      _defined     = false;
       _params      = va_arg(va, symlist_t *);
       break;
     default:
@@ -56,8 +54,6 @@ symbol_t::symbol_t(const symbol_t &sym)
       _rt        = sym._rt;
       _params    = sym._params;
       _symbols   = sym._symbols;
-      _is_extern = sym._is_extern;
-      _defined   = sym._defined;
       break;
     case ST_RETLOC:
       break;

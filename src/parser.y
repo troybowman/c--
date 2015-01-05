@@ -21,24 +21,35 @@
                                 // in order as they appear in the source file
   static struct
   {
-    symtab_t *syms;    // pointer to currently active symbol table
-    return_type_t rt;  // return type of current function
-    bool ret_resolved; // have we seen a 'return expr' statement yet? (for non-void funcs)
+    int mode;
+#define CTX_GLOBAL 0
+#define CTX_LOCAL  1
+#define CTX_TEMP   2
+    union
+    {
+      symtab_t *syms; // pointer to currently active symbol table
+      symbol_t *func; // pointer to function we are currently parsing
+    };
 
-    void setglobal()
+    void setglobal()           { mode = CTX_GLOBAL; syms = &gsyms; }
+    void setlocal(symbol_t *f) { mode = CTX_LOCAL;  func = f; }
+    void settemp()             { mode = CTX_TEMP;   syms = new symtab_t(); }
+    void trash()               { delete syms; setglobal(); }
+
+    void insert(symbol_t *sym)
     {
-      syms = &gsyms;
-      rt = RT_UNKNOWN;
-      ret_resolved = true;
+      if ( mode == CTX_GLOBAL || mode == CTX_TEMP )
+        syms->insert(sym);
+      else
+        func->symbols()->insert(sym);
     }
-    void setlocal(symtab_t *_syms, return_type_t _rt = RT_UNKNOWN)
+
+    symbol_t *get(const std::string &key)
     {
-      syms = _syms;
-      rt = _rt;
-      ret_resolved = _rt == RT_VOID;
+      return mode == CTX_GLOBAL || mode == CTX_TEMP
+           ? syms->get(key)
+           : func->symbols()->get(key);
     }
-    void settemp() { setlocal(new symtab_t()); }
-    void trash() { delete syms; setglobal(); }
   } ctx;
 
   //---------------------------------------------------------------------------
@@ -508,9 +519,7 @@ enum ret_res_t
 //-----------------------------------------------------------------------------
 static ret_res_t validate_ret_stmt(const treenode_t *expr)
 {
-  ASSERT(1040, ctx.rt != RT_UNKNOWN);
-
-  if ( ctx.rt == RT_VOID )
+  if ( ctx.func->rt() == RT_VOID )
     return expr != NULL ? RET_EXTRA : RET_OK;
   else
     return expr == NULL           ? RET_MISSING
@@ -547,7 +556,7 @@ static treenode_t *process_ret_stmt(treenode_t *expr, int line)
   }
 
   if ( res == RET_OK_RESOLVED )
-    ctx.ret_resolved = true;
+    ctx.func->set_ret_resolved();
 
   return new treenode_t(TNT_RET, expr);
 }
@@ -725,7 +734,7 @@ static seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type
 static symbol_t *process_stmt_id(const char *id, int line)
 {
   std::string key(id);
-  symbol_t *sym = ctx.syms->get(key); // first check local symbols
+  symbol_t *sym = ctx.get(key); // first check local symbols
   if ( sym == NULL )
   {
     sym = gsyms.get(key); // now global symbols
@@ -816,7 +825,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, 
   if ( asfx.code == ASFX_ERROR )
     return NULL;
 
-  symbol_t *prev = ctx.syms->get(std::string(name));
+  symbol_t *prev = ctx.get(std::string(name));
   if ( prev != NULL )
   {
     usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
@@ -830,7 +839,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, 
                 ? new symbol_t(name, line, ST_PRIMITIVE | pf)
                 : new symbol_t(name, line, ST_ARRAY | pf, asfx.size);
 
-  ctx.syms->insert(sym);
+  ctx.insert(sym);
   return sym;
 }
 
@@ -933,7 +942,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
 
   f->set_rt(rt);
 
-  symbol_t *prev = ctx.syms->get(f->name());
+  symbol_t *prev = gsyms.get(f->name());
   if ( prev != NULL )
   {
     col_res_t res = validate_collision(*prev, *f);
@@ -946,14 +955,13 @@ static void f_enter(symbol_t *f, return_type_t rt)
       purge_and_exit(FATAL_FUNCDEF);
     }
     // existing symbol for decl is replaced with definition
-    ctx.syms->erase(prev->name());
+    gsyms.erase(prev->name());
     delete prev;
   }
 
   init_lsyms(*f);
-  ctx.syms->insert(f);
-
-  ctx.setlocal(f->symbols(), f->rt());
+  gsyms.insert(f);
+  ctx.setlocal(f);
 }
 
 //-----------------------------------------------------------------------------
@@ -963,7 +971,7 @@ static void f_leave(symbol_t *f, treenode_t *tree)
 
   f->set_defined();
 
-  if ( !ctx.ret_resolved )
+  if ( !f->ret_resolved() )
     usererr("error: non-void funcion %s must return a value\n", f->c_str());
 
   functions.push_back(treefunc_t(*f, tree));
@@ -995,7 +1003,7 @@ static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
   {
     ASSERT(1011, *i != NULL);
     symbol_t *sym = *i;
-    symbol_t *prev = ctx.syms->get(sym->name());
+    symbol_t *prev = gsyms.get(sym->name());
     if ( prev != NULL )
     {
       usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
@@ -1004,8 +1012,8 @@ static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
       continue;
     }
     sym->set_rt(rt);
-    sym->set_extern(is_extern);
-    ctx.syms->insert(sym);
+    if ( is_extern ) sym->set_extern();
+    gsyms.insert(sym);
   }
 }
 

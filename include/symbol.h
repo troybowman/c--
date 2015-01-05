@@ -78,20 +78,23 @@ class symbol_t
 
   uint32_t _flags;
 // symbol types
-#define ST_PRIMITIVE       0x001 // source level primitive type (int/char)
-#define ST_ARRAY           0x002 // source level array - base type is a primitive
-#define ST_FUNCTION        0x004 // source level function
-#define ST_TEMPORARY       0x008 // asm temporary value
-#define ST_SAVED_TEMPORARY 0x010 // a temporary that must persist across a function call
-#define ST_INTCON          0x020 // integer constant
-#define ST_CHARCON         0x040 // character constant
-#define ST_STRCON          0x080 // string constant
-#define ST_LABEL           0x100 // asm label
-#define ST_RETLOC          0x200 // identifies asm return value location
-#define ST_ARGUMENT        0x400 // asm function argument location
-#define ST_TYPEMASK        0x7FF
+#define ST_PRIMITIVE       0x0001 // source level primitive type (int/char)
+#define ST_ARRAY           0x0002 // source level array - base type is a primitive
+#define ST_FUNCTION        0x0004 // source level function
+#define ST_TEMPORARY       0x0008 // asm temporary value
+#define ST_SAVED_TEMPORARY 0x0010 // a temporary that must persist across a function call
+#define ST_INTCON          0x0020 // integer constant
+#define ST_CHARCON         0x0040 // character constant
+#define ST_STRCON          0x0080 // string constant
+#define ST_LABEL           0x0100 // asm label
+#define ST_RETLOC          0x0200 // identifies asm return value location
+#define ST_ARGUMENT        0x0400 // asm function argument location
+#define ST_TYPEMASK        0x07FF
 // additional properties
-#define SF_PARAMETER       0x800 // symbol is a source level function parameter
+#define SF_PARAMETER       0x0800 // symbol is a source level function parameter
+#define SF_EXTERN          0x1000 // is function extern?
+#define SF_DEFINED         0x2000 // has function been defined?
+#define SF_RET_RESOLVED    0x4000 // have we seen a 'return expr' statement yet? (for non-void funcs)
 
   union
   {
@@ -108,8 +111,6 @@ class symbol_t
       return_type_t _rt;
       symlist_t *_params;
       symtab_t *_symbols;
-      bool _is_extern;
-      bool _defined;
     };
   };
 
@@ -147,18 +148,20 @@ public:
   return_type_t rt()   const { return _rt; }
   symlist_t *params()  const { return _params; }
   symtab_t *symbols()  const { return _symbols; }
-  bool is_extern()     const { return _is_extern; }
-  bool defined()       const { return _defined; }
+  bool is_extern()     const { return (_flags & SF_EXTERN) != 0; }
+  bool defined()       const { return (_flags & SF_DEFINED) != 0; }
+  bool ret_resolved()  const { return (_flags & SF_RET_RESOLVED) != 0; }
 
   void set_name(const char *name)  { _name.assign(name); }
 
   void set_base(primitive_t base)  { _base = base; }
   void set_size(asize_t size)      { _size = size; }
 
-  void set_rt(return_type_t rt)    { _rt = rt; }
+  void set_rt(return_type_t rt)    { _rt = rt; if ( _rt == RT_VOID ) set_ret_resolved(); }
   void set_symbols(symtab_t *syms) { _symbols = syms; }
-  void set_extern(bool is_extern = true) { _is_extern = is_extern; }
-  void set_defined(bool defined = true)  { _defined = defined; }
+  void set_extern()                { _flags |= SF_EXTERN; }
+  void set_defined()               { _flags |= SF_DEFINED; }
+  void set_ret_resolved()          { _flags |= SF_RET_RESOLVED; }
 
   void set_val(int val) { _val = val; }
 
