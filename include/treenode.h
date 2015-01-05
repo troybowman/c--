@@ -109,18 +109,16 @@ class tree_iterator_t
   const treenode_t *ptr;
 
 public:
-  tree_iterator_t(const treenode_t *root) : ptr(root)
-  {
-    ASSERT(0, root == NULL || is_seq_type(root->type));
-  }
+  tree_iterator_t(const treenode_t *root) : ptr(root) {}
+
   const treenode_t *cur()
   {
     return ptr != NULL ? ptr->children[SEQ_CUR] : NULL;
   }
   tree_iterator_t &operator++()
   {
-    ASSERT(0, ptr != NULL);
-    ptr = ptr->children[SEQ_NEXT];
+    if ( ptr != NULL )
+      ptr = ptr->children[SEQ_NEXT];
     return *this;
   }
   tree_iterator_t operator++(int)

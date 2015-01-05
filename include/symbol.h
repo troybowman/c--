@@ -90,8 +90,8 @@ class symbol_t
 #define ST_TYPEMASK        0x07FF
 // additional properties
 #define SF_PARAMETER       0x0800 // symbol is a source level function parameter
-#define SF_EXTERN          0x1000 // is function extern?
-#define SF_DEFINED         0x2000 // has function been defined?
+#define SF_EXTERN          0x1000 // function is extern
+#define SF_DEFINED         0x2000 // function has been defined
 #define SF_RET_RESOLVED    0x4000 // have we seen a 'return expr' statement yet? (for non-void funcs)
 
   union
