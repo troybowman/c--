@@ -566,7 +566,7 @@ static int count_args(const treenode_t *args)
 {
   int ret = 0;
   tree_iterator_t ti(args);
-  for ( ; ti.cur() != NULL; ti++ )
+  for ( ; *ti != NULL; ti++ )
     ret++;
   return ret;
 }
@@ -615,13 +615,13 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
   tree_iterator_t ti(args);
   symlist_t::const_iterator si = params->begin();
 
-  for ( ; ti.cur() != NULL && si != params->end(); ti++, si++ )
+  for ( ; *ti != NULL && si != params->end(); ti++, si++ )
   {
-    if ( !check_arg(**si, *ti.cur()) )
+    if ( !check_arg(**si, **ti) )
       return call_res_t(CALL_BADARG, params->idx(si)+1);
   }
 
-  if ( ti.cur() != NULL || si != params->end() )
+  if ( *ti != NULL || si != params->end() )
     return call_res_t(CALL_NUMARGS, count_args(args));
 
   return call_res_t(CALL_OK);

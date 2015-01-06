@@ -111,7 +111,7 @@ class tree_iterator_t
 public:
   tree_iterator_t(const treenode_t *root) : ptr(root) {}
 
-  const treenode_t *cur()
+  const treenode_t *operator*() const
   {
     return ptr != NULL ? ptr->children[SEQ_CUR] : NULL;
   }

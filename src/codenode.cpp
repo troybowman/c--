@@ -217,8 +217,8 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 
         tree_iterator_t ti(tree->children[CALL_ARGS]);
 
-        for ( ; ti.cur() != NULL; ti++ )
-          argvals.push_back(generate(ti.cur()));
+        for ( ; *ti != NULL; ti++ )
+          argvals.push_back(generate(*ti));
 
         int size = argvals.size();
         for ( int i = 0; i < size; i++ )
