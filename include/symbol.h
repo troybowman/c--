@@ -13,38 +13,44 @@
 class symtab_t;
 
 //-----------------------------------------------------------------------------
-enum symloc_type_t
-{
-  SLT_UNKNOWN,
-  SLT_REG,
-  SLT_STACK,
-  SLT_GLOBAL
-};
-
-//-----------------------------------------------------------------------------
 class symloc_t
 {
-  symloc_type_t _type;
+  uint32_t _flags;
+// symloc types
+#define SLT_UNKNOWN  0x00
+#define SLT_GLOBAL   0x01
+#define SLT_REG      0x02
+#define SLT_STKOFF   0x03
+#define SLT_TYPEMASK 0x0F
+// additional properties:
+#define SLF_FP       0x10
+#define SLF_SP       0x20
+#define SLF_SUB      0x40
+
   union
   {
-    int _off;
+    uint32_t _off;
     const char *_reg;
   };
 
 public:
-  symloc_t() : _type(SLT_UNKNOWN) {}
+  symloc_t() : _flags(0) {}
 
-  bool is_stkoff() const { return _type == SLT_STACK;  }
-  bool is_reg()    const { return _type == SLT_REG; }
-  bool is_global() const { return _type == SLT_GLOBAL; }
+  bool is_global() const { return (_flags & SLT_TYPEMASK) == SLT_GLOBAL; }
+  bool is_reg()    const { return (_flags & SLT_TYPEMASK) == SLT_REG; }
+  bool is_stkoff() const { return (_flags & SLT_TYPEMASK) == SLT_STKOFF;  }
 
-  void set_stkoff(int off)      { _type = SLT_STACK; _off = off; }
-  void set_reg(const char *reg) { _type = SLT_REG;   _reg = reg; }
-  void set_global()             { _type = SLT_GLOBAL; }
+  void set_global()
+    { _flags |= SLT_GLOBAL; }
+  void set_reg(const char *reg)
+    { _flags |= SLT_REG; _reg = reg; }
+  void set_stkoff(uint32_t flags, uint32_t off)
+    { _flags |= (SLT_STKOFF | flags); _off = off; }
 
-  symloc_type_t type() const { return _type; }
-  int stkoff()         const { return _off;  }
-  const char *reg()    const { return _reg;  }
+  uint8_t type()    const { return _flags & SLT_TYPEMASK; }
+  uint32_t flags()  const { return _flags; }
+  const char *reg() const { return _reg;  }
+  uint32_t stkoff() const { return _off;  }
 };
 
 //-----------------------------------------------------------------------------
@@ -76,23 +82,23 @@ class symbol_t
 
   uint32_t _flags;
 // symbol types
-#define ST_PRIMITIVE       0x0001 // source level primitive type (int/char)
-#define ST_ARRAY           0x0002 // source level array - base type is a primitive
-#define ST_FUNCTION        0x0004 // source level function
-#define ST_TEMPORARY       0x0008 // asm temporary value
-#define ST_SAVED_TEMPORARY 0x0010 // a temporary that must persist across a function call
-#define ST_INTCON          0x0020 // integer constant
-#define ST_CHARCON         0x0040 // character constant
-#define ST_STRCON          0x0080 // string constant
-#define ST_LABEL           0x0100 // asm label
-#define ST_RETLOC          0x0200 // identifies asm return value location
-#define ST_ARGUMENT        0x0400 // asm function argument location
-#define ST_TYPEMASK        0x07FF
+#define ST_PRIMITIVE       0x01 // source level primitive type (int/char)
+#define ST_ARRAY           0x02 // source level array - base type is a primitive
+#define ST_FUNCTION        0x03 // source level function
+#define ST_TEMPORARY       0x04 // asm temporary value
+#define ST_SAVED_TEMPORARY 0x05 // a temporary that must persist across a function call
+#define ST_INTCON          0x06 // integer constant
+#define ST_CHARCON         0x07 // character constant
+#define ST_STRCON          0x08 // string constant
+#define ST_LABEL           0x09 // asm label
+#define ST_RETLOC          0x0A // identifies asm return value location
+#define ST_ARGUMENT        0x0B // asm function argument location
+#define ST_TYPEMASK        0x0F
 // additional properties
-#define SF_PARAMETER       0x0800 // symbol is a source level function parameter
-#define SF_EXTERN          0x1000 // function is extern
-#define SF_DEFINED         0x2000 // function has been defined
-#define SF_RET_RESOLVED    0x4000 // have we seen a 'return expr' statement yet? (for non-void funcs)
+#define SF_PARAMETER       0x10 // symbol is a source level function parameter
+#define SF_EXTERN          0x20 // function is extern
+#define SF_DEFINED         0x40 // function has been defined
+#define SF_RET_RESOLVED    0x80 // have we seen a 'return expr' statement yet? (for non-void funcs)
 
   union
   {
@@ -117,23 +123,23 @@ public:
 
   symbol_t(const char *name, int line, uint32_t flags, ...);
 
-  symbol_t(uint32_t flags, int val) : _flags(flags) { _val = val; }
+  symbol_t(uint32_t flags, int val) : _flags(flags), _val(val) {}
 
-  symbol_t(uint32_t flags, const char *str) : _flags(flags) { _str = str; }
+  symbol_t(uint32_t flags, const char *str) : _flags(flags), _str(str) {}
 
   symbol_t(uint32_t flags) : _flags(flags) {}
 
   ~symbol_t();
 
-  bool is_prim()       const { return (_flags & ST_PRIMITIVE) != 0; }
-  bool is_array()      const { return (_flags & ST_ARRAY) != 0; }
-  bool is_func()       const { return (_flags & ST_FUNCTION) != 0; }
+  bool is_prim()       const { return (_flags & ST_TYPEMASK) == ST_PRIMITIVE; }
+  bool is_array()      const { return (_flags & ST_TYPEMASK) == ST_ARRAY; }
+  bool is_func()       const { return (_flags & ST_TYPEMASK) == ST_FUNCTION; }
   bool is_param()      const { return (_flags & SF_PARAMETER) != 0; }
 
   std::string name()   const { return _name; }
   const char *c_str()  const { return _name.c_str(); }
+  uint8_t type()       const { return _flags & ST_TYPEMASK; }
   uint32_t flags()     const { return _flags; }
-  uint32_t type()      const { return _flags & ST_TYPEMASK; }
   int line()           const { return _line; }
   const char *str()    const { return _str; }
   int val()            const { return _val; }
