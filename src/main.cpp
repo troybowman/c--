@@ -36,13 +36,13 @@ inline bool is_path_sep(char c)
 }
 
 //-----------------------------------------------------------------------------
-static char *gen_outpath(const char *path)
+static char *gen_outpath(const char *inpath)
 {
-  int len = strlen(path);
-  const char *const end = path + len;
+  int len = strlen(inpath);
+  const char *const end = inpath + len;
 
   const char *ptr1 = end;
-  for ( ; ptr1 != path; ptr1-- )
+  for ( ; ptr1 != inpath; ptr1-- )
     if ( is_path_sep(*(ptr1-1)) )
       break;
 

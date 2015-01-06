@@ -216,7 +216,7 @@ func : type func_decl
           { f_leave($2, $5); }
        '}'
      | error '{' { purge_and_exit(FATAL_FUNCDEF); } /* avoid processing an invaild function */
-     | error '}' { yyerrok; }  /* function never began, start over at '}' */
+     | error '}' { yyerrok; }  /* start over at '}' */
      ;
 
 func_body : local_decls stmts { $$ = $2.head; }
@@ -889,7 +889,7 @@ static void init_lsyms(symbol_t &f)
   symlist_t::const_iterator i;
   for ( i = f.params()->begin(); i != f.params()->end(); i++ )
   {
-    ASSERT(1003, f.symbols()->get((*i)->name()) == NULL);
+    ASSERT(1003, *i != NULL);
     f.symbols()->insert(*i);
   }
 }
@@ -950,7 +950,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
       purge_and_exit(FATAL_FUNCDEF);
     }
     // existing symbol for decl is replaced with definition
-    gsyms.erase(prev->name());
+    gsyms.erase(*prev);
     delete prev;
   }
 

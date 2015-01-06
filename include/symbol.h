@@ -199,7 +199,6 @@ public:
   }
   void insert(const std::string &key, symbol_t *value)
   {
-    ASSERT(1075, key.size() > 0 && value != NULL);
     map[key] = value;
     list.push_back(value);
   }
@@ -207,11 +206,10 @@ public:
   {
     insert(value->name(), value);
   }
-  void erase(const std::string &key)
+  void erase(symbol_t &sym)
   {
-    symbol_t *sym = map.find(key)->second;
-    map.erase(key);
-    list.remove(sym);
+    map.erase(sym.name());
+    list.remove(&sym);
   }
 
   // always iterate in insertion order
