@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <symbol.h>
+#include <codenode.h>
 #include <messages.h>
 #include "mips_asm.h"
 
@@ -207,7 +209,7 @@ static void gen_text_section(FILE *outfile, const ir_funcs_t &funcs);
 }
 */
 //-----------------------------------------------------------------------------
-void mips_asm_generate(ir_t &ir, FILE *outfile)
+void generate_mips_asm(FILE *outfile, ir_t &ir)
 {
   init_gsyms(ir.gsyms, ir.strings, ir.labels);
   gen_data_section(outfile, ir.gsyms);

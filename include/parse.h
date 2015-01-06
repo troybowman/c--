@@ -7,7 +7,7 @@
 class symtab_t;
 class symlist_t;
 
-// this function initiates the bison parser - it called from main
+// this function initiates the bison parser - it is called from main
 void parse(symtab_t &_gsyms, treefuncs_t &_functions, FILE *infile);
 
 #endif // PARSE_H

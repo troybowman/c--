@@ -42,11 +42,11 @@ class resource_manager_t
   uint32_t _type;
 
   rmap_t _free;
-  symlist_t *_union;
+  symlist_t &_union;
 
 public:
-  resource_manager_t(uint32_t type)
-    : _cnt(0), _type(type & ST_TYPEMASK), _union(new symlist_t()) {}
+  resource_manager_t(uint32_t type, symlist_t &u)
+    : _cnt(0), _type(type & ST_TYPEMASK), _union(u) {}
 
   symbol_t *gen_resource()
   {
@@ -57,20 +57,20 @@ public:
       return ret;
     }
     else
+    {
       return new symbol_t(_type, _cnt++);
+    }
   }
 
   void clear()           { _free.clear(); }
   void free(symbol_t *s) { _free[s->val()] = s; }
-  void used(symbol_t *s) { _union->add_unique(s); }
-
-  symlist_t *get_union() { return _union; }
+  void used(symbol_t *s) { _union.add_unique(s); }
 
   void reset()
   {
     clear();
     symlist_t::iterator i;
-    for ( i = _union->begin(); i != _union->end(); i++ )
+    for ( i = _union.begin(); i != _union.end(); i++ )
       free(*i);
   }
 };
@@ -97,51 +97,56 @@ struct frame_summary_t
 };
 
 //-----------------------------------------------------------------------------
-struct ir_func_t
+struct codefunc_t
 {
   symbol_t &sym;
   codenode_t *code;
 
-  symlist_t &temps;
-  symlist_t &svtemps;
-  symlist_t &args;
+  symlist_t temps;
+  symlist_t svtemps;
+  symlist_t args;
 
-  frame_summary_t frame;
-
-  ir_func_t(symbol_t &s, codenode_t *c, symlist_t &t, symlist_t &svt, symlist_t &a)
-    : sym(s), code(c), temps(t), svtemps(svt), args(a) {}
+  codefunc_t(symbol_t &s) : sym(s) {}
 };
 
-typedef std::list<ir_func_t *> ir_funcs_t;
+typedef std::list<codefunc_t *> codefuncs_t;
+
+struct ir_t
+{
+  symtab_t gsyms;
+  symtab_t strings;
+  symlist_t labels;
+  symbol_t retloc;
+  codefuncs_t funcs;
+
+  ir_t(symtab_t &_gsyms) : retloc(ST_RETLOC) { gsyms.swap(_gsyms); }
+};
 
 //-----------------------------------------------------------------------------
-struct ir_ctx_t
+struct tree_ctx_t
 {
   uint32_t flags;
-#define CTX_LVAL 0x1
-#define CTX_SAVE 0x2
-#define CTX_IF   0x4
+#define TCTX_LVAL 0x1
+#define TCTX_SAVE 0x2
+#define TCTX_IF   0x4
 
-  union
-  {
-    symbol_t *endif;
-  };
+  symbol_t *endif;
 
-  ir_ctx_t(symbol_t *_endif) : flags(CTX_IF), endif(_endif) {}
-  ir_ctx_t(uint32_t _flags = 0) : flags(_flags) {}
+  tree_ctx_t(symbol_t *_endif) : flags(TCTX_IF), endif(_endif) {}
+  tree_ctx_t(uint32_t _flags = 0) : flags(_flags), endif(NULL) {}
 };
 
 //-----------------------------------------------------------------------------
-class ir_engine_t
+class codefunc_engine_t
 {
+  codefunc_t &cf;
+  symtab_t &strings;
+  symlist_t &labels;
+  symbol_t &retloc;
+
   resource_manager_t temps;
   resource_manager_t svtemps;
   resource_manager_t args;
-
-  treefunc_t &func;
-  symtab_t  &strings;
-  symlist_t &labels;
-  symbol_t  &retloc;
 
   codenode_t *head;
   codenode_t *tail;
@@ -158,32 +163,21 @@ private:
       symbol_t *src1 = NULL,
       symbol_t *src2 = NULL);
 
-  symbol_t *generate(const treenode_t *tree, ir_ctx_t ctx = ir_ctx_t());
+  symbol_t *generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 
 public:
-  ir_engine_t(treefunc_t &f, symtab_t &s, symlist_t &l, symbol_t &r)
-    : temps(ST_TEMPORARY),
-      svtemps(ST_SAVED_TEMPORARY),
-      args(ST_ARGUMENT),
-      func(f), strings(s), labels(l), retloc(r),
+  codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
+    : cf(_cf),
+      strings(_ir.strings), labels(_ir.labels), retloc(_ir.retloc),
+      temps(ST_TEMPORARY, _cf.temps),
+      svtemps(ST_SAVED_TEMPORARY, _cf.svtemps),
+      args(ST_ARGUMENT, _cf.args),
       head(NULL), tail(NULL) {}
 
-  ir_func_t *generate();
+  void start(const treenode_t *root);
 };
 
 //-----------------------------------------------------------------------------
-struct ir_t
-{
-  symtab_t gsyms;
-  symtab_t strings;
-  symlist_t labels;
-  symbol_t retloc;
-  ir_funcs_t funcs;
-
-  ir_t(symtab_t &_gsyms) : retloc(ST_RETLOC) { gsyms.swap(_gsyms); }
-};
-
-//-----------------------------------------------------------------------------
-void generate(ir_t &ir, const treefuncs_t &functions);
+void generate_ir(ir_t &ir, const treefuncs_t &functions);
 
 #endif // CODENODE_H

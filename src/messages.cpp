@@ -412,15 +412,15 @@ static void print_ir_code(const codenode_t *code)
 //-----------------------------------------------------------------------------
 void print_ir(const ir_t &ir)
 {
-  ir_funcs_t::const_iterator i;
+  codefuncs_t::const_iterator i;
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
-    ir_func_t *irf = *i;
-    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", irf->sym.c_str());
-    cmtout(0, "temps used:   %d\n", irf->temps.size());
-    cmtout(0, "svtemps used: %d\n", irf->svtemps.size());
-    cmtout(0, "args used:    %d\n", irf->args.size());
-    print_ir_code(irf->code);
+    codefunc_t *cf = *i;
+    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", cf->sym.c_str());
+    cmtout(0, "temps used:   %d\n", cf->temps.size());
+    cmtout(0, "svtemps used: %d\n", cf->svtemps.size());
+    cmtout(0, "args used:    %d\n", cf->args.size());
+    print_ir_code(cf->code);
   }
 }
 

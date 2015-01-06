@@ -192,32 +192,30 @@ int main(int argc, char **argv)
   if ( args.code != ARGS_OK )
     process_args_error(args, argv[0]);
 
-  //---------------------------------------------------------------------------
-  // parse, generate syntax tree
+  // generate syntax tree -----------------------------------------------------
   symtab_t gsyms;
   treefuncs_t functions;
-
   parse(gsyms, functions, args.infile);
+  //---------------------------------------------------------------------------
 
   fclose(args.infile);
 
-  //---------------------------------------------------------------------------
-  FILE *outfile = init_outfile(args.str);
-
+  DBG_INIT_OUTFILE(args.str);
   DBG_PARSE_RESULTS(gsyms, functions);
-  CHECK_PHASE_FLAG(dbg_no_ir);
+  DBG_CHECK_PHASE_FLAG(dbg_no_ir);
 
-  //---------------------------------------------------------------------------
-  // generate intermediate representation
+  // generate intermediate representation -------------------------------------
   ir_t ir(gsyms);
-  generate(ir, functions);
+  generate_ir(ir, functions);
+  //---------------------------------------------------------------------------
 
   DBG_IR(ir);
-  CHECK_PHASE_FLAG(dbg_no_code);
+  DBG_CHECK_PHASE_FLAG(dbg_no_code);
 
+  // backend ------------------------------------------------------------------
+  OPT_INIT_OUTFILE(args.str);
+  generate_mips_asm(outfile, ir);
   //---------------------------------------------------------------------------
-  // backend
-  mips_asm_generate(ir, outfile);
 
   fclose(outfile);
   return 0;

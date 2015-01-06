@@ -2,9 +2,8 @@
 #define MIPS_ASM_H
 
 #include <stdio.h>
-#include <symbol.h>
-#include <codenode.h>
+struct ir_t;
 
-void mips_asm_generate(ir_t &ir, FILE *outfile);
+void generate_mips_asm(FILE *outfile, ir_t &ir);
 
 #endif // MIPS_ASM_H

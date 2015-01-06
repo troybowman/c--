@@ -85,7 +85,9 @@ void set_dbgfile(FILE *dbgfile);
 void print_frame_summary(const ir_func_t &func);
 
 //-----------------------------------------------------------------------------
-#define SET_DBGFILE(dbgfile) do { set_dbgfile(dbgfile); } while ( false );
+#define DBG_INIT_OUTFILE(outpath) FILE *outfile = init_outfile(args.str);
+#define OPT_INIT_OUTFILE(outpath) // nothing
+#define SET_DBGFILE(dbgfile)      do { set_dbgfile(dbgfile); } while ( false );
 
 //-----------------------------------------------------------------------------
 #define DBG_PARSE_RESULTS(gsyms, functions)       \
@@ -101,7 +103,7 @@ do                                                \
 } while ( false );
 
 //-----------------------------------------------------------------------------
-#define CHECK_PHASE_FLAG(flag)     \
+#define DBG_CHECK_PHASE_FLAG(flag) \
 do                                 \
 {                                  \
   if ( (dbg_flags & flag) != 0 )   \
@@ -127,13 +129,14 @@ do                                       \
 #else
 
 //-----------------------------------------------------------------------------
-#define DBG(flag, ...)          // nothing
-#define ASSERT(code, cond)      // nothing
-#define DBG_PARSE_RESULTS()     // nothing
-#define DBG_IR(code)            // nothing
-#define CHECK_PHASE_FLAG(flags) // nothing
-#define SET_DBGFILE(dbgfile)    // nothing
-#define DBG_FRAME_SUMMARY(func) // nothing
+#define DBG(flag, ...)            // nothing
+#define ASSERT(code, cond)        // nothing
+#define DBG_PARSE_RESULTS()       // nothing
+#define DBG_IR(code)              // nothing
+#define CHECK_PHASE_FLAG(flags)   // nothing
+#define DBG_INIT_OUTFILE(outpath) // nothing
+#define OPT_INIT_OUTFILE(outpath) FILE *outfile = init_outfile(args.str);
+#define DBG_FRAME_SUMMARY(func)   // nothing
 
 #endif // DEBUG
 
