@@ -49,7 +49,7 @@ static void gen_asm_names(T &syms, symtab_t &gsyms, const char *pfx)
 //-----------------------------------------------------------------------------
 static void init_gsyms(symtab_t &gsyms, symtab_t &strings, symlist_t &labels)
 {
-  gsyms.make_asm_names();
+  gsyms.make_asm_names("_");
 
   gen_asm_names<symtab_t>(strings, gsyms, "_str");
   gen_asm_names<symlist_t>(labels, gsyms, "_L");
