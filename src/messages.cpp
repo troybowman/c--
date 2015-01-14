@@ -250,11 +250,8 @@ static const char *st2str(uint32_t type)
 }
 
 //-----------------------------------------------------------------------------
-static const char *addr2str(const symbol_t *addr)
+static const char *addr2str(char *buf, size_t bufsize, const symbol_t *addr)
 {
-#define MAXADDRSTR 32
-  char *buf = (char *)malloc(MAXADDRSTR);
-
   const char *type = st2str(addr->type());
 
   switch ( addr->type() )
@@ -262,21 +259,21 @@ static const char *addr2str(const symbol_t *addr)
     case ST_PRIMITIVE:
     case ST_ARRAY:
     case ST_FUNCTION:
-      snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->c_str());
+      snprintf(buf, bufsize, "%s (%s)", type, addr->c_str());
       break;
     case ST_TEMPORARY:
     case ST_SAVED_TEMPORARY:
     case ST_ARGUMENT:
     case ST_INTCON:
     case ST_LABEL:
-      snprintf(buf, MAXADDRSTR, "%s (%d)", type, addr->val());
+      snprintf(buf, bufsize, "%s (%d)", type, addr->val());
       break;
     case ST_CHARCON:
     case ST_STRCON:
-      snprintf(buf, MAXADDRSTR, "%s (%s)", type, addr->str());
+      snprintf(buf, bufsize, "%s (%s)", type, addr->str());
       break;
     case ST_RETLOC:
-      snprintf(buf, MAXADDRSTR, "%s", type);
+      snprintf(buf, bufsize, "%s", type);
       break;
     default:
       INTERR(1078);
@@ -395,12 +392,15 @@ static void print_ir_code(const codenode_t *code)
   {
     cmtout(0, "%s\n", cnt2str(ptr->type));
 
+#define MAXADDRSTR 32
+    char buf[MAXADDRSTR];
+
     if ( ptr->dest != NULL )
-      cmtout(0, "dest -> %s\n", addr2str(ptr->dest));
+      cmtout(0, "dest -> %s\n", addr2str(buf, MAXADDRSTR, ptr->dest));
     if ( ptr->src1 != NULL )
-      cmtout(0, "src1 -> %s\n", addr2str(ptr->src1));
+      cmtout(0, "src1 -> %s\n", addr2str(buf, MAXADDRSTR, ptr->src1));
     if ( ptr->src2 != NULL )
-      cmtout(0, "src2 -> %s\n", addr2str(ptr->src2));
+      cmtout(0, "src2 -> %s\n", addr2str(buf, MAXADDRSTR, ptr->src2));
 
     ptr = ptr->next;
 

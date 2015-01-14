@@ -129,14 +129,14 @@ do                                       \
 #else
 
 //-----------------------------------------------------------------------------
-#define DBG(flag, ...)            // nothing
-#define ASSERT(code, cond)        // nothing
-#define DBG_PARSE_RESULTS()       // nothing
-#define DBG_IR(code)              // nothing
-#define CHECK_PHASE_FLAG(flags)   // nothing
-#define DBG_INIT_OUTFILE(outpath) // nothing
+#define DBG(flag, ...)              // nothing
+#define ASSERT(code, cond)          // nothing
+#define DBG_PARSE_RESULTS()         // nothing
+#define DBG_IR(code)                // nothing
+#define DBG_CHECK_PHASE_FLAG(flags) // nothing
+#define DBG_INIT_OUTFILE(outpath)   // nothing
 #define OPT_INIT_OUTFILE(outpath) FILE *outfile = init_outfile(args.str);
-#define DBG_FRAME_SUMMARY(func)   // nothing
+#define DBG_FRAME_SUMMARY(func)     // nothing
 
 #endif // DEBUG
 
