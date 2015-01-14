@@ -208,6 +208,7 @@ static void gen_text_section(FILE *outfile, const ir_funcs_t &funcs);
   }
 }
 */
+
 //-----------------------------------------------------------------------------
 void generate_mips_asm(FILE *outfile, ir_t &ir)
 {

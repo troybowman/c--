@@ -208,9 +208,12 @@ public:
     map[key] = value;
     list.push_back(value);
   }
-  void insert(symbol_t *value)
+  bool insert(symbol_t *value)
   {
+    if ( value == NULL )
+      return false;
     insert(value->name(), value);
+    return true;
   }
   void erase(symbol_t &sym)
   {
@@ -218,14 +221,18 @@ public:
     list.remove(&sym);
   }
 
-  // always iterate in insertion order
-  typedef symlist_t::iterator iterator;
-  typedef symlist_t::const_iterator const_iterator;
+#define DEFINE_TABLE_ITERATOR(iterator, begin, end)       \
+  typedef symlist_t::iterator iterator;                   \
+  typedef symlist_t::const_##iterator const_##iterator;   \
+  iterator begin() { return list.begin(); }               \
+  iterator end()   { return list.end(); }                 \
+  const_##iterator begin() const { return list.begin(); } \
+  const_##iterator end() const { return list.end(); }
 
-  iterator begin() { return list.begin(); }
-  iterator end()   { return list.end(); }
-  const_iterator begin() const { return list.begin(); }
-  const_iterator end()   const { return list.end(); }
+  DEFINE_TABLE_ITERATOR(iterator, begin, end)
+  DEFINE_TABLE_ITERATOR(reverse_iterator, rbegin, rend)
+
+#undef DEFINE_TABLE_ITERATOR
 
   size_t size() const    { return list.size(); }
   void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }

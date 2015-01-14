@@ -8,7 +8,7 @@
 #define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
 
 //-----------------------------------------------------------------------------
-static bool has_call(treenode_t *tree)
+static bool has_call(const treenode_t *tree)
 {
   if ( tree == NULL )
     return false;
