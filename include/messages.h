@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 //-----------------------------------------------------------------------------
 // Error messages
@@ -33,9 +34,24 @@ do                                              \
 // Debug/Logging messages
 //-----------------------------------------------------------------------------
 
-#ifndef NDEBUG
+#define APPCHAR(ptr, c, len) \
+do                           \
+{                            \
+  int l = len;               \
+  while ( l-- > 0)           \
+    { *ptr = c; ptr++; }     \
+} while ( false ) ;
+
+#define APPSTR(ptr, str, len) \
+do                            \
+{                             \
+  strncpy(ptr, str, len);     \
+  ptr += len;                 \
+} while ( false )
 
 //-----------------------------------------------------------------------------
+#ifndef NDEBUG
+
 #define ASSERT(code, cond) \
 do                         \
 {                          \

@@ -356,7 +356,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: num_at
@@ -391,7 +391,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: char_at
@@ -426,7 +426,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: bunch
@@ -460,14 +460,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (right_back)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -490,14 +490,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (right_back)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -532,14 +532,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (num_at)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -574,14 +574,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (char_at)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SB

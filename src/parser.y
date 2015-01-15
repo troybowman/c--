@@ -524,7 +524,7 @@ static ret_res_t validate_ret_stmt(const treenode_t *expr)
   else
     return expr == NULL           ? RET_MISSING
          : !expr->is_int_compat() ? RET_INCOMPAT
-         : RET_OK_RESOLVED;
+         :                          RET_OK_RESOLVED;
 }
 
 //-----------------------------------------------------------------------------
@@ -757,7 +757,7 @@ static inline lookup_res_t validate_array_lookup(const symbol_t &sym, const tree
 {
   return !sym.is_array()      ? AL_ERR_BASE
        : !idx.is_int_compat() ? AL_ERR_IDX
-       : AL_OK;
+       :                        AL_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -876,11 +876,11 @@ static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
   ASSERT(1001, prev.name() == sym.name());
 
   return !prev.is_func()                              ? COL_REDECL
-       :  prev.is_extern()                            ? COL_EXT
-       :  prev.defined()                              ? COL_REDEF
+       : prev.is_extern()                             ? COL_EXT
+       : prev.defined()                               ? COL_REDEF
        : !check_params(*prev.params(), *sym.params()) ? COL_PARAMS
-       :  prev.rt() != sym.rt()                       ? COL_RET
-       :  COL_OK;
+       : prev.rt() != sym.rt()                        ? COL_RET
+       :                                                COL_OK;
 }
 
 //-----------------------------------------------------------------------------

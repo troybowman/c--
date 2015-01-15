@@ -243,7 +243,7 @@ static const char *st2str(uint32_t type)
     case ST_STRCON:          return "ST_STRCON";
     case ST_LABEL:           return "ST_LABEL";
     case ST_ARGUMENT:        return "ST_ARGUMENT";
-    case ST_RETLOC:          return "ST_RETLOC";
+    case ST_RETVAL:          return "ST_RETVAL";
     default:
       INTERR(1061);
   }
@@ -272,7 +272,7 @@ static const char *addr2str(char *buf, size_t bufsize, const symbol_t *addr)
     case ST_STRCON:
       snprintf(buf, bufsize, "%s (%s)", type, addr->str());
       break;
-    case ST_RETLOC:
+    case ST_RETVAL:
       snprintf(buf, bufsize, "%s", type);
       break;
     default:

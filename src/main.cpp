@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
-#include <string.h>
 
 #include <parse.h>
 #include <symbol.h>
@@ -60,19 +59,10 @@ static char *gen_outpath(const char *inpath)
   char *buf = (char *)malloc(baselen+extlen+2);
   char *ptr = buf;
 
-#define APPSTR(ptr, str, len) \
-do                            \
-{                             \
-  strncpy(ptr, str, len);     \
-  ptr += len;                 \
-} while ( false )
-
   APPSTR(ptr, ptr1, baselen);
   APPSTR(ptr, ".", 1);
   APPSTR(ptr, OUTFILE_EXT, extlen);
   *ptr = '\0';
-
-#undef APPSTR
 
   return buf;
 }

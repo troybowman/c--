@@ -80,26 +80,29 @@ struct codefunc_t
 {
   symbol_t &sym;
   codenode_t *code;
+  bool has_call;
 
   symlist_t ra;
   symlist_t temps;
   symlist_t svtemps;
   symlist_t args;
 
-  codefunc_t(symbol_t &s) : sym(s) {}
+  codefunc_t(symbol_t &s) : sym(s), code(NULL), has_call(false) {}
 };
 
+//-----------------------------------------------------------------------------
 typedef std::list<codefunc_t *> codefuncs_t;
 
+//-----------------------------------------------------------------------------
 struct ir_t
 {
   symtab_t gsyms;
   symtab_t strings;
   symlist_t labels;
-  symbol_t retloc;
+  symbol_t retval;
   codefuncs_t funcs;
 
-  ir_t(symtab_t &_gsyms) : retloc(ST_RETLOC) { gsyms.swap(_gsyms); }
+  ir_t(symtab_t &_gsyms) : retval(ST_RETVAL) { gsyms.swap(_gsyms); }
 };
 
 //-----------------------------------------------------------------------------
@@ -122,7 +125,7 @@ class codefunc_engine_t
   codefunc_t &cf;
   symtab_t &strings;
   symlist_t &labels;
-  symbol_t &retloc;
+  symbol_t &retval;
 
   resource_manager_t temps;
   resource_manager_t svtemps;
@@ -148,7 +151,8 @@ private:
 public:
   codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
     : cf(_cf),
-      strings(_ir.strings), labels(_ir.labels), retloc(_ir.retloc),
+      strings(_ir.strings), labels(_ir.labels),
+      retval(_ir.retval),
       temps(ST_TEMPORARY, _cf.temps),
       svtemps(ST_SAVED_TEMPORARY, _cf.svtemps),
       args(ST_ARGUMENT, _cf.args),

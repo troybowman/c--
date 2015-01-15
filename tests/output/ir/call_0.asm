@@ -113,7 +113,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
@@ -133,14 +133,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (gimme5)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW

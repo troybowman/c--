@@ -320,7 +320,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (2)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: diff
@@ -349,7 +349,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (2)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: dub
@@ -378,7 +378,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (2)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: lots
@@ -406,14 +406,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_MOV
@@ -430,14 +430,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (1)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_ARG
@@ -454,14 +454,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (sum)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -484,14 +484,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_MOV
@@ -520,14 +520,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (sum)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (1)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_LW
@@ -556,14 +556,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (diff)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_MOV
@@ -599,14 +599,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_MOV
@@ -673,14 +673,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (diff)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (4)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_ARG
@@ -744,14 +744,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (diff)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_ARG
@@ -762,14 +762,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_ARG
@@ -780,14 +780,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_ARG
@@ -798,14 +798,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_ARG
@@ -816,14 +816,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (dub)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_MOV

@@ -212,6 +212,12 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_CALL:
       {
+        if ( !cf.has_call )
+        {
+          cf.has_call = true;
+          cf.ra.push_back(new symbol_t(ST_RETADDR));
+        }
+
         symlist_t argvals;
         symlist_t arglocs;
 
@@ -235,10 +241,10 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symbol_t *f = tree->sym;
         if ( f->rt() != RT_VOID )
         {
-          append(CNT_CALL, &retloc, f);
+          append(CNT_CALL, &retval, f);
 
           symbol_t *temp = gen_temp(ctx.flags);
-          append(CNT_MOV, temp, &retloc);
+          append(CNT_MOV, temp, &retval);
           return temp;
         }
 
@@ -247,9 +253,9 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_RET:
       {
-        symbol_t *retval = generate(tree->children[RET_EXPR]);
-        if ( retval != NULL )
-          append(CNT_RET, &retloc, retval);
+        symbol_t *val = generate(tree->children[RET_EXPR]);
+        if ( val != NULL )
+          append(CNT_RET, &retval, val);
         else
           append(CNT_RET);
         break;

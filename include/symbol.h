@@ -91,8 +91,9 @@ class symbol_t
 #define ST_CHARCON         0x07 // character constant
 #define ST_STRCON          0x08 // string constant
 #define ST_LABEL           0x09 // asm label
-#define ST_RETLOC          0x0A // identifies asm return value location
-#define ST_ARGUMENT        0x0B // asm function argument location
+#define ST_RETVAL          0x0A // asm return value location
+#define ST_RETADDR         0x0B // asm return address location
+#define ST_ARGUMENT        0x0C // asm function argument location
 #define ST_TYPEMASK        0x0F
 // additional properties
 #define SF_PARAMETER       0x10 // symbol is a source level function parameter

@@ -220,7 +220,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f2
@@ -236,7 +236,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f3
@@ -252,7 +252,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
@@ -462,14 +462,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (f1)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -485,14 +485,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (f2)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -588,14 +588,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (f1)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -611,14 +611,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (f2)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
@@ -634,14 +634,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (f3)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SW
