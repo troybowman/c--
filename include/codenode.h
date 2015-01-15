@@ -75,33 +75,13 @@ public:
   }
 };
 
-
-//-----------------------------------------------------------------------------
-struct frame_summary_t
-{
-  int size;
-
-  int lvars;
-  int ra;
-  int temps;
-  int svregs;
-  int args;
-
-  void set_lvars (int _lvars)  { lvars  = _lvars;  size += lvars; }
-  void set_ra    (int _ra)     { ra     = _ra;     size += ra; }
-  void set_temps (int _temps)  { temps  = _temps;  size += temps; }
-  void set_svregs(int _svregs) { svregs = _svregs; size += svregs; }
-  void set_args  (int _args)   { args   = _args;   size += args; }
-
-  frame_summary_t() : size(0) {}
-};
-
 //-----------------------------------------------------------------------------
 struct codefunc_t
 {
   symbol_t &sym;
   codenode_t *code;
 
+  symlist_t ra;
   symlist_t temps;
   symlist_t svtemps;
   symlist_t args;

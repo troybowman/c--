@@ -102,6 +102,63 @@ static void gen_data_section(FILE *outfile, const symtab_t &gsyms)
     fprintf(outfile, "\n");
   }
 }
+
+//-----------------------------------------------------------------------------
+struct frame_item_visitor_t
+{
+  virtual void visit_item(symbol_t &sym, int idx) = 0;
+};
+
+#define FIV_REVERSE 0x1
+
+//-----------------------------------------------------------------------------
+template<class T>
+class frame_section_t
+{
+  T &items;
+
+public:
+  uint32_t off;
+  uint32_t size;
+
+  frame_section_t(T &_items)
+    : items(_items), off(BADSIZE), size(BADSIZE) {}
+
+  void visit_items(frame_item_visitor_t &fiv, uint32_t flags = 0)
+  {
+    int idx = 0;
+    if ( (flags & FIV_REVERSE) == 0 )
+    {
+      typename T::iterator i = items.begin();
+      for ( ; i != items.end(); i++, idx++ )
+        fiv.visit_item(**i, idx);
+    }
+    else
+    {
+      typename T::reverse_iterator i = items.rbegin();
+      for ( ; i != items.rend(); i++, idx++ )
+        fiv.visit_item(**i, idx);
+    }
+  }
+};
+
+//-----------------------------------------------------------------------------
+struct frame_summary_t
+{
+  uint32_t size;
+
+  frame_section_t<symlist_t> params;
+  frame_section_t<symtab_t>  lvars;
+  frame_section_t<symlist_t> ra;
+  frame_section_t<symlist_t> temps;
+  frame_section_t<symlist_t> svtemps;
+  frame_section_t<symlist_t> args;
+
+  frame_summary_t(codefunc_t &cf)
+    : size(BADSIZE), params(*cf.sym.params()), lvars(*cf.sym.symbols()),
+      ra(cf.ra), temps(cf.temps), svtemps(cf.svtemps), args(cf.args) {}
+};
+
 /*
 //-----------------------------------------------------------------------------
 static void init_params(symlist_t &params, int used_args)
@@ -194,25 +251,35 @@ static void gen_prologue(ir_func_t &func)
 
   // ...
 }
+*/
+
+static void build_stack_frame(frame_summary_t &frame)
+{
+
+}
 
 //-----------------------------------------------------------------------------
-static void gen_text_section(FILE *outfile, const ir_funcs_t &funcs);
+static void gen_asm_function(FILE *outfile, codefunc_t &cf)
+{
+  fprintf(outfile, "%s\n", cf.sym.c_str());
+  frame_summary_t frame(cf);
+  build_stack_frame(frame);
+  //DBG_FRAME_SUMMARY(frame);
+}
+
+//-----------------------------------------------------------------------------
+static void gen_text_section(FILE *outfile, codefuncs_t &funcs)
 {
   fprintf(outfile, ".data\n\n");
 
-  for ( ir_funcs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
-  {
-    const ir_func_t *func = *i;
-    fprintf("%s\n", func->sym.c_str());
-    gen_prologue(func);
-  }
+  for ( codefuncs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
+    gen_asm_function(outfile, **i);
 }
-*/
 
 //-----------------------------------------------------------------------------
 void generate_mips_asm(FILE *outfile, ir_t &ir)
 {
   init_gsyms(ir.gsyms, ir.strings, ir.labels);
   gen_data_section(outfile, ir.gsyms);
-  //print_text_section(outfile, ir.funcs);
+  //gen_text_section(outfile, ir.funcs);
 }

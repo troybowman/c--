@@ -73,7 +73,6 @@ struct codenode_t;
 class symtab_t;
 class symlist_t;
 struct ir_t;
-struct ir_func_t;
 struct treefunc_t;
 #include <list>
 typedef std::list<treefunc_t> treefuncs_t;
@@ -82,7 +81,6 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra);
 void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags);
 void print_ir(const ir_t &ir);
 void set_dbgfile(FILE *dbgfile);
-void print_frame_summary(const ir_func_t &func);
 
 //-----------------------------------------------------------------------------
 #define DBG_INIT_OUTFILE(outpath) FILE *outfile = init_outfile(args.str);
@@ -116,14 +114,6 @@ do                                      \
 {                                       \
   if ( (dbg_flags & dbg_dump_ir) != 0 ) \
     print_ir(ir);                       \
-} while ( false );
-
-//-----------------------------------------------------------------------------
-#define DBG_FRAME_SUMMARY(func)          \
-do                                       \
-{                                        \
-  if ( (dbg_flags & dbg_asm_cmts) != 0 ) \
-    print_frame_summary(func);           \
 } while ( false );
 
 #else

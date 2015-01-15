@@ -448,10 +448,4 @@ void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags)
   }
 }
 
-//-----------------------------------------------------------------------------
-void print_frame_summary(const ir_func_t &func)
-{
-
-}
-
 #endif // NDEBUG
