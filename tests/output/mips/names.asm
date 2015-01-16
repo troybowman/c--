@@ -266,7 +266,7 @@
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: L0
@@ -300,19 +300,19 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (char_at)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: L2
@@ -346,19 +346,19 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (char_at)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: L4
@@ -392,19 +392,19 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (char_at)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_RET
 # -------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_TEMPORARY (0)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
@@ -426,14 +426,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (L0)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SB
@@ -456,14 +456,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (L2)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SB
@@ -486,14 +486,14 @@
 # >
 # CNT_CALL
 # --------
-# dest -> ST_RETLOC
+# dest -> ST_RETVAL
 # src1 -> ST_FUNCTION (L4)
 # |
 # >
 # CNT_MOV
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_RETLOC
+# src1 -> ST_RETVAL
 # |
 # >
 # CNT_SB
@@ -578,3 +578,95 @@
 		.asciiz "test three"
 		.align 2
 
+.text
+
+_char_at:
+
+	# STACK FRAME SUMMARY:
+	# |----------------|
+	# |  <arg in $a1>  |
+	# |----------------| sp+4
+	# |  <arg in $a0>  |
+	# |----------------| sp+0
+	la $sp, -0($sp)
+
+_L0:
+
+	# STACK FRAME SUMMARY:
+	# |----------------|
+	# |     string     |
+	# |----------------| sp+20
+	# |      $ra       |
+	# |----------------| sp+16
+	# |     <arg3>     |
+	# |----------------| sp+12
+	# |     <arg2>     |
+	# |----------------| sp+8
+	# |      $a0       |
+	# |----------------| sp+4
+	# |      $a1       |
+	# |----------------| sp+0
+	la $sp, -20($sp)
+	sw $ra, 16(sp)
+	sw $a1, 20(sp)
+	sw $a0, 24(sp)
+
+_L2:
+
+	# STACK FRAME SUMMARY:
+	# |----------------|
+	# |     string     |
+	# |----------------| sp+20
+	# |      $ra       |
+	# |----------------| sp+16
+	# |     <arg3>     |
+	# |----------------| sp+12
+	# |     <arg2>     |
+	# |----------------| sp+8
+	# |      $a0       |
+	# |----------------| sp+4
+	# |      $a1       |
+	# |----------------| sp+0
+	la $sp, -20($sp)
+	sw $ra, 16(sp)
+	sw $a1, 20(sp)
+	sw $a0, 24(sp)
+
+_L4:
+
+	# STACK FRAME SUMMARY:
+	# |----------------|
+	# |     string     |
+	# |----------------| sp+20
+	# |      $ra       |
+	# |----------------| sp+16
+	# |     <arg3>     |
+	# |----------------| sp+12
+	# |     <arg2>     |
+	# |----------------| sp+8
+	# |      $a0       |
+	# |----------------| sp+4
+	# |      $a1       |
+	# |----------------| sp+0
+	la $sp, -20($sp)
+	sw $ra, 16(sp)
+	sw $a1, 20(sp)
+	sw $a0, 24(sp)
+
+_main:
+
+	# STACK FRAME SUMMARY:
+	# |----------------|
+	# |      $ra       |
+	# |----------------| sp+16
+	# |     <arg3>     |
+	# |----------------| sp+12
+	# |     <arg2>     |
+	# |----------------| sp+8
+	# |     <arg1>     |
+	# |----------------| sp+4
+	# |      $a0       |
+	# |----------------| sp+0
+	la $sp, -20($sp)
+	sw $ra, 16(sp)
+	sw $a0, 20(sp)

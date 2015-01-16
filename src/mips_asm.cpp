@@ -439,7 +439,7 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
   fprintf(outfile, "%s\n", item);
 
   char offstr[OFFLEN];
-  snprintf(offstr, OFFLEN, "sp+0x%x", off);
+  snprintf(offstr, OFFLEN, "sp+%d", off);
 
   fprintf(outfile, TAB1"# %s %s\n", sep, offstr);
 }
