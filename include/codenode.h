@@ -42,11 +42,11 @@ class resource_manager_t
   uint32_t _type;
 
   rmap_t _free;
-  symlist_t &_union;
+  rmap_t _used;
 
 public:
-  resource_manager_t(uint32_t type, symlist_t &u)
-    : _cnt(0), _type(type & ST_TYPEMASK), _union(u) {}
+  resource_manager_t(uint32_t type)
+    : _cnt(0), _type(type & ST_TYPEMASK) {}
 
   symbol_t *gen_resource()
   {
@@ -64,14 +64,20 @@ public:
 
   void clear()           { _free.clear(); }
   void free(symbol_t *s) { _free[s->val()] = s; }
-  void used(symbol_t *s) { _union.add_unique(s); }
+  void used(symbol_t *s) { _used[s->val()] = s; }
 
   void reset()
   {
     clear();
-    symlist_t::iterator i;
-    for ( i = _union.begin(); i != _union.end(); i++ )
-      free(*i);
+    rmap_t::iterator i;
+    for ( i = _used.begin(); i != _used.end(); i++ )
+      free(i->second);
+  }
+
+  void get_used(symlist_t &list)
+  {
+    for ( rmap_t::iterator i = _used.begin(); i != _used.end(); i++ )
+      list.push_back(i->second);
   }
 };
 
@@ -151,11 +157,10 @@ private:
 public:
   codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
     : cf(_cf),
-      strings(_ir.strings), labels(_ir.labels),
-      retval(_ir.retval),
-      temps(ST_TEMPORARY, _cf.temps),
-      svtemps(ST_SAVED_TEMPORARY, _cf.svtemps),
-      args(ST_ARGUMENT, _cf.args),
+      strings(_ir.strings), labels(_ir.labels), retval(_ir.retval),
+      temps(ST_TEMPORARY),
+      svtemps(ST_SAVED_TEMPORARY),
+      args(ST_ARGUMENT),
       head(NULL), tail(NULL) {}
 
   void start(const treenode_t *root);

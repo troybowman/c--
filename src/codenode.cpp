@@ -327,6 +327,9 @@ void codefunc_engine_t::start(const treenode_t *root)
 {
   generate(root);
   cf.code = head;
+  temps.get_used(cf.temps);
+  svtemps.get_used(cf.svtemps);
+  args.get_used(cf.args);
 }
 
 //-----------------------------------------------------------------------------
