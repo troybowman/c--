@@ -12,4 +12,6 @@ void f11(int one, int two, int three, int four, int five) {}
 void f12(int one[], int two[], int three[], int four[], int five[]) { f0(); }
 void f14(char one, char two, char three[], char four[], char five[], char six) {}
 void f15(char one, char two, char three[], char four[], char five[], char six) { f0(); }
+void f16(char one, char two, char three[], char four[], char five[], char six, int seven) {}
+void f17(char one, char two, char three[], char four[], char five[], char six, int seven) { f0(); }
 void main(void) {}

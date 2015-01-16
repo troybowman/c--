@@ -365,7 +365,20 @@ static void gen_prologue(frame_summary_t &frame)
   reg_saver_t rasvr(frame.ra.off);
   frame.ra.visit_items(rasvr);
 
-  reg_saver_t asvr(frame.params.off);
+  struct argregs_saver_t : public frame_item_visitor_t
+  {
+    int nparams;
+    virtual void visit_item(symbol_t &arg, int idx)
+    {
+      if ( arg.loc.is_reg() && idx < nparams )
+        fprintf(outfile, TAB1"sw %s, %u(sp)\n",
+                arg.loc.reg(), off + idx * WORDSIZE);
+    }
+    argregs_saver_t(uint32_t off, int _nparams)
+      : frame_item_visitor_t(off), nparams(_nparams) {}
+  };
+
+  argregs_saver_t asvr(frame.params.off, frame.params.nitems());
   frame.args.visit_items(asvr);
 }
 
@@ -405,11 +418,11 @@ void generate_mips_asm(FILE *_outfile, ir_t &ir)
 #ifndef NDEBUG
 
 #define FMTLEN  1024
-#define NAMELEN 16
-#define OFFLEN  16
+#define NAMELEN 32
+#define OFFLEN  32
 
 static const char *sep =
-"|----------------|";
+"|--------------------------------|";
 
 //-----------------------------------------------------------------------------
 static void print_frame_item(uint32_t off, const char *fmt, ...)
@@ -457,7 +470,9 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
       if ( param.loc.is_stkoff() )
         print_frame_item(param.loc.stkoff(), param.c_str());
       else
-        print_frame_item(off - idx * WORDSIZE, "<arg in %s>", param.loc.reg());
+        print_frame_item(off - idx * WORDSIZE,
+                         "<%s is in %s>",
+                         param.c_str(), param.loc.reg());
     }
     param_printer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
@@ -532,28 +547,20 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
   //---------------------------------------------------------------------------
   frame_section_t<symlist_t> &args = frame.args;
 
-  if ( is_call_frame )
-  {
-    // padding for unused argument slots
-    int i = ARGREGQTY;
-    uint32_t off = args.off + frame.args.size - WORDSIZE;
-    for ( ; i > args.nitems(); i--, off -= WORDSIZE )
-      print_frame_item(off, "<arg%d>", i-1);
-  }
-
   struct args_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(symbol_t &arg, int idx)
+    virtual void visit_item(symbol_t &arg, int)
     {
       if ( arg.loc.is_stkoff() )
         print_frame_item(arg.loc.stkoff(), "<arg%d>", arg.val());
-      else
-        print_frame_item(off - idx * WORDSIZE, arg.loc.reg());
     }
     args_printer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
   args_printer_t aprinter(args.off + (args.nitems() * WORDSIZE) - WORDSIZE);
   args.visit_items(aprinter, FIV_REVERSE);
+
+  if ( is_call_frame )
+    print_frame_item(args.off, "<minimum 4 arg slots>");
 }
 #endif // NDEBUG
