@@ -194,7 +194,7 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
       }
       else
       {
-        arg.loc.set_stkoff(SLF_SP, off);
+        arg.loc.set_stkoff(off, SLF_SP);
         off += WORDSIZE;
       }
     }
@@ -222,7 +222,7 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
       if ( svtemp.val() < SVREGQTY )
         svtemp.loc.set_reg(svregs[svtemp.val()]);
       else
-        svtemp.loc.set_stkoff(SLF_SP, off);
+        svtemp.loc.set_stkoff(off, SLF_SP);
 
       off += WORDSIZE;
     }
@@ -250,7 +250,7 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
       }
       else
       {
-        temp.loc.set_stkoff(SLF_SP, off);
+        temp.loc.set_stkoff(off, SLF_SP);
         off += WORDSIZE;
       }
     }
@@ -296,7 +296,7 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
       if ( lvar.is_param() )
         return;
 
-      lvar.loc.set_stkoff(SLF_SP, off);
+      lvar.loc.set_stkoff(off, SLF_SP);
       switch ( lvar.type() )
       {
         case ST_PRIMITIVE:
@@ -334,7 +334,7 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
       if ( idx < ARGREGQTY && idx >= nargs )
         param.loc.set_reg(argregs[idx]);
       else
-        param.loc.set_stkoff(SLF_SP, off);
+        param.loc.set_stkoff(off, SLF_SP);
 
       off += WORDSIZE;
     }

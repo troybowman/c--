@@ -2,12 +2,12 @@
 #include <symbol.h>
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
-  : _name(name), _line(line), _flags(flags)
+symbol_t::symbol_t(uint32_t flags, const char *name, int line, symbol_type_t type, ...)
+  : _type(type), _flags(flags), _name(name), _line(line)
 {
   va_list va;
-  va_start(va, flags);
-  switch ( flags & ST_TYPEMASK )
+  va_start(va, type);
+  switch ( type )
   {
     case ST_ARRAY:
       _size = va_arg(va, asize_t);
@@ -25,6 +25,30 @@ symbol_t::symbol_t(const char *name, int line, uint32_t flags, ...)
   }
   va_end(va);
 }
+
+//-----------------------------------------------------------------------------
+symbol_t::symbol_t(symbol_type_t type, ...) : _type(type)
+{
+  va_list va;
+  va_start(va, type);
+  switch ( type )
+  {
+    case ST_INTCON:
+    case ST_TEMPORARY:
+    case ST_SAVED_TEMPORARY:
+    case ST_ARGUMENT:
+      _val = va_arg(va, int);
+      break;
+    case ST_STRCON:
+    case ST_CHARCON:
+      _str = va_arg(va, const char *);
+      break;
+    default:
+      break;
+  }
+  va_end(va);
+}
+
 
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()

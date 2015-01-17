@@ -4,60 +4,18 @@
 #include <messages.h>
 
 //-----------------------------------------------------------------------------
-#define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
-#define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
-
-//-----------------------------------------------------------------------------
-static bool has_call(const treenode_t *tree)
-{
-  if ( tree == NULL )
-    return false;
-  if ( tree->type == TNT_CALL )
-    return true;
-
-  for ( int i = 0; i < 4; i++ )
-    if ( has_call(tree->children[i]) )
-      return true;
-
-  return false;
-}
-
-//-----------------------------------------------------------------------------
-static codenode_type_t tnt2cnt(treenode_type_t type)
-{
-  switch ( type )
-  {
-    case TNT_PLUS:  return CNT_ADD;
-    case TNT_MINUS: return CNT_SUB;
-    case TNT_DIV:   return CNT_DIV;
-    case TNT_MULT:  return CNT_MUL;
-    case TNT_OR:    return CNT_OR;
-    case TNT_AND:   return CNT_AND;
-    case TNT_LT:    return CNT_SLT;
-    case TNT_GT:    return CNT_SGT;
-    case TNT_GEQ:   return CNT_SGE;
-    case TNT_LEQ:   return CNT_SLE;
-    case TNT_EQ:    return CNT_SEQ;
-    case TNT_NEQ:   return CNT_SNE;
-    default:
-      INTERR(0);
-  }
-}
-
-//-----------------------------------------------------------------------------
 class resource_manager_t
 {
-  typedef std::map<int, symbol_t *> rmap_t;
-
+  symbol_type_t _type;
   int _cnt;
-  uint32_t _type;
 
+  typedef std::map<int, symbol_t *> rmap_t;
   rmap_t _free;
   rmap_t _used;
 
 public:
-  resource_manager_t(uint32_t type)
-    : _cnt(0), _type(type & ST_TYPEMASK) {}
+  resource_manager_t(symbol_type_t type)
+    : _type(type), _cnt(0) {}
 
   symbol_t *gen_resource()
   {
@@ -73,13 +31,12 @@ public:
     }
   }
 
-  void clear()           { _free.clear(); }
   void free(symbol_t *s) { _free[s->val()] = s; }
   void used(symbol_t *s) { _used[s->val()] = s; }
 
   void reset()
   {
-    clear();
+    _free.clear();
     rmap_t::iterator i;
     for ( i = _used.begin(); i != _used.end(); i++ )
       free(i->second);
@@ -121,6 +78,8 @@ class codefunc_engine_t
   codenode_t *head;
   codenode_t *tail;
 
+  int lblcnt;
+
 private:
   void check_dest(symbol_t *src);
   void check_src(symbol_t *src);
@@ -138,14 +97,58 @@ private:
 public:
   codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
     : cf(_cf),
-      strings(_ir.strings), labels(_ir.labels), retval(_ir.retval),
+      strings(_ir.strings),
+      labels(_ir.labels),
+      retval(_ir.retval),
       temps(ST_TEMPORARY),
       svtemps(ST_SAVED_TEMPORARY),
       args(ST_ARGUMENT),
-      head(NULL), tail(NULL) {}
+      head(NULL), tail(NULL),
+      lblcnt(0) {}
 
   void start(const treenode_t *root);
 };
+
+//-----------------------------------------------------------------------------
+#define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
+#define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
+
+//-----------------------------------------------------------------------------
+static bool has_call(const treenode_t *tree)
+{
+  if ( tree == NULL )
+    return false;
+  if ( tree->type == TNT_CALL )
+    return true;
+
+  for ( int i = 0; i < 4; i++ )
+    if ( has_call(tree->children[i]) )
+      return true;
+
+  return false;
+}
+
+//-----------------------------------------------------------------------------
+static codenode_type_t tnt2cnt(treenode_type_t type)
+{
+  switch ( type )
+  {
+    case TNT_PLUS:  return CNT_ADD;
+    case TNT_MINUS: return CNT_SUB;
+    case TNT_DIV:   return CNT_DIV;
+    case TNT_MULT:  return CNT_MUL;
+    case TNT_OR:    return CNT_OR;
+    case TNT_AND:   return CNT_AND;
+    case TNT_LT:    return CNT_SLT;
+    case TNT_GT:    return CNT_SGT;
+    case TNT_GEQ:   return CNT_SGE;
+    case TNT_LEQ:   return CNT_SLE;
+    case TNT_EQ:    return CNT_SEQ;
+    case TNT_NEQ:   return CNT_SNE;
+    default:
+      INTERR(0);
+  }
+}
 
 //-----------------------------------------------------------------------------
 void codefunc_engine_t::check_dest(symbol_t *sym)
@@ -174,9 +177,6 @@ void codefunc_engine_t::check_src(symbol_t *sym)
 {
   if ( sym == NULL )
     return;
-#ifndef NDEBUG
-  static int lblcnt = 0;
-#endif
   switch ( sym->type() )
   {
     case ST_TEMPORARY:
@@ -186,9 +186,7 @@ void codefunc_engine_t::check_src(symbol_t *sym)
       svtemps.free(sym);
       break;
     case ST_LABEL:
-#ifndef NDEBUG
       sym->set_val(lblcnt++);
-#endif
       labels.push_back(sym);
       break;
     case ST_ARGUMENT:
