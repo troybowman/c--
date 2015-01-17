@@ -30,10 +30,8 @@ public:
       return new symbol_t(_type, _cnt++);
     }
   }
-
   void free(symbol_t *s) { _free[s->val()] = s; }
   void used(symbol_t *s) { _used[s->val()] = s; }
-
   void reset()
   {
     _free.clear();
@@ -41,7 +39,6 @@ public:
     for ( i = _used.begin(); i != _used.end(); i++ )
       free(i->second);
   }
-
   void get_used(symlist_t &list)
   {
     for ( rmap_t::iterator i = _used.begin(); i != _used.end(); i++ )
@@ -386,15 +383,19 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_IF:
       {
-        symbol_t *endif = (ctx.flags & TCTX_IF) != 0
-                         ? ctx.endif
-                         : new symbol_t(ST_LABEL);
+        symbol_t *endif;
+        symbol_t *cond_target;
+
+        if ( (ctx.flags & TCTX_IF) != 0 )
+          endif = ctx.endif;
+        else
+          endif = new symbol_t(ST_LABEL);
 
         treenode_t *elsetree = tree->children[IF_ELSE];
-
-        symbol_t *cond_target = elsetree == NULL
-                              ? endif
-                              : new symbol_t(ST_LABEL);
+        if ( elsetree == NULL )
+          cond_target = endif;
+        else
+          cond_target = new symbol_t(ST_LABEL);
 
         symbol_t *cond = generate(tree->children[IF_COND]);
         append(CNT_CNDJMP, cond_target, cond);
@@ -405,7 +406,6 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( elsetree != NULL )
         {
           append(CNT_JUMP, endif);
-
           append(CNT_LABEL, NULL, cond_target);
           generate(elsetree, ifctx);
         }
