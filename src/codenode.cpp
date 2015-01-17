@@ -75,7 +75,7 @@ public:
 
   void clear()           { _free.clear(); }
   void free(symbol_t *s) { _free[s->val()] = s; }
-  void used(symbol_t *s) { _used[s->val()] = s; } // TODO: check if we even have to insert
+  void used(symbol_t *s) { _used[s->val()] = s; }
 
   void reset()
   {

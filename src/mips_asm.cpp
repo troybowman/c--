@@ -149,6 +149,12 @@ public:
   }
 
   size_t nitems() { return items.size(); }
+  uint32_t top()
+  {
+    uint32_t t = off + size - WORDSIZE;
+    return t > 0 ? t : 0;
+  }
+  uint32_t end()  { return off + size; }
 };
 
 //-----------------------------------------------------------------------------
@@ -478,7 +484,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
   };
 
   frame_section_t<symlist_t> &params = frame.params;
-  param_printer_t pprinter(params.off + params.size - WORDSIZE);
+  param_printer_t pprinter(params.top());
 
   params.visit_items(pprinter, FIV_REVERSE);
 
@@ -506,7 +512,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
   };
 
   frame_section_t<symlist_t> &ra = frame.ra;
-  ra_printer_t raprinter(ra.off + ra.size - WORDSIZE);
+  ra_printer_t raprinter(ra.top());
 
   ra.visit_items(raprinter, FIV_REVERSE);
 
@@ -522,7 +528,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
   };
 
   frame_section_t<symlist_t> &temps = frame.temps;
-  temp_printer_t tprinter(temps.off + temps.size - WORDSIZE);
+  temp_printer_t tprinter(temps.top());
 
   temps.visit_items(tprinter, FIV_REVERSE);
 
@@ -540,7 +546,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
   };
 
   frame_section_t<symlist_t> &svtemps = frame.svtemps;
-  svtemp_printer_t stprinter(svtemps.off + svtemps.size - WORDSIZE);
+  svtemp_printer_t stprinter(svtemps.top());
 
   svtemps.visit_items(stprinter, FIV_REVERSE);
 
@@ -554,10 +560,9 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
       if ( arg.loc.is_stkoff() )
         print_frame_item(arg.loc.stkoff(), "<arg%d>", arg.val());
     }
-    args_printer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  args_printer_t aprinter(args.off + (args.nitems() * WORDSIZE) - WORDSIZE);
+  args_printer_t aprinter;
   args.visit_items(aprinter, FIV_REVERSE);
 
   if ( is_call_frame )
