@@ -64,9 +64,7 @@ struct tree_ctx_t
 class codefunc_engine_t
 {
   codefunc_t &cf;
-  symtab_t &strings;
-  symlist_t &labels;
-  symbol_t &retval;
+  ir_t &ir;
 
   resource_manager_t temps;
   resource_manager_t svtemps;
@@ -93,10 +91,7 @@ private:
 
 public:
   codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
-    : cf(_cf),
-      strings(_ir.strings),
-      labels(_ir.labels),
-      retval(_ir.retval),
+    : cf(_cf), ir(_ir),
       temps(ST_TEMPORARY),
       svtemps(ST_SAVED_TEMPORARY),
       args(ST_ARGUMENT),
@@ -184,7 +179,7 @@ void codefunc_engine_t::check_src(symbol_t *sym)
       break;
     case ST_LABEL:
       sym->set_val(lblcnt++);
-      labels.push_back(sym);
+      ir.labels.push_back(sym);
       break;
     case ST_ARGUMENT:
       INTERR(1079);
@@ -245,14 +240,14 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
     case TNT_STRCON:
       {
         std::string key(tree->str);
-        symbol_t *sym = strings.get(key);
-        if ( sym == NULL )
+        symbol_t *str = ir.strings.get(key);
+        if ( str == NULL )
         {
-          sym = new symbol_t(ST_STRCON, tree->str);
-          strings.insert(key, sym);
+          str = new symbol_t(ST_STRCON, tree->str);
+          ir.strings.insert(key, str);
         }
         symbol_t *dest = gen_temp(ctx.flags);
-        append(CNT_LEA, dest, sym);
+        append(CNT_LEA, dest, str);
         return dest;
       }
     case TNT_ASSG:
@@ -339,10 +334,10 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symbol_t *f = tree->sym;
         if ( f->rt() != RT_VOID )
         {
-          append(CNT_CALL, &retval, f);
+          append(CNT_CALL, &ir.retval, f);
 
           symbol_t *temp = gen_temp(ctx.flags);
-          append(CNT_MOV, temp, &retval);
+          append(CNT_MOV, temp, &ir.retval);
           return temp;
         }
 
@@ -353,7 +348,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       {
         symbol_t *val = generate(tree->children[RET_EXPR]);
         if ( val != NULL )
-          append(CNT_RET, &retval, val);
+          append(CNT_RET, &ir.retval, val);
         else
           append(CNT_RET);
         break;

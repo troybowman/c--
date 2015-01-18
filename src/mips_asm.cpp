@@ -149,12 +149,12 @@ public:
   }
 
   size_t nitems() { return items.size(); }
+  uint32_t end()  { return off + size; }
   uint32_t top()
   {
     uint32_t t = off + size - WORDSIZE;
     return t > 0 ? t : 0;
   }
-  uint32_t end()  { return off + size; }
 };
 
 //-----------------------------------------------------------------------------
