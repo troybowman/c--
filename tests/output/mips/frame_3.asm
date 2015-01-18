@@ -322,9 +322,9 @@ _another:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -40($sp)
-	sw $ra, 16(sp)
-	sw $a0, 40(sp)
-	sw $a1, 44(sp)
+	sw $ra, 16($sp)
+	sw $a0, 40($sp)
+	sw $a1, 44($sp)
 
 _main:
 

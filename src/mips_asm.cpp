@@ -359,7 +359,7 @@ static void gen_prologue(frame_summary_t &frame)
     virtual void visit_item(symbol_t &item, int idx)
     {
       if ( item.loc.is_reg() )
-        fprintf(outfile, TAB1"sw %s, %u(sp)\n",
+        fprintf(outfile, TAB1"sw %s, %u($sp)\n",
                 item.loc.reg(), off + idx * WORDSIZE);
     }
     reg_saver_t(uint32_t off) : frame_item_visitor_t(off) {}
@@ -377,7 +377,7 @@ static void gen_prologue(frame_summary_t &frame)
     virtual void visit_item(symbol_t &arg, int idx)
     {
       if ( arg.loc.is_reg() && idx < nparams )
-        fprintf(outfile, TAB1"sw %s, %u(sp)\n",
+        fprintf(outfile, TAB1"sw %s, %u($sp)\n",
                 arg.loc.reg(), off + idx * WORDSIZE);
     }
     argregs_saver_t(uint32_t off, int _nparams)

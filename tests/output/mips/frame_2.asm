@@ -2744,8 +2744,8 @@ _f1a:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
 
 _f1b:
 
@@ -2772,9 +2772,9 @@ _f1b:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
-	sw $a1, 24(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
+	sw $a1, 24($sp)
 
 _f1c:
 
@@ -2801,10 +2801,10 @@ _f1c:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
-	sw $a1, 24(sp)
-	sw $a2, 28(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
+	sw $a1, 24($sp)
+	sw $a2, 28($sp)
 
 _f1d:
 
@@ -2831,11 +2831,11 @@ _f1d:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
-	sw $a1, 24(sp)
-	sw $a2, 28(sp)
-	sw $a3, 32(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
+	sw $a1, 24($sp)
+	sw $a2, 28($sp)
+	sw $a3, 32($sp)
 
 _f1e:
 
@@ -2864,11 +2864,11 @@ _f1e:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -24($sp)
-	sw $ra, 20(sp)
-	sw $a0, 24(sp)
-	sw $a1, 28(sp)
-	sw $a2, 32(sp)
-	sw $a3, 36(sp)
+	sw $ra, 20($sp)
+	sw $a0, 24($sp)
+	sw $a1, 28($sp)
+	sw $a2, 32($sp)
+	sw $a3, 36($sp)
 
 _f1f:
 
@@ -2899,11 +2899,11 @@ _f1f:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -28($sp)
-	sw $ra, 24(sp)
-	sw $a0, 28(sp)
-	sw $a1, 32(sp)
-	sw $a2, 36(sp)
-	sw $a3, 40(sp)
+	sw $ra, 24($sp)
+	sw $a0, 28($sp)
+	sw $a1, 32($sp)
+	sw $a2, 36($sp)
+	sw $a3, 40($sp)
 
 _f1g:
 
@@ -2936,11 +2936,11 @@ _f1g:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -32($sp)
-	sw $ra, 28(sp)
-	sw $a0, 32(sp)
-	sw $a1, 36(sp)
-	sw $a2, 40(sp)
-	sw $a3, 44(sp)
+	sw $ra, 28($sp)
+	sw $a0, 32($sp)
+	sw $a1, 36($sp)
+	sw $a2, 40($sp)
+	sw $a3, 44($sp)
 
 _f1h:
 
@@ -2975,11 +2975,11 @@ _f1h:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -36($sp)
-	sw $ra, 32(sp)
-	sw $a0, 36(sp)
-	sw $a1, 40(sp)
-	sw $a2, 44(sp)
-	sw $a3, 48(sp)
+	sw $ra, 32($sp)
+	sw $a0, 36($sp)
+	sw $a1, 40($sp)
+	sw $a2, 44($sp)
+	sw $a3, 48($sp)
 
 _f2a:
 
@@ -2998,8 +2998,8 @@ _f2a:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
 
 _f2b:
 
@@ -3016,9 +3016,9 @@ _f2b:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
-	sw $a1, 24(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
+	sw $a1, 24($sp)
 
 _f2c:
 
@@ -3033,9 +3033,9 @@ _f2c:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
-	sw $a1, 24(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
+	sw $a1, 24($sp)
 
 _f2d:
 
@@ -3048,8 +3048,8 @@ _f2d:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -20($sp)
-	sw $ra, 16(sp)
-	sw $a0, 20(sp)
+	sw $ra, 16($sp)
+	sw $a0, 20($sp)
 
 _f2e:
 
@@ -3066,9 +3066,9 @@ _f2e:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -24($sp)
-	sw $ra, 20(sp)
-	sw $a0, 24(sp)
-	sw $a1, 28(sp)
+	sw $ra, 20($sp)
+	sw $a0, 24($sp)
+	sw $a1, 28($sp)
 
 _f2f:
 
@@ -3089,10 +3089,10 @@ _f2f:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -28($sp)
-	sw $ra, 24(sp)
-	sw $a0, 28(sp)
-	sw $a1, 32(sp)
-	sw $a2, 36(sp)
+	sw $ra, 24($sp)
+	sw $a0, 28($sp)
+	sw $a1, 32($sp)
+	sw $a2, 36($sp)
 
 _f2g:
 
@@ -3117,11 +3117,11 @@ _f2g:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -32($sp)
-	sw $ra, 28(sp)
-	sw $a0, 32(sp)
-	sw $a1, 36(sp)
-	sw $a2, 40(sp)
-	sw $a3, 44(sp)
+	sw $ra, 28($sp)
+	sw $a0, 32($sp)
+	sw $a1, 36($sp)
+	sw $a2, 40($sp)
+	sw $a3, 44($sp)
 
 _f2h:
 
@@ -3150,11 +3150,11 @@ _f2h:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -36($sp)
-	sw $ra, 32(sp)
-	sw $a0, 36(sp)
-	sw $a1, 40(sp)
-	sw $a2, 44(sp)
-	sw $a3, 48(sp)
+	sw $ra, 32($sp)
+	sw $a0, 36($sp)
+	sw $a1, 40($sp)
+	sw $a2, 44($sp)
+	sw $a3, 48($sp)
 
 _main:
 

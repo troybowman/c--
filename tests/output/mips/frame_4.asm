@@ -1619,15 +1619,15 @@ _f3:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -56($sp)
-	sw $s0, 16(sp)
-	sw $s1, 20(sp)
-	sw $s2, 24(sp)
-	sw $s3, 28(sp)
-	sw $s4, 32(sp)
-	sw $s5, 36(sp)
-	sw $s6, 40(sp)
-	sw $s7, 44(sp)
-	sw $ra, 48(sp)
+	sw $s0, 16($sp)
+	sw $s1, 20($sp)
+	sw $s2, 24($sp)
+	sw $s3, 28($sp)
+	sw $s4, 32($sp)
+	sw $s5, 36($sp)
+	sw $s6, 40($sp)
+	sw $s7, 44($sp)
+	sw $ra, 48($sp)
 
 _f4:
 
@@ -1658,15 +1658,15 @@ _f4:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -60($sp)
-	sw $s0, 16(sp)
-	sw $s1, 20(sp)
-	sw $s2, 24(sp)
-	sw $s3, 28(sp)
-	sw $s4, 32(sp)
-	sw $s5, 36(sp)
-	sw $s6, 40(sp)
-	sw $s7, 44(sp)
-	sw $ra, 52(sp)
+	sw $s0, 16($sp)
+	sw $s1, 20($sp)
+	sw $s2, 24($sp)
+	sw $s3, 28($sp)
+	sw $s4, 32($sp)
+	sw $s5, 36($sp)
+	sw $s6, 40($sp)
+	sw $s7, 44($sp)
+	sw $ra, 52($sp)
 
 _f5:
 
@@ -1721,15 +1721,15 @@ _f5:
 	# |     <minimum 4 arg slots>      |
 	# |--------------------------------| sp+0
 	la $sp, -108($sp)
-	sw $s0, 16(sp)
-	sw $s1, 20(sp)
-	sw $s2, 24(sp)
-	sw $s3, 28(sp)
-	sw $s4, 32(sp)
-	sw $s5, 36(sp)
-	sw $s6, 40(sp)
-	sw $s7, 44(sp)
-	sw $ra, 100(sp)
+	sw $s0, 16($sp)
+	sw $s1, 20($sp)
+	sw $s2, 24($sp)
+	sw $s3, 28($sp)
+	sw $s4, 32($sp)
+	sw $s5, 36($sp)
+	sw $s6, 40($sp)
+	sw $s7, 44($sp)
+	sw $ra, 100($sp)
 
 _main:
 
