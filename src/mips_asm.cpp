@@ -10,8 +10,8 @@
 #define MAXNAMELEN 32
 #define WORDSIZE 4
 
-#define TAB1 "\t"
-#define TAB2 "\t\t"
+#define TAB1 "  "
+#define TAB2 "    "
 
 #define TEMPREGQTY 10
 static const char *tempregs[TEMPREGQTY] =
@@ -443,7 +443,8 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
   char item[NAMELEN+6];
   char *ptr = item;
 
-  APPSTR (ptr, TAB1"# ", 3);
+  const char *pfx = TAB1"# ";
+  APPSTR (ptr, pfx, strlen(pfx));
   APPCHAR(ptr, '|', 1);
 
   int len = strlen(namestr);
