@@ -327,183 +327,158 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
 %%
 
 //-----------------------------------------------------------------------------
-static array_sfx_t process_array_sfx(int size, int line)
+static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, uint32_t flags)
 {
-  array_sfx_t ret;
-  if ( size >= 0 )
+  if ( asfx.code == ASFX_ERROR )
+    return NULL;
+
+  symbol_t *prev = ctx.get(std::string(name));
+  if ( prev != NULL )
   {
-    ret.code = ASFX_OK;
-    ret.size = size;
+    usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
+            prev->c_str(), line, prev->line());
+    return NULL;
   }
-  else
+
+  symbol_t *sym = asfx.code == ASFX_NONE
+                ? new symbol_t(flags, name, line, ST_PRIMITIVE)
+                : new symbol_t(flags, name, line, ST_ARRAY, asfx.size);
+  ctx.insert(sym);
+  return sym;
+}
+
+//-----------------------------------------------------------------------------
+static bool check_params(const symlist_t &p1, const symlist_t &p2)
+{
+  if ( p1.size() != p2.size() )
+    return false;
+
+  for ( symlist_t::const_iterator i1 = p1.begin(), i2 = p2.begin();
+        i1 != p1.end() && i2 != p2.end();
+        i1++, i2++)
   {
-    usererr("error: line %d: arrays must have non-negative size\n", line);
-    ret.code = ASFX_ERROR;
+    symbol_t *s1 = *i1;
+    symbol_t *s2 = *i2;
+
+    if ( s1->type() != s2->type() || s1->base() != s2->base() )
+      return false;
   }
-  return ret;
+  return true;
 }
 
 //-----------------------------------------------------------------------------
-static symlist_t *process_first_sym(symbol_t *first, symlist_t *rest)
+enum col_res_t
 {
-  symlist_t *list = rest == NULL ? new symlist_t() : rest;
-  if ( first != NULL )
-    list->insert(list->begin(), first);
-  return list;
+  COL_OK,
+  COL_PARAMS,
+  COL_REDECL,
+  COL_REDEF,
+  COL_EXT,
+  COL_RET
+};
+
+//-----------------------------------------------------------------------------
+static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
+{
+  ASSERT(1001, prev.name() == sym.name());
+
+  return !prev.is_func()                              ? COL_REDECL
+       : prev.is_extern()                             ? COL_EXT
+       : prev.defined()                               ? COL_REDEF
+       : !check_params(*prev.params(), *sym.params()) ? COL_PARAMS
+       : prev.rt() != sym.rt()                        ? COL_RET
+       :                                                COL_OK;
 }
 
 //-----------------------------------------------------------------------------
-static symlist_t *process_sym_list(symlist_t *prev, symbol_t *to_ins)
+static void init_lsyms(symbol_t &f)
 {
-  symlist_t *symlist = prev == NULL ? new symlist_t() : prev;
-  if ( to_ins != NULL )
-    symlist->push_back(to_ins);
-  return symlist;
-}
-
-//-----------------------------------------------------------------------------
-static bool validate_math_expr(
-    const treenode_t *lhs,
-    treenode_type_t type,
-    const treenode_t *rhs)
-{
-  ASSERT(1069, rhs != NULL);
-
-  switch ( type )
+  symlist_t::const_iterator i;
+  for ( i = f.params()->begin(); i != f.params()->end(); i++ )
   {
-    case TNT_NEG:
-      ASSERT(1070, lhs == NULL);
-      return rhs->is_int_compat();
-    case TNT_PLUS:
-    case TNT_MINUS:
-    case TNT_MULT:
-    case TNT_DIV:
-      ASSERT(1071, lhs != NULL);
-      return lhs->is_int_compat()
-          && rhs->is_int_compat();
+    ASSERT(1003, *i != NULL);
+    f.symbols()->insert(*i);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &prev)
+{
+  switch ( res )
+  {
+    case COL_REDEF:
+      usererr("error: function %s redefined at line %d "
+              "(previous definition starts at line %d)\n",
+              f.c_str(), f.line(), prev.line());
+      break;
+    case COL_REDECL:
+      usererr("error: symbol %s redeclared as a function at line %d "
+              "(previous declaration at line %d)\n",
+              f.c_str(), f.line(), prev.line());
+      break;
+    case COL_PARAMS:
+      usererr("error: parameters in definition of function %s at line %d "
+              "do not match the parameters in its declaration at line %d\n",
+              f.c_str(), f.line(), prev.line());
+      break;
+    case COL_RET:
+      usererr("error: return type for function %s at line %d "
+              "does not match the return type in its declaration at line %d\n",
+              f.c_str(), f.line(), prev.line());
+      break;
+    case COL_EXT:
+      usererr("error: function %s is defined at line %d "
+              "but is declared extern at line %d\n",
+              f.c_str(), f.line(), prev.line());
+      break;
     default:
-      INTERR(1064);
+      INTERR(1012);
   }
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_math_expr(
-    treenode_t *lhs,
-    treenode_type_t type,
-    treenode_t *rhs,
-    int line)
+static void f_enter(symbol_t *f, return_type_t rt)
 {
-  if ( !validate_math_expr(lhs, type, rhs) )
+  ASSERT(1004, f != NULL);
+  ASSERT(1000, f->is_func());
+
+  f->set_rt(rt);
+
+  symbol_t *prev = gsyms.get(f->name());
+  if ( prev != NULL )
   {
-    usererr("error: incompatible arithmetic operand, line %d\n", line);
-    delete lhs; delete rhs;
-    return ERRNODE;
+    col_res_t res = validate_collision(*prev, *f);
+
+    if ( res != COL_OK )
+    {
+      process_col_err(res, *f, *prev);
+      // these errors invalidate an entire function definition.
+      // we do not try to recover from them
+      purge_and_exit(FATAL_FUNCDEF);
+    }
+    // existing symbol for decl is replaced with definition
+    gsyms.erase(*prev);
+    delete prev;
   }
 
-  return new treenode_t(type, lhs, rhs);
+  init_lsyms(*f);
+  gsyms.insert(f);
+  ctx.setlocal(f);
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_for_stmt(
-    treenode_t *init,
-    treenode_t *cond,
-    treenode_t *inc,
-    treenode_t *body,
-    int line)
+static void f_leave(symbol_t *f, treenode_t *tree)
 {
-  if ( cond != NULL && !cond->is_bool_compat() )
-  {
-    usererr("error: expression in for condition is not of type bool, line %d\n", line);
-    if ( init != NULL ) delete init;
-    if ( cond != NULL ) delete cond;
-    if ( inc  != NULL ) delete inc;
-    if ( body != NULL ) delete body;
-    return ERRNODE;
-  }
-  return new treenode_t(TNT_FOR, init, cond, inc, body);
-}
+  ASSERT(1005, f != NULL);
 
-//-----------------------------------------------------------------------------
-static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line)
-{
-  ASSERT(1072, cond != NULL);
+  f->set_defined();
 
-  if ( !cond->is_bool_compat() )
-  {
-    usererr("error: expression in while condition is not of type bool, line %d\n", line);
-    if ( body != NULL ) delete body;
-    delete cond;
-    return ERRNODE;
-  }
-  return new treenode_t(TNT_WHILE, cond, body);
-}
+  if ( !f->ret_resolved() )
+    usererr("error: non-void funcion %s must return a value\n", f->c_str());
 
-//-----------------------------------------------------------------------------
-static treenode_t *process_if_stmt(
-    treenode_t *cond,
-    treenode_t *body,
-    treenode_t *el,
-    int line)
-{
-  ASSERT(1073, cond != NULL);
+  functions.push_back(treefunc_t(*f, tree));
 
-  if ( !cond->is_bool_compat() )
-  {
-    usererr("error: expression in if condition is not of type bool, line %d\n", line);
-    if ( body != NULL ) delete body;
-    if ( el   != NULL ) delete el;
-    delete cond;
-    return ERRNODE;
-  }
-  return new treenode_t(TNT_IF, cond, body, el);
-}
-
-//-----------------------------------------------------------------------------
-static bool validate_bool_expr(
-    const treenode_t *lhs,
-    treenode_type_t type,
-    const treenode_t *rhs)
-{
-  ASSERT(1048, rhs != NULL);
-
-  switch ( type )
-  {
-    case TNT_NOT:
-      ASSERT(1049, lhs == NULL);
-      return rhs->is_bool_compat();
-    case TNT_EQ:
-    case TNT_NEQ:
-    case TNT_LT:
-    case TNT_LEQ:
-    case TNT_GT:
-    case TNT_GEQ:
-      ASSERT(1050, lhs != NULL);
-      return lhs->is_int_compat()
-          && rhs->is_int_compat();
-    case TNT_AND:
-    case TNT_OR:
-      ASSERT(1051, lhs != NULL);
-      return lhs->is_bool_compat()
-          && rhs->is_bool_compat();
-    default:
-      INTERR(1052);
-  }
-}
-
-//-----------------------------------------------------------------------------
-static treenode_t *process_bool_expr(
-    treenode_t *lhs,
-    treenode_type_t type,
-    treenode_t *rhs,
-    int line)
-{
-  if ( !validate_bool_expr(lhs, type, rhs) )
-  {
-    usererr("error: incompatible boolean operands, line %d\n", line);
-    delete lhs; delete rhs;
-    return ERRNODE;
-  }
-  return new treenode_t(type, lhs, rhs);
+  ctx.setglobal();
 }
 
 //-----------------------------------------------------------------------------
@@ -592,13 +567,15 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
       return expr.is_int_compat();
     case ST_ARRAY:
       if ( expr.type == TNT_STRCON )
+      {
         return param.base() == PRIM_CHAR;
-
+      }
       else if ( expr.type == TNT_SYMBOL )
+      {
         return expr.sym->is_array()
             && expr.sym->base() == param.base();
-      else
-        return false;
+      }
+      return false;
     default:
       INTERR(1031);
   }
@@ -820,161 +797,6 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 }
 
 //-----------------------------------------------------------------------------
-static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, uint32_t flags)
-{
-  if ( asfx.code == ASFX_ERROR )
-    return NULL;
-
-  symbol_t *prev = ctx.get(std::string(name));
-  if ( prev != NULL )
-  {
-    usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
-            prev->c_str(), line, prev->line());
-    return NULL;
-  }
-
-  symbol_t *sym = asfx.code == ASFX_NONE
-                ? new symbol_t(flags, name, line, ST_PRIMITIVE)
-                : new symbol_t(flags, name, line, ST_ARRAY, asfx.size);
-  ctx.insert(sym);
-  return sym;
-}
-
-//-----------------------------------------------------------------------------
-static bool check_params(const symlist_t &p1, const symlist_t &p2)
-{
-  if ( p1.size() != p2.size() )
-    return false;
-
-  for ( symlist_t::const_iterator i1 = p1.begin(), i2 = p2.begin();
-        i1 != p1.end() && i2 != p2.end();
-        i1++, i2++)
-  {
-    symbol_t *s1 = *i1;
-    symbol_t *s2 = *i2;
-
-    if ( s1->type() != s2->type() || s1->base() != s2->base() )
-      return false;
-  }
-  return true;
-}
-
-//-----------------------------------------------------------------------------
-enum col_res_t
-{
-  COL_OK,
-  COL_PARAMS,
-  COL_REDECL,
-  COL_REDEF,
-  COL_EXT,
-  COL_RET
-};
-
-//-----------------------------------------------------------------------------
-static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
-{
-  ASSERT(1001, prev.name() == sym.name());
-
-  return !prev.is_func()                              ? COL_REDECL
-       : prev.is_extern()                             ? COL_EXT
-       : prev.defined()                               ? COL_REDEF
-       : !check_params(*prev.params(), *sym.params()) ? COL_PARAMS
-       : prev.rt() != sym.rt()                        ? COL_RET
-       :                                                COL_OK;
-}
-
-//-----------------------------------------------------------------------------
-static void init_lsyms(symbol_t &f)
-{
-  symlist_t::const_iterator i;
-  for ( i = f.params()->begin(); i != f.params()->end(); i++ )
-  {
-    ASSERT(1003, *i != NULL);
-    f.symbols()->insert(*i);
-  }
-}
-
-//-----------------------------------------------------------------------------
-static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &prev)
-{
-  switch ( res )
-  {
-    case COL_REDEF:
-      usererr("error: function %s redefined at line %d "
-              "(previous definition starts at line %d)\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case COL_REDECL:
-      usererr("error: symbol %s redeclared as a function at line %d "
-              "(previous declaration at line %d)\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case COL_PARAMS:
-      usererr("error: parameters in definition of function %s at line %d "
-              "do not match the parameters in its declaration at line %d\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case COL_RET:
-      usererr("error: return type for function %s at line %d "
-              "does not match the return type in its declaration at line %d\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case COL_EXT:
-      usererr("error: function %s is defined at line %d "
-              "but is declared extern at line %d\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    default:
-      INTERR(1012);
-  }
-}
-
-//-----------------------------------------------------------------------------
-static void f_enter(symbol_t *f, return_type_t rt)
-{
-  ASSERT(1004, f != NULL);
-  ASSERT(1000, f->is_func());
-
-  f->set_rt(rt);
-
-  symbol_t *prev = gsyms.get(f->name());
-  if ( prev != NULL )
-  {
-    col_res_t res = validate_collision(*prev, *f);
-
-    if ( res != COL_OK )
-    {
-      process_col_err(res, *f, *prev);
-      // these errors invalidate an entire function definition.
-      // we do not try to recover from them
-      purge_and_exit(FATAL_FUNCDEF);
-    }
-    // existing symbol for decl is replaced with definition
-    gsyms.erase(*prev);
-    delete prev;
-  }
-
-  init_lsyms(*f);
-  gsyms.insert(f);
-  ctx.setlocal(f);
-}
-
-//-----------------------------------------------------------------------------
-static void f_leave(symbol_t *f, treenode_t *tree)
-{
-  ASSERT(1005, f != NULL);
-
-  f->set_defined();
-
-  if ( !f->ret_resolved() )
-    usererr("error: non-void funcion %s must return a value\n", f->c_str());
-
-  functions.push_back(treefunc_t(*f, tree));
-
-  ctx.setglobal();
-}
-
-//-----------------------------------------------------------------------------
 static void process_var_list(symlist_t *list, primitive_t prim)
 {
   ASSERT(1007, list != NULL);
@@ -1010,6 +832,180 @@ static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
     if ( is_extern ) sym->set_extern();
     gsyms.insert(sym);
   }
+}
+
+//-----------------------------------------------------------------------------
+static array_sfx_t process_array_sfx(int size, int line)
+{
+  array_sfx_t ret;
+  if ( size >= 0 )
+  {
+    ret.code = ASFX_OK;
+    ret.size = size;
+  }
+  else
+  {
+    usererr("error: line %d: arrays must have non-negative size\n", line);
+    ret.code = ASFX_ERROR;
+  }
+  return ret;
+}
+
+//-----------------------------------------------------------------------------
+static symlist_t *process_first_sym(symbol_t *first, symlist_t *rest)
+{
+  symlist_t *list = rest == NULL ? new symlist_t() : rest;
+  if ( first != NULL )
+    list->insert(list->begin(), first);
+  return list;
+}
+
+//-----------------------------------------------------------------------------
+static symlist_t *process_sym_list(symlist_t *prev, symbol_t *to_ins)
+{
+  symlist_t *symlist = prev == NULL ? new symlist_t() : prev;
+  if ( to_ins != NULL )
+    symlist->push_back(to_ins);
+  return symlist;
+}
+
+//-----------------------------------------------------------------------------
+static bool validate_math_expr(
+    const treenode_t *lhs,
+    treenode_type_t type,
+    const treenode_t *rhs)
+{
+  ASSERT(1069, rhs != NULL);
+
+  switch ( type )
+  {
+    case TNT_NEG:
+      ASSERT(1070, lhs == NULL);
+      return rhs->is_int_compat();
+    case TNT_PLUS:
+    case TNT_MINUS:
+    case TNT_MULT:
+    case TNT_DIV:
+      ASSERT(1071, lhs != NULL);
+      return lhs->is_int_compat()
+          && rhs->is_int_compat();
+    default:
+      INTERR(1064);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_math_expr(
+    treenode_t *lhs,
+    treenode_type_t type,
+    treenode_t *rhs,
+    int line)
+{
+  if ( !validate_math_expr(lhs, type, rhs) )
+  {
+    usererr("error: incompatible arithmetic operand, line %d\n", line);
+    delete lhs; delete rhs;
+    return ERRNODE;
+  }
+
+  return new treenode_t(type, lhs, rhs);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_for_stmt(
+    treenode_t *init,
+    treenode_t *cond,
+    treenode_t *inc,
+    treenode_t *body,
+    int line)
+{
+  if ( cond != NULL && !cond->is_bool_compat() )
+  {
+    usererr("error: expression in for condition is not of type bool, line %d\n", line);
+    delete init; delete cond; delete inc; delete body;
+    return ERRNODE;
+  }
+  return new treenode_t(TNT_FOR, init, cond, inc, body);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line)
+{
+  ASSERT(1072, cond != NULL);
+
+  if ( !cond->is_bool_compat() )
+  {
+    usererr("error: expression in while condition is not of type bool, line %d\n", line);
+    delete cond; delete body;
+    return ERRNODE;
+  }
+  return new treenode_t(TNT_WHILE, cond, body);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_if_stmt(
+    treenode_t *cond,
+    treenode_t *body,
+    treenode_t *el,
+    int line)
+{
+  ASSERT(1073, cond != NULL);
+
+  if ( !cond->is_bool_compat() )
+  {
+    usererr("error: expression in if condition is not of type bool, line %d\n", line);
+    delete cond; delete body; delete el;
+    return ERRNODE;
+  }
+  return new treenode_t(TNT_IF, cond, body, el);
+}
+
+//-----------------------------------------------------------------------------
+static bool validate_bool_expr(
+    const treenode_t *lhs,
+    treenode_type_t type,
+    const treenode_t *rhs)
+{
+  ASSERT(1048, rhs != NULL);
+
+  switch ( type )
+  {
+    case TNT_NOT:
+      ASSERT(1049, lhs == NULL);
+      return rhs->is_bool_compat();
+    case TNT_EQ:
+    case TNT_NEQ:
+    case TNT_LT:
+    case TNT_LEQ:
+    case TNT_GT:
+    case TNT_GEQ:
+      ASSERT(1050, lhs != NULL);
+      return lhs->is_int_compat()
+          && rhs->is_int_compat();
+    case TNT_AND:
+    case TNT_OR:
+      ASSERT(1051, lhs != NULL);
+      return lhs->is_bool_compat()
+          && rhs->is_bool_compat();
+    default:
+      INTERR(1052);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_bool_expr(
+    treenode_t *lhs,
+    treenode_type_t type,
+    treenode_t *rhs,
+    int line)
+{
+  if ( !validate_bool_expr(lhs, type, rhs) )
+  {
+    usererr("error: incompatible boolean operands, line %d\n", line);
+    delete lhs; delete rhs;
+    return ERRNODE;
+  }
+  return new treenode_t(type, lhs, rhs);
 }
 
 //-----------------------------------------------------------------------------
