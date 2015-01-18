@@ -70,32 +70,32 @@ static void gen_data_section(const symtab_t &gsyms)
 
   for ( symtab_t::const_iterator i = gsyms.begin(); i != gsyms.end(); i++ )
   {
-    symbol_t *sym = *i;
+    symbol_t &sym = **i;
 
-    if ( sym->type() == ST_FUNCTION || sym->type() == ST_LABEL )
+    if ( sym.type() == ST_FUNCTION || sym.type() == ST_LABEL )
       continue;
 
-    fprintf(outfile, TAB1"%s:\n", sym->c_str());
+    fprintf(outfile, TAB1"%s:\n", sym.c_str());
 
-    switch ( sym->type() )
+    switch ( sym.type() )
     {
       case ST_PRIMITIVE:
-        if ( sym->base() == PRIM_INT )
+        if ( sym.base() == PRIM_INT )
           fprintf(outfile, TAB2".space %d\n", WORDSIZE);
         else
           fprintf(outfile, TAB2".space 1\n"
                            TAB2".align 2\n");
         break;
       case ST_ARRAY:
-        if ( sym->base() == PRIM_INT )
-          fprintf(outfile, TAB2".space %d\n", sym->size() * WORDSIZE);
+        if ( sym.base() == PRIM_INT )
+          fprintf(outfile, TAB2".space %d\n", sym.size() * WORDSIZE);
         else
           fprintf(outfile, TAB2".space %d\n"
-                           TAB2".align 2\n", sym->size());
+                           TAB2".align 2\n",  sym.size());
         break;
       case ST_STRCON:
         fprintf(outfile,   TAB2".asciiz %s\n"
-                           TAB2".align 2\n", sym->str());
+                           TAB2".align 2\n",  sym.str());
         break;
       default:
         INTERR(0);
