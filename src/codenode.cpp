@@ -308,7 +308,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( !cf.has_call )
         {
           cf.has_call = true;
-          cf.ra.push_back(new symbol_t(ST_RETADDR));
+          cf.ra = new symbol_t(ST_RETADDR);
         }
 
         symlist_t argvals;

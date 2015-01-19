@@ -62,7 +62,7 @@ $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
 
 #------------------------------------------------------------------------------
 $(OBJ)mips_asm.o: $(SRC)mips_asm.cpp $(SRC)mips_asm.h $(HFILES)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -Wno-local-type-template-args -c -o $@ $<
 
 #------------------------------------------------------------------------------
 .PHONY: clean

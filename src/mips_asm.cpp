@@ -2,13 +2,9 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <symbol.h>
-#include <codenode.h>
-#include <messages.h>
 #include "mips_asm.h"
 
 #define MAXNAMELEN 32
-#define WORDSIZE 4
 
 #define TAB1 "  "
 #define TAB2 "    "
@@ -106,84 +102,24 @@ static void gen_data_section(const symtab_t &gsyms)
 }
 
 //-----------------------------------------------------------------------------
-struct frame_item_visitor_t
-{
-  uint32_t off;
-
-  frame_item_visitor_t() : off(BADSIZE) {}
-  frame_item_visitor_t(uint32_t _off) : off(_off) {}
-
-  virtual void visit_item(symbol_t &sym, int idx) = 0;
-};
-
-//-----------------------------------------------------------------------------
 template<class T>
-class frame_section_t
+static uint32_t build_frame_section(
+    frame_section_t &sec,
+    uint32_t framesize,
+    uint32_t start = BADSIZE)
 {
-  T &items;
+  sec.off = framesize;
 
-public:
-  uint32_t off;
-  uint32_t size;
+  T sizer(start == BADSIZE ? sec.off : start);
+  sec.visit_items(sizer);
 
-  frame_section_t(T &_items)
-    : items(_items), off(0), size(0) {}
-
-#define FIV_REVERSE 0x1
-
-  void visit_items(frame_item_visitor_t &fiv, uint32_t flags = 0)
-  {
-    int idx = 0;
-    if ( (flags & FIV_REVERSE) == 0 )
-    {
-      typename T::iterator i = items.begin();
-      for ( ; i != items.end(); i++, idx++ )
-        fiv.visit_item(**i, idx);
-    }
-    else
-    {
-      typename T::reverse_iterator i = items.rbegin();
-      for ( ; i != items.rend(); i++, idx++ )
-        fiv.visit_item(**i, idx);
-    }
-  }
-
-  size_t nitems() { return items.size(); }
-  uint32_t end()  { return off + size; }
-  uint32_t top()
-  {
-    uint32_t t = off + size - WORDSIZE;
-    return t > 0 ? t : 0;
-  }
-};
+  sec.size = sizer.off - sec.off;
+  return sec.size;
+}
 
 //-----------------------------------------------------------------------------
-struct frame_summary_t
+static uint32_t build_args_section(frame_section_t &args)
 {
-  uint32_t size;
-  uint32_t flags;
-
-  frame_section_t<symlist_t> params;
-  frame_section_t<symtab_t>  lvars;
-  frame_section_t<symlist_t> ra;
-  frame_section_t<symlist_t> temps;
-  frame_section_t<symlist_t> svtemps;
-  frame_section_t<symlist_t> args;
-
-  frame_summary_t(codefunc_t &cf)
-    : size(BADSIZE), params(*cf.sym.params()), lvars(*cf.sym.symbols()),
-      ra(cf.ra), temps(cf.temps), svtemps(cf.svtemps), args(cf.args) {}
-};
-
-//-----------------------------------------------------------------------------
-static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
-{
-  uint32_t framesize = 0;
-
-  //---------------------------------------------------------------------------
-  // arglocs
-  frame_section_t<symlist_t> &args = frame.args;
-
   struct args_sizer_t : public frame_item_visitor_t
   {
     virtual void visit_item(symbol_t &arg, int)
@@ -201,20 +137,12 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
     args_sizer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  if ( is_call_frame )
-  {
-    args_sizer_t aszr(uint32_t(WORDSIZE * ARGREGQTY)); // always allocate enough space for 4 arg regs
-    args.visit_items(aszr);
+  return build_frame_section<args_sizer_t>(args, 0, WORDSIZE * ARGREGQTY);
+}
 
-    args.size = aszr.off - args.off;
-    framesize += args.size;
-  }
-
-  //---------------------------------------------------------------------------
-  // saved temporaries
-  frame_section_t<symlist_t> &svtemps = frame.svtemps;
-  svtemps.off = framesize;
-
+//-----------------------------------------------------------------------------
+static uint32_t build_svtemps_section(frame_section_t &svtemps, uint32_t framesize)
+{
   struct svtemps_sizer_t : public frame_item_visitor_t
   {
     virtual void visit_item(symbol_t &svtemp, int)
@@ -229,17 +157,12 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
     svtemps_sizer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  svtemps_sizer_t stszr(svtemps.off);
-  svtemps.visit_items(stszr);
+  return build_frame_section<svtemps_sizer_t>(svtemps, framesize);
+}
 
-  svtemps.size = stszr.off - svtemps.off;
-  framesize += svtemps.size;
-
-  //---------------------------------------------------------------------------
-  // temporaries
-  frame_section_t<symlist_t> &temps = frame.temps;
-  temps.off = framesize;
-
+//-----------------------------------------------------------------------------
+static uint32_t build_temps_section(frame_section_t &temps, uint32_t framesize)
+{
   struct temps_sizer_t : public frame_item_visitor_t
   {
     virtual void visit_item(symbol_t &temp, int)
@@ -257,17 +180,12 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
     temps_sizer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  temps_sizer_t tszr(temps.off);
-  temps.visit_items(tszr);
+  return build_frame_section<temps_sizer_t>(temps, framesize);
+}
 
-  temps.size = tszr.off - temps.off;
-  framesize += temps.size;
-
-  //---------------------------------------------------------------------------
-  // return address
-  frame_section_t<symlist_t> &ra = frame.ra;
-  ra.off = framesize;
-
+//-----------------------------------------------------------------------------
+static uint32_t build_ra_section(frame_section_t &ra, uint32_t framesize)
+{
   struct ra_sizer_t : public frame_item_visitor_t
   {
     virtual void visit_item(symbol_t &ra, int)
@@ -278,17 +196,12 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
     ra_sizer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  ra_sizer_t raszr(ra.off);
-  ra.visit_items(raszr);
+  return build_frame_section<ra_sizer_t>(ra, framesize);
+}
 
-  ra.size = raszr.off - ra.off;
-  framesize += ra.size;
-
-  //---------------------------------------------------------------------------
-  // local variables
-  frame_section_t<symtab_t> &lvars = frame.lvars;
-  lvars.off = framesize;
-
+//-----------------------------------------------------------------------------
+static uint32_t build_lvars_section(frame_section_t &lvars, uint32_t framesize)
+{
   struct lvars_sizer_t : public frame_item_visitor_t
   {
     virtual void visit_item(symbol_t &lvar, int)
@@ -315,15 +228,12 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
     lvars_sizer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  lvars_sizer_t lvszr(lvars.off);
-  lvars.visit_items(lvszr);
+  return build_frame_section<lvars_sizer_t>(lvars, framesize);
+}
 
-  lvars.size = lvszr.off - lvars.off;
-  framesize += lvars.size;
-
-  //---------------------------------------------------------------------------
-  // params
-  frame_section_t<symlist_t> &params = frame.params;
+//-----------------------------------------------------------------------------
+static uint32_t build_params_section(frame_section_t &params, uint32_t framesize, size_t nargs)
+{
   params.off = framesize;
 
   struct params_sizer_t : public frame_item_visitor_t
@@ -341,48 +251,71 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
     params_sizer_t(uint32_t off, size_t n) : frame_item_visitor_t(off), nargs(n) {}
   };
 
-  params_sizer_t pszr(params.off, args.nitems());
+  params_sizer_t pszr(params.off, nargs);
   params.visit_items(pszr);
 
   params.size = pszr.off - params.off;
+  return params.size;
+}
+
+//-----------------------------------------------------------------------------
+static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
+{
+  uint32_t framesize = 0;
+
+  if ( is_call_frame )
+    framesize += build_args_section(frame.args);
+
+  framesize += build_svtemps_section(frame.svtemps, framesize);
+  framesize += build_temps_section(frame.temps, framesize);
+  framesize += build_ra_section(frame.ra, framesize);
+  framesize += build_lvars_section(frame.lvars, framesize);
+
   // we dont grow the stack frame here - params are located in the caller's stack
+  build_params_section(frame.params, framesize, frame.args.nitems());
+
   frame.size = framesize;
 }
+
+//-----------------------------------------------------------------------------
+struct reg_saver_t : public frame_item_visitor_t
+{
+  bool restore;
+  virtual bool apply_to(const symbol_t &item, int) { return item.loc.is_reg(); }
+  virtual void visit_item(symbol_t &item, int idx)
+  {
+    if ( apply_to(item, idx) )
+      fprintf(outfile,
+              TAB1"%s %s, %u($sp)\n",
+              restore ? "lw" : "sw",
+              item.loc.reg(),
+              off + idx * WORDSIZE);
+  }
+  reg_saver_t(uint32_t off) : frame_item_visitor_t(off), restore(false) {}
+};
+
+//-----------------------------------------------------------------------------
+struct argregs_saver_t : public reg_saver_t
+{
+  int nparams;
+
+  virtual bool apply_to(const symbol_t &arg, int idx)
+    { return arg.loc.is_reg() && idx < nparams; }
+
+  argregs_saver_t(uint32_t off, int _nparams)
+    : reg_saver_t(off), nparams(_nparams) {}
+};
 
 //-----------------------------------------------------------------------------
 static void gen_prologue(frame_summary_t &frame)
 {
   fprintf(outfile, TAB1"la $sp, -%u($sp)\n", frame.size);
 
-  struct reg_saver_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(symbol_t &item, int idx)
-    {
-      if ( item.loc.is_reg() )
-        fprintf(outfile, TAB1"sw %s, %u($sp)\n",
-                item.loc.reg(), off + idx * WORDSIZE);
-    }
-    reg_saver_t(uint32_t off) : frame_item_visitor_t(off) {}
-  };
-
   reg_saver_t srsvr(frame.svtemps.off);
   frame.svtemps.visit_items(srsvr);
 
   reg_saver_t rasvr(frame.ra.off);
   frame.ra.visit_items(rasvr);
-
-  struct argregs_saver_t : public frame_item_visitor_t
-  {
-    int nparams;
-    virtual void visit_item(symbol_t &arg, int idx)
-    {
-      if ( arg.loc.is_reg() && idx < nparams )
-        fprintf(outfile, TAB1"sw %s, %u($sp)\n",
-                arg.loc.reg(), off + idx * WORDSIZE);
-    }
-    argregs_saver_t(uint32_t off, int _nparams)
-      : frame_item_visitor_t(off), nparams(_nparams) {}
-  };
 
   argregs_saver_t asvr(frame.params.off, frame.params.nitems());
   frame.args.visit_items(asvr);
@@ -484,7 +417,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
     param_printer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  frame_section_t<symlist_t> &params = frame.params;
+  frame_section_t &params = frame.params;
   param_printer_t pprinter(params.top());
 
   params.visit_items(pprinter, FIV_REVERSE);
@@ -512,7 +445,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
     ra_printer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  frame_section_t<symlist_t> &ra = frame.ra;
+  frame_section_t &ra = frame.ra;
   ra_printer_t raprinter(ra.top());
 
   ra.visit_items(raprinter, FIV_REVERSE);
@@ -528,7 +461,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
     temp_printer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  frame_section_t<symlist_t> &temps = frame.temps;
+  frame_section_t &temps = frame.temps;
   temp_printer_t tprinter(temps.top());
 
   temps.visit_items(tprinter, FIV_REVERSE);
@@ -546,13 +479,13 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
     svtemp_printer_t(uint32_t off) : frame_item_visitor_t(off) {}
   };
 
-  frame_section_t<symlist_t> &svtemps = frame.svtemps;
+  frame_section_t &svtemps = frame.svtemps;
   svtemp_printer_t stprinter(svtemps.top());
 
   svtemps.visit_items(stprinter, FIV_REVERSE);
 
   //---------------------------------------------------------------------------
-  frame_section_t<symlist_t> &args = frame.args;
+  frame_section_t &args = frame.args;
 
   struct args_printer_t : public frame_item_visitor_t
   {

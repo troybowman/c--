@@ -40,12 +40,13 @@ struct codefunc_t
   codenode_t *code;
   bool has_call;
 
-  symlist_t ra;
+  symbol_t *ra;
   symlist_t temps;
   symlist_t svtemps;
   symlist_t args;
 
-  codefunc_t(symbol_t &s) : sym(s), code(NULL), has_call(false) {}
+  codefunc_t(symbol_t &s)
+    : sym(s), code(NULL), has_call(false), ra(NULL) {}
 };
 
 //-----------------------------------------------------------------------------
