@@ -796,6 +796,10 @@ _f0:
   # |--------------------------------|
   la $sp, -0($sp)
 
+__leave_f0:
+  la $sp, 0($sp)
+  jr $ra
+
 _f1:
 
   # STACK FRAME SUMMARY:
@@ -807,6 +811,11 @@ _f1:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f1:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f2:
 
   # STACK FRAME SUMMARY:
@@ -814,6 +823,10 @@ _f2:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f2:
+  la $sp, 0($sp)
+  jr $ra
 
 _f3:
 
@@ -828,6 +841,11 @@ _f3:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f3:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f4:
 
   # STACK FRAME SUMMARY:
@@ -837,6 +855,10 @@ _f4:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f4:
+  la $sp, 0($sp)
+  jr $ra
 
 _f5:
 
@@ -853,6 +875,11 @@ _f5:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f5:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f7:
 
   # STACK FRAME SUMMARY:
@@ -864,6 +891,10 @@ _f7:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f7:
+  la $sp, 0($sp)
+  jr $ra
 
 _f8:
 
@@ -882,6 +913,11 @@ _f8:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f8:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f9:
 
   # STACK FRAME SUMMARY:
@@ -895,6 +931,10 @@ _f9:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f9:
+  la $sp, 0($sp)
+  jr $ra
 
 _f10:
 
@@ -915,6 +955,11 @@ _f10:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f10:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f11:
 
   # STACK FRAME SUMMARY:
@@ -930,6 +975,10 @@ _f11:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f11:
+  la $sp, 0($sp)
+  jr $ra
 
 _f12:
 
@@ -952,6 +1001,11 @@ _f12:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f12:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f14:
 
   # STACK FRAME SUMMARY:
@@ -969,6 +1023,10 @@ _f14:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f14:
+  la $sp, 0($sp)
+  jr $ra
 
 _f15:
 
@@ -993,6 +1051,11 @@ _f15:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f15:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f16:
 
   # STACK FRAME SUMMARY:
@@ -1012,6 +1075,10 @@ _f16:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f16:
+  la $sp, 0($sp)
+  jr $ra
 
 _f17:
 
@@ -1038,8 +1105,17 @@ _f17:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f17:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _main:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   la $sp, -0($sp)
+
+__leave_main:
+  la $sp, 0($sp)
+  jr $ra

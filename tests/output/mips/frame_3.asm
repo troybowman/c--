@@ -287,6 +287,10 @@ _func:
   # |--------------------------------| sp+0
   la $sp, -84($sp)
 
+__leave_func:
+  la $sp, 84($sp)
+  jr $ra
+
 _simple:
 
   # STACK FRAME SUMMARY:
@@ -300,6 +304,10 @@ _simple:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_simple:
+  la $sp, 0($sp)
+  jr $ra
 
 _another:
 
@@ -326,8 +334,17 @@ _another:
   sw $a0, 40($sp)
   sw $a1, 44($sp)
 
+__leave_another:
+  lw $ra, 16($sp)
+  la $sp, 40($sp)
+  jr $ra
+
 _main:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   la $sp, -0($sp)
+
+__leave_main:
+  la $sp, 0($sp)
+  jr $ra

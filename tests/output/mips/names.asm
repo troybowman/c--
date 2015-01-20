@@ -590,6 +590,10 @@ _char_at:
   # |--------------------------------| sp+0
   la $sp, -0($sp)
 
+__leave_char_at:
+  la $sp, 0($sp)
+  jr $ra
+
 _L0:
 
   # STACK FRAME SUMMARY:
@@ -603,6 +607,11 @@ _L0:
   la $sp, -20($sp)
   sw $ra, 16($sp)
   sw $a0, 20($sp)
+
+__leave_L0:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
 
 _L2:
 
@@ -618,6 +627,11 @@ _L2:
   sw $ra, 16($sp)
   sw $a0, 20($sp)
 
+__leave_L2:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _L4:
 
   # STACK FRAME SUMMARY:
@@ -632,6 +646,11 @@ _L4:
   sw $ra, 16($sp)
   sw $a0, 20($sp)
 
+__leave_L4:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _main:
 
   # STACK FRAME SUMMARY:
@@ -642,3 +661,8 @@ _main:
   # |--------------------------------| sp+0
   la $sp, -20($sp)
   sw $ra, 16($sp)
+
+__leave_main:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra

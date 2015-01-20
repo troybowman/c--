@@ -994,6 +994,10 @@ _f0:
   # |--------------------------------| sp+0
   la $sp, -0($sp)
 
+__leave_f0:
+  la $sp, 0($sp)
+  jr $ra
+
 _f1:
 
   # STACK FRAME SUMMARY:
@@ -1005,6 +1009,11 @@ _f1:
   la $sp, -20($sp)
   sw $ra, 16($sp)
 
+__leave_f1:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
+
 _f2:
 
   # STACK FRAME SUMMARY:
@@ -1014,6 +1023,10 @@ _f2:
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0
   la $sp, -0($sp)
+
+__leave_f2:
+  la $sp, 0($sp)
+  jr $ra
 
 _f3:
 
@@ -1025,6 +1038,11 @@ _f3:
   # |--------------------------------| sp+0
   la $sp, -20($sp)
   sw $ra, 16($sp)
+
+__leave_f3:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
 
 _f4:
 
@@ -1038,6 +1056,10 @@ _f4:
   # |--------------------------------| sp+0
   la $sp, -0($sp)
 
+__leave_f4:
+  la $sp, 0($sp)
+  jr $ra
+
 _f5:
 
   # STACK FRAME SUMMARY:
@@ -1048,6 +1070,11 @@ _f5:
   # |--------------------------------| sp+0
   la $sp, -20($sp)
   sw $ra, 16($sp)
+
+__leave_f5:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
 
 _f6:
 
@@ -1063,6 +1090,10 @@ _f6:
   # |--------------------------------| sp+0
   la $sp, -0($sp)
 
+__leave_f6:
+  la $sp, 0($sp)
+  jr $ra
+
 _f7:
 
   # STACK FRAME SUMMARY:
@@ -1073,6 +1104,11 @@ _f7:
   # |--------------------------------| sp+0
   la $sp, -20($sp)
   sw $ra, 16($sp)
+
+__leave_f7:
+  lw $ra, 16($sp)
+  la $sp, 20($sp)
+  jr $ra
 
 _f8:
 
@@ -1090,6 +1126,10 @@ _f8:
   # |--------------------------------| sp+0
   la $sp, -0($sp)
 
+__leave_f8:
+  la $sp, 0($sp)
+  jr $ra
+
 _f9:
 
   # STACK FRAME SUMMARY:
@@ -1102,6 +1142,11 @@ _f9:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 20($sp)
+
+__leave_f9:
+  lw $ra, 20($sp)
+  la $sp, 24($sp)
+  jr $ra
 
 _f10:
 
@@ -1121,6 +1166,10 @@ _f10:
   # |--------------------------------| sp+0
   la $sp, -0($sp)
 
+__leave_f10:
+  la $sp, 0($sp)
+  jr $ra
+
 _f11:
 
   # STACK FRAME SUMMARY:
@@ -1135,6 +1184,11 @@ _f11:
   # |--------------------------------| sp+0
   la $sp, -28($sp)
   sw $ra, 24($sp)
+
+__leave_f11:
+  lw $ra, 24($sp)
+  la $sp, 28($sp)
+  jr $ra
 
 _f12:
 
@@ -1156,6 +1210,10 @@ _f12:
   # |--------------------------------| sp+0
   la $sp, -0($sp)
 
+__leave_f12:
+  la $sp, 0($sp)
+  jr $ra
+
 _f13:
 
   # STACK FRAME SUMMARY:
@@ -1173,8 +1231,17 @@ _f13:
   la $sp, -32($sp)
   sw $ra, 28($sp)
 
+__leave_f13:
+  lw $ra, 28($sp)
+  la $sp, 32($sp)
+  jr $ra
+
 _main:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   la $sp, -0($sp)
+
+__leave_main:
+  la $sp, 0($sp)
+  jr $ra

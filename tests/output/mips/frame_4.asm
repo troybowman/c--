@@ -1574,6 +1574,10 @@ _f0:
   # |--------------------------------|
   la $sp, -0($sp)
 
+__leave_f0:
+  la $sp, 0($sp)
+  jr $ra
+
 _f1:
 
   # STACK FRAME SUMMARY:
@@ -1581,6 +1585,10 @@ _f1:
   # |               x                |
   # |--------------------------------| sp+0
   la $sp, -4($sp)
+
+__leave_f1:
+  la $sp, 4($sp)
+  jr $ra
 
 _f2:
 
@@ -1591,6 +1599,10 @@ _f2:
   # |            <temp10>            |
   # |--------------------------------| sp+0
   la $sp, -8($sp)
+
+__leave_f2:
+  la $sp, 8($sp)
+  jr $ra
 
 _f3:
 
@@ -1628,6 +1640,19 @@ _f3:
   sw $s6, 40($sp)
   sw $s7, 44($sp)
   sw $ra, 48($sp)
+
+__leave_f3:
+  lw $ra, 48($sp)
+  lw $s7, 44($sp)
+  lw $s6, 40($sp)
+  lw $s5, 36($sp)
+  lw $s4, 32($sp)
+  lw $s3, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 56($sp)
+  jr $ra
 
 _f4:
 
@@ -1667,6 +1692,19 @@ _f4:
   sw $s6, 40($sp)
   sw $s7, 44($sp)
   sw $ra, 52($sp)
+
+__leave_f4:
+  lw $ra, 52($sp)
+  lw $s7, 44($sp)
+  lw $s6, 40($sp)
+  lw $s5, 36($sp)
+  lw $s4, 32($sp)
+  lw $s3, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 60($sp)
+  jr $ra
 
 _f5:
 
@@ -1731,8 +1769,25 @@ _f5:
   sw $s7, 44($sp)
   sw $ra, 100($sp)
 
+__leave_f5:
+  lw $ra, 100($sp)
+  lw $s7, 44($sp)
+  lw $s6, 40($sp)
+  lw $s5, 36($sp)
+  lw $s4, 32($sp)
+  lw $s3, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 108($sp)
+  jr $ra
+
 _main:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   la $sp, -0($sp)
+
+__leave_main:
+  la $sp, 0($sp)
+  jr $ra

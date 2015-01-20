@@ -278,48 +278,80 @@ static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
 }
 
 //-----------------------------------------------------------------------------
-struct reg_saver_t : public frame_item_visitor_t
+class prologue_t
 {
-  bool restore;
-  virtual bool apply_to(const symbol_t &item, int) { return item.loc.is_reg(); }
-  virtual void visit_item(symbol_t &item, int idx)
+  struct reg_saver_t : public frame_item_visitor_t
   {
-    if ( apply_to(item, idx) )
-      fprintf(outfile,
-              TAB1"%s %s, %u($sp)\n",
-              restore ? "lw" : "sw",
-              item.loc.reg(),
-              off + idx * WORDSIZE);
+    bool restore;
+
+    virtual bool apply_to(const symbol_t &item, int)
+      { return item.loc.is_reg(); }
+
+    virtual void visit_item(symbol_t &item, int idx)
+    {
+      if ( apply_to(item, idx) )
+        fprintf(outfile,
+                TAB1"%s %s, %u($sp)\n",
+                restore ? "lw" : "sw",
+                item.loc.reg(),
+                off + WORDSIZE * (restore ? -idx : idx));
+    }
+
+    reg_saver_t(uint32_t off, bool _restore = false)
+      : frame_item_visitor_t(off), restore(_restore) {}
+  };
+
+  struct argreg_saver_t : public reg_saver_t
+  {
+    int nparams;
+
+    virtual bool apply_to(const symbol_t &arg, int idx)
+      { return arg.loc.is_reg() && idx < nparams; }
+
+    argreg_saver_t(uint32_t off, int _nparams)
+      : reg_saver_t(off), nparams(_nparams) {}
+  };
+
+  frame_summary_t &frame;
+  symbol_t *leave_label;
+
+public:
+  prologue_t(frame_summary_t &_frame, const char *fname) : frame(_frame)
+  {
+    fprintf(outfile, TAB1"la $sp, -%u($sp)\n", frame.size);
+
+    reg_saver_t st_saver(frame.svtemps.off);
+    frame.svtemps.visit_items(st_saver);
+
+    reg_saver_t ra_saver(frame.ra.off);
+    frame.ra.visit_items(ra_saver);
+
+    argreg_saver_t args_saver(frame.params.off, frame.params.nitems());
+    frame.args.visit_items(args_saver);
+
+    leave_label = new symbol_t(ST_LABEL);
+    leave_label->set_name(fname);
+    leave_label->make_asm_name("__leave");
   }
-  reg_saver_t(uint32_t off) : frame_item_visitor_t(off), restore(false) {}
+
+  ~prologue_t()
+  {
+    fprintf(outfile, "\n%s:\n", leave_label->c_str());
+
+    reg_saver_t ra_restore(frame.ra.top(), true);
+    frame.ra.visit_items(ra_restore);
+
+    reg_saver_t st_restore(frame.svtemps.top(), true);
+    frame.svtemps.visit_items(st_restore, FIV_REVERSE);
+
+    fprintf(outfile, TAB1"la $sp, %u($sp)\n", frame.size);
+    fprintf(outfile, TAB1"jr $ra\n");
+
+    delete leave_label;
+  }
+
+  symbol_t *get_leave_label() { return leave_label; }
 };
-
-//-----------------------------------------------------------------------------
-struct argregs_saver_t : public reg_saver_t
-{
-  int nparams;
-
-  virtual bool apply_to(const symbol_t &arg, int idx)
-    { return arg.loc.is_reg() && idx < nparams; }
-
-  argregs_saver_t(uint32_t off, int _nparams)
-    : reg_saver_t(off), nparams(_nparams) {}
-};
-
-//-----------------------------------------------------------------------------
-static void gen_prologue(frame_summary_t &frame)
-{
-  fprintf(outfile, TAB1"la $sp, -%u($sp)\n", frame.size);
-
-  reg_saver_t srsvr(frame.svtemps.off);
-  frame.svtemps.visit_items(srsvr);
-
-  reg_saver_t rasvr(frame.ra.off);
-  frame.ra.visit_items(rasvr);
-
-  argregs_saver_t asvr(frame.params.off, frame.params.nitems());
-  frame.args.visit_items(asvr);
-}
 
 //-----------------------------------------------------------------------------
 static void gen_asm_function(codefunc_t &cf)
@@ -330,7 +362,7 @@ static void gen_asm_function(codefunc_t &cf)
   build_stack_frame(frame, cf.has_call);
   DBG_FRAME_SUMMARY(frame, cf.has_call);
 
-  gen_prologue(frame);
+  prologue_t prologue(frame, cf.sym.c_str());
 
   // loop through codenodes
 }
