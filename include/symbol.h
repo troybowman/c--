@@ -171,8 +171,6 @@ public:
   void set_ret_resolved()          { _flags |= SF_RET_RESOLVED; }
 
   void set_val(int val) { _val = val; }
-
-  void make_asm_name(const char *pfx) { _name.insert(0, std::string(pfx)); }
 };
 
 //-----------------------------------------------------------------------------
@@ -243,8 +241,6 @@ public:
   size_t size() const    { return list.size(); }
   void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }
   void clear()           { map.clear(); list.clear(); }
-
-  void make_asm_names(const char *pfx);
 };
 
 //-----------------------------------------------------------------------------

@@ -22,45 +22,63 @@ static const char *argregs[ARGREGQTY] =
   { "$a0", "$a1", "$a2", "$a3" };
 
 static FILE *outfile;
+static symtab_t gsyms; // all named symbols (labels, strings, src symbols)
+
+//-----------------------------------------------------------------------------
+static bool prepare_named_symbol(symbol_t *sym, const char *fmt, ...)
+{
+  va_list va;
+  va_start(va, fmt);
+
+  char buf[MAXNAMELEN];
+  vsnprintf(buf, MAXNAMELEN, fmt, va);
+
+  va_end(va);
+
+  sym->set_name(buf);
+
+  if ( gsyms.get(sym->name()) )
+    return false;
+
+  sym->loc.set_global();
+  gsyms.insert(sym);
+  return true;
+}
 
 //-----------------------------------------------------------------------------
 template<class T>
-static void gen_asm_names(T &syms, symtab_t &gsyms, const char *pfx)
+static void gen_asm_names(T &syms, const char *pfx = "", bool make_dummy_names = false)
 {
   size_t counter = 0;
-  char buf[MAXNAMELEN];
   for ( typename T::iterator i = syms.begin(); i != syms.end(); i++ )
   {
     symbol_t *sym = *i;
-    do
+    if ( make_dummy_names )
     {
-      snprintf(buf, MAXNAMELEN, "%s%lu", pfx, counter);
-      sym->set_name(buf);
-      counter++;
+      while ( !prepare_named_symbol(sym, "%s%lu", pfx, counter) )
+        counter++;
     }
-    while ( gsyms.get(sym->name()) != NULL );
-
-    gsyms.insert(sym);
+    else
+    {
+      prepare_named_symbol(sym, "%s%s", "_", sym->c_str());
+    }
   }
 }
 
 //-----------------------------------------------------------------------------
-static void init_gsyms(symtab_t &gsyms, symtab_t &strings, symlist_t &labels)
+static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symlist_t &labels)
 {
-  gsyms.make_asm_names("_");
+  gen_asm_names<symtab_t>(src_syms);
+  gen_asm_names<symtab_t> (strings, "_str", true);
+  gen_asm_names<symlist_t>(labels,  "_L",   true);
 
-  gen_asm_names<symtab_t>(strings, gsyms, "_str");
-  gen_asm_names<symlist_t>(labels, gsyms, "_L");
-
-  for ( symtab_t::iterator i = gsyms.begin(); i != gsyms.end(); i++ )
-    (*i)->loc.set_global();
-
+  src_syms.clear();
   strings.clear();
   labels.clear();
 }
 
 //-----------------------------------------------------------------------------
-static void gen_data_section(const symtab_t &gsyms)
+static void gen_data_section()
 {
   fprintf(outfile, "\n.data\n\n");
 
@@ -259,11 +277,11 @@ static uint32_t build_params_section(frame_section_t &params, uint32_t framesize
 }
 
 //-----------------------------------------------------------------------------
-static void build_stack_frame(frame_summary_t &frame, bool is_call_frame)
+static void build_stack_frame(frame_summary_t &frame)
 {
   uint32_t framesize = 0;
 
-  if ( is_call_frame )
+  if ( frame.is_call_frame )
     framesize += build_args_section(frame.args);
 
   framesize += build_svtemps_section(frame.svtemps, framesize);
@@ -312,12 +330,17 @@ class prologue_t
       : reg_saver_t(off), nparams(_nparams) {}
   };
 
-  frame_summary_t &frame;
-  symbol_t *leave_label;
+  frame_summary_t frame;
+  symbol_t *eplg_lbl;
 
 public:
-  prologue_t(frame_summary_t &_frame, const char *fname) : frame(_frame)
+  prologue_t(codefunc_t &cf) : frame(cf)
   {
+    fprintf(outfile, "\n%s:\n", cf.sym.c_str());
+
+    build_stack_frame(frame);
+    DBG_FRAME_SUMMARY(frame);
+
     fprintf(outfile, TAB1"la $sp, -%u($sp)\n", frame.size);
 
     reg_saver_t st_saver(frame.svtemps.off);
@@ -329,14 +352,13 @@ public:
     argreg_saver_t args_saver(frame.params.off, frame.params.nitems());
     frame.args.visit_items(args_saver);
 
-    leave_label = new symbol_t(ST_LABEL);
-    leave_label->set_name(fname);
-    leave_label->make_asm_name("__leave");
+    eplg_lbl = new symbol_t(ST_LABEL);
+    prepare_named_symbol(eplg_lbl, "%s%s", "__leave", cf.sym.c_str());
   }
 
   ~prologue_t()
   {
-    fprintf(outfile, "\n%s:\n", leave_label->c_str());
+    fprintf(outfile, "\n%s:\n", eplg_lbl->c_str());
 
     reg_saver_t ra_restore(frame.ra.top(), true);
     frame.ra.visit_items(ra_restore);
@@ -346,23 +368,15 @@ public:
 
     fprintf(outfile, TAB1"la $sp, %u($sp)\n", frame.size);
     fprintf(outfile, TAB1"jr $ra\n");
-
-    delete leave_label;
   }
 
-  symbol_t *get_leave_label() { return leave_label; }
+  symbol_t *get_epilogue_label() { return eplg_lbl; }
 };
 
 //-----------------------------------------------------------------------------
 static void gen_asm_function(codefunc_t &cf)
 {
-  fprintf(outfile, "\n%s:\n", cf.sym.c_str());
-
-  frame_summary_t frame(cf);
-  build_stack_frame(frame, cf.has_call);
-  DBG_FRAME_SUMMARY(frame, cf.has_call);
-
-  prologue_t prologue(frame, cf.sym.c_str());
+  prologue_t prologue(cf);
 
   // loop through codenodes
 }
@@ -381,7 +395,7 @@ void generate_mips_asm(FILE *_outfile, ir_t &ir)
 {
   outfile = _outfile;
   init_gsyms(ir.gsyms, ir.strings, ir.labels);
-  gen_data_section(ir.gsyms);
+  gen_data_section();
   gen_text_section(ir.funcs);
 }
 
@@ -430,7 +444,7 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
 }
 
 //-----------------------------------------------------------------------------
-void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
+void print_frame_summary(frame_summary_t &frame)
 {
   fprintf(outfile, "\n"TAB1"# STACK FRAME SUMMARY:\n"TAB1"# %s\n", sep);
 
@@ -531,7 +545,7 @@ void print_frame_summary(frame_summary_t &frame, bool is_call_frame)
   args_printer_t aprinter;
   args.visit_items(aprinter, FIV_REVERSE);
 
-  if ( is_call_frame )
+  if ( frame.is_call_frame )
     print_frame_item(args.off, "<minimum 4 arg slots>");
 }
 #endif // NDEBUG

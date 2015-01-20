@@ -98,6 +98,7 @@ public:
 struct frame_summary_t
 {
   uint32_t size;
+  bool is_call_frame;
 
   list_section_t  params;
   table_section_t lvars;
@@ -107,8 +108,9 @@ struct frame_summary_t
   list_section_t  args;
 
   frame_summary_t(codefunc_t &cf)
-    : size(BADSIZE), params(*cf.sym.params()), lvars(*cf.sym.symbols()),
-      ra(cf.ra), temps(cf.temps), svtemps(cf.svtemps), args(cf.args) {}
+    : size(BADSIZE), is_call_frame(cf.has_call), params(*cf.sym.params()),
+      lvars(*cf.sym.symbols()), ra(cf.ra), temps(cf.temps),
+      svtemps(cf.svtemps), args(cf.args) {}
 
 //private:
   //struct reg_saver_t : public frame_item_visitor_t
@@ -120,10 +122,10 @@ struct frame_summary_t
 //-----------------------------------------------------------------------------
 #ifndef NDEBUG
 struct frame_summary_t;
-void print_frame_summary(frame_summary_t &frame, bool is_call_frame);
-#define DBG_FRAME_SUMMARY(frame, has_call) print_frame_summary(frame, has_call);
+void print_frame_summary(frame_summary_t &frame);
+#define DBG_FRAME_SUMMARY(frame) print_frame_summary(frame);
 #else
-#define DBG_FRAME_SUMMARY(frame, has_call) // nothing
+#define DBG_FRAME_SUMMARY(frame) // nothing
 #endif // NDEBUG
 
 #endif // MIPS_ASM_H

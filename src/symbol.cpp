@@ -64,16 +64,3 @@ symbol_t::~symbol_t()
     delete _symbols;
   }
 }
-
-//-----------------------------------------------------------------------------
-void symtab_t::make_asm_names(const char *pfx)
-{
-  symtab_t temp;
-  for ( iterator i = begin(); i != end(); i++ )
-  {
-    symbol_t *sym = *i;
-    sym->make_asm_name(pfx);
-    temp.insert(sym);
-  }
-  swap(temp);
-}
