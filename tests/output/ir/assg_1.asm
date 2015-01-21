@@ -143,8 +143,8 @@
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (3)
 # |

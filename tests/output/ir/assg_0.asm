@@ -77,8 +77,8 @@
 # temps used:   4
 # svtemps used: 0
 # args used:    0
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (5)
 # |
@@ -89,14 +89,14 @@
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_CHARCON ('a')
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (0)
 # |
@@ -120,8 +120,8 @@
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (5555)
 # |
@@ -132,8 +132,8 @@
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (3)
 # |
@@ -157,8 +157,8 @@
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (10)
 # |

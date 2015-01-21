@@ -105,8 +105,8 @@
 # temps used:   1
 # svtemps used: 0
 # args used:    0
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (5)
 # |

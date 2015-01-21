@@ -446,8 +446,8 @@
 # temps used:   10
 # svtemps used: 0
 # args used:    10
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (5)
 # |
@@ -476,8 +476,8 @@
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_CHARCON ('a')
 # |
@@ -512,8 +512,8 @@
 # src1 -> ST_ARRAY (larray)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (6)
 # |
@@ -554,8 +554,8 @@
 # src1 -> ST_STRCON ("hello")
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (16)
 # |
@@ -602,14 +602,14 @@
 # src1 -> ST_ARRAY (larray)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (2)
 # src1 -> ST_CHARCON ('3')
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (3)
 # src1 -> ST_INTCON (4)
 # |
@@ -620,20 +620,20 @@
 # src1 -> ST_ARRAY (larray)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (5)
 # src1 -> ST_INTCON (6)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (6)
 # src1 -> ST_INTCON (7)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (7)
 # src1 -> ST_CHARCON ('8')
 # |
@@ -644,8 +644,8 @@
 # src1 -> ST_STRCON ("nine")
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (9)
 # src1 -> ST_INTCON (10)
 # |
@@ -715,8 +715,8 @@
 # src1 -> ST_FUNCTION (bunch)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (500000)
 # |

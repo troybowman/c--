@@ -188,8 +188,8 @@
 # src1 -> ST_PRIMITIVE (x)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (2)
 # |
@@ -211,14 +211,14 @@
 # temps used:   2
 # svtemps used: 3
 # args used:    1
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_SAVED_TEMPORARY (0)
 # src1 -> ST_INTCON (1)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (2)
 # |
@@ -254,14 +254,14 @@
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_SAVED_TEMPORARY (0)
 # src1 -> ST_INTCON (3)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (4)
 # |
@@ -291,8 +291,8 @@
 # src2 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (5)
 # |
@@ -322,8 +322,8 @@
 # src2 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (6)
 # |
@@ -353,8 +353,8 @@
 # src2 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (7)
 # |
@@ -390,8 +390,8 @@
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (8)
 # |
@@ -414,8 +414,8 @@
 # src1 -> ST_RETVAL
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (9)
 # |
@@ -438,8 +438,8 @@
 # src1 -> ST_RETVAL
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (10)
 # |
@@ -462,8 +462,8 @@
 # src1 -> ST_RETVAL
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (11)
 # |
@@ -513,8 +513,8 @@
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (12)
 # |
@@ -537,8 +537,8 @@
 # src1 -> ST_RETVAL
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (13)
 # |
@@ -568,8 +568,8 @@
 # src2 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (14)
 # |
@@ -599,8 +599,8 @@
 # src2 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (15)
 # |

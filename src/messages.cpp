@@ -223,6 +223,7 @@ static const char *cnt2str(codenode_type_t type)
     case CNT_CNDJMP: return "CNT_CNDJMP\n# ----------";
     case CNT_LABEL:  return "CNT_LABEL\n# ---------";
     case CNT_JUMP:   return "CNT_JUMP\n# --------";
+    case CNT_LI:     return "CNT_LI\n# ------";
     default:
       INTERR(1060);
   }

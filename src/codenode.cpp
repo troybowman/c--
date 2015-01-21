@@ -234,7 +234,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symbol_t *src1 = tree->type == TNT_CHARCON
                        ? new symbol_t(ST_CHARCON, tree->str)
                        : new symbol_t(ST_INTCON, tree->val);
-        append(CNT_MOV, dest, src1);
+        append(CNT_LI, dest, src1);
         return dest;
       }
     case TNT_STRCON:

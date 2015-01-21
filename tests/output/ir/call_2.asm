@@ -362,8 +362,8 @@
 # temps used:   4
 # svtemps used: 0
 # args used:    0
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (0)
 # |
@@ -387,8 +387,8 @@
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (1)
 # |
@@ -419,8 +419,8 @@
 # src2 -> ST_TEMPORARY (1)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (2)
 # |
@@ -566,8 +566,8 @@
 # src1 -> ST_PRIMITIVE (x)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (5)
 # |
@@ -687,8 +687,8 @@
 # src1 -> ST_SAVED_TEMPORARY (0)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (11)
 # |
@@ -779,8 +779,8 @@
 # src1 -> ST_PRIMITIVE (c)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (22)
 # |
@@ -889,8 +889,8 @@
 # src1 -> ST_RETVAL
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (2)
 # src1 -> ST_INTCON (77)
 # |
@@ -914,8 +914,8 @@
 # src1 -> ST_TEMPORARY (4)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (3)
 # src1 -> ST_INTCON (88)
 # |
@@ -1031,8 +1031,8 @@
 # src1 -> ST_ARRAY (array)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (33)
 # |
@@ -1056,8 +1056,8 @@
 # src1 -> ST_TEMPORARY (3)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (2)
 # src1 -> ST_INTCON (44)
 # |
@@ -1087,8 +1087,8 @@
 # src1 -> ST_PRIMITIVE (c)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (3)
 # src1 -> ST_INTCON (55)
 # |

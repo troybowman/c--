@@ -280,8 +280,8 @@
 # src1 -> ST_ARRAY (string)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (0)
 # |
@@ -326,8 +326,8 @@
 # src1 -> ST_ARRAY (string)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (2)
 # |
@@ -372,8 +372,8 @@
 # src1 -> ST_ARRAY (string)
 # |
 # >
-# CNT_MOV
-# -------
+# CNT_LI
+# ------
 # dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (4)
 # |
