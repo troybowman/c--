@@ -314,9 +314,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symlist_t argvals;
         symlist_t arglocs;
 
-        tree_iterator_t ti(tree->children[CALL_ARGS]);
-
-        for ( ; *ti != NULL; ti++ )
+        for ( tree_iterator_t ti(tree->children[CALL_ARGS]); *ti != NULL; ti++ )
           argvals.push_back(generate(*ti));
 
         int size = argvals.size();

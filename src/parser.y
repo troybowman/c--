@@ -540,8 +540,7 @@ static treenode_t *process_ret_stmt(treenode_t *expr, int line)
 static int count_args(const treenode_t *args)
 {
   int ret = 0;
-  tree_iterator_t ti(args);
-  for ( ; *ti != NULL; ti++ )
+  for ( tree_iterator_t ti(args); *ti != NULL; ti++ )
     ret++;
   return ret;
 }

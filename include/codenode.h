@@ -34,6 +34,32 @@ struct codenode_t
 };
 
 //-----------------------------------------------------------------------------
+class code_iterator_t
+{
+  const codenode_t *ptr;
+
+public:
+  code_iterator_t(const codenode_t *head) : ptr(head) {}
+
+  const codenode_t *operator*() const
+  {
+    return ptr;
+  }
+  code_iterator_t &operator++()
+  {
+    if ( ptr != NULL )
+      ptr = ptr->next;
+    return *this;
+  }
+  code_iterator_t operator++(int)
+  {
+    code_iterator_t tmp = *this;
+    ++(*this);
+    return tmp;
+  }
+};
+
+//-----------------------------------------------------------------------------
 struct codefunc_t
 {
   symbol_t &sym;

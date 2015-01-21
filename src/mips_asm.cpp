@@ -23,6 +23,7 @@ static const char *argregs[ARGREGQTY] =
 
 static FILE *outfile;
 static symtab_t gsyms; // all named symbols (labels, strings, src symbols)
+static void run_asm_engine(const codenode_t *code, symbol_t *epilogue);
 
 //-----------------------------------------------------------------------------
 static bool prepare_named_symbol(symbol_t *sym, const char *fmt, ...)
@@ -36,12 +37,12 @@ static bool prepare_named_symbol(symbol_t *sym, const char *fmt, ...)
   va_end(va);
 
   sym->set_name(buf);
-
   if ( gsyms.get(sym->name()) )
     return false;
 
   sym->loc.set_global();
   gsyms.insert(sym);
+
   return true;
 }
 
@@ -68,7 +69,7 @@ static void gen_asm_names(T &syms, const char *pfx = "", bool make_dummy_names =
 //-----------------------------------------------------------------------------
 static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symlist_t &labels)
 {
-  gen_asm_names<symtab_t>(src_syms);
+  gen_asm_names<symtab_t> (src_syms);
   gen_asm_names<symtab_t> (strings, "_str", true);
   gen_asm_names<symlist_t>(labels,  "_L",   true);
 
@@ -330,10 +331,10 @@ class prologue_t
       : reg_saver_t(off), nparams(_nparams) {}
   };
 
-  frame_summary_t frame;
-  symbol_t *eplg_lbl;
-
 public:
+  frame_summary_t frame;
+  symbol_t *epilogue_lbl;
+
   prologue_t(codefunc_t &cf) : frame(cf)
   {
     fprintf(outfile, "\n%s:\n", cf.sym.c_str());
@@ -352,13 +353,13 @@ public:
     argreg_saver_t args_saver(frame.params.off, frame.params.nitems());
     frame.args.visit_items(args_saver);
 
-    eplg_lbl = new symbol_t(ST_LABEL);
-    prepare_named_symbol(eplg_lbl, "%s%s", "__leave", cf.sym.c_str());
+    epilogue_lbl = new symbol_t(ST_LABEL);
+    prepare_named_symbol(epilogue_lbl, "%s%s", "__leave", cf.sym.c_str());
   }
 
   ~prologue_t()
   {
-    fprintf(outfile, "\n%s:\n", eplg_lbl->c_str());
+    fprintf(outfile, "\n%s:\n", epilogue_lbl->c_str());
 
     reg_saver_t ra_restore(frame.ra.top(), true);
     frame.ra.visit_items(ra_restore);
@@ -369,17 +370,7 @@ public:
     fprintf(outfile, TAB1"la $sp, %u($sp)\n", frame.size);
     fprintf(outfile, TAB1"jr $ra\n");
   }
-
-  symbol_t *get_epilogue_label() { return eplg_lbl; }
 };
-
-//-----------------------------------------------------------------------------
-static void gen_asm_function(codefunc_t &cf)
-{
-  prologue_t prologue(cf);
-
-  // loop through codenodes
-}
 
 //-----------------------------------------------------------------------------
 static void gen_text_section(codefuncs_t &funcs)
@@ -387,7 +378,10 @@ static void gen_text_section(codefuncs_t &funcs)
   fprintf(outfile, ".text\n");
 
   for ( codefuncs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
-    gen_asm_function(**i);
+  {
+    prologue_t prologue(**i);
+    run_asm_engine((*i)->code, prologue.epilogue_lbl);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -397,6 +391,20 @@ void generate_mips_asm(FILE *_outfile, ir_t &ir)
   init_gsyms(ir.gsyms, ir.strings, ir.labels);
   gen_data_section();
   gen_text_section(ir.funcs);
+}
+
+//-----------------------------------------------------------------------------
+static void run_asm_engine(const codenode_t *code, symbol_t *epilogue)
+{
+  for ( code_iterator_t ci(code); *ci != NULL; ci++ )
+  {
+    const codenode_t &node = **ci;
+    switch ( node.type )
+    {
+      default:
+        continue;
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
