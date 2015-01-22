@@ -51,7 +51,7 @@ static bool prepare_named_symbol(symbol_t *sym, const char *fmt, ...)
 
 //-----------------------------------------------------------------------------
 template<class T>
-static void gen_asm_names(T &syms, const char *pfx = "", bool make_dummy_names = false)
+static void gen_asm_names(T &syms, const char *pfx, bool make_dummy_names = false)
 {
   size_t counter = 0;
   for ( typename T::iterator i = syms.begin(); i != syms.end(); i++ )
@@ -64,8 +64,7 @@ static void gen_asm_names(T &syms, const char *pfx = "", bool make_dummy_names =
     }
     else
     {
-      // TODO: use pfx
-      prepare_named_symbol(sym, "%s%s", "_", sym->c_str());
+      prepare_named_symbol(sym, "%s%s", pfx, sym->c_str());
     }
   }
 }
@@ -73,9 +72,9 @@ static void gen_asm_names(T &syms, const char *pfx = "", bool make_dummy_names =
 //-----------------------------------------------------------------------------
 static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symlist_t &labels)
 {
-  gen_asm_names<symtab_t> (src_syms);
-  gen_asm_names<symtab_t> (strings, "_str", true);
-  gen_asm_names<symlist_t>(labels,  "_L",   true);
+  gen_asm_names<symtab_t> (src_syms, "_");
+  gen_asm_names<symtab_t> (strings,  "_str", true);
+  gen_asm_names<symlist_t>(labels,   "_L",   true);
 
   src_syms.clear();
   strings.clear();
