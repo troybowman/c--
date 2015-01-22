@@ -4,14 +4,14 @@ void f1(void)
 {
   int x;
   /* should all be handled with temporary registers */
-  x = 1 + (2 + (3 + (4 + (5 + (6 + (7 + (8 + 9)))))));
+  x = 1 + (2 + (3 + (4 + (5 + (6 + (7 + 8))))));
 }
 
 void f2(void)
 {
   int x;
   /* make the compiler run out of temporary registers */
-  x = 1 + (2 + (3 + (4 + (5 + (6 + (7 + (8 + (9 + 10))))))));
+  x = 1 + (2 + (3 + (4 + (5 + (6 + (7 + (8 + 9)))))));
 }
 
 void f3(void)

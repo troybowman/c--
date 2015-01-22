@@ -108,11 +108,7 @@
 # child LHS for node 16
 # node 17: type: TNT_INTCON val: 7
 # child RHS for node 16
-# node 18: type: TNT_PLUS
-# child LHS for node 18
-# node 19: type: TNT_INTCON val: 8
-# child RHS for node 18
-# node 20: type: TNT_INTCON val: 9
+# node 18: type: TNT_INTCON val: 8
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: f2
 #-----------------------------------------------------------------------------
@@ -162,11 +158,7 @@
 # child LHS for node 18
 # node 19: type: TNT_INTCON val: 8
 # child RHS for node 18
-# node 20: type: TNT_PLUS
-# child LHS for node 20
-# node 21: type: TNT_INTCON val: 9
-# child RHS for node 20
-# node 22: type: TNT_INTCON val: 10
+# node 20: type: TNT_INTCON val: 9
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: f3
 #-----------------------------------------------------------------------------
@@ -439,6 +431,113 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f1
 #-----------------------------------------------------------------------------
+# temps used:   9
+# svtemps used: 0
+# args used:    0
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_INTCON (1)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (2)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_INTCON (3)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_INTCON (4)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (4)
+# src1 -> ST_INTCON (5)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (5)
+# src1 -> ST_INTCON (6)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (6)
+# src1 -> ST_INTCON (7)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (7)
+# src1 -> ST_INTCON (8)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (8)
+# src1 -> ST_TEMPORARY (6)
+# src2 -> ST_TEMPORARY (7)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (6)
+# src1 -> ST_TEMPORARY (5)
+# src2 -> ST_TEMPORARY (8)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (5)
+# src1 -> ST_TEMPORARY (4)
+# src2 -> ST_TEMPORARY (6)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (4)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_TEMPORARY (5)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (2)
+# src2 -> ST_TEMPORARY (4)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (3)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_SW
+# ------
+# dest -> ST_PRIMITIVE (x)
+# src1 -> ST_TEMPORARY (1)
+#-----------------------------------------------------------------------------
+# INTERMEDIATE CODE FOR FUNCTION: f2
+#-----------------------------------------------------------------------------
 # temps used:   10
 # svtemps used: 0
 # args used:    0
@@ -508,139 +607,6 @@
 # dest -> ST_TEMPORARY (7)
 # src1 -> ST_TEMPORARY (6)
 # src2 -> ST_TEMPORARY (9)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (6)
-# src1 -> ST_TEMPORARY (5)
-# src2 -> ST_TEMPORARY (7)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (5)
-# src1 -> ST_TEMPORARY (4)
-# src2 -> ST_TEMPORARY (6)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_TEMPORARY (3)
-# src2 -> ST_TEMPORARY (5)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (4)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (3)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (2)
-# |
-# >
-# CNT_SW
-# ------
-# dest -> ST_PRIMITIVE (x)
-# src1 -> ST_TEMPORARY (1)
-#-----------------------------------------------------------------------------
-# INTERMEDIATE CODE FOR FUNCTION: f2
-#-----------------------------------------------------------------------------
-# temps used:   11
-# svtemps used: 0
-# args used:    0
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_INTCON (1)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_INTCON (2)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_INTCON (3)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_INTCON (4)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_INTCON (5)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (5)
-# src1 -> ST_INTCON (6)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (6)
-# src1 -> ST_INTCON (7)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (7)
-# src1 -> ST_INTCON (8)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (8)
-# src1 -> ST_INTCON (9)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (9)
-# src1 -> ST_INTCON (10)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (10)
-# src1 -> ST_TEMPORARY (8)
-# src2 -> ST_TEMPORARY (9)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (8)
-# src1 -> ST_TEMPORARY (7)
-# src2 -> ST_TEMPORARY (10)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (7)
-# src1 -> ST_TEMPORARY (6)
-# src2 -> ST_TEMPORARY (8)
 # |
 # >
 # CNT_ADD
@@ -1596,7 +1562,7 @@ _f2:
   # |--------------------------------|
   # |               x                |
   # |--------------------------------| sp+4
-  # |            <temp10>            |
+  # |            <temp9>             |
   # |--------------------------------| sp+0
   la $sp, -8($sp)
 
@@ -1711,20 +1677,22 @@ _f5:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |               x                |
-  # |--------------------------------| sp+104
+  # |--------------------------------| sp+108
   # |              $ra               |
-  # |--------------------------------| sp+100
+  # |--------------------------------| sp+104
   # |            <temp15>            |
-  # |--------------------------------| sp+96
+  # |--------------------------------| sp+100
   # |            <temp14>            |
-  # |--------------------------------| sp+92
+  # |--------------------------------| sp+96
   # |            <temp13>            |
-  # |--------------------------------| sp+88
+  # |--------------------------------| sp+92
   # |            <temp12>            |
-  # |--------------------------------| sp+84
+  # |--------------------------------| sp+88
   # |            <temp11>            |
-  # |--------------------------------| sp+80
+  # |--------------------------------| sp+84
   # |            <temp10>            |
+  # |--------------------------------| sp+80
+  # |            <temp9>             |
   # |--------------------------------| sp+76
   # |           <svtemp14>           |
   # |--------------------------------| sp+72
@@ -1758,7 +1726,7 @@ _f5:
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -108($sp)
+  la $sp, -112($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
   sw $s2, 24($sp)
@@ -1767,10 +1735,10 @@ _f5:
   sw $s5, 36($sp)
   sw $s6, 40($sp)
   sw $s7, 44($sp)
-  sw $ra, 100($sp)
+  sw $ra, 104($sp)
 
 __leave_f5:
-  lw $ra, 100($sp)
+  lw $ra, 104($sp)
   lw $s7, 44($sp)
   lw $s6, 40($sp)
   lw $s5, 36($sp)
@@ -1779,7 +1747,7 @@ __leave_f5:
   lw $s2, 24($sp)
   lw $s1, 20($sp)
   lw $s0, 16($sp)
-  la $sp, 108($sp)
+  la $sp, 112($sp)
   jr $ra
 
 _main:

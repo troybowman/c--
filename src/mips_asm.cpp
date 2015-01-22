@@ -9,9 +9,9 @@
 #define TAB1 "  "
 #define TAB2 "    "
 
-#define TEMPREGQTY 10
+#define TEMPREGQTY 9
 static const char *tempregs[TEMPREGQTY] =
-  { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9" };
+  { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8" };
 
 #define SVREGQTY 8
 static const char *svregs[SVREGQTY] =
@@ -20,6 +20,9 @@ static const char *svregs[SVREGQTY] =
 #define ARGREGQTY 4
 static const char *argregs[ARGREGQTY] =
   { "$a0", "$a1", "$a2", "$a3" };
+
+// used to store temporaries in memory when we run out of temp registers
+#define RESERVED_TEMP "$t9"
 
 static FILE *outfile;
 static symtab_t gsyms; // all named symbols (labels, strings, src symbols)
@@ -61,6 +64,7 @@ static void gen_asm_names(T &syms, const char *pfx = "", bool make_dummy_names =
     }
     else
     {
+      // TODO: use pfx
       prepare_named_symbol(sym, "%s%s", "_", sym->c_str());
     }
   }
