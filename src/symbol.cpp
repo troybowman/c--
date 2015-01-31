@@ -10,7 +10,7 @@ symbol_t::symbol_t(uint32_t flags, const char *name, int line, symbol_type_t typ
   switch ( type )
   {
     case ST_ARRAY:
-      _size = va_arg(va, asize_t);
+      _size = va_arg(va, ea_t);
     case ST_PRIMITIVE:
       _base = PRIM_UNKNOWN;
       break;

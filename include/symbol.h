@@ -1,13 +1,12 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <stdint.h>
-
 #include <vector>
 #include <string>
 #include <list>
 #include <map>
 
+#include <ea.h>
 #include <messages.h>
 
 class symtab_t;
@@ -30,8 +29,8 @@ class symloc_t
     const char *_reg;
     struct
     {
-      uint32_t _off;
-      uint8_t  _flags;
+      ea_t    _off;
+      uint8_t _flags;
       #define SLF_FP  0x1
       #define SLF_SP  0x2
       #define SLF_SUB 0x4
@@ -54,7 +53,7 @@ public:
 
   symloc_type_t type() const { return _type;  }
   const char *reg()    const { return _reg;   }
-  uint32_t stkoff()    const { return _off;   }
+  ea_t stkoff()        const { return _off;   }
   uint8_t flags()      const { return _flags; }
 };
 
@@ -65,10 +64,6 @@ enum primitive_t
   PRIM_INT,
   PRIM_CHAR
 };
-
-//-----------------------------------------------------------------------------
-typedef uint32_t asize_t;   // array size
-#define BADSIZE asize_t(-1) // invalid array size
 
 //-----------------------------------------------------------------------------
 enum return_type_t
@@ -118,7 +113,7 @@ class symbol_t
     struct                // ST_ARRAY
     {
       primitive_t _eltyp;
-      asize_t _size;
+      ea_t _size;
     };
     struct                // ST_FUNCTION
     {
@@ -151,7 +146,7 @@ public:
   int val()            const { return _val; }
 
   primitive_t base()   const { return _base; }
-  asize_t size()       const { return _size; }
+  ea_t size()          const { return _size; }
 
   return_type_t rt()   const { return _rt; }
   symlist_t *params()  const { return _params; }
@@ -163,7 +158,7 @@ public:
   void set_name(const char *name)  { _name.assign(name); }
 
   void set_base(primitive_t base)  { _base = base; }
-  void set_size(asize_t size)      { _size = size; }
+  void set_size(ea_t size)         { _size = size; }
 
   void set_rt(return_type_t rt)    { _rt = rt; if ( _rt == RT_VOID ) set_ret_resolved(); }
   void set_extern()                { _flags |= SF_EXTERN; }

@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
 #include "mips_asm.h"
 
@@ -128,11 +127,11 @@ template<class T>
 static uint32_t build_frame_section(
     frame_section_t &sec,
     uint32_t framesize,
-    uint32_t start = BADSIZE)
+    uint32_t start = BADADDR)
 {
   sec.off = framesize;
 
-  T sizer(start == BADSIZE ? sec.off : start);
+  T sizer(start == BADADDR ? sec.off : start);
   sec.visit_items(sizer);
 
   sec.size = sizer.off - sec.off;
