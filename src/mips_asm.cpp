@@ -127,11 +127,11 @@ template<class T>
 static uint32_t build_frame_section(
     frame_section_t &sec,
     uint32_t framesize,
-    uint32_t start = BADADDR)
+    uint32_t start = BADOFFSET)
 {
   sec.off = framesize;
 
-  T sizer(start == BADADDR ? sec.off : start);
+  T sizer(start == BADOFFSET ? sec.off : start);
   sec.visit_items(sizer);
 
   sec.size = sizer.off - sec.off;

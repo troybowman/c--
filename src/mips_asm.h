@@ -16,7 +16,7 @@ struct frame_item_visitor_t
 {
   uint32_t off;
 
-  frame_item_visitor_t() : off(BADADDR) {}
+  frame_item_visitor_t() : off(BADOFFSET) {}
   frame_item_visitor_t(uint32_t _off) : off(_off) {}
 
   virtual void visit_item(symbol_t &sym, int idx) = 0;
@@ -108,7 +108,7 @@ struct frame_summary_t
   list_section_t  args;
 
   frame_summary_t(codefunc_t &cf)
-    : size(BADADDR), is_call_frame(cf.has_call), params(*cf.sym.params()),
+    : size(BADOFFSET), is_call_frame(cf.has_call), params(*cf.sym.params()),
       lvars(*cf.sym.symbols()), ra(cf.ra), temps(cf.temps),
       svtemps(cf.svtemps), args(cf.args) {}
 

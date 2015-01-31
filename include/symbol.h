@@ -6,7 +6,7 @@
 #include <list>
 #include <map>
 
-#include <ea.h>
+#include <offset.h>
 #include <messages.h>
 
 class symtab_t;
@@ -29,8 +29,8 @@ class symloc_t
     const char *_reg;
     struct
     {
-      ea_t    _off;
-      uint8_t _flags;
+      offset_t _off;
+      uint8_t  _flags;
       #define SLF_FP  0x1
       #define SLF_SP  0x2
       #define SLF_SUB 0x4
@@ -53,7 +53,7 @@ public:
 
   symloc_type_t type() const { return _type;  }
   const char *reg()    const { return _reg;   }
-  ea_t stkoff()        const { return _off;   }
+  offset_t stkoff()    const { return _off;   }
   uint8_t flags()      const { return _flags; }
 };
 
@@ -113,7 +113,7 @@ class symbol_t
     struct                // ST_ARRAY
     {
       primitive_t _eltyp;
-      ea_t _size;
+      offsize_t   _size;
     };
     struct                // ST_FUNCTION
     {
@@ -146,7 +146,7 @@ public:
   int val()            const { return _val; }
 
   primitive_t base()   const { return _base; }
-  ea_t size()          const { return _size; }
+  offsize_t size()     const { return _size; }
 
   return_type_t rt()   const { return _rt; }
   symlist_t *params()  const { return _params; }
@@ -158,7 +158,7 @@ public:
   void set_name(const char *name)  { _name.assign(name); }
 
   void set_base(primitive_t base)  { _base = base; }
-  void set_size(ea_t size)         { _size = size; }
+  void set_size(offsize_t size)    { _size = size; }
 
   void set_rt(return_type_t rt)    { _rt = rt; if ( _rt == RT_VOID ) set_ret_resolved(); }
   void set_extern()                { _flags |= SF_EXTERN; }
