@@ -1,28 +1,34 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "mips_asm.h"
+#include <asm.h>
+#include <resource.h>
 
 #define MAXNAMELEN 32
 
 #define TAB1 "  "
 #define TAB2 "    "
 
-#define TEMPREGQTY 9
+//-----------------------------------------------------------------------------
 static const char *tempregs[TEMPREGQTY] =
-  { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8" };
+  { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6" };
 
-#define SVREGQTY 8
 static const char *svregs[SVREGQTY] =
   { "$s0", "$s1", "$s2", "$s3", "$s4", "$s5", "$s6", "$s7" };
 
-#define ARGREGQTY 4
 static const char *argregs[ARGREGQTY] =
   { "$a0", "$a1", "$a2", "$a3" };
 
 // used to store temporaries in memory when we run out of temp registers
-#define RESERVED_TEMP "$t9"
+#define RESERVED_TEMP1 "$t7"
+#define RESERVED_TEMP2 "$t8"
+#define RESERVED_TEMP3 "$t9"
 
+static symbol_t *t7;
+static symbol_t *t8;
+static symbol_t *t9;
+
+//-----------------------------------------------------------------------------
 static FILE *outfile;
 static symtab_t gsyms; // all named symbols (labels, strings, src symbols)
 static void run_asm_engine(const codenode_t *code, symbol_t *epilogue);
@@ -115,7 +121,7 @@ static void gen_data_section()
                            TAB2".align 2\n",  sym.str());
         break;
       default:
-        INTERR(0);
+        INTERR(1085);
     }
 
     fprintf(outfile, "\n");
@@ -242,7 +248,7 @@ static uint32_t build_lvars_section(frame_section_t &lvars, uint32_t framesize)
                : lvar.size();
           break;
         default:
-          INTERR(0);
+          INTERR(1086);
       }
       off = (off + (WORDSIZE-1)) & ~(WORDSIZE-1); // align to word boundary
     }

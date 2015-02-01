@@ -345,9 +345,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: right_back
 #-----------------------------------------------------------------------------
-# temps used:   1
-# svtemps used: 0
-# args used:    0
+# temps used:    1
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 # CNT_LW
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -361,9 +363,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: num_at
 #-----------------------------------------------------------------------------
-# temps used:   3
-# svtemps used: 0
-# args used:    0
+# temps used:    3
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 # CNT_LW
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -396,9 +400,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
-# temps used:   3
-# svtemps used: 0
-# args used:    0
+# temps used:    3
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 # CNT_LW
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -431,21 +437,27 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: bunch
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: blip
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: stuff
 #-----------------------------------------------------------------------------
-# temps used:   10
-# svtemps used: 0
-# args used:    10
+# temps used:    7
+# svregs used:   3
+# stktemps used: 0
+# regargs used:  4
+# stkargs used:  6
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -454,7 +466,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -484,7 +496,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -520,13 +532,13 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -562,13 +574,13 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -634,79 +646,79 @@
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (7)
+# dest -> ST_SAVED_TEMPORARY (0)
 # src1 -> ST_CHARCON ('8')
 # |
 # >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (8)
+# dest -> ST_SAVED_TEMPORARY (1)
 # src1 -> ST_STRCON ("nine")
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (9)
+# dest -> ST_SAVED_TEMPORARY (2)
 # src1 -> ST_INTCON (10)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (9)
-# src1 -> ST_TEMPORARY (9)
+# dest -> ST_STACK_ARGUMENT (5)
+# src1 -> ST_SAVED_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (8)
-# src1 -> ST_TEMPORARY (8)
+# dest -> ST_STACK_ARGUMENT (4)
+# src1 -> ST_SAVED_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (7)
-# src1 -> ST_TEMPORARY (7)
+# dest -> ST_STACK_ARGUMENT (3)
+# src1 -> ST_SAVED_TEMPORARY (0)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (6)
+# dest -> ST_STACK_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (6)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (5)
+# dest -> ST_STACK_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (5)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (4)
+# dest -> ST_STACK_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (4)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (3)
+# dest -> ST_REG_ARGUMENT (3)
 # src1 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (2)
+# dest -> ST_REG_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -723,7 +735,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >

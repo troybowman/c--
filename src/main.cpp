@@ -9,7 +9,7 @@
 #include <codenode.h>
 #include <messages.h>
 
-#include "mips_asm.h"
+//#include "mips_asm.h"
 
 #define OUTFILE_EXT "asm"
 
@@ -107,7 +107,7 @@ static void process_args_error(args_t res, const char *prog)
       fprintf(stderr, "error: no input source file specified\n");
       break;
     default:
-      INTERR(0);
+      INTERR(1083);
   }
   fprintf(stderr, usagestr, prog);
   exit(FATAL_USAGE);
@@ -143,7 +143,7 @@ static args_t parseargs(int argc, char **argv)
       case ':':
         return args_t(ARGS_MISSING, optopt);
       default:
-        INTERR(0);
+        INTERR(1084);
     }
   }
 
@@ -203,8 +203,8 @@ int main(int argc, char **argv)
   DBG_CHECK_PHASE_FLAG(dbg_no_code);
 
   // backend ------------------------------------------------------------------
-  OPT_INIT_OUTFILE(args.str);
-  generate_mips_asm(outfile, ir);
+  //OPT_INIT_OUTFILE(args.str);
+  //generate_mips_asm(outfile, ir);
   //---------------------------------------------------------------------------
 
   fclose(outfile);

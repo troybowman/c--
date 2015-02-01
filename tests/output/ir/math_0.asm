@@ -125,9 +125,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:   4
-# svtemps used: 0
-# args used:    0
+# temps used:    4
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)

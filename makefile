@@ -21,10 +21,11 @@ endif
 
 OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o  $(OBJ)symbol.o   \
 					 $(OBJ)treenode.o $(OBJ)codenode.o $(OBJ)messages.o \
-					 $(OBJ)main.o     $(OBJ)mips_asm.o
+					 $(OBJ)main.o     #$(OBJ)mips_asm.o
 
 HFILES   = $(I)offset.h   $(I)symbol.h   $(I)treenode.h \
-					 $(I)codenode.h $(I)messages.h $(I)parse.h
+					 $(I)codenode.h $(I)messages.h $(I)parse.h    \
+					 $(I)resource.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
@@ -61,8 +62,8 @@ $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 #------------------------------------------------------------------------------
-$(OBJ)mips_asm.o: $(SRC)mips_asm.cpp $(SRC)mips_asm.h $(HFILES)
-	$(CC) $(CFLAGS) -Wno-local-type-template-args -c -o $@ $<
+#$(OBJ)mips_asm.o: $(SRC)mips_asm.cpp $(SRC)mips_asm.h $(HFILES)
+	#$(CC) $(CFLAGS) -Wno-local-type-template-args -c -o $@ $<
 
 #------------------------------------------------------------------------------
 .PHONY: clean

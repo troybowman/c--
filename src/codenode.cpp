@@ -4,49 +4,6 @@
 #include <messages.h>
 
 //-----------------------------------------------------------------------------
-class resource_manager_t
-{
-  symbol_type_t _type;
-  int _cnt;
-
-  typedef std::map<int, symbol_t *> rmap_t;
-  rmap_t _free;
-  rmap_t _used;
-
-public:
-  resource_manager_t(symbol_type_t type)
-    : _type(type), _cnt(0) {}
-
-  symbol_t *gen_resource()
-  {
-    if ( _free.size() > 0 )
-    {
-      symbol_t *ret = _free.begin()->second;
-      _free.erase(_free.begin());
-      return ret;
-    }
-    else
-    {
-      return new symbol_t(_type, _cnt++);
-    }
-  }
-  void free(symbol_t *s) { _free[s->val()] = s; }
-  void used(symbol_t *s) { _used[s->val()] = s; }
-  void reset()
-  {
-    _free.clear();
-    rmap_t::iterator i;
-    for ( i = _used.begin(); i != _used.end(); i++ )
-      free(i->second);
-  }
-  void get_used(symlist_t &list)
-  {
-    for ( rmap_t::iterator i = _used.begin(); i != _used.end(); i++ )
-      list.push_back(i->second);
-  }
-};
-
-//-----------------------------------------------------------------------------
 struct tree_ctx_t
 {
   uint32_t flags;
@@ -66,10 +23,6 @@ class codefunc_engine_t
   codefunc_t &cf;
   ir_t &ir;
 
-  resource_manager_t temps;
-  resource_manager_t svtemps;
-  resource_manager_t args;
-
   codenode_t *head;
   codenode_t *tail;
 
@@ -80,6 +33,7 @@ private:
   void check_src(symbol_t *src);
 
   symbol_t *gen_temp(uint32_t flags = 0);
+  symbol_t *gen_argloc();
 
   void append(
       codenode_type_t type,
@@ -92,9 +46,6 @@ private:
 public:
   codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
     : cf(_cf), ir(_ir),
-      temps(ST_TEMPORARY),
-      svtemps(ST_SAVED_TEMPORARY),
-      args(ST_ARGUMENT),
       head(NULL), tail(NULL),
       lblcnt(0) {}
 
@@ -138,7 +89,7 @@ static codenode_type_t tnt2cnt(treenode_type_t type)
     case TNT_EQ:    return CNT_SEQ;
     case TNT_NEQ:   return CNT_SNE;
     default:
-      INTERR(0);
+      INTERR(1081);
   }
 }
 
@@ -151,14 +102,25 @@ void codefunc_engine_t::check_dest(symbol_t *sym)
   switch ( sym->type() )
   {
     case ST_TEMPORARY:
-      temps.used(sym);
+      cf.temps.use(sym);
       break;
     case ST_SAVED_TEMPORARY:
-      svtemps.used(sym);
+      cf.svregs.use(sym);
       break;
-    case ST_ARGUMENT:
-      args.used(sym);
+    case ST_REG_ARGUMENT:
+      cf.regargs.use(sym);
       break;
+    case ST_STACK_ARGUMENT:
+      cf.stkargs.use(sym);
+      break;
+    case ST_STACK_TEMPORARY:
+      cf.stktemps.use(sym);
+      break;
+    case ST_RETVAL:
+      cf.retval.use(sym);
+      break;
+    case ST_RETADDR:
+      INTERR(1082);
     default:
       break;
   }
@@ -169,19 +131,28 @@ void codefunc_engine_t::check_src(symbol_t *sym)
 {
   if ( sym == NULL )
     return;
+
   switch ( sym->type() )
   {
     case ST_TEMPORARY:
-      temps.free(sym);
+      cf.temps.free(sym);
       break;
     case ST_SAVED_TEMPORARY:
-      svtemps.free(sym);
+      cf.svregs.free(sym);
+      break;
+    case ST_STACK_TEMPORARY:
+      cf.stktemps.free(sym);
+      break;
+    case ST_RETVAL:
+      cf.retval.free(sym);
       break;
     case ST_LABEL:
       sym->set_val(lblcnt++);
       ir.labels.push_back(sym);
       break;
-    case ST_ARGUMENT:
+    case ST_REG_ARGUMENT:
+    case ST_STACK_ARGUMENT:
+    case ST_RETADDR:
       INTERR(1079);
     default:
       break;
@@ -189,9 +160,38 @@ void codefunc_engine_t::check_src(symbol_t *sym)
 }
 
 //-----------------------------------------------------------------------------
-inline symbol_t *codefunc_engine_t::gen_temp(uint32_t flags)
+symbol_t *codefunc_engine_t::gen_temp(uint32_t flags)
 {
-  return (flags & TCTX_SAVE) != 0 ? svtemps.gen_resource() : temps.gen_resource();
+  symbol_t *temp;
+
+  if ( (flags & TCTX_SAVE) == 0 )
+  {
+    // use a temporary
+    temp = cf.temps.gen_resource();
+    // use a saved reg if no temps left
+    if ( temp == NULL )
+      temp = cf.svregs.gen_resource();
+  }
+  else
+  {
+    // this temp MUST persist across a function call
+    temp = cf.svregs.gen_resource();
+  }
+
+  // if all else fails, use the stack
+  if ( temp == NULL )
+    temp = cf.stktemps.gen_resource();
+
+  return temp;
+}
+
+//-----------------------------------------------------------------------------
+symbol_t *codefunc_engine_t::gen_argloc()
+{
+  symbol_t *argloc = cf.regargs.gen_resource();
+  if ( argloc == NULL )
+    argloc = cf.stkargs.gen_resource();
+  return argloc;
 }
 
 //-----------------------------------------------------------------------------
@@ -308,7 +308,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( !cf.has_call )
         {
           cf.has_call = true;
-          cf.ra = new symbol_t(ST_RETADDR);
+          cf.ra.use(cf.ra.gen_resource());
         }
 
         symlist_t argvals;
@@ -319,7 +319,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 
         int size = argvals.size();
         for ( int i = 0; i < size; i++ )
-          arglocs.push_back(args.gen_resource());
+          arglocs.push_back(gen_argloc());
 
         symlist_t::reverse_iterator val = argvals.rbegin();
         symlist_t::reverse_iterator loc = arglocs.rbegin();
@@ -327,15 +327,18 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
           append(CNT_ARG, *loc, *val);
 
-        args.reset();
+        cf.regargs.reset();
+        cf.stkargs.reset();
 
         symbol_t *f = tree->sym;
         if ( f->rt() != RT_VOID )
         {
-          append(CNT_CALL, &ir.retval, f);
+          symbol_t *retval = cf.retval.gen_resource();
+          append(CNT_CALL, retval, f);
 
           symbol_t *temp = gen_temp(ctx.flags);
-          append(CNT_MOV, temp, &ir.retval);
+          append(CNT_MOV, temp, retval);
+
           return temp;
         }
 
@@ -346,7 +349,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       {
         symbol_t *val = generate(tree->children[RET_EXPR]);
         if ( val != NULL )
-          append(CNT_RET, &ir.retval, val);
+          append(CNT_RET, cf.retval.gen_resource(), val);
         else
           append(CNT_RET);
         break;
@@ -411,8 +414,11 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       INTERR(1059);
   }
 
-  temps.reset();
-  svtemps.reset();
+  cf.temps.reset();
+  cf.svregs.reset();
+  cf.stktemps.reset();
+  cf.retval.reset();
+
   return NULL;
 }
 
@@ -421,9 +427,6 @@ void codefunc_engine_t::start(const treenode_t *root)
 {
   generate(root);
   cf.code = head;
-  temps.get_used(cf.temps);
-  svtemps.get_used(cf.svtemps);
-  args.get_used(cf.args);
 }
 
 //-----------------------------------------------------------------------------

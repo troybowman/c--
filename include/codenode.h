@@ -1,7 +1,7 @@
 #ifndef CODENODE_H
 #define CODENODE_H
 
-#include <map>
+#include <resource.h>
 
 class symbol_t;
 struct treenode_t;
@@ -60,19 +60,22 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+// intermediate representation of a function
 struct codefunc_t
 {
   symbol_t &sym;
   codenode_t *code;
   bool has_call;
 
-  symbol_t *ra;
-  symlist_t temps;
-  symlist_t svtemps;
-  symlist_t args;
+  ra_manager_t      ra;
+  stktemp_manager_t stktemps;
+  temp_manager_t    temps;
+  svreg_manager_t   svregs;
+  argreg_manager_t  regargs;
+  stkarg_manager_t  stkargs;
+  retval_manager_t  retval;
 
-  codefunc_t(symbol_t &s)
-    : sym(s), code(NULL), has_call(false), ra(NULL) {}
+  codefunc_t(symbol_t &s) : sym(s), code(NULL), has_call(false) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -84,10 +87,9 @@ struct ir_t
   symtab_t gsyms;
   symtab_t strings;
   symlist_t labels;
-  symbol_t retval;
   codefuncs_t funcs;
 
-  ir_t(symtab_t &_gsyms) : retval(ST_RETVAL) { gsyms.swap(_gsyms); }
+  ir_t(symtab_t &_gsyms) { gsyms.swap(_gsyms); }
 };
 
 //-----------------------------------------------------------------------------

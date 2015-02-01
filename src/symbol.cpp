@@ -18,7 +18,7 @@ symbol_t::symbol_t(uint32_t flags, const char *name, int line, symbol_type_t typ
       _rt      = RT_UNKNOWN;
       _symbols = new symtab_t();
       _params  = va_arg(va, symlist_t *);
-      ASSERT(0, _params != NULL);
+      ASSERT(1088, _params != NULL);
       break;
     default:
       INTERR(1065);
@@ -36,7 +36,9 @@ symbol_t::symbol_t(symbol_type_t type, ...) : _type(type)
     case ST_INTCON:
     case ST_TEMPORARY:
     case ST_SAVED_TEMPORARY:
-    case ST_ARGUMENT:
+    case ST_STACK_TEMPORARY:
+    case ST_REG_ARGUMENT:
+    case ST_STACK_ARGUMENT:
       _val = va_arg(va, int);
       break;
     case ST_STRCON:

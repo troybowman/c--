@@ -239,11 +239,13 @@ static const char *st2str(uint32_t type)
     case ST_FUNCTION:        return "ST_FUNCTION";
     case ST_TEMPORARY:       return "ST_TEMPORARY";
     case ST_SAVED_TEMPORARY: return "ST_SAVED_TEMPORARY";
+    case ST_STACK_TEMPORARY: return "ST_STACK_TEMPORARY";
     case ST_INTCON:          return "ST_INTCON";
     case ST_CHARCON:         return "ST_CHARCON";
     case ST_STRCON:          return "ST_STRCON";
     case ST_LABEL:           return "ST_LABEL";
-    case ST_ARGUMENT:        return "ST_ARGUMENT";
+    case ST_REG_ARGUMENT:    return "ST_REG_ARGUMENT";
+    case ST_STACK_ARGUMENT:  return "ST_STACK_ARGUMENT";
     case ST_RETVAL:          return "ST_RETVAL";
     default:
       INTERR(1061);
@@ -264,7 +266,9 @@ static const char *addr2str(char *buf, size_t bufsize, const symbol_t *addr)
       break;
     case ST_TEMPORARY:
     case ST_SAVED_TEMPORARY:
-    case ST_ARGUMENT:
+    case ST_STACK_TEMPORARY:
+    case ST_REG_ARGUMENT:
+    case ST_STACK_ARGUMENT:
     case ST_INTCON:
     case ST_LABEL:
       snprintf(buf, bufsize, "%s (%d)", type, addr->val());
@@ -418,9 +422,11 @@ void print_ir(const ir_t &ir)
   {
     codefunc_t *cf = *i;
     fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", cf->sym.c_str());
-    cmtout(0, "temps used:   %d\n", cf->temps.size());
-    cmtout(0, "svtemps used: %d\n", cf->svtemps.size());
-    cmtout(0, "args used:    %d\n", cf->args.size());
+    cmtout(0, "temps used:    %d\n", cf->temps.count());
+    cmtout(0, "svregs used:   %d\n", cf->svregs.count());
+    cmtout(0, "stktemps used: %d\n", cf->stktemps.count());
+    cmtout(0, "regargs used:  %d\n", cf->regargs.count());
+    cmtout(0, "stkargs used:  %d\n", cf->stkargs.count());
     print_ir_code(cf->code);
   }
 }

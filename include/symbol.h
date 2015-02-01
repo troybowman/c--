@@ -31,9 +31,9 @@ class symloc_t
     {
       offset_t _off;
       uint8_t  _flags;
-      #define SLF_FP  0x1
-      #define SLF_SP  0x2
-      #define SLF_SUB 0x4
+#define SLF_FP  0x1
+#define SLF_SP  0x2
+#define SLF_SUB 0x4
     };
   };
 
@@ -77,18 +77,20 @@ enum return_type_t
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_PRIMITIVE,        // source level primitive (int/char)
-  ST_ARRAY,            // source level array. base type is a primitive
-  ST_FUNCTION,         // source level function
-  ST_TEMPORARY,        // asm temporary value
-  ST_SAVED_TEMPORARY,  // temporary that must persist across a function call
-  ST_INTCON,           // integer constant
-  ST_CHARCON,          // character constant
-  ST_STRCON,           // string constant
-  ST_LABEL,            // asm label
-  ST_RETVAL,           // asm return value location
-  ST_RETADDR,          // asm return address location
-  ST_ARGUMENT          // asm function argument location
+  ST_PRIMITIVE,       // source level primitive (int/char)
+  ST_ARRAY,           // source level array. base type is a primitive
+  ST_FUNCTION,        // source level function
+  ST_TEMPORARY,       // asm temporary value
+  ST_SAVED_TEMPORARY, // temporary that must persist across a function call
+  ST_STACK_TEMPORARY, // temporary that must be stored on the stack
+  ST_INTCON,          // integer constant
+  ST_CHARCON,         // character constant
+  ST_STRCON,          // string constant
+  ST_LABEL,           // asm label
+  ST_RETVAL,          // asm return value location
+  ST_RETADDR,         // asm return address location
+  ST_REG_ARGUMENT,    // asm function register argument
+  ST_STACK_ARGUMENT   // asm function stack argument
 };
 
 //-----------------------------------------------------------------------------
@@ -107,7 +109,7 @@ class symbol_t
 
   union
   {
-    int _val;             // ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_ARGUMENT, ST_INTCON
+    int _val;             // ST_INTCON, all arguments and temporaries
     const char *_str;     // ST_STRCON, ST_CHARCON
     primitive_t _base;    // ST_PRIMITIVE/ST_ARRAY
     struct                // ST_ARRAY
