@@ -1,7 +1,10 @@
+#ifndef RESOURCE_H
+#define RESOURCE_H
+
 #include <symbol.h>
 #include <messages.h>
 
-#define TMPREGQTY  7
+#define TEMPREGQTY 7
 #define SVREGQTY   8
 #define ARGREGQTY  4
 
@@ -75,7 +78,7 @@ public:
 class temp_manager_t : public reg_manager_t
 {
 public:
-  temp_manager_t() : reg_manager_t(ST_TEMPORARY, TMPREGQTY) {}
+  temp_manager_t() : reg_manager_t(ST_TEMPORARY, TEMPREGQTY) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -139,3 +142,5 @@ class retval_manager_t : public reg_manager_t
 public:
   retval_manager_t() : reg_manager_t(ST_RETVAL, 1) {}
 };
+
+#endif // RESOURCE_H

@@ -184,21 +184,27 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: func
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: simple
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: another
 #-----------------------------------------------------------------------------
-# temps used:   4
-# svtemps used: 0
-# args used:    4
+# temps used:    4
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  4
+# stkargs used:  0
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -225,25 +231,25 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (3)
+# dest -> ST_REG_ARGUMENT (3)
 # src1 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (2)
+# dest -> ST_REG_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -253,9 +259,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 
 .data
 
@@ -265,6 +273,8 @@ _func:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+84
   # |            section             |
   # |--------------------------------| sp+80
   # |             frame              |
@@ -285,10 +295,11 @@ _func:
   # |--------------------------------| sp+4
   # |              this              |
   # |--------------------------------| sp+0
-  la $sp, -84($sp)
+  la $sp, -88($sp)
+
 
 __leave_func:
-  la $sp, 84($sp)
+  la $sp, 88($sp)
   jr $ra
 
 _simple:
@@ -302,8 +313,9 @@ _simple:
   # |        <two is in $a1>         |
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_simple:
   la $sp, 0($sp)
@@ -314,29 +326,34 @@ _another:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |              two               |
-  # |--------------------------------| sp+44
+  # |--------------------------------| sp+52
   # |              one               |
-  # |--------------------------------| sp+40
+  # |--------------------------------| sp+48  <-- start of caller's stack
+  # |           <padding>            |
+  # |--------------------------------| sp+44
   # |             array3             |
-  # |--------------------------------| sp+28
+  # |--------------------------------| sp+32
   # |             array2             |
-  # |--------------------------------| sp+28
+  # |--------------------------------| sp+32
   # |             array1             |
-  # |--------------------------------| sp+24
+  # |--------------------------------| sp+28
   # |             array              |
+  # |--------------------------------| sp+24
+  # |           <padding>            |
   # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -40($sp)
+  la $sp, -48($sp)
   sw $ra, 16($sp)
-  sw $a0, 40($sp)
-  sw $a1, 44($sp)
+  sw $a0, 48($sp)
+  sw $a1, 52($sp)
+
 
 __leave_another:
   lw $ra, 16($sp)
-  la $sp, 40($sp)
+  la $sp, 48($sp)
   jr $ra
 
 _main:
@@ -344,6 +361,7 @@ _main:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   la $sp, -0($sp)
+
 
 __leave_main:
   la $sp, 0($sp)

@@ -537,15 +537,19 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f0
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f1
 #-----------------------------------------------------------------------------
-# temps used:   1
-# svtemps used: 0
-# args used:    1
+# temps used:    1
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  1
+# stkargs used:  0
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -554,7 +558,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -564,15 +568,19 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f2
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f3
 #-----------------------------------------------------------------------------
-# temps used:   2
-# svtemps used: 0
-# args used:    2
+# temps used:    2
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  2
+# stkargs used:  0
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -587,13 +595,13 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -603,15 +611,19 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f4
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f5
 #-----------------------------------------------------------------------------
-# temps used:   3
-# svtemps used: 0
-# args used:    3
+# temps used:    3
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  3
+# stkargs used:  0
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -632,19 +644,19 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (2)
+# dest -> ST_REG_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -654,15 +666,19 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f6
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f7
 #-----------------------------------------------------------------------------
-# temps used:   4
-# svtemps used: 0
-# args used:    4
+# temps used:    4
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  4
+# stkargs used:  0
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -689,25 +705,25 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (3)
+# dest -> ST_REG_ARGUMENT (3)
 # src1 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (2)
+# dest -> ST_REG_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -717,15 +733,19 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f8
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f9
 #-----------------------------------------------------------------------------
-# temps used:   5
-# svtemps used: 0
-# args used:    5
+# temps used:    5
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  4
+# stkargs used:  1
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -758,31 +778,31 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (4)
+# dest -> ST_STACK_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (4)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (3)
+# dest -> ST_REG_ARGUMENT (3)
 # src1 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (2)
+# dest -> ST_REG_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -792,15 +812,19 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f10
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f11
 #-----------------------------------------------------------------------------
-# temps used:   6
-# svtemps used: 0
-# args used:    6
+# temps used:    6
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  4
+# stkargs used:  2
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -839,37 +863,37 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (5)
+# dest -> ST_STACK_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (5)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (4)
+# dest -> ST_STACK_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (4)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (3)
+# dest -> ST_REG_ARGUMENT (3)
 # src1 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (2)
+# dest -> ST_REG_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -879,15 +903,19 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f12
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f13
 #-----------------------------------------------------------------------------
-# temps used:   7
-# svtemps used: 0
-# args used:    7
+# temps used:    7
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  4
+# stkargs used:  3
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -932,43 +960,43 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (6)
+# dest -> ST_STACK_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (6)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (5)
+# dest -> ST_STACK_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (5)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (4)
+# dest -> ST_STACK_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (4)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (3)
+# dest -> ST_REG_ARGUMENT (3)
 # src1 -> ST_TEMPORARY (3)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (2)
+# dest -> ST_REG_ARGUMENT (2)
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -978,9 +1006,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:   0
-# svtemps used: 0
-# args used:    0
+# temps used:    0
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 
 .data
 
@@ -991,8 +1021,9 @@ _f0:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_f0:
   la $sp, 0($sp)
@@ -1002,16 +1033,19 @@ _f1:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
+
 
 __leave_f1:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra
 
 _f2:
@@ -1021,8 +1055,9 @@ _f2:
   # |        <two is in $a1>         |
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_f2:
   la $sp, 0($sp)
@@ -1032,16 +1067,19 @@ _f3:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
+
 
 __leave_f3:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra
 
 _f4:
@@ -1053,8 +1091,9 @@ _f4:
   # |        <two is in $a1>         |
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_f4:
   la $sp, 0($sp)
@@ -1064,16 +1103,19 @@ _f5:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
+
 
 __leave_f5:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra
 
 _f6:
@@ -1087,8 +1129,9 @@ _f6:
   # |        <two is in $a1>         |
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_f6:
   la $sp, 0($sp)
@@ -1098,16 +1141,19 @@ _f7:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
+
 
 __leave_f7:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra
 
 _f8:
@@ -1123,8 +1169,9 @@ _f8:
   # |        <two is in $a1>         |
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_f8:
   la $sp, 0($sp)
@@ -1136,12 +1183,13 @@ _f9:
   # |--------------------------------|
   # |              $ra               |
   # |--------------------------------| sp+20
-  # |             <arg4>             |
+  # |           <stkarg 0>           |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 20($sp)
+
 
 __leave_f9:
   lw $ra, 20($sp)
@@ -1163,8 +1211,9 @@ _f10:
   # |        <two is in $a1>         |
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_f10:
   la $sp, 0($sp)
@@ -1174,20 +1223,23 @@ _f11:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+28
   # |              $ra               |
   # |--------------------------------| sp+24
-  # |             <arg5>             |
+  # |           <stkarg 1>           |
   # |--------------------------------| sp+20
-  # |             <arg4>             |
+  # |           <stkarg 0>           |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -28($sp)
+  la $sp, -32($sp)
   sw $ra, 24($sp)
+
 
 __leave_f11:
   lw $ra, 24($sp)
-  la $sp, 28($sp)
+  la $sp, 32($sp)
   jr $ra
 
 _f12:
@@ -1207,8 +1259,9 @@ _f12:
   # |        <two is in $a1>         |
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_f12:
   la $sp, 0($sp)
@@ -1220,16 +1273,17 @@ _f13:
   # |--------------------------------|
   # |              $ra               |
   # |--------------------------------| sp+28
-  # |             <arg6>             |
+  # |           <stkarg 2>           |
   # |--------------------------------| sp+24
-  # |             <arg5>             |
+  # |           <stkarg 1>           |
   # |--------------------------------| sp+20
-  # |             <arg4>             |
+  # |           <stkarg 0>           |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -32($sp)
   sw $ra, 28($sp)
+
 
 __leave_f13:
   lw $ra, 28($sp)
@@ -1241,6 +1295,7 @@ _main:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   la $sp, -0($sp)
+
 
 __leave_main:
   la $sp, 0($sp)

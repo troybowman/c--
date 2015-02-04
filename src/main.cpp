@@ -8,8 +8,7 @@
 #include <treenode.h>
 #include <codenode.h>
 #include <messages.h>
-
-//#include "mips_asm.h"
+#include <asm.h>
 
 #define OUTFILE_EXT "asm"
 
@@ -203,8 +202,8 @@ int main(int argc, char **argv)
   DBG_CHECK_PHASE_FLAG(dbg_no_code);
 
   // backend ------------------------------------------------------------------
-  //OPT_INIT_OUTFILE(args.str);
-  //generate_mips_asm(outfile, ir);
+  OPT_INIT_OUTFILE(args.str);
+  generate_mips_asm(outfile, ir);
   //---------------------------------------------------------------------------
 
   fclose(outfile);

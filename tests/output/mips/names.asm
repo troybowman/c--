@@ -236,9 +236,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
-# temps used:   3
-# svtemps used: 0
-# args used:    0
+# temps used:    3
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
 # CNT_LW
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -271,9 +273,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: L0
 #-----------------------------------------------------------------------------
-# temps used:   2
-# svtemps used: 0
-# args used:    2
+# temps used:    2
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  2
+# stkargs used:  0
 # CNT_LEA
 # -------
 # dest -> ST_TEMPORARY (0)
@@ -288,13 +292,13 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -317,9 +321,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: L2
 #-----------------------------------------------------------------------------
-# temps used:   2
-# svtemps used: 0
-# args used:    2
+# temps used:    2
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  2
+# stkargs used:  0
 # CNT_LEA
 # -------
 # dest -> ST_TEMPORARY (0)
@@ -334,13 +340,13 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -363,9 +369,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: L4
 #-----------------------------------------------------------------------------
-# temps used:   2
-# svtemps used: 0
-# args used:    2
+# temps used:    2
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  2
+# stkargs used:  0
 # CNT_LEA
 # -------
 # dest -> ST_TEMPORARY (0)
@@ -380,13 +388,13 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (1)
+# dest -> ST_REG_ARGUMENT (1)
 # src1 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -409,9 +417,11 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:   1
-# svtemps used: 0
-# args used:    1
+# temps used:    1
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  1
+# stkargs used:  0
 # CNT_LEA
 # -------
 # dest -> ST_TEMPORARY (0)
@@ -420,7 +430,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -450,7 +460,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -480,7 +490,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -510,7 +520,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -527,7 +537,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -544,7 +554,7 @@
 # >
 # CNT_ARG
 # -------
-# dest -> ST_ARGUMENT (0)
+# dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
 # |
 # >
@@ -587,8 +597,9 @@ _char_at:
   # |        <idx is in $a1>         |
   # |--------------------------------| sp+4
   # |       <string is in $a0>       |
-  # |--------------------------------| sp+0
+  # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
+
 
 __leave_char_at:
   la $sp, 0($sp)
@@ -599,18 +610,21 @@ _L0:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |             string             |
+  # |--------------------------------| sp+24  <-- start of caller's stack
+  # |           <padding>            |
   # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
-  sw $a0, 20($sp)
+  sw $a0, 24($sp)
+
 
 __leave_L0:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra
 
 _L2:
@@ -618,18 +632,21 @@ _L2:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |             string             |
+  # |--------------------------------| sp+24  <-- start of caller's stack
+  # |           <padding>            |
   # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
-  sw $a0, 20($sp)
+  sw $a0, 24($sp)
+
 
 __leave_L2:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra
 
 _L4:
@@ -637,32 +654,38 @@ _L4:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |             string             |
+  # |--------------------------------| sp+24  <-- start of caller's stack
+  # |           <padding>            |
   # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
-  sw $a0, 20($sp)
+  sw $a0, 24($sp)
+
 
 __leave_L4:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra
 
 _main:
 
   # STACK FRAME SUMMARY:
   # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+20
   # |              $ra               |
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -20($sp)
+  la $sp, -24($sp)
   sw $ra, 16($sp)
+
 
 __leave_main:
   lw $ra, 16($sp)
-  la $sp, 20($sp)
+  la $sp, 24($sp)
   jr $ra

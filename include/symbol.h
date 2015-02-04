@@ -48,7 +48,7 @@ public:
     { _type = SLT_GLOBAL; }
   void set_reg(const char *reg)
     { _type = SLT_REG; _reg = reg; }
-  void set_stkoff(uint32_t off, uint8_t flags)
+  void set_stkoff(uint32_t off, uint8_t flags = SLF_SP)
     { _type = SLT_STKOFF; _flags = flags; _off = off; }
 
   symloc_type_t type() const { return _type;  }
@@ -173,6 +173,8 @@ public:
 //-----------------------------------------------------------------------------
 class symlist_t : public std::list<symbol_t *>
 {
+  typedef std::list<symbol_t *> inherited;
+
 public:
   int idx(const_iterator i)
   {
@@ -186,6 +188,10 @@ public:
   {
     if ( !has(s) )
       push_back(s);
+  }
+  void assign(const symlist_t &list)
+  {
+    inherited::assign(list.begin(), list.end());
   }
 };
 
@@ -238,6 +244,13 @@ public:
   size_t size() const    { return list.size(); }
   void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }
   void clear()           { map.clear(); list.clear(); }
+
+  symlist_t *as_list() const
+  {
+    symlist_t *ret = new symlist_t;
+    ret->assign(list);
+    return ret;
+  }
 };
 
 //-----------------------------------------------------------------------------
