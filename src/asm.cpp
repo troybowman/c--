@@ -555,10 +555,10 @@ void stack_frame_t::dump()
 #endif // NDEBUG
 
 //-----------------------------------------------------------------------------
-static void init_temps(const resource_manager_t &rs)
+static void init_temps(resource_manager_t &rm)
 {
   symlist_t temps;
-  rs.get_used_resources(temps);
+  rm.get_used_resources(temps);
 
   for ( symlist_t::iterator i = temps.begin(); i != temps.end(); i++ )
   {
@@ -568,14 +568,22 @@ static void init_temps(const resource_manager_t &rs)
 }
 
 //-----------------------------------------------------------------------------
+static void init_retval(retval_manager_t &rm)
+{
+  symbol_t *retval = rm.gen_resource();
+  retval->loc.set_reg("$v0");
+}
+
+//-----------------------------------------------------------------------------
 static void gen_text_section(codefuncs_t &funcs)
 {
   fprintf(outfile, ".text\n");
 
   for ( codefuncs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
   {
-    const codefunc_t &cf = **i;
+    codefunc_t &cf = **i;
     init_temps(cf.temps);
+    init_retval(cf.retval);
 
     stack_frame_t frame(cf);
     frame.gen_prologue();

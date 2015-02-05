@@ -227,6 +227,12 @@ public:
     map.erase(sym.name());
     list.remove(&sym);
   }
+  symlist_t *as_list() const
+  {
+    symlist_t *ret = new symlist_t;
+    ret->assign(list);
+    return ret;
+  }
 
 #define DEFINE_TABLE_ITERATOR(iterator, begin, end)       \
   typedef symlist_t::iterator iterator;                   \
@@ -244,13 +250,6 @@ public:
   size_t size() const    { return list.size(); }
   void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }
   void clear()           { map.clear(); list.clear(); }
-
-  symlist_t *as_list() const
-  {
-    symlist_t *ret = new symlist_t;
-    ret->assign(list);
-    return ret;
-  }
 };
 
 //-----------------------------------------------------------------------------
