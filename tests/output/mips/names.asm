@@ -627,12 +627,12 @@ _L0:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
-  la $t0, 24($sp)
+  lw $t0, 24($sp)
   li $t1, 0
   move $a1, $t1
   move $a0, $t0
   jal _char_at
-  move, $t0, $v0
+  move $t0, $v0
   move $v0, $t0
   j __leave_L0
 
@@ -657,12 +657,12 @@ _L2:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
-  la $t0, 24($sp)
+  lw $t0, 24($sp)
   li $t1, 2
   move $a1, $t1
   move $a0, $t0
   jal _char_at
-  move, $t0, $v0
+  move $t0, $v0
   move $v0, $t0
   j __leave_L2
 
@@ -687,12 +687,12 @@ _L4:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
-  la $t0, 24($sp)
+  lw $t0, 24($sp)
   li $t1, 4
   move $a1, $t1
   move $a0, $t0
   jal _char_at
-  move, $t0, $v0
+  move $t0, $v0
   move $v0, $t0
   j __leave_L4
 
@@ -717,17 +717,17 @@ _main:
   la $t0, _str0
   move $a0, $t0
   jal _L0
-  move, $t0, $v0
+  move $t0, $v0
   sb $t0, _str1
   la $t0, _str2
   move $a0, $t0
   jal _L2
-  move, $t0, $v0
+  move $t0, $v0
   sb $t0, _str3
   la $t0, _str4
   move $a0, $t0
   jal _L4
-  move, $t0, $v0
+  move $t0, $v0
   sb $t0, _str5
   lb $t0, _str1
   move $a0, $t0

@@ -1644,23 +1644,23 @@ _f3:
   sw $s7, 44($sp)
 
   jal _f0
-  move, $s0, $v0
+  move $s0, $v0
   jal _f0
-  move, $s1, $v0
+  move $s1, $v0
   jal _f0
-  move, $s2, $v0
+  move $s2, $v0
   jal _f0
-  move, $s3, $v0
+  move $s3, $v0
   jal _f0
-  move, $s4, $v0
+  move $s4, $v0
   jal _f0
-  move, $s5, $v0
+  move $s5, $v0
   jal _f0
-  move, $s6, $v0
+  move $s6, $v0
   jal _f0
-  move, $s7, $v0
+  move $s7, $v0
   jal _f0
-  move, $t0, $v0
+  move $t0, $v0
   add $t1, $s7, $t0
   add $t0, $s6, $t1
   add $t1, $s5, $t0
@@ -1726,25 +1726,25 @@ _f4:
   sw $s7, 44($sp)
 
   jal _f0
-  move, $s0, $v0
+  move $s0, $v0
   jal _f0
-  move, $s1, $v0
+  move $s1, $v0
   jal _f0
-  move, $s2, $v0
+  move $s2, $v0
   jal _f0
-  move, $s3, $v0
+  move $s3, $v0
   jal _f0
-  move, $s4, $v0
+  move $s4, $v0
   jal _f0
-  move, $s5, $v0
+  move $s5, $v0
   jal _f0
-  move, $s6, $v0
+  move $s6, $v0
   jal _f0
-  move, $s7, $v0
+  move $s7, $v0
   jal _f0
   sw $v0, 48($sp)
   jal _f0
-  move, $t0, $v0
+  move $t0, $v0
   lw $t7, 48($sp)
   add $t1, $t7, $t0
   add $t0, $s7, $t1
@@ -1824,21 +1824,21 @@ _f5:
   sw $s7, 44($sp)
 
   jal _f0
-  move, $s0, $v0
+  move $s0, $v0
   jal _f0
-  move, $s1, $v0
+  move $s1, $v0
   jal _f0
-  move, $s2, $v0
+  move $s2, $v0
   jal _f0
-  move, $s3, $v0
+  move $s3, $v0
   jal _f0
-  move, $s4, $v0
+  move $s4, $v0
   jal _f0
-  move, $s5, $v0
+  move $s5, $v0
   jal _f0
-  move, $s6, $v0
+  move $s6, $v0
   jal _f0
-  move, $s7, $v0
+  move $s7, $v0
   jal _f0
   sw $v0, 48($sp)
   jal _f0
@@ -1854,7 +1854,7 @@ _f5:
   jal _f0
   sw $v0, 72($sp)
   jal _f0
-  move, $t0, $v0
+  move $t0, $v0
   lw $t7, 72($sp)
   add $t1, $t7, $t0
   lw $t7, 68($sp)

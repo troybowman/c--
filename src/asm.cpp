@@ -670,7 +670,7 @@ static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
               fprintf(outfile, TAB1"sw %s, %d($sp)\n", src1->loc.reg(), dest->loc.stkoff());
               break;
             case SLT_REG:
-              fprintf(outfile, TAB1"move, %s, %s\n", dest->loc.reg(), src1->loc.reg());
+              fprintf(outfile, TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
               break;
             default:
               INTERR(1091);
@@ -690,7 +690,10 @@ static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
               fprintf(outfile, TAB1"la %s, %s\n", dest->loc.reg(), src1->c_str());
               break;
             case SLT_STKOFF:
-              fprintf(outfile, TAB1"la %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+              if ( src1->is_param() )
+                fprintf(outfile, TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+              else
+                fprintf(outfile, TAB1"la %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
               break;
             case SLT_REG:
               fprintf(outfile, TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
