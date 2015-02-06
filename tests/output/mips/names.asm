@@ -212,27 +212,39 @@
 # child SEQ_NEXT for node 13
 # node 19: type: TNT_STMT
 # child SEQ_CUR for node 19
-# node 20: type: TNT_CALL sym: print_int
-# child CALL_ARGS for node 20
-# node 21: type: TNT_ARG
-# child SEQ_CUR for node 21
+# node 20: type: TNT_IF
+# child IF_COND for node 20
+# node 21: type: TNT_LT
+# child LHS for node 21
 # node 22: type: TNT_SYMBOL sym: str1
-# child SEQ_NEXT for node 19
-# node 23: type: TNT_STMT
-# child SEQ_CUR for node 23
+# child RHS for node 21
+# node 23: type: TNT_SYMBOL sym: str3
+# child IF_BODY for node 20
 # node 24: type: TNT_CALL sym: print_int
 # child CALL_ARGS for node 24
 # node 25: type: TNT_ARG
 # child SEQ_CUR for node 25
-# node 26: type: TNT_SYMBOL sym: str3
-# child SEQ_NEXT for node 23
-# node 27: type: TNT_STMT
-# child SEQ_CUR for node 27
-# node 28: type: TNT_CALL sym: print_int
-# child CALL_ARGS for node 28
-# node 29: type: TNT_ARG
-# child SEQ_CUR for node 29
-# node 30: type: TNT_SYMBOL sym: str5
+# node 26: type: TNT_SYMBOL sym: str1
+# child IF_ELSE for node 20
+# node 27: type: TNT_IF
+# child IF_COND for node 27
+# node 28: type: TNT_EQ
+# child LHS for node 28
+# node 29: type: TNT_SYMBOL sym: str5
+# child RHS for node 28
+# node 30: type: TNT_INTCON val: 16
+# child IF_BODY for node 27
+# node 31: type: TNT_CALL sym: print_int
+# child CALL_ARGS for node 31
+# node 32: type: TNT_ARG
+# child SEQ_CUR for node 32
+# node 33: type: TNT_SYMBOL sym: str3
+# child IF_ELSE for node 27
+# node 34: type: TNT_CALL sym: print_int
+# child CALL_ARGS for node 34
+# node 35: type: TNT_ARG
+# child SEQ_CUR for node 35
+# node 36: type: TNT_SYMBOL sym: str5
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
@@ -417,7 +429,7 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:    1
+# temps used:    3
 # svregs used:   0
 # stktemps used: 0
 # regargs used:  1
@@ -518,6 +530,31 @@
 # src1 -> ST_PRIMITIVE (str1)
 # |
 # >
+# CNT_LB
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_PRIMITIVE (str3)
+# |
+# >
+# CNT_SLT
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (0)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_PRIMITIVE (str1)
+# |
+# >
 # CNT_ARG
 # -------
 # dest -> ST_REG_ARGUMENT (0)
@@ -527,6 +564,41 @@
 # CNT_CALL
 # --------
 # src1 -> ST_FUNCTION (print_int)
+# |
+# >
+# CNT_JUMP
+# --------
+# dest -> ST_LABEL (2)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (0)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_PRIMITIVE (str5)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (16)
+# |
+# >
+# CNT_SEQ
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (1)
+# src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_LB
@@ -546,6 +618,16 @@
 # src1 -> ST_FUNCTION (print_int)
 # |
 # >
+# CNT_JUMP
+# --------
+# dest -> ST_LABEL (2)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (1)
+# |
+# >
 # CNT_LB
 # ------
 # dest -> ST_TEMPORARY (0)
@@ -561,6 +643,11 @@
 # CNT_CALL
 # --------
 # src1 -> ST_FUNCTION (print_int)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (2)
 
 .data
 
@@ -730,14 +817,27 @@ _main:
   move $t0, $v0
   sb $t0, _str5
   lb $t0, _str1
+  lb $t1, _str3
+  slt $t2, $t0, $t1
+  beq $t2, 0, _L1
+  lb $t0, _str1
   move $a0, $t0
   jal _print_int
+  j _L5
+_L1:
+  lb $t0, _str5
+  li $t1, 16
+  seq $t2, $t0, $t1
+  beq $t2, 0, _L3
   lb $t0, _str3
   move $a0, $t0
   jal _print_int
+  j _L5
+_L3:
   lb $t0, _str5
   move $a0, $t0
   jal _print_int
+_L5:
 
 __leave_main:
   lw $ra, 16($sp)

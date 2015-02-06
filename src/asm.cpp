@@ -863,7 +863,7 @@ static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
         fprintf(outfile, TAB1"jal %s\n", node->src1->c_str());
         break;
       case CNT_LABEL:
-        fprintf(outfile, TAB1"%s:\n", node->src1->c_str());
+        fprintf(outfile, "%s:\n", node->src1->c_str());
         break;
       case CNT_JUMP:
         fprintf(outfile, TAB1"j %s\n", node->dest->c_str());

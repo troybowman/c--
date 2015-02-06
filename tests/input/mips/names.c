@@ -15,7 +15,10 @@ void main(void)
   str1 = L0("test one");
   str3 = L2("test two");
   str5 = L4("test three");
-  print_int(str1);
-  print_int(str3);
-  print_int(str5);
+  if ( str1 < str3 )
+    print_int(str1);
+  else if ( str5 == 16 )
+    print_int(str3);
+  else
+    print_int(str5);
 }
