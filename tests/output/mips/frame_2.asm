@@ -2839,6 +2839,9 @@ _f1a:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
+  li $t0, 1
+  move $a0, $t0
+  jal _one
 
 __leave_f1a:
   lw $ra, 16($sp)
@@ -2876,6 +2879,11 @@ _f1b:
   sw $a0, 24($sp)
   sw $a1, 28($sp)
 
+  li $t0, 1
+  li $t1, 2
+  move $a1, $t1
+  move $a0, $t0
+  jal _two
 
 __leave_f1b:
   lw $ra, 16($sp)
@@ -2914,6 +2922,13 @@ _f1c:
   sw $a1, 28($sp)
   sw $a2, 32($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _three
 
 __leave_f1c:
   lw $ra, 16($sp)
@@ -2953,6 +2968,15 @@ _f1d:
   sw $a2, 32($sp)
   sw $a3, 36($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _four
 
 __leave_f1d:
   lw $ra, 16($sp)
@@ -2992,6 +3016,17 @@ _f1e:
   sw $a2, 32($sp)
   sw $a3, 36($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _five
 
 __leave_f1e:
   lw $ra, 20($sp)
@@ -3035,6 +3070,19 @@ _f1f:
   sw $a2, 40($sp)
   sw $a3, 44($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _six
 
 __leave_f1f:
   lw $ra, 24($sp)
@@ -3078,6 +3126,21 @@ _f1g:
   sw $a2, 40($sp)
   sw $a3, 44($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  li $t6, 7
+  sw $t6, 24($sp)
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _seven
 
 __leave_f1g:
   lw $ra, 28($sp)
@@ -3126,6 +3189,23 @@ _f1h:
   sw $a3, 52($sp)
   sw $s0, 32($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  li $t6, 7
+  li $s0, 8
+  sw $s0, 28($sp)
+  sw $t6, 24($sp)
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _eight
 
 __leave_f1h:
   lw $s0, 32($sp)
@@ -3155,6 +3235,9 @@ _f2a:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
+  li $t0, 1
+  move $a0, $t0
+  jal _one
 
 __leave_f2a:
   lw $ra, 16($sp)
@@ -3182,6 +3265,11 @@ _f2b:
   sw $a0, 24($sp)
   sw $a1, 28($sp)
 
+  li $t0, 1
+  li $t1, 2
+  move $a1, $t1
+  move $a0, $t0
+  jal _two
 
 __leave_f2b:
   lw $ra, 16($sp)
@@ -3207,6 +3295,13 @@ _f2c:
   sw $a0, 24($sp)
   sw $a1, 28($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _three
 
 __leave_f2c:
   lw $ra, 16($sp)
@@ -3229,6 +3324,15 @@ _f2d:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _four
 
 __leave_f2d:
   lw $ra, 16($sp)
@@ -3254,6 +3358,17 @@ _f2e:
   sw $a0, 24($sp)
   sw $a1, 28($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _five
 
 __leave_f2e:
   lw $ra, 20($sp)
@@ -3286,6 +3401,19 @@ _f2f:
   sw $a1, 36($sp)
   sw $a2, 40($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _six
 
 __leave_f2f:
   lw $ra, 24($sp)
@@ -3321,6 +3449,21 @@ _f2g:
   sw $a2, 40($sp)
   sw $a3, 44($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  li $t6, 7
+  sw $t6, 24($sp)
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _seven
 
 __leave_f2g:
   lw $ra, 28($sp)
@@ -3363,6 +3506,23 @@ _f2h:
   sw $a3, 52($sp)
   sw $s0, 32($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  li $t6, 7
+  li $s0, 8
+  sw $s0, 28($sp)
+  sw $t6, 24($sp)
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _eight
 
 __leave_f2h:
   lw $s0, 32($sp)

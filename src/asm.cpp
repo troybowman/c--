@@ -26,14 +26,13 @@ static const char *argreg_names[ARGREGQTY] =
 #define RESERVED_TEMP2 "$t8"
 #define RESERVED_TEMP3 "$t9"
 
-//static symbol_t *t7;
-//static symbol_t *t8;
-//static symbol_t *t9;
+static symbol_t *t7;
+static symbol_t *t8;
+static symbol_t *t9;
 
 //-----------------------------------------------------------------------------
 static FILE *outfile;
 static symtab_t gsyms; // all named symbols (labels, strings, src symbols)
-static void run_asm_engine(const codenode_t *code, symbol_t *epilogue);
 
 //-----------------------------------------------------------------------------
 static bool prepare_named_symbol(symbol_t *sym, const char *fmt, ...)
@@ -255,7 +254,7 @@ void stack_frame_t::build_ra_section()
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_padding_section(section_id_t padid, section_id_t previd)
+void stack_frame_t::build_padding_section(int padid, int previd)
 {
   frame_section_t &padding = sections[padid];
 
@@ -554,6 +553,324 @@ void stack_frame_t::dump()
 
 #endif // NDEBUG
 
+#define REQUIRE_REG_DEST 0x1
+#define REQUIRE_REG_SRC1 0x2
+#define REQUIRE_REG_SRC2 0x4
+
+//-----------------------------------------------------------------------------
+static void ensure_compatible_operands(codenode_t *node, uint32_t flags)
+{
+  symbol_t *dest = node->dest;
+  symbol_t *src1 = node->src1;
+  symbol_t *src2 = node->src2;
+
+  if ( (flags & REQUIRE_REG_SRC1) != 0 && !src1->loc.is_reg() )
+  {
+    if ( src1->loc.is_stkoff() )
+      fprintf(outfile, TAB1"lw %s, %d($sp)\n", t7->loc.reg(), src1->loc.stkoff());
+    else
+      fprintf(outfile, TAB1"lw %s, %s\n", t7->loc.reg(), src1->c_str());
+
+    node->src1 = t7;
+  }
+
+  if ( (flags & REQUIRE_REG_SRC2) != 0 && !src2->loc.is_reg() )
+  {
+    if ( src2->loc.is_stkoff() )
+      fprintf(outfile, TAB1"lw %s, %d($sp)\n", t8->loc.reg(), src2->loc.stkoff());
+    else
+      fprintf(outfile, TAB1"lw %s, %s\n", t8->loc.reg(), src2->c_str());
+
+    node->src2 = t8;
+  }
+
+  if ( (flags & REQUIRE_REG_DEST) != 0 && !dest->loc.is_reg() )
+  {
+    symbol_t *olddest = node->dest;
+    node->dest = t9;
+    codenode_t *store = new codenode_t(CNT_SW, olddest, t9, NULL);
+    codenode_t *oldnext = node->next;
+    node->next = store;
+    store->next = oldnext;
+  }
+}
+
+//-----------------------------------------------------------------------------
+static const char *cnt2instr(codenode_type_t type)
+{
+  switch ( type )
+  {
+    case CNT_ADD: return "add";
+    case CNT_SUB: return "sub";
+    case CNT_DIV: return "div";
+    case CNT_MUL: return "mul";
+    case CNT_AND: return "and";
+    case CNT_OR:  return "or";
+    case CNT_SLT: return "slt";
+    case CNT_SGT: return "sgt";
+    case CNT_SLE: return "sle";
+    case CNT_SEQ: return "seq";
+    case CNT_SNE: return "sne";
+    case CNT_SGE: return "sge";
+    default:
+      INTERR(1089);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
+{
+  t7 = new symbol_t(ST_TEMPORARY);
+  t8 = new symbol_t(ST_TEMPORARY);
+  t9 = new symbol_t(ST_TEMPORARY);
+
+  t7->loc.set_reg(RESERVED_TEMP1);
+  t8->loc.set_reg(RESERVED_TEMP2);
+  t9->loc.set_reg(RESERVED_TEMP3);
+
+  for ( code_iterator_t ci(code); *ci != NULL; ci++ )
+  {
+    codenode_t *node = *ci;
+
+    switch ( node->type )
+    {
+      case CNT_LI:
+        {
+          ensure_compatible_operands(node, REQUIRE_REG_DEST);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          switch ( src1->type() )
+          {
+            case ST_INTCON:
+              fprintf(outfile, TAB1"li %s, %d\n", dest->loc.reg(), src1->val());
+              break;
+            case ST_CHARCON:
+              fprintf(outfile, TAB1"li, %s, '%s'\n", dest->loc.reg(), src1->str());
+              break;
+            default:
+              INTERR(1090);
+          }
+        }
+        break;
+      case CNT_MOV:
+        {
+          ensure_compatible_operands(node, REQUIRE_REG_SRC1);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          switch ( dest->loc.type() )
+          {
+            case SLT_GLOBAL:
+              fprintf(outfile, TAB1"sw %s, %s\n", src1->loc.reg(), dest->c_str());
+              break;
+            case SLT_STKOFF:
+              fprintf(outfile, TAB1"sw %s, %d($sp)\n", src1->loc.reg(), dest->loc.stkoff());
+              break;
+            case SLT_REG:
+              fprintf(outfile, TAB1"move, %s, %s\n", dest->loc.reg(), src1->loc.reg());
+              break;
+            default:
+              INTERR(1091);
+          }
+        }
+        break;
+      case CNT_LEA:
+        {
+          ensure_compatible_operands(node, REQUIRE_REG_DEST);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          switch ( src1->loc.type() )
+          {
+            case SLT_GLOBAL:
+              fprintf(outfile, TAB1"la %s, %s\n", dest->loc.reg(), src1->c_str());
+              break;
+            case SLT_STKOFF:
+              fprintf(outfile, TAB1"la %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+              break;
+            case SLT_REG:
+              fprintf(outfile, TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+              break;
+            default:
+              INTERR(1092);
+          }
+        }
+        break;
+      case CNT_SB:
+      case CNT_SW:
+        {
+          ensure_compatible_operands(node, REQUIRE_REG_SRC1);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          const char *store = node->type == CNT_SB ? "sb" : "sw";
+
+          switch ( dest->loc.type() )
+          {
+            case SLT_GLOBAL:
+              fprintf(outfile, TAB1"%s %s, %s\n", store, src1->loc.reg(), dest->c_str());
+              break;
+            case SLT_STKOFF:
+              fprintf(outfile, TAB1"%s %s, %d($sp)\n", store, src1->loc.reg(), dest->loc.stkoff());
+              break;
+            case SLT_REG:
+              if ( dest->is_param() )
+                fprintf(outfile, TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+              else
+                fprintf(outfile, TAB1"%s %s, (%s)\n", store, src1->loc.reg(), dest->loc.reg());
+              break;
+            default:
+              INTERR(1093);
+          }
+        }
+        break;
+      case CNT_LB:
+      case CNT_LW:
+        {
+          ensure_compatible_operands(node, REQUIRE_REG_DEST);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          const char *load = node->type == CNT_LB ? "lb" : "sw";
+
+          switch ( src1->loc.type() )
+          {
+            case SLT_GLOBAL:
+              fprintf(outfile, TAB1"%s %s, %s\n", load, dest->loc.reg(), src1->c_str());
+              break;
+            case SLT_STKOFF:
+              fprintf(outfile, TAB1"%s %s, %d($sp)\n", load, dest->loc.reg(), src1->loc.stkoff());
+              break;
+            case SLT_REG:
+              if ( src1->is_param() )
+                fprintf(outfile, TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+              else
+                fprintf(outfile, TAB1"%s %s, (%s)\n", load, dest->loc.reg(), src1->loc.reg());
+              break;
+            default:
+              INTERR(1094);
+          }
+        }
+        break;
+      case CNT_ARG:
+        {
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          switch ( dest->loc.type() )
+          {
+            case SLT_REG:
+              switch ( src1->loc.type() )
+              {
+                case SLT_STKOFF:
+                  fprintf(outfile, TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+                  break;
+                case SLT_REG:
+                  fprintf(outfile, TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+                  break;
+                default:
+                  INTERR(1095);
+              }
+              break;
+            case SLT_STKOFF:
+              switch ( src1->loc.type() )
+              {
+                case SLT_STKOFF:
+                  ensure_compatible_operands(node, REQUIRE_REG_SRC1);
+                  src1 = node->src1;
+                case SLT_REG:
+                  fprintf(outfile, TAB1"sw %s, %d($sp)\n", src1->loc.reg(), dest->loc.stkoff());
+                  break;
+                default:
+                  INTERR(1096);
+              }
+              break;
+            default:
+              INTERR(1097);
+          }
+        }
+        break;
+      case CNT_CNDJMP:
+        {
+          ensure_compatible_operands(node, REQUIRE_REG_SRC1);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          fprintf(outfile, TAB1"beq %s, 0, %s\n", src1->loc.reg(), dest->c_str());
+        }
+        break;
+      case CNT_RET:
+        {
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+
+          if ( dest != NULL )
+          {
+            switch ( src1->loc.type() )
+            {
+              case SLT_GLOBAL:
+                fprintf(outfile, TAB1"lw %s, %s\n", dest->loc.reg(), src1->c_str());
+                break;
+              case SLT_STKOFF:
+                fprintf(outfile, TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+                break;
+              case SLT_REG:
+                fprintf(outfile, TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+                break;
+              default:
+                INTERR(1098);
+            }
+          }
+
+          fprintf(outfile, TAB1"j %s\n", epilogue->c_str());
+        }
+        break;
+      case CNT_ADD:
+      case CNT_SUB:
+      case CNT_DIV:
+      case CNT_MUL:
+      case CNT_AND:
+      case CNT_OR:
+      case CNT_SLT:
+      case CNT_SGT:
+      case CNT_SLE:
+      case CNT_SEQ:
+      case CNT_SNE:
+      case CNT_SGE:
+        {
+          ensure_compatible_operands(node,
+              REQUIRE_REG_DEST | REQUIRE_REG_SRC1 | REQUIRE_REG_SRC2);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+          symbol_t *src2 = node->src2;
+
+          fprintf(outfile, TAB1"%s %s, %s, %s\n",
+                  cnt2instr(node->type), dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
+        }
+        break;
+      case CNT_CALL:
+        fprintf(outfile, TAB1"jal %s\n", node->src1->c_str());
+        break;
+      case CNT_LABEL:
+        fprintf(outfile, TAB1"%s:\n", node->src1->c_str());
+        break;
+      case CNT_JUMP:
+        fprintf(outfile, TAB1"j %s\n", node->dest->c_str());
+        break;
+      default:
+        continue;
+    }
+  }
+}
+
 //-----------------------------------------------------------------------------
 static void init_temps(resource_manager_t &rm)
 {
@@ -601,18 +918,4 @@ void generate_mips_asm(FILE *_outfile, ir_t &ir)
   init_gsyms(ir.gsyms, ir.strings, ir.labels);
   gen_data_section();
   gen_text_section(ir.funcs);
-}
-
-//-----------------------------------------------------------------------------
-static void run_asm_engine(const codenode_t *code, symbol_t *epilogue)
-{
-  for ( code_iterator_t ci(code); *ci != NULL; ci++ )
-  {
-    const codenode_t &node = **ci;
-    switch ( node.type )
-    {
-      default:
-        continue;
-    }
-  }
 }

@@ -4,7 +4,7 @@ void f1(void)
 {
   int x;
   /* should all be handled with temporary registers */
-  x = 1 + (2 + (3 + (4 + (5 + (6 + (7 + 8))))));
+  x = 1 + (2 + (3 + (4 + (5 + 6))));
 }
 
 void f2(void)

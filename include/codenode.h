@@ -36,12 +36,12 @@ struct codenode_t
 //-----------------------------------------------------------------------------
 class code_iterator_t
 {
-  const codenode_t *ptr;
+  codenode_t *ptr;
 
 public:
-  code_iterator_t(const codenode_t *head) : ptr(head) {}
+  code_iterator_t(codenode_t *head) : ptr(head) {}
 
-  const codenode_t *operator*() const
+  codenode_t *operator*() const
   {
     return ptr;
   }

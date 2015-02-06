@@ -100,15 +100,7 @@
 # child LHS for node 12
 # node 13: type: TNT_INTCON val: 5
 # child RHS for node 12
-# node 14: type: TNT_PLUS
-# child LHS for node 14
-# node 15: type: TNT_INTCON val: 6
-# child RHS for node 14
-# node 16: type: TNT_PLUS
-# child LHS for node 16
-# node 17: type: TNT_INTCON val: 7
-# child RHS for node 16
-# node 18: type: TNT_INTCON val: 8
+# node 14: type: TNT_INTCON val: 6
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: f2
 #-----------------------------------------------------------------------------
@@ -434,7 +426,7 @@
 # INTERMEDIATE CODE FOR FUNCTION: f1
 #-----------------------------------------------------------------------------
 # temps used:    7
-# svregs used:   2
+# svregs used:   0
 # stktemps used: 0
 # regargs used:  0
 # stkargs used:  0
@@ -474,44 +466,18 @@
 # src1 -> ST_INTCON (6)
 # |
 # >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (6)
-# src1 -> ST_INTCON (7)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_SAVED_TEMPORARY (0)
-# src1 -> ST_INTCON (8)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_SAVED_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (6)
-# src2 -> ST_SAVED_TEMPORARY (0)
-# |
-# >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (6)
-# src1 -> ST_TEMPORARY (5)
-# src2 -> ST_SAVED_TEMPORARY (1)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (5)
 # src1 -> ST_TEMPORARY (4)
-# src2 -> ST_TEMPORARY (6)
+# src2 -> ST_TEMPORARY (5)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (4)
 # src1 -> ST_TEMPORARY (3)
-# src2 -> ST_TEMPORARY (5)
+# src2 -> ST_TEMPORARY (6)
 # |
 # >
 # CNT_ADD
@@ -1554,6 +1520,9 @@ _f0:
   # |--------------------------------|
   la $sp, -0($sp)
 
+  li $t0, 0
+  move $v0, $t0
+  j __leave_f0
 
 __leave_f0:
   la $sp, 0($sp)
@@ -1564,22 +1533,26 @@ _f1:
   # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |           <padding>            |
-  # |--------------------------------| sp+12
-  # |               x                |
-  # |--------------------------------| sp+8
-  # |              $s1               |
   # |--------------------------------| sp+4
-  # |              $s0               |
+  # |               x                |
   # |--------------------------------| sp+0
-  la $sp, -16($sp)
-  sw $s0, 0($sp)
-  sw $s1, 4($sp)
+  la $sp, -8($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  add $t6, $t4, $t5
+  add $t4, $t3, $t6
+  add $t3, $t2, $t4
+  add $t2, $t1, $t3
+  add $t1, $t0, $t2
+  sw $t1, 0($sp)
 
 __leave_f1:
-  lw $s1, 4($sp)
-  lw $s0, 0($sp)
-  la $sp, 16($sp)
+  la $sp, 8($sp)
   jr $ra
 
 _f2:
@@ -1603,6 +1576,24 @@ _f2:
   sw $s1, 4($sp)
   sw $s2, 8($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  li $t6, 7
+  li $s0, 8
+  li $s1, 9
+  add $s2, $s0, $s1
+  add $s0, $t6, $s2
+  add $t6, $t5, $s0
+  add $t5, $t4, $t6
+  add $t4, $t3, $t5
+  add $t3, $t2, $t4
+  add $t2, $t1, $t3
+  add $t1, $t0, $t2
+  sw $t1, 16($sp)
 
 __leave_f2:
   lw $s2, 8($sp)
@@ -1652,6 +1643,33 @@ _f3:
   sw $s6, 40($sp)
   sw $s7, 44($sp)
 
+  jal _f0
+  move, $s0, $v0
+  jal _f0
+  move, $s1, $v0
+  jal _f0
+  move, $s2, $v0
+  jal _f0
+  move, $s3, $v0
+  jal _f0
+  move, $s4, $v0
+  jal _f0
+  move, $s5, $v0
+  jal _f0
+  move, $s6, $v0
+  jal _f0
+  move, $s7, $v0
+  jal _f0
+  move, $t0, $v0
+  add $t1, $s7, $t0
+  add $t0, $s6, $t1
+  add $t1, $s5, $t0
+  add $t0, $s4, $t1
+  add $t1, $s3, $t0
+  add $t0, $s2, $t1
+  add $t1, $s1, $t0
+  add $t0, $s0, $t1
+  sw $t0, 56($sp)
 
 __leave_f3:
   lw $s7, 44($sp)
@@ -1707,6 +1725,37 @@ _f4:
   sw $s6, 40($sp)
   sw $s7, 44($sp)
 
+  jal _f0
+  move, $s0, $v0
+  jal _f0
+  move, $s1, $v0
+  jal _f0
+  move, $s2, $v0
+  jal _f0
+  move, $s3, $v0
+  jal _f0
+  move, $s4, $v0
+  jal _f0
+  move, $s5, $v0
+  jal _f0
+  move, $s6, $v0
+  jal _f0
+  move, $s7, $v0
+  jal _f0
+  sw $v0, 48($sp)
+  jal _f0
+  move, $t0, $v0
+  lw $t7, 48($sp)
+  add $t1, $t7, $t0
+  add $t0, $s7, $t1
+  add $t1, $s6, $t0
+  add $t0, $s5, $t1
+  add $t1, $s4, $t0
+  add $t0, $s3, $t1
+  add $t1, $s2, $t0
+  add $t0, $s1, $t1
+  add $t1, $s0, $t0
+  sw $t1, 56($sp)
 
 __leave_f4:
   lw $s7, 44($sp)
@@ -1774,6 +1823,93 @@ _f5:
   sw $s6, 40($sp)
   sw $s7, 44($sp)
 
+  jal _f0
+  move, $s0, $v0
+  jal _f0
+  move, $s1, $v0
+  jal _f0
+  move, $s2, $v0
+  jal _f0
+  move, $s3, $v0
+  jal _f0
+  move, $s4, $v0
+  jal _f0
+  move, $s5, $v0
+  jal _f0
+  move, $s6, $v0
+  jal _f0
+  move, $s7, $v0
+  jal _f0
+  sw $v0, 48($sp)
+  jal _f0
+  sw $v0, 52($sp)
+  jal _f0
+  sw $v0, 56($sp)
+  jal _f0
+  sw $v0, 60($sp)
+  jal _f0
+  sw $v0, 64($sp)
+  jal _f0
+  sw $v0, 68($sp)
+  jal _f0
+  sw $v0, 72($sp)
+  jal _f0
+  move, $t0, $v0
+  lw $t7, 72($sp)
+  add $t1, $t7, $t0
+  lw $t7, 68($sp)
+  add $t0, $t7, $t1
+  lw $t7, 64($sp)
+  add $t1, $t7, $t0
+  lw $t7, 60($sp)
+  add $t0, $t7, $t1
+  lw $t7, 56($sp)
+  add $t1, $t7, $t0
+  lw $t7, 52($sp)
+  add $t0, $t7, $t1
+  lw $t7, 48($sp)
+  add $t1, $t7, $t0
+  add $t0, $s7, $t1
+  add $t1, $s6, $t0
+  add $t0, $s5, $t1
+  add $t1, $s4, $t0
+  add $t0, $s3, $t1
+  add $t1, $s2, $t0
+  add $t0, $s1, $t1
+  add $t1, $s0, $t0
+  sw $t1, 80($sp)
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  li $t6, 7
+  li $s0, 8
+  li $s1, 9
+  li $s2, 10
+  li $s3, 11
+  li $s4, 12
+  li $s5, 13
+  li $s6, 14
+  li $s7, 15
+  add $t9, $s6, $s7
+  sw $t9, 48($sp)
+  lw $t8, 48($sp)
+  add $s6, $s5, $t8
+  add $s5, $s4, $s6
+  add $s4, $s3, $s5
+  add $s3, $s2, $s4
+  add $s2, $s1, $s3
+  add $s1, $s0, $s2
+  add $s0, $t6, $s1
+  add $t6, $t5, $s0
+  add $t5, $t4, $t6
+  add $t4, $t3, $t5
+  add $t3, $t2, $t4
+  add $t2, $t1, $t3
+  add $t1, $t0, $t2
+  sw $t1, 80($sp)
 
 __leave_f5:
   lw $s7, 44($sp)

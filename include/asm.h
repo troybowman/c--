@@ -46,7 +46,6 @@ class stack_frame_t
 #define FRAME_SECTION_QTY 9
   frame_section_t sections[FRAME_SECTION_QTY];
 
-  typedef int section_id_t;
 #define FS_PARAMS   8
 #define FS_PADDING2 7
 #define FS_LVARS    6
@@ -64,7 +63,7 @@ class stack_frame_t
   void build_ra_section();
   void build_lvars_section();
   void build_params_section();
-  void build_padding_section(section_id_t, section_id_t);
+  void build_padding_section(int, int);
 
   struct reg_saver_t : public frame_item_visitor_t
   {

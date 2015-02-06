@@ -600,6 +600,12 @@ _char_at:
   # |--------------------------------| sp+0  <-- start of caller's stack
   la $sp, -0($sp)
 
+  move $t0, $a1
+  move $t1, $a0
+  add $t2, $t1, $t0
+  lb $t0, ($t2)
+  move $v0, $t0
+  j __leave_char_at
 
 __leave_char_at:
   la $sp, 0($sp)
@@ -621,6 +627,14 @@ _L0:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
+  la $t0, 24($sp)
+  li $t1, 0
+  move $a1, $t1
+  move $a0, $t0
+  jal _char_at
+  move, $t0, $v0
+  move $v0, $t0
+  j __leave_L0
 
 __leave_L0:
   lw $ra, 16($sp)
@@ -643,6 +657,14 @@ _L2:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
+  la $t0, 24($sp)
+  li $t1, 2
+  move $a1, $t1
+  move $a0, $t0
+  jal _char_at
+  move, $t0, $v0
+  move $v0, $t0
+  j __leave_L2
 
 __leave_L2:
   lw $ra, 16($sp)
@@ -665,6 +687,14 @@ _L4:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
+  la $t0, 24($sp)
+  li $t1, 4
+  move $a1, $t1
+  move $a0, $t0
+  jal _char_at
+  move, $t0, $v0
+  move $v0, $t0
+  j __leave_L4
 
 __leave_L4:
   lw $ra, 16($sp)
@@ -684,6 +714,30 @@ _main:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  la $t0, _str0
+  move $a0, $t0
+  jal _L0
+  move, $t0, $v0
+  sb $t0, _str1
+  la $t0, _str2
+  move $a0, $t0
+  jal _L2
+  move, $t0, $v0
+  sb $t0, _str3
+  la $t0, _str4
+  move $a0, $t0
+  jal _L4
+  move, $t0, $v0
+  sb $t0, _str5
+  lb $t0, _str1
+  move $a0, $t0
+  jal _print_int
+  lb $t0, _str3
+  move $a0, $t0
+  jal _print_int
+  lb $t0, _str5
+  move $a0, $t0
+  jal _print_int
 
 __leave_main:
   lw $ra, 16($sp)

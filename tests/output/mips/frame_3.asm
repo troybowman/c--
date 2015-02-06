@@ -350,6 +350,15 @@ _another:
   sw $a0, 48($sp)
   sw $a1, 52($sp)
 
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _simple
 
 __leave_another:
   lw $ra, 16($sp)

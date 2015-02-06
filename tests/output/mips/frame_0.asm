@@ -848,6 +848,7 @@ _f1:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f1:
   lw $ra, 16($sp)
@@ -882,6 +883,7 @@ _f3:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f3:
   lw $ra, 16($sp)
@@ -920,6 +922,7 @@ _f5:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f5:
   lw $ra, 16($sp)
@@ -962,6 +965,7 @@ _f8:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f8:
   lw $ra, 16($sp)
@@ -1008,6 +1012,7 @@ _f10:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f10:
   lw $ra, 16($sp)
@@ -1058,6 +1063,7 @@ _f12:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f12:
   lw $ra, 16($sp)
@@ -1112,6 +1118,7 @@ _f15:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f15:
   lw $ra, 16($sp)
@@ -1170,6 +1177,7 @@ _f17:
   la $sp, -24($sp)
   sw $ra, 16($sp)
 
+  jal _f0
 
 __leave_f17:
   lw $ra, 16($sp)
