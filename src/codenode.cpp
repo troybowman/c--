@@ -410,6 +410,45 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           append(CNT_LABEL, NULL, endif);
         break;
       }
+    case TNT_FOR:
+      {
+        generate(tree->children[FOR_INIT]);
+
+        symbol_t *check = new symbol_t(ST_LABEL);
+        append(CNT_LABEL, NULL, check);
+
+        symbol_t *cond = generate(tree->children[FOR_COND]);
+        if ( cond == NULL )
+        {
+          cond = gen_temp();
+          append(CNT_LI, cond, new symbol_t(ST_INTCON, 1));
+        }
+
+        symbol_t *end = new symbol_t(ST_LABEL);
+        append(CNT_CNDJMP, end, cond);
+
+        generate(tree->children[FOR_BODY]);
+        generate(tree->children[FOR_INC]);
+        append(CNT_JUMP, check);
+
+        append(CNT_LABEL, NULL, end);
+        break;
+      }
+    case TNT_WHILE:
+      {
+        symbol_t *loop = new symbol_t(ST_LABEL);
+        append(CNT_LABEL, NULL, loop);
+
+        symbol_t *cond = generate(tree->children[WHILE_COND]);
+        symbol_t *end  = new symbol_t(ST_LABEL);
+        append(CNT_CNDJMP, end, cond);
+
+        generate(tree->children[WHILE_BODY]);
+        append(CNT_JUMP, loop);
+
+        append(CNT_LABEL, NULL, end);
+        break;
+      }
     default:
       INTERR(1059);
   }

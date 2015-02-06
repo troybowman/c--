@@ -740,7 +740,7 @@ static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
           symbol_t *dest = node->dest;
           symbol_t *src1 = node->src1;
 
-          const char *load = node->type == CNT_LB ? "lb" : "sw";
+          const char *load = node->type == CNT_LB ? "lb" : "lw";
 
           switch ( src1->loc.type() )
           {
