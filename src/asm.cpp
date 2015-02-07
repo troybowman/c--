@@ -43,7 +43,7 @@ static bool prepare_named_symbol(symbol_t *sym, const char *fmt, ...)
   va_end(va);
 
   sym->set_name(buf);
-  if ( gsyms.get(sym->name()) )
+  if ( gsyms.get(sym->name()) != NULL )
     return false;
 
   sym->loc.set_global();
@@ -471,7 +471,7 @@ static const char *cnt2instr(codenode_type_t type)
 }
 
 //-----------------------------------------------------------------------------
-static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
+static void gen_func_body(codenode_t *code, symbol_t *epilogue)
 {
   for ( code_iterator_t ci(code); *ci != NULL; ci++ )
   {
@@ -752,6 +752,21 @@ static void init_retval(retval_manager_t &rm)
 }
 
 //-----------------------------------------------------------------------------
+static void gen_builtin_function(const char *name, int syscall)
+{
+  symbol_t *func = gsyms.get(name);
+
+  if ( func != NULL && func->is_extern() )
+  {
+    fprintf(outfile,
+            "\n%s:\n"
+            TAB1"li $v0, %d\n"
+            TAB1"syscall\n"
+            TAB1"jr $ra\n", name, syscall);
+  }
+}
+
+//-----------------------------------------------------------------------------
 static void gen_text_section(codefuncs_t &funcs)
 {
   init_reserved_temps();
@@ -770,9 +785,12 @@ static void gen_text_section(codefuncs_t &funcs)
     DBG_FRAME_SUMMARY(frame);
 
     frame.gen_prologue();
-    run_asm_engine(cf.code, frame.epilogue_lbl);
+    gen_func_body(cf.code, frame.epilogue_lbl);
     frame.gen_epilogue();
   }
+
+  gen_builtin_function("_print_int", 1);
+  gen_builtin_function("_print_string", 4);
 }
 
 //-----------------------------------------------------------------------------

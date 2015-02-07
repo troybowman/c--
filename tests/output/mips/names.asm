@@ -838,3 +838,8 @@ __leave_main:
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
+
+_print_int:
+  li $v0, 1
+  syscall
+  jr $ra
