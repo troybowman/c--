@@ -1,5 +1,7 @@
 #include <stdarg.h>
+
 #include <symbol.h>
+#include <messages.h>
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(uint32_t flags, const char *name, int line, symbol_type_t type, ...)

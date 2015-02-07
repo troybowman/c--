@@ -35,6 +35,7 @@ public:
 
 #define FIV_REVERSE 0x1
   void visit_items(frame_item_visitor_t &fiv, uint32_t flags = 0);
+
   size_t nitems() const { return items.size(); }
   bool is_valid() const { return size() >= WORDSIZE; }
   offset_t top()  const { return is_valid() ? end - WORDSIZE : BADOFFSET; }

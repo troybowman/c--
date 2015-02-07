@@ -7,9 +7,9 @@
 #include <map>
 
 #include <offset.h>
-#include <messages.h>
 
 class symtab_t;
+class symlist_t;
 
 //-----------------------------------------------------------------------------
 enum symloc_type_t

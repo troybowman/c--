@@ -57,11 +57,11 @@
        }
 
 '[[:print:]]{-}[\]{-}[']' |
-'\\n'		  	              |
-'\\0'						          {
-                            yylval.str = strdup(yytext);
-                            return CHAR;
-                          }
+'\\n' |
+'\\0' {
+        yylval.str = strdup(yytext);
+        return CHAR;
+      }
 
 [[:alpha:]]([[:alpha:]]{+}[_]{+}[0-9]+)? {
                                            yylval.str = strdup(yytext);
@@ -76,13 +76,9 @@
 [[:space:]]+ /* nom */
 
 
-"/*" {
-       BEGIN(COMMENT);
-     }
+"/*" { BEGIN(COMMENT); }
 
-<COMMENT>"*/" {
-                BEGIN(INITIAL);
-              }
+<COMMENT>"*/" { BEGIN(INITIAL); }
 
 <COMMENT>([^*]|\n)+|. /* nom */
 
@@ -91,8 +87,6 @@
                    return 0;
                  }
 
-.	{
-    return yytext[0];
-  }
+.	{ return yytext[0]; }
 
 %%
