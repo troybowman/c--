@@ -24,7 +24,7 @@ class Tester:
         "asm"  : DBG_ALL_IR,                        # 0x2e
         }
 
-    all_phases = [ "syms", "tree", "ir", "mips" ]
+    all_phases = [ "syms", "tree", "ir", "asm" ]
 
     def __init__(self, argv):
         self.phase_spec = self.all_phases if len(argv) == 1 else argv[1].split(',')
