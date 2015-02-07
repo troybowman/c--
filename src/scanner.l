@@ -1,8 +1,10 @@
 %{
   #include <stdlib.h>
-  // TODO: we shouldn't need these two
+
+  // TODO: we shouldn't need these
+  #include <parse.h>
   #include <symbol.h>
-  #include <treenode.h>
+
   #include "parser.hpp"
   #define YY_DECL extern "C" int yylex()
 %}

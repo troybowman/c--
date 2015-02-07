@@ -90,15 +90,6 @@ typedef std::list<treefunc_t> treefuncs_t;
 //-----------------------------------------------------------------------------
 #define ERRNODE new treenode_t(TNT_ERROR)
 
-//-----------------------------------------------------------------------------
-// helps build linear sequences of related treenodes
-// (like statements, argument lists, etc)
-struct seq_t
-{
-  treenode_t *head;
-  treenode_t *tail;
-};
-
 #ifndef NDEBUG
 bool is_seq_type(treenode_type_t type);
 #endif

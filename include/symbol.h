@@ -240,7 +240,7 @@ public:
   iterator begin() { return list.begin(); }               \
   iterator end()   { return list.end(); }                 \
   const_##iterator begin() const { return list.begin(); } \
-  const_##iterator end() const { return list.end(); }
+  const_##iterator end()   const { return list.end(); }
 
   DEFINE_TABLE_ITERATOR(iterator, begin, end)
   DEFINE_TABLE_ITERATOR(reverse_iterator, rbegin, rend)
@@ -250,16 +250,6 @@ public:
   size_t size() const    { return list.size(); }
   void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }
   void clear()           { map.clear(); list.clear(); }
-};
-
-//-----------------------------------------------------------------------------
-struct array_sfx_t
-{
-  int code;
-#define ASFX_OK     1
-#define ASFX_NONE   0
-#define ASFX_ERROR -1
-  int size;
 };
 
 #endif // SYMBOL_H
