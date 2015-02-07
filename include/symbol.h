@@ -99,30 +99,45 @@ class symbol_t
   symbol_type_t _type;
 
   uint32_t _flags;
-#define SF_PARAMETER       0x1 // is source level function parameter?
+#define SF_PARAMETER       0x1 // is function parameter?
 #define SF_EXTERN          0x2 // is extern?
 #define SF_DEFINED         0x4 // has been defined?
 #define SF_RET_RESOLVED    0x8 // have we seen a 'return expr' statement yet? (for non-void funcs)
 
   std::string _name;
-  int _line;
 
   union
   {
-    int _val;             // ST_INTCON, all arguments and temporaries
-    const char *_str;     // ST_STRCON, ST_CHARCON
-    primitive_t _base;    // ST_PRIMITIVE/ST_ARRAY
-    struct                // ST_ARRAY
+    // source level symbols
+    struct
     {
-      primitive_t _eltyp;
-      offsize_t   _size;
+      // source line
+      int _line;
+      // type
+      union
+      {
+        // ST_PRIMITIVE/ST_ARRAY
+        primitive_t _base;
+        // ST_ARRAY
+        struct
+        {
+          primitive_t _eltyp;
+          offsize_t   _size;
+        };
+        // ST_FUNCTION
+        struct
+        {
+          return_type_t _rt;
+          symlist_t *_params;
+          symtab_t *_symbols;
+        };
+      };
     };
-    struct                // ST_FUNCTION
-    {
-      return_type_t _rt;
-      symlist_t *_params;
-      symtab_t *_symbols;
-    };
+    // ST_INTCON, ST_TEMPORARY, ST_SAVED_TEMPORARY,
+    // ST_STACK_TEMPORARY, ST_STACK_ARGUMENT, ST_REG_ARGUMENT
+    int _val;
+    // ST_STRCON, ST_CHARCON
+    const char *_str;
   };
 
 public:
