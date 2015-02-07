@@ -21,7 +21,7 @@ class Tester:
         "syms" : DBG_ALL_SYMS | DBG_NO_IR,          # 0x16
         "tree" : DBG_ALL_TREE | DBG_NO_IR,          # 0x1e
         "ir"   : DBG_ALL_IR   | DBG_NO_CODE,        # 0x6e
-        "mips" : DBG_ALL_IR,                        # 0x2e
+        "asm"  : DBG_ALL_IR,                        # 0x2e
         }
 
     all_phases = [ "syms", "tree", "ir", "mips" ]
