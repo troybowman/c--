@@ -6,9 +6,6 @@
 
 #define MAXNAMELEN 32
 
-#define TAB1 "  "
-#define TAB2 "    "
-
 #define ALIGN(off, val) ((off + (val-1)) & ~(val-1))
 
 //-----------------------------------------------------------------------------
@@ -377,10 +374,6 @@ void stack_frame_t::argreg_saver_t::visit_item(
 //-----------------------------------------------------------------------------
 void stack_frame_t::gen_prologue()
 {
-  fprintf(outfile, "\n%s:\n", cf.sym.c_str());
-
-  DBG_FRAME_SUMMARY();
-
   fprintf(outfile, TAB1"la $sp, -%u($sp)\n", size());
 
   reg_saver_t ra_saver;
@@ -413,146 +406,6 @@ void stack_frame_t::gen_epilogue()
 }
 
 //-----------------------------------------------------------------------------
-#ifndef NDEBUG
-
-#define FMTLEN  1024
-#define NAMELEN 32
-#define OFFLEN  64
-
-static const char *sep =
-"|--------------------------------|";
-
-static offset_t dbg_stksize = BADOFFSET;
-
-//-----------------------------------------------------------------------------
-static void print_frame_item(uint32_t off, const char *fmt, ...)
-{
-  char namestr[FMTLEN];
-
-  va_list va;
-  va_start(va, fmt);
-  vsnprintf(namestr, FMTLEN, fmt, va);
-  va_end(va);
-
-  char item[NAMELEN+6];
-  char *ptr = item;
-
-  const char *pfx = TAB1"# ";
-  APPSTR (ptr, pfx, strlen(pfx));
-  APPCHAR(ptr, '|', 1);
-
-  int len = strlen(namestr);
-  const char *const end = ptr + NAMELEN;
-
-  APPCHAR(ptr, ' ', (NAMELEN - len) / 2);
-  APPSTR (ptr, namestr, len);
-  APPCHAR(ptr, ' ', end-ptr);
-  APPCHAR(ptr, '|', 1);
-  *ptr = '\0';
-
-  fprintf(outfile, "%s\n", item);
-
-  char offstr[OFFLEN];
-  snprintf(offstr, OFFLEN, "sp+%d%s", off,
-           off == dbg_stksize ? "  <-- start of caller's stack" : "");
-
-  fprintf(outfile, TAB1"# %s %s\n", sep, offstr);
-}
-
-//-----------------------------------------------------------------------------
-void stack_frame_t::dump()
-{
-  dbg_stksize = size();
-
-  fprintf(outfile, "\n"TAB1"# STACK FRAME SUMMARY:\n"TAB1"# %s\n", sep);
-
-  // PARAMS -------------------------------------------------------------------
-  struct param_printer_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(frame_section_t &sec, symbol_t &param, int idx) // TODO: const?
-    {
-      if ( param.loc.is_stkoff() )
-        print_frame_item(param.loc.stkoff(), param.c_str());
-      else
-        print_frame_item(sec.top() - idx * WORDSIZE,
-                         "<%s is in %s>",
-                         param.c_str(), param.loc.reg());
-    }
-  };
-  param_printer_t pp;
-  sections[FS_PARAMS].visit_items(pp, FIV_REVERSE);
-
-  // PADDING2 -----------------------------------------------------------------
-  if ( sections[FS_PADDING2].is_valid() )
-    print_frame_item(sections[FS_PADDING2].start, "<padding>");
-
-  // LVARS --------------------------------------------------------------------
-  struct lvar_printer_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(frame_section_t &, symbol_t &lvar, int)
-    {
-      if ( !lvar.is_param() )
-        print_frame_item(lvar.loc.stkoff(), lvar.c_str());
-    }
-  };
-  lvar_printer_t lvp;
-  sections[FS_LVARS].visit_items(lvp, FIV_REVERSE);
-
-  // PADDING1 -----------------------------------------------------------------
-  if ( sections[FS_PADDING1].is_valid() )
-    print_frame_item(sections[FS_PADDING1].start, "<padding>");
-
-  // RA -----------------------------------------------------------------------
-  struct ra_printer_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(frame_section_t &sec, symbol_t &ra, int)
-    {
-      print_frame_item(sec.start, ra.loc.reg());
-    }
-  };
-  ra_printer_t rap;
-  sections[FS_RA].visit_items(rap, FIV_REVERSE);
-
-  // STKTEMPS -----------------------------------------------------------------
-  struct stktemp_printer_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(frame_section_t &, symbol_t &stktemp, int)
-    {
-      print_frame_item(stktemp.loc.stkoff(), "<stktemp %d>", stktemp.val());
-    }
-  };
-  stktemp_printer_t stp;
-  sections[FS_STKTEMPS].visit_items(stp, FIV_REVERSE);
-
-  // SVREGS -------------------------------------------------------------------
-  struct svregs_printer_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(frame_section_t &sec, symbol_t &svreg, int idx)
-    {
-      print_frame_item(sec.top() - idx * WORDSIZE, svreg.loc.reg());
-    }
-  };
-  svregs_printer_t srp;
-  sections[FS_SVREGS].visit_items(srp, FIV_REVERSE);
-
-  // STKARGS ------------------------------------------------------------------
-  struct stkargs_printer_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(frame_section_t &, symbol_t &stkarg, int)
-    {
-      print_frame_item(stkarg.loc.stkoff(), "<stkarg %d>", stkarg.val());
-    }
-  };
-  stkargs_printer_t sag;
-  sections[FS_STKARGS].visit_items(sag, FIV_REVERSE);
-
-  // REGARGS ------------------------------------------------------------------
-  if ( sections[FS_REGARGS].is_valid() )
-    print_frame_item(0, "<minimum 4 arg slots>");
-}
-
-#endif // NDEBUG
-
 #define REQUIRE_REG_DEST 0x1
 #define REQUIRE_REG_SRC1 0x2
 #define REQUIRE_REG_SRC2 0x4
@@ -620,14 +473,6 @@ static const char *cnt2instr(codenode_type_t type)
 //-----------------------------------------------------------------------------
 static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
 {
-  t7 = new symbol_t(ST_TEMPORARY);
-  t8 = new symbol_t(ST_TEMPORARY);
-  t9 = new symbol_t(ST_TEMPORARY);
-
-  t7->loc.set_reg(RESERVED_TEMP1);
-  t8->loc.set_reg(RESERVED_TEMP2);
-  t9->loc.set_reg(RESERVED_TEMP3);
-
   for ( code_iterator_t ci(code); *ci != NULL; ci++ )
   {
     codenode_t *node = *ci;
@@ -875,6 +720,18 @@ static void run_asm_engine(codenode_t *code, symbol_t *epilogue)
 }
 
 //-----------------------------------------------------------------------------
+static void init_reserved_temps()
+{
+  t7 = new symbol_t(ST_TEMPORARY);
+  t8 = new symbol_t(ST_TEMPORARY);
+  t9 = new symbol_t(ST_TEMPORARY);
+
+  t7->loc.set_reg(RESERVED_TEMP1);
+  t8->loc.set_reg(RESERVED_TEMP2);
+  t9->loc.set_reg(RESERVED_TEMP3);
+}
+
+//-----------------------------------------------------------------------------
 static void init_temps(resource_manager_t &rm)
 {
   symlist_t temps;
@@ -897,6 +754,8 @@ static void init_retval(retval_manager_t &rm)
 //-----------------------------------------------------------------------------
 static void gen_text_section(codefuncs_t &funcs)
 {
+  init_reserved_temps();
+
   fprintf(outfile, ".text\n");
 
   for ( codefuncs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
@@ -905,11 +764,13 @@ static void gen_text_section(codefuncs_t &funcs)
     init_temps(cf.temps);
     init_retval(cf.retval);
 
+    fprintf(outfile, "\n%s:\n", cf.sym.c_str());
+
     stack_frame_t frame(cf);
+    DBG_FRAME_SUMMARY(frame);
+
     frame.gen_prologue();
-
-    run_asm_engine((*i)->code, frame.get_epilogue_lbl());
-
+    run_asm_engine(cf.code, frame.epilogue_lbl);
     frame.gen_epilogue();
   }
 }

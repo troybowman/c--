@@ -679,7 +679,6 @@
 
 _char_at:
 
-  # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |        <idx is in $a1>         |
   # |--------------------------------| sp+4
@@ -700,7 +699,6 @@ __leave_char_at:
 
 _L0:
 
-  # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |             string             |
   # |--------------------------------| sp+24  <-- start of caller's stack
@@ -730,7 +728,6 @@ __leave_L0:
 
 _L2:
 
-  # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |             string             |
   # |--------------------------------| sp+24  <-- start of caller's stack
@@ -760,7 +757,6 @@ __leave_L2:
 
 _L4:
 
-  # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |             string             |
   # |--------------------------------| sp+24  <-- start of caller's stack
@@ -790,7 +786,6 @@ __leave_L4:
 
 _main:
 
-  # STACK FRAME SUMMARY:
   # |--------------------------------|
   # |           <padding>            |
   # |--------------------------------| sp+20

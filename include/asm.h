@@ -78,25 +78,24 @@ class stack_frame_t
     argreg_saver_t(frame_section_t &_params) : params(_params) {}
   };
 
-#ifndef NDEBUG
-  void dump();
-#define DBG_FRAME_SUMMARY() dump();
-#else
-#define DBG_FRAME_SUMMARY() // nothing
-#endif
-
-  symbol_t *epilogue_lbl;
   const codefunc_t &cf;
 
 public:
+  symbol_t *epilogue_lbl;
+
   stack_frame_t(const codefunc_t &_cf);
 
   offset_t size() const { return sections[FS_PADDING2].end; }
 
-  symbol_t *get_epilogue_lbl() const { return epilogue_lbl; }
-
   void gen_prologue();
   void gen_epilogue();
+
+#ifndef NDEBUG
+  void dump();
+#endif
 };
+
+#define TAB1 "  "
+#define TAB2 "    "
 
 #endif // MIPS_ASM_H
