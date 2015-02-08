@@ -199,16 +199,6 @@ class RealPhase(SpimRunner):
         pass
 
 #------------------------------------------------------------------------------
-phases = {
-    SYMS : SymsPhase,
-    TREE : TreePhase,
-    IR   : IrPhase,
-    ASM  : AsmPhase,
-    REAL : RealPhase,
-    OPT  : OptPhase,
-    }
-
-#------------------------------------------------------------------------------
 class Tester:
 
     def __init__(self):
@@ -233,13 +223,23 @@ class Tester:
 
     def cmmdbg(self):
         if self.dbg is None:
-            raise Exception("Error could not find c-- debug binary!")
+            raise Exception("Error: could not find c-- debug binary!")
         return self.dbg
 
     def cmmopt(self):
         if self.opt is None:
             raise Exception("Error: could not find c-- release binary!")
         return self.opt
+
+#------------------------------------------------------------------------------
+phases = {
+    SYMS : SymsPhase,
+    TREE : TreePhase,
+    IR   : IrPhase,
+    ASM  : AsmPhase,
+    REAL : RealPhase,
+    OPT  : OptPhase,
+    }
 
 t = Tester()
 

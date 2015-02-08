@@ -90,8 +90,7 @@ class symtab_t;
 class symlist_t;
 struct ir_t;
 struct treefunc_t;
-#include <list>
-typedef std::list<treefunc_t> treefuncs_t;
+class treefuncs_t;
 
 void print_syms(const symtab_t &syms, const char *title, const char *extra);
 void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags);

@@ -2,7 +2,6 @@
 #define TREENODE_H
 
 #include <list>
-#include <messages.h>
 
 class symbol_t;
 struct treenode_t;
@@ -85,7 +84,7 @@ struct treefunc_t
   treefunc_t(symbol_t &_sym, treenode_t *_tree) : sym(_sym), tree(_tree) {}
 };
 
-typedef std::list<treefunc_t> treefuncs_t;
+class treefuncs_t : public std::list<treefunc_t> {};
 
 //-----------------------------------------------------------------------------
 #define ERRNODE new treenode_t(TNT_ERROR)
