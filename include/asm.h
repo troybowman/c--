@@ -96,7 +96,8 @@ public:
 #endif
 };
 
-#define TAB1 "  "
-#define TAB2 "    "
+#define TAB1   "  "
+#define TAB2   "    "
+#define TABLEN 2
 
 #endif // MIPS_ASM_H

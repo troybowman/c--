@@ -477,12 +477,11 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
   vsnprintf(namestr, FMTLEN, fmt, va);
   va_end(va);
 
-  char item[NAMELEN+6];
+  char item[NAMELEN+TABLEN+5]; // \t,#, ,|,name,|,\0
   char *ptr = item;
 
-  const char *pfx = TAB1"# ";
-  APPSTR (ptr, pfx, strlen(pfx));
-  APPCHAR(ptr, '|', 1);
+  const char *pfx = TAB1"# |";
+  APPSTR(ptr, pfx, strlen(pfx));
 
   int len = strlen(namestr);
   const char *const end = ptr + NAMELEN;
