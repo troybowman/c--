@@ -108,27 +108,18 @@ class symbol_t
 
   union
   {
-    // source level symbols
-    struct
+    struct // source level symbols
     {
-      // source line
-      int _line;
-
-      // type
-      union
+      int _line; // source line
+      union      // type
       {
-        // ST_PRIMITIVE/ST_ARRAY
-        primitive_t _base;
-
-        // ST_ARRAY
-        struct
+        primitive_t _base;    // ST_PRIMITIVE/ST_ARRAY
+        struct                // ST_ARRAY
         {
           primitive_t _eltyp;
           offsize_t   _size;
         };
-
-        // ST_FUNCTION
-        struct
+        struct                // ST_FUNCTION
         {
           return_type_t _rt;
           symlist_t *_params;
@@ -136,13 +127,10 @@ class symbol_t
         };
       };
     };
-
     // ST_INTCON, ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_LABEL
     // ST_STACK_TEMPORARY, ST_STACK_ARGUMENT, ST_REG_ARGUMENT
     int _val;
-
-    // ST_STRCON, ST_CHARCON
-    const char *_str;
+    const char *_str; // ST_STRCON, ST_CHARCON
   };
 
 public:
