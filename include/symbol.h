@@ -99,7 +99,7 @@ class symbol_t
   symbol_type_t _type;
 
   uint32_t _flags;
-#define SF_PARAMETER       0x1 // is function parameter?
+#define SF_PARAMETER       0x1 // is a function parameter?
 #define SF_EXTERN          0x2 // is extern?
 #define SF_DEFINED         0x4 // has been defined?
 #define SF_RET_RESOLVED    0x8 // have we seen a 'return expr' statement yet? (for non-void funcs)
@@ -113,17 +113,20 @@ class symbol_t
     {
       // source line
       int _line;
+
       // type
       union
       {
         // ST_PRIMITIVE/ST_ARRAY
         primitive_t _base;
+
         // ST_ARRAY
         struct
         {
           primitive_t _eltyp;
           offsize_t   _size;
         };
+
         // ST_FUNCTION
         struct
         {
@@ -133,9 +136,11 @@ class symbol_t
         };
       };
     };
-    // ST_INTCON, ST_TEMPORARY, ST_SAVED_TEMPORARY,
+
+    // ST_INTCON, ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_LABEL
     // ST_STACK_TEMPORARY, ST_STACK_ARGUMENT, ST_REG_ARGUMENT
     int _val;
+
     // ST_STRCON, ST_CHARCON
     const char *_str;
   };

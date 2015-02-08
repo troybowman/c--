@@ -3,74 +3,252 @@
 import sys, os, glob, subprocess, re
 
 #------------------------------------------------------------------------------
-class Tester:
+DBG_NO_PARSE   = 0x01
+DBG_DUMP_GSYMS = 0x02
+DBG_DUMP_LSYMS = 0x04
+DBG_DUMP_TREE  = 0x08
+DBG_NO_IR      = 0x10
+DBG_DUMP_IR    = 0x20
+DBG_NO_CODE    = 0x40
 
-    DBG_NO_PARSE   = 0x01
-    DBG_DUMP_GSYMS = 0x02
-    DBG_DUMP_LSYMS = 0x04
-    DBG_DUMP_TREE  = 0x08
-    DBG_NO_IR      = 0x10
-    DBG_DUMP_IR    = 0x20
-    DBG_NO_CODE    = 0x40
+DBG_ALL_SYMS = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
+DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
+DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
 
-    DBG_ALL_SYMS = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
-    DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
-    DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
+FAILURE  = '\033[91m'
+SUCCESS  = '\033[92m'
+WARNING  = '\033[93m'
+ENDCOLOR = '\033[0m'
 
-    phases = {
-        "syms" : DBG_ALL_SYMS | DBG_NO_IR,          # 0x16
-        "tree" : DBG_ALL_TREE | DBG_NO_IR,          # 0x1e
-        "ir"   : DBG_ALL_IR   | DBG_NO_CODE,        # 0x6e
-        "asm"  : DBG_ALL_IR,                        # 0x2e
-        }
+SYMS = "syms"
+TREE = "tree"
+IR   = "ir"
+ASM  = "asm"
+REAL = "real"
+OPT  = "opt"
 
-    all_phases = [ "syms", "tree", "ir", "asm" ]
-
-    def __init__(self, argv):
-        self.phase_spec = self.all_phases if len(argv) == 1 else argv[1].split(',')
-        # TODO:
-        #cwd = os.getcwd()
-        #last_child = cwd
-        #cur = os.path.dirname(cwd)
-        #while not os.path.basename(cur).lower().startswith("idasrc"):
-            #last_child = cur
-            #parent = os.path.dirname(cur)
-            #if parent == cur:
-                #break
-            #cur = parent
-        #idahome = last_child
-        self.cmm = os.path.join("..", "bin", "c--")
-        if not os.path.exists(self.cmm):
-            print "error, can't find c-- binary"
-            exit()
-
-    def compile(self, inpath, flags):
-        print "compiling: %s" % inpath
-        outpath = re.sub("input/", "output/",
-                    re.sub("\.c", ".asm",
-                      inpath))
-        args = [ self.cmm, "-v", hex(flags), "-o", outpath, inpath ]
-        errpath = re.sub("\.asm", ".stderr", outpath)
-        with open(errpath, "w") as errfile:
-            try:
-                subprocess.call(args, stdout=errfile, stderr=errfile)
-            except OSError as e:
-                errfile.write("couldn't launch c--: %s\n" % e.strerror)
-            except:
-                errfile.write("idk wtf happened\n")
-                raise
-        if os.path.getsize(errpath) == 0:
-            os.remove(errpath)
-
-    def run(self):
-        for p in self.phase_spec:
-            path = os.path.join("input", p, "*.c")
-            for inpath in glob.iglob(path):
-                self.compile(inpath, self.phases[p])
-
+phase_names = [ SYMS, TREE, IR, ASM, REAL, OPT ]
 
 #------------------------------------------------------------------------------
-t = Tester(sys.argv)
-t.run()
+def replace_ext(path, ext):
+    base = os.path.splitext(path)[0]
+    return base + "." + ext
 
-# #TODO: automatically report changed files
+def simplify_inpath(path):
+    f = os.path.basename(path)
+    b = os.path.dirname(path)
+    d = os.path.basename(b)
+    return os.path.join(d, f)
+
+#------------------------------------------------------------------------------
+class StderrMonitor:
+
+    def __init__(self, path):
+        self.errpath = replace_ext(path, "stderr")
+
+    def __enter__(self):
+        self.errfile = open(self.errpath, "w")
+        return self
+
+    def __exit__(self, t, v, tr):
+        if os.path.getsize(self.errpath) == 0:
+            os.remove(self.errpath)
+
+    def file(self):
+        return self.errfile
+
+    def append(self, text):
+        self.errfile.write(text)
+
+#------------------------------------------------------------------------------
+class Directory:
+
+    def __init__(self, target):
+        self.prev = os.getcwd()
+        self.target = target
+
+    def __enter__(self):
+        os.chdir(self.target)
+        return self
+
+    def __exit__(self, t, v, tr):
+        os.chdir(self.prev)
+
+#------------------------------------------------------------------------------
+class TesterPhase:
+
+    def __init__(self, t, name):
+        self.t      = t
+        self.input  = os.path.join(t.cmmhome(), "tests", "input",  name)
+        self.output = os.path.join(t.cmmhome(), "tests", "output", name)
+        self.name   = name
+
+    def compile(self, inpath):
+        outfile = replace_ext(os.path.basename(inpath), "asm")
+        outpath = os.path.join(self.output, outfile)
+        argv = self.argv() + [ "-o", outpath, inpath ]
+        with StderrMonitor(outpath) as errors:
+            try:
+                subprocess.call(argv, stdout=errors.file(), stderr=errors.file())
+            except OSError as e:
+                errors.append("couldn't launch c--: %s\n" % e.strerror)
+            except:
+                errors.append("idk wtf happened\n")
+                raise
+
+    def execute(self):
+        pattern = os.path.join(self.input, "*.c")
+        for inpath in glob.iglob(pattern):
+            print "compiling: %s" % simplify_inpath(inpath)
+            self.compile(inpath)
+
+    def status(self):
+        print "checking diffs for phase %s..." % self.name
+        with Directory(self.output):
+            status = subprocess.check_output(["git", "ls-files", "-dmo"])
+            if len(status) > 0:
+                print FAILURE + status + ENDCOLOR
+            else:
+                print SUCCESS + "Clean!" + ENDCOLOR
+
+    def validate(self):
+        self.status()
+
+#------------------------------------------------------------------------------
+class SymsPhase(TesterPhase):
+
+    def __init__(self, t):
+        TesterPhase.__init__(self, t, SYMS)
+        #super(SymsPhase, self).__init__(SYMS)
+
+    def argv(self):
+        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_SYMS | DBG_NO_IR) ]
+
+#------------------------------------------------------------------------------
+class TreePhase(TesterPhase):
+
+    def __init__(self, t):
+        TesterPhase.__init__(self, t, TREE)
+        #super(TreePhase, self).__init__(TREE)
+
+    def argv(self):
+        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_TREE | DBG_NO_IR) ]
+
+#------------------------------------------------------------------------------
+class IrPhase(TesterPhase):
+
+    def __init__(self, t):
+        TesterPhase.__init__(self, t, IR)
+        #super(IrPhase, self).__init__(IR)
+
+    def argv(self):
+        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR | DBG_NO_CODE) ]
+
+#------------------------------------------------------------------------------
+class AsmPhase(TesterPhase):
+
+    def __init__(self, t):
+        TesterPhase.__init__(self, t, ASM)
+        #super(AsmPhase, self).__init__(ASM)
+
+    def argv(self):
+        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
+
+#------------------------------------------------------------------------------
+class SpimRunner(TesterPhase):
+
+    def __init__(self, t, name):
+        TesterPhase.__init__(self, t, name)
+        #super(AsmRunner, self).__init__(phase)
+
+    def validate(self):
+        # TODO: run all asm files and check output
+        #self.status()
+        pass
+
+#------------------------------------------------------------------------------
+class OptPhase(SpimRunner):
+
+    def __init__(self, t):
+        SpimRunner.__init__(self, t, OPT)
+        #super(OptPhase, self).__init__(OPT)
+
+    def argv(self):
+        return [ self.t.cmmopt() ]
+
+    def execute(self):
+        print WARNING + "opt: TODO" + ENDCOLOR
+
+    def validate(self):
+        pass
+
+#------------------------------------------------------------------------------
+class RealPhase(SpimRunner):
+
+    def __init__(self, t):
+        SpimRunner.__init__(self, t, REAL)
+        #super(RealPhase, self).__init__(REAL)
+
+    def argv(self):
+        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
+
+    def execute(self):
+        print WARNING + "real: TODO" + ENDCOLOR
+
+    def validate(self):
+        pass
+
+#------------------------------------------------------------------------------
+phases = {
+    SYMS : SymsPhase,
+    TREE : TreePhase,
+    IR   : IrPhase,
+    ASM  : AsmPhase,
+    REAL : RealPhase,
+    OPT  : OptPhase,
+    }
+
+#------------------------------------------------------------------------------
+class Tester:
+
+    def __init__(self):
+        cur = os.getcwd()
+        while not os.path.basename(cur).lower() == "c--":
+            parent = os.path.dirname(cur)
+            if parent == cur:
+                cur = None
+                break
+            cur = parent
+        if cur == None:
+            raise Exception("Error: could not find c-- root directory!")
+        self.home = cur
+
+        self.dbg = os.path.join(self.home, "bin", "debug", "c--")
+        if not os.path.exists(self.dbg):
+            self.dbg = None
+
+        self.opt = os.path.join(self.home, "bin", "release", "c--")
+        if not os.path.exists(self.opt):
+            self.opt = None
+
+    def cmmhome(self):
+        return self.home
+
+    def cmmdbg(self):
+        if self.dbg is None:
+            raise Exception("Error could not find c-- debug binary!")
+        return self.dbg
+
+    def cmmopt(self):
+        if self.opt is None:
+            raise Exception("Error: could not find c-- release binary!")
+        return self.opt
+
+t = Tester()
+
+phase_spec = phase_names if len(sys.argv) <= 1 else sys.argv[1].split(',')
+
+for p in phase_spec:
+    phase = phases[p](t)
+    phase.execute()
+    phase.validate()

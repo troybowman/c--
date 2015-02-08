@@ -2,15 +2,17 @@ CC = g++
 
 I   = ./include/
 SRC = ./src/
-BIN = ./bin/
-OBJ = ./obj/
 
-CFLAGS = -I$(I)
+CFLAGS += -I$(I)
 
 ifndef NDEBUG
   CFLAGS += -g -Wall
+  BIN = ./bin/debug/
+  OBJ = ./obj/debug/
 else
   CFLAGS += -O2 -DNDEBUG
+  BIN = ./bin/release/
+  OBJ = ./obj/release/
 endif
 
 ifdef __MAC__

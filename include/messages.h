@@ -30,10 +30,6 @@ do                                              \
   exit(code);                                   \
 } while ( false );
 
-//-----------------------------------------------------------------------------
-// Debug/Logging messages
-//-----------------------------------------------------------------------------
-
 #define APPCHAR(ptr, c, len) \
 do                           \
 {                            \
@@ -48,6 +44,10 @@ do                            \
   strncpy(ptr, str, len);     \
   ptr += len;                 \
 } while ( false )
+
+//-----------------------------------------------------------------------------
+// Debug/Logging messages
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 #ifndef NDEBUG
@@ -138,14 +138,15 @@ do                                      \
 #else
 
 //-----------------------------------------------------------------------------
-#define DBG(flag, ...)              // nothing
-#define ASSERT(code, cond)          // nothing
-#define DBG_PARSE_RESULTS()         // nothing
-#define DBG_IR(code)                // nothing
-#define DBG_CHECK_PHASE_FLAG(flags) // nothing
-#define DBG_INIT_OUTFILE(outpath)   // nothing
-#define OPT_INIT_OUTFILE(outpath)   FILE *outfile = init_outfile(args.str);
-#define DBG_FRAME_SUMMARY(frame)    // nothing
+#define DBG(flag, ...)                      // nothing
+#define ASSERT(code, cond)                  // nothing
+#define DBG_PARSE_RESULTS(gsyms, functions) // nothing
+#define DBG_IR(code)                        // nothing
+#define DBG_CHECK_PHASE_FLAG(flags)         // nothing
+#define DBG_INIT_OUTFILE(outpath)           // nothing
+#define OPT_INIT_OUTFILE(outpath)           FILE *outfile = init_outfile(args.str);
+#define SET_DBGFILE(outfile)                // nothing
+#define DBG_FRAME_SUMMARY(frame)            // nothing
 
 #endif // DEBUG
 

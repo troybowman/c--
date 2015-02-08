@@ -2,10 +2,11 @@
 #define CODENODE_H
 
 #include <resource.h>
+#include <treenode.h>
 
 class symbol_t;
-struct treenode_t;
 struct codenode_t;
+
 
 //-----------------------------------------------------------------------------
 enum codenode_type_t
