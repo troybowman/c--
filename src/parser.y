@@ -53,11 +53,8 @@
   } ctx;
 
   //---------------------------------------------------------------------------
-  // use a temporary symbol table to validate parameter declarations
-  static inline void param_on() { ctx.settemp(); }
-  static inline void param_off() { ctx.trash(); }
-  static void f_enter(symbol_t *, return_type_t); // initialize func def
-  static void f_leave(symbol_t *, treenode_t *);
+  static void func_enter(symbol_t *, return_type_t); // initialize func def
+  static void func_leave(symbol_t *, treenode_t *);
   static seq_t &seq_append(seq_t &, const treenode_t *, treenode_type_t);
   static       void  process_var_list(symlist_t *, primitive_t);
   static       void  process_func_list(symlist_t *, return_type_t, bool);
@@ -168,7 +165,7 @@ var_decl_list : var_decl_list ',' var_decl { $$ = process_sym_list($1, $3); }
 func_decls : func_decl func_decl_list { $$ = process_first_sym($1, $2); }
            ;
 
-func_decl : ID '(' { param_on(); } params { param_off(); } ')'
+func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
               ASSERT(1039, $4 != NULL);
               $$ = new symbol_t(0, $1, yylineno, ST_FUNCTION, $4);
@@ -205,15 +202,15 @@ param_decl_list : param_decl_list ',' param_decl { $$ = process_sym_list($1, $3)
 /*---------------------------------------------------------------------------*/
 func : type func_decl
        '{'
-          { f_enter($2, return_type_t($1)); }
+          { func_enter($2, return_type_t($1)); }
           func_body
-          { f_leave($2, $5); }
+          { func_leave($2, $5); }
        '}'
      | VOID func_decl
        '{'
-          { f_enter($2, RT_VOID); }
+          { func_enter($2, RT_VOID); }
           func_body
-          { f_leave($2, $5); }
+          { func_leave($2, $5); }
        '}'
      | error '{' { purge_and_exit(FATAL_FUNCDEF); } /* avoid processing an invaild function */
      | error '}' { yyerrok; }  /* start over at '}' */
@@ -437,7 +434,7 @@ static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &pr
 }
 
 //-----------------------------------------------------------------------------
-static void f_enter(symbol_t *f, return_type_t rt)
+static void func_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
   ASSERT(1000, f->is_func());
@@ -467,7 +464,7 @@ static void f_enter(symbol_t *f, return_type_t rt)
 }
 
 //-----------------------------------------------------------------------------
-static void f_leave(symbol_t *f, treenode_t *tree)
+static void func_leave(symbol_t *f, treenode_t *tree)
 {
   ASSERT(1005, f != NULL);
 
