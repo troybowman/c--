@@ -564,6 +564,7 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
   {
     case ST_PRIMITIVE:
       return expr.is_int_compat();
+
     case ST_ARRAY:
       if ( expr.type == TNT_STRCON )
       {
@@ -575,6 +576,7 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
             && expr.sym->base() == param.base();
       }
       return false;
+
     default:
       INTERR(1031);
   }
@@ -828,7 +830,8 @@ static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
       continue;
     }
     sym->set_rt(rt);
-    if ( is_extern ) sym->set_extern();
+    if ( is_extern )
+      sym->set_extern();
     gsyms.insert(sym);
   }
 }

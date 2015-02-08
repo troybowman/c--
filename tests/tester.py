@@ -216,11 +216,8 @@ class Tester:
         while not os.path.basename(cur).lower() == "c--":
             parent = os.path.dirname(cur)
             if parent == cur:
-                cur = None
-                break
+                raise Exception("Error: could not find c-- root directory!")
             cur = parent
-        if cur == None:
-            raise Exception("Error: could not find c-- root directory!")
         self.home = cur
 
         self.dbg = os.path.join(self.home, "bin", "debug", "c--")
