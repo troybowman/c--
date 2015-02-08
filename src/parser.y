@@ -380,10 +380,10 @@ static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
   ASSERT(1001, prev.name() == sym.name());
 
   return !prev.is_func()                              ? COL_REDECL
-       : prev.is_extern()                             ? COL_EXT
-       : prev.defined()                               ? COL_REDEF
+       :  prev.is_extern()                            ? COL_EXT
+       :  prev.defined()                              ? COL_REDEF
        : !check_params(*prev.params(), *sym.params()) ? COL_PARAMS
-       : prev.rt() != sym.rt()                        ? COL_RET
+       :  prev.rt() != sym.rt()                       ? COL_RET
        :                                                COL_OK;
 }
 
@@ -442,6 +442,7 @@ static void func_enter(symbol_t *f, return_type_t rt)
   f->set_rt(rt);
 
   symbol_t *prev = gsyms.get(f->name());
+
   if ( prev != NULL )
   {
     col_res_t res = validate_collision(*prev, *f);
@@ -747,7 +748,7 @@ static treenode_t *process_stmt_var(const symbol_t *sym, treenode_t *idx, int li
 
   if ( res != AL_OK )
   {
-    switch( res )
+    switch ( res )
     {
       case AL_ERR_BASE:
         usererr("error: symbol %s used as an array but is not of array type, line %d\n",
@@ -854,8 +855,10 @@ static array_sfx_t process_array_sfx(int size, int line)
 static symlist_t *process_first_sym(symbol_t *first, symlist_t *rest)
 {
   symlist_t *list = rest == NULL ? new symlist_t() : rest;
+
   if ( first != NULL )
     list->insert(list->begin(), first);
+
   return list;
 }
 
@@ -863,8 +866,10 @@ static symlist_t *process_first_sym(symbol_t *first, symlist_t *rest)
 static symlist_t *process_sym_list(symlist_t *prev, symbol_t *to_ins)
 {
   symlist_t *symlist = prev == NULL ? new symlist_t() : prev;
+
   if ( to_ins != NULL )
     symlist->push_back(to_ins);
+
   return symlist;
 }
 
