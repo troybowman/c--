@@ -119,7 +119,6 @@ class SymsPhase(TesterPhase):
 
     def __init__(self, t):
         TesterPhase.__init__(self, t, SYMS)
-        #super(SymsPhase, self).__init__(SYMS)
 
     def argv(self):
         return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_SYMS | DBG_NO_IR) ]
@@ -129,7 +128,6 @@ class TreePhase(TesterPhase):
 
     def __init__(self, t):
         TesterPhase.__init__(self, t, TREE)
-        #super(TreePhase, self).__init__(TREE)
 
     def argv(self):
         return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_TREE | DBG_NO_IR) ]
@@ -139,7 +137,6 @@ class IrPhase(TesterPhase):
 
     def __init__(self, t):
         TesterPhase.__init__(self, t, IR)
-        #super(IrPhase, self).__init__(IR)
 
     def argv(self):
         return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR | DBG_NO_CODE) ]
@@ -149,7 +146,6 @@ class AsmPhase(TesterPhase):
 
     def __init__(self, t):
         TesterPhase.__init__(self, t, ASM)
-        #super(AsmPhase, self).__init__(ASM)
 
     def argv(self):
         return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
@@ -159,7 +155,6 @@ class SpimRunner(TesterPhase):
 
     def __init__(self, t, name):
         TesterPhase.__init__(self, t, name)
-        #super(AsmRunner, self).__init__(phase)
 
     def validate(self):
         # TODO: run all asm files and check output
@@ -171,7 +166,6 @@ class OptPhase(SpimRunner):
 
     def __init__(self, t):
         SpimRunner.__init__(self, t, OPT)
-        #super(OptPhase, self).__init__(OPT)
 
     def argv(self):
         return [ self.t.cmmopt() ]
@@ -187,7 +181,6 @@ class RealPhase(SpimRunner):
 
     def __init__(self, t):
         SpimRunner.__init__(self, t, REAL)
-        #super(RealPhase, self).__init__(REAL)
 
     def argv(self):
         return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
