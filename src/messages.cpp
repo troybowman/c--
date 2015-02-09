@@ -483,7 +483,7 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
   const char *pfx = TAB1"# |";
   APPSTR(ptr, pfx, strlen(pfx));
 
-  int len = strlen(namestr);
+  int len = cmin(strlen(namestr), NAMELEN);
   const char *const end = ptr + NAMELEN;
 
   APPCHAR(ptr, ' ', (NAMELEN - len) / 2);
