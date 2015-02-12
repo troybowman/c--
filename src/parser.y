@@ -53,7 +53,7 @@
   } ctx;
 
   //---------------------------------------------------------------------------
-  static void func_enter(symbol_t *, return_type_t); // initialize func def
+  static void func_enter(symbol_t *, return_type_t);
   static void func_leave(symbol_t *, treenode_t *);
   static seq_t &seq_append(seq_t &, const treenode_t *, treenode_type_t);
   static       void  process_var_list(symlist_t *, primitive_t);
@@ -72,7 +72,9 @@
   static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
   static  symlist_t *process_sym_list(symlist_t *, symbol_t *);
   static  symlist_t *process_first_sym(symbol_t *, symlist_t *);
+  static  symlist_t *process_param_list(symbol_t *, symlist_t *, symbol_t *);
   static array_sfx_t process_array_sfx(int, int);
+  static        void process_fdecl_error(fdecl_res_t, symbol_t *);
 %}
 
 /*---------------------------------------------------------------------------*/
@@ -94,10 +96,10 @@
 
 %token INT_TYPE CHAR_TYPE VOID
 %token WHILE RETURN EXTERN IF ELSE FOR
-%token EQ NEQ LEQ GEQ AND OR
+%token EQ NEQ LEQ GEQ AND OR ELLIPSIS
 
 %type<prim>     type
-%type<sym>      var_decl func_decl param_decl
+%type<sym>      var_decl func_decl param_decl ellipsis
 %type<symlist>  var_decls var_decl_list func_decls func_decl_list params param_decl_list
 %type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
 %type<asfx>     decl_array_sfx param_array_sfx
@@ -167,7 +169,6 @@ func_decls : func_decl func_decl_list { $$ = process_first_sym($1, $2); }
 
 func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
-              ASSERT(1039, $4 != NULL);
               $$ = new symbol_t(0, $1, yylineno, ST_FUNCTION, $4);
             }
           ;
@@ -177,9 +178,13 @@ func_decl_list : func_decl_list ',' func_decl { $$ = process_sym_list($1, $3); }
                ;
 
 /*---------------------------------------------------------------------------*/
-params : param_decl param_decl_list { $$ = process_first_sym($1, $2); }
-       | VOID                       { $$ = new symlist_t(); }
+params : param_decl param_decl_list ellipsis { $$ = process_param_list($1, $2, $3); }
+       | VOID { $$ = new symlist_t(); }
        ;
+
+ellipsis : ',' ELLIPSIS { $$ = new symbol_t(ST_ELLIPSIS); }
+         | /* empty */  { $$ = NULL; }
+         ;
 
 param_decl : type ID param_array_sfx
              {
@@ -364,17 +369,6 @@ static bool check_params(const symlist_t &p1, const symlist_t &p2)
 }
 
 //-----------------------------------------------------------------------------
-enum col_res_t
-{
-  COL_OK,
-  COL_PARAMS,
-  COL_REDECL,
-  COL_REDEF,
-  COL_EXT,
-  COL_RET
-};
-
-//-----------------------------------------------------------------------------
 static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
 {
   ASSERT(1001, prev.name() == sym.name());
@@ -439,6 +433,12 @@ static void func_enter(symbol_t *f, return_type_t rt)
   ASSERT(1004, f != NULL);
   ASSERT(1000, f->is_func());
 
+  if ( f->has_ellipsis() )
+  {
+    process_fdecl_error(FDECL_BAD_PRINTF, f);
+    purge_and_exit(FATAL_FUNCDEF);
+  }
+
   f->set_rt(rt);
 
   symbol_t *prev = gsyms.get(f->name());
@@ -478,16 +478,6 @@ static void func_leave(symbol_t *f, treenode_t *tree)
 
   ctx.setglobal();
 }
-
-//-----------------------------------------------------------------------------
-enum ret_res_t
-{
-  RET_EXTRA,
-  RET_MISSING,
-  RET_INCOMPAT,
-  RET_OK,
-  RET_OK_RESOLVED
-};
 
 //-----------------------------------------------------------------------------
 static ret_res_t validate_ret_stmt(const treenode_t *expr)
@@ -542,18 +532,6 @@ static int count_args(const treenode_t *args)
     ret++;
   return ret;
 }
-
-//-----------------------------------------------------------------------------
-struct call_res_t
-{
-  int code;
-#define CALL_OK       0
-#define CALL_BADARG   1
-#define CALL_NUMARGS  2
-#define CALL_NOFUNC   3
-  int info;
-  call_res_t(int c, int i = -1) : code(c), info(i) {}
-};
 
 //-----------------------------------------------------------------------------
 static bool check_arg(const symbol_t &param, const treenode_t &expr)
@@ -637,14 +615,6 @@ static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
 }
 
 //-----------------------------------------------------------------------------
-enum cctx_res_t
-{
-  CCTX_OK,
-  CCTX_EXPR,
-  CCTX_STMT
-};
-
-//-----------------------------------------------------------------------------
 static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
 {
   if ( call.type == TNT_ERROR )
@@ -719,14 +689,6 @@ static symbol_t *process_stmt_id(const char *id, int line)
   }
   return sym;
 }
-
-//-----------------------------------------------------------------------------
-enum lookup_res_t
-{
-  AL_OK,
-  AL_ERR_BASE,
-  AL_ERR_IDX
-};
 
 //-----------------------------------------------------------------------------
 static inline lookup_res_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
@@ -809,27 +771,105 @@ static void process_var_list(symlist_t *list, primitive_t prim)
 }
 
 //-----------------------------------------------------------------------------
+static fdecl_res_t validate_func_decl(const symbol_t &func, return_type_t rt, bool is_extern)
+{
+  symbol_t *prev = gsyms.get(func.name());
+  if ( prev != NULL )
+    return fdecl_res_t(FDECL_REDECL, prev->line());
+
+  if ( func.has_ellipsis() )
+  {
+    symlist_t *params = func.params();
+
+    return (func.name() == "printf"
+         && rt == RT_VOID
+         && is_extern
+         && params->size() == 2
+         && params->front()->is_array()
+         && params->front()->base() == PRIM_CHAR) ? FDECL_PRINTF_OK
+                                                  : FDECL_BAD_PRINTF;
+  }
+
+  return FDECL_OK;
+}
+
+//-----------------------------------------------------------------------------
+static void process_fdecl_error(fdecl_res_t res, symbol_t *sym)
+{
+  switch ( res.code )
+  {
+    case FDECL_REDECL:
+      usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
+              sym->c_str(), sym->line(), res.info);
+      break;
+    case FDECL_BAD_PRINTF:
+      usererr("error, line %d: ellipsis \"...\" notation is is only valid when declaring "
+              "builtin function: extern void printf(char format[], ...);\n", sym->line());
+      break;
+    default:
+      INTERR(0);
+  }
+}
+
+//-----------------------------------------------------------------------------
+static void init_builtin_function(const char *name, symlist_t *params)
+{
+  symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, ST_FUNCTION, params);
+  bfunc->set_rt(RT_VOID);
+  ASSERT(0, gsyms.get(bfunc->name()) == NULL);
+  gsyms.insert(bfunc);
+}
+
+//-----------------------------------------------------------------------------
+static symlist_t *init_builtin_param(const char *name, symbol_type_t type, primitive_t base)
+{
+  symlist_t *params = new symlist_t;
+  symbol_t  *param  = new symbol_t(SF_PARAMETER, name, -1, type);
+
+  param->set_base(base);
+  params->push_back(param);
+
+  return params;
+}
+
+//-----------------------------------------------------------------------------
+static void init_print_functions()
+{
+  symlist_t *pi_param = init_builtin_param("val", ST_PRIMITIVE, PRIM_INT);
+  init_builtin_function(BI_PRINT_INT, pi_param);
+
+  symlist_t *ps_param = init_builtin_param("str", ST_ARRAY, PRIM_CHAR);
+  init_builtin_function(BI_PRINT_STRING, ps_param);
+}
+
+//-----------------------------------------------------------------------------
 static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
 {
   ASSERT(1010, list != NULL);
   ASSERT(1025, rt != RT_UNKNOWN);
 
-  symlist_t::iterator i;
-  for ( i = list->begin(); i != list->end(); i++ )
+  for ( symlist_t::iterator i = list->begin(); i != list->end(); i++ )
   {
     ASSERT(1011, *i != NULL);
+
     symbol_t *sym = *i;
-    symbol_t *prev = gsyms.get(sym->name());
-    if ( prev != NULL )
+    fdecl_res_t res = validate_func_decl(*sym, rt, is_extern);
+
+    if ( res.code < FDECL_OK )
     {
-      usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
-              sym->c_str(), sym->line(), prev->line());
+      process_fdecl_error(res, sym);
       delete sym;
       continue;
     }
+
+    if ( res.code == FDECL_PRINTF_OK )
+      init_print_functions();
+
     sym->set_rt(rt);
+
     if ( is_extern )
       sym->set_extern();
+
     gsyms.insert(sym);
   }
 }
@@ -871,6 +911,14 @@ static symlist_t *process_sym_list(symlist_t *prev, symbol_t *to_ins)
     symlist->push_back(to_ins);
 
   return symlist;
+}
+
+//-----------------------------------------------------------------------------
+static symlist_t *process_param_list(symbol_t *first, symlist_t *rest, symbol_t *ellipsis)
+{
+  symlist_t *params = process_first_sym(first, rest);
+
+  return process_sym_list(params, ellipsis);
 }
 
 //-----------------------------------------------------------------------------

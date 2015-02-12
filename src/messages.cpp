@@ -328,6 +328,11 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
           {
             symbol_t *p = *i;
             int pindent = indent+1;
+            if ( p->type() == ST_ELLIPSIS )
+            {
+              cmtout(pindent, "%d: ST_ELLIPSIS\n", params->idx(i));
+              continue;
+            }
             cmtout(pindent, "%d: %s\n", params->idx(i), p->c_str());
             cmtout(++pindent, "type: ");
             switch ( p->type() )

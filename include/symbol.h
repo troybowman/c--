@@ -10,6 +10,7 @@
 
 class symtab_t;
 class symlist_t;
+class symbol_t;
 
 //-----------------------------------------------------------------------------
 enum symloc_type_t
@@ -58,6 +59,31 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+class symlist_t : public std::list<symbol_t *>
+{
+  typedef std::list<symbol_t *> inherited;
+
+public:
+  int idx(const_iterator i)
+  {
+    return std::distance(static_cast<const_iterator>(begin()), i);
+  }
+  bool has(const symbol_t *s)
+  {
+    return std::find(begin(), end(), s) != end();
+  }
+  void add_unique(symbol_t *s)
+  {
+    if ( !has(s) )
+      push_back(s);
+  }
+  void assign(const symlist_t &list)
+  {
+    inherited::assign(list.begin(), list.end());
+  }
+};
+
+//-----------------------------------------------------------------------------
 enum primitive_t
 {
   PRIM_UNKNOWN,
@@ -80,6 +106,7 @@ enum symbol_type_t
   ST_PRIMITIVE,       // source level primitive (int/char)
   ST_ARRAY,           // source level array. base type is a primitive
   ST_FUNCTION,        // source level function
+  ST_ELLIPSIS,        // identifies "..." parameter declaration
   ST_TEMPORARY,       // asm temporary value
   ST_SAVED_TEMPORARY, // temporary that must persist across a function call
   ST_STACK_TEMPORARY, // temporary that must be stored on the stack
@@ -99,10 +126,11 @@ class symbol_t
   symbol_type_t _type;
 
   uint32_t _flags;
-#define SF_PARAMETER       0x1 // is a function parameter?
-#define SF_EXTERN          0x2 // is extern?
-#define SF_DEFINED         0x4 // has been defined?
-#define SF_RET_RESOLVED    0x8 // have we seen a 'return expr' statement yet? (for non-void funcs)
+#define SF_PARAMETER       0x01 // is a function parameter?
+#define SF_EXTERN          0x02 // is extern?
+#define SF_DEFINED         0x04 // has been defined?
+#define SF_RET_RESOLVED    0x08 // have we seen a 'return expr' statement yet? (for non-void funcs)
+#define SF_BUILTIN_PRINTF  0x10 // denotes the builtin printf function
 
   std::string _name;
 
@@ -164,6 +192,8 @@ public:
   bool is_extern()     const { return (_flags & SF_EXTERN) != 0; }
   bool defined()       const { return (_flags & SF_DEFINED) != 0; }
   bool ret_resolved()  const { return (_flags & SF_RET_RESOLVED) != 0; }
+  bool has_ellipsis()  const { return _params->size() > 0
+                                   && _params->back()->type() == ST_ELLIPSIS; }
 
   void set_name(const char *name)  { _name.assign(name); }
 
@@ -174,33 +204,9 @@ public:
   void set_extern()                { _flags |= SF_EXTERN; }
   void set_defined()               { _flags |= SF_DEFINED; }
   void set_ret_resolved()          { _flags |= SF_RET_RESOLVED; }
+  void set_builtin_printf()        { _flags |= SF_BUILTIN_PRINTF; }
 
   void set_val(int val)            { _val = val; }
-};
-
-//-----------------------------------------------------------------------------
-class symlist_t : public std::list<symbol_t *>
-{
-  typedef std::list<symbol_t *> inherited;
-
-public:
-  int idx(const_iterator i)
-  {
-    return std::distance(static_cast<const_iterator>(begin()), i);
-  }
-  bool has(const symbol_t *s)
-  {
-    return std::find(begin(), end(), s) != end();
-  }
-  void add_unique(symbol_t *s)
-  {
-    if ( !has(s) )
-      push_back(s);
-  }
-  void assign(const symlist_t &list)
-  {
-    inherited::assign(list.begin(), list.end());
-  }
 };
 
 //-----------------------------------------------------------------------------

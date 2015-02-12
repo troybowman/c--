@@ -20,18 +20,19 @@
 "int"		 { return INT_TYPE;  }
 "char"	 { return CHAR_TYPE; }
 "void"	 { return VOID;      }
-"while"	 { return WHILE;  }
-"return" { return RETURN; }
-"extern" { return EXTERN; }
-"if"		 { return IF;     }
-"else"	 { return ELSE;   }
-"for"		 { return FOR;    }
-"=="		 { return EQ;     }
-"!="		 { return NEQ;    }
-"<="		 { return LEQ;    }
-">="		 { return GEQ;    }
-"&&"		 { return AND;    }
-"||"		 { return OR;     }
+"while"	 { return WHILE;     }
+"return" { return RETURN;    }
+"extern" { return EXTERN;    }
+"if"		 { return IF;        }
+"else"	 { return ELSE;      }
+"for"		 { return FOR;       }
+"=="		 { return EQ;        }
+"!="		 { return NEQ;       }
+"<="		 { return LEQ;       }
+">="		 { return GEQ;       }
+"&&"		 { return AND;       }
+"||"		 { return OR;        }
+"..."    { return ELLIPSIS;  }
 
 "[" |
 "]" |
