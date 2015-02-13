@@ -334,7 +334,7 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, 
   if ( asfx.code == ASFX_ERROR )
     return NULL;
 
-  symbol_t *prev = ctx.get(std::string(name));
+  symbol_t *prev = ctx.get(name);
   if ( prev != NULL )
   {
     usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
@@ -428,12 +428,20 @@ static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &pr
 }
 
 //-----------------------------------------------------------------------------
+static bool has_ellipsis(const symbol_t &f)
+{
+  return f.is_func()
+      && f.params()->size() > 0
+      && f.params()->back()->type() == ST_ELLIPSIS;
+}
+
+//-----------------------------------------------------------------------------
 static void func_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
   ASSERT(1000, f->is_func());
 
-  if ( f->has_ellipsis() )
+  if ( has_ellipsis(*f) )
   {
     process_fdecl_error(FDECL_BAD_PRINTF, f);
     purge_and_exit(FATAL_FUNCDEF);
@@ -777,7 +785,7 @@ static fdecl_res_t validate_func_decl(const symbol_t &func, return_type_t rt, bo
   if ( prev != NULL )
     return fdecl_res_t(FDECL_REDECL, prev->line());
 
-  if ( func.has_ellipsis() )
+  if ( has_ellipsis(func) )
   {
     symlist_t *params = func.params();
 
