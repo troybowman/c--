@@ -192,8 +192,6 @@ public:
   bool is_extern()     const { return (_flags & SF_EXTERN) != 0; }
   bool defined()       const { return (_flags & SF_DEFINED) != 0; }
   bool ret_resolved()  const { return (_flags & SF_RET_RESOLVED) != 0; }
-  bool has_ellipsis()  const { return _params->size() > 0
-                                   && _params->back()->type() == ST_ELLIPSIS; }
 
   void set_name(const char *name)  { _name.assign(name); }
 
