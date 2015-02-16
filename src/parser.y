@@ -809,6 +809,7 @@ static void process_fdecl_error(fdecl_res_t res, symbol_t *sym)
     default:
       INTERR(0);
   }
+  delete sym;
 }
 
 //-----------------------------------------------------------------------------
@@ -858,7 +859,6 @@ static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
     if ( res.code < FDECL_OK )
     {
       process_fdecl_error(res, sym);
-      delete sym;
       continue;
     }
 
