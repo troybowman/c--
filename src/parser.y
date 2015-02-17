@@ -573,8 +573,8 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
     return call_res_t(CALL_NOFUNC);
 
   symvec_t &params = *f.params();
-  size_t sz        = params.size();
-  size_t nargs     = count_args(args);
+  size_t sz    = params.size();
+  size_t nargs = count_args(args);
 
   if ( sz != nargs )
     return call_res_t(CALL_NUMARGS, nargs);
@@ -812,7 +812,8 @@ static void process_fdecl_error(fdecl_res_t res, symbol_t *sym)
       break;
     case FDECL_BAD_PRINTF:
       usererr("error, line %d: ellipsis \"...\" notation is is only valid when declaring "
-              "builtin function: extern void printf(char format[], ...);\n", sym->line());
+              "builtin function: extern void printf(char format[], ...);\n",
+              sym->line());
       break;
     default:
       INTERR(0);
