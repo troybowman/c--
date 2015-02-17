@@ -1,7 +1,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
-#include <list>
+#include <vector>
 
 class symbol_t;
 struct treenode_t;
@@ -84,7 +84,7 @@ struct treefunc_t
   treefunc_t(symbol_t &_sym, treenode_t *_tree) : sym(_sym), tree(_tree) {}
 };
 
-class treefuncs_t : public std::list<treefunc_t> {};
+class treefuncs_t : public std::vector<treefunc_t> {};
 
 //-----------------------------------------------------------------------------
 #define ERRNODE new treenode_t(TNT_ERROR)

@@ -90,7 +90,6 @@ do                                 \
 
 struct codenode_t;
 class symtab_t;
-class symlist_t;
 struct ir_t;
 struct treefunc_t;
 class treefuncs_t;

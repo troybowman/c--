@@ -21,15 +21,15 @@ struct frame_item_visitor_t
 //-----------------------------------------------------------------------------
 class frame_section_t : public area_t
 {
-  symlist_t items;
+  symvec_t items;
 
 public:
   frame_section_t() {}
 
-  void init(const symlist_t &list)
-    { items.assign(list); }
+  void init(const symvec_t &vec)
+    { items.assign(vec); }
   void init(const symtab_t &table)
-    { symlist_t *list = table.as_list(); items.assign(*list); delete list; }
+    { symvec_t *vec = table.as_vector(); items.assign(*vec); delete vec; }
   void init(const resource_manager_t &rm)
     { rm.get_used_resources(items); }
 

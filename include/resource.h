@@ -48,11 +48,11 @@ public:
       free(i->second);
   }
 
-  void get_used_resources(symlist_t &list) const
+  void get_used_resources(symvec_t &vec) const
   {
     rmap_t::const_iterator i;
     for ( i = _used.begin(); i != _used.end(); i++ )
-      list.push_back(i->second);
+      vec.push_back(i->second);
   }
 };
 

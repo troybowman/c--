@@ -56,8 +56,8 @@
   static void func_enter(symbol_t *, return_type_t);
   static void func_leave(symbol_t *, treenode_t *);
   static seq_t &seq_append(seq_t &, const treenode_t *, treenode_type_t);
-  static       void  process_var_list(symlist_t *, primitive_t);
-  static       void  process_func_list(symlist_t *, return_type_t, bool);
+  static       void  process_var_list(symvec_t *, primitive_t);
+  static       void  process_func_list(symvec_t *, return_type_t, bool);
   static   symbol_t *process_var_decl(const char *, int, array_sfx_t, uint32_t flags = 0);
   static   symbol_t *process_stmt_id(const char *, int);
   static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
@@ -70,9 +70,9 @@
   static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
   static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
   static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
-  static  symlist_t *process_sym_list(symlist_t *, symbol_t *);
-  static  symlist_t *process_first_sym(symbol_t *, symlist_t *);
-  static  symlist_t *process_param_list(symbol_t *, symlist_t *, symbol_t *);
+  static   symvec_t *process_sym_list(symvec_t *, symbol_t *);
+  static   symvec_t *process_first_sym(symbol_t *, symvec_t *);
+  static   symvec_t *process_param_list(symbol_t *, symvec_t *, symbol_t *);
   static array_sfx_t process_array_sfx(int, int);
   static        void process_fdecl_error(fdecl_res_t, symbol_t *);
 %}
@@ -84,7 +84,7 @@
   char *str;
   primitive_t prim;
   symbol_t *sym;
-  symlist_t *symlist;
+  symvec_t *symvec;
   treenode_t *tree;
   symtab_t *symtab;
   array_sfx_t asfx;
@@ -100,7 +100,7 @@
 
 %type<prim>     type
 %type<sym>      var_decl func_decl param_decl ellipsis
-%type<symlist>  var_decls var_decl_list func_decls func_decl_list params param_decl_list
+%type<symvec>   var_decls var_decl_list func_decls func_decl_list params param_decl_list
 %type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
 %type<asfx>     decl_array_sfx param_array_sfx
 %type<seq>      stmts arg_list
@@ -179,7 +179,7 @@ func_decl_list : func_decl_list ',' func_decl { $$ = process_sym_list($1, $3); }
 
 /*---------------------------------------------------------------------------*/
 params : param_decl param_decl_list ellipsis { $$ = process_param_list($1, $2, $3); }
-       | VOID { $$ = new symlist_t(); }
+       | VOID { $$ = new symvec_t(); }
        ;
 
 ellipsis : ',' ELLIPSIS { $$ = new symbol_t(ST_ELLIPSIS); }
@@ -350,12 +350,12 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, 
 }
 
 //-----------------------------------------------------------------------------
-static bool check_params(const symlist_t &p1, const symlist_t &p2)
+static bool check_params(const symvec_t &p1, const symvec_t &p2)
 {
   if ( p1.size() != p2.size() )
     return false;
 
-  for ( symlist_t::const_iterator i1 = p1.begin(), i2 = p2.begin();
+  for ( symvec_t::const_iterator i1 = p1.begin(), i2 = p2.begin();
         i1 != p1.end() && i2 != p2.end();
         i1++, i2++)
   {
@@ -384,7 +384,7 @@ static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
 //-----------------------------------------------------------------------------
 static void init_lsyms(symbol_t &f)
 {
-  symlist_t::const_iterator i;
+  symvec_t::const_iterator i;
   for ( i = f.params()->begin(); i != f.params()->end(); i++ )
   {
     ASSERT(1003, *i != NULL);
@@ -572,19 +572,19 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
   if ( !f.is_func() )
     return call_res_t(CALL_NOFUNC);
 
-  symlist_t *params = f.params();
+  symvec_t &params = *f.params();
+  size_t sz        = params.size();
+  size_t nargs     = count_args(args);
+
+  if ( sz != nargs )
+    return call_res_t(CALL_NUMARGS, nargs);
 
   tree_iterator_t ti(args);
-  symlist_t::const_iterator si = params->begin();
-
-  for ( ; *ti != NULL && si != params->end(); ti++, si++ )
+  for ( size_t i = 0; *ti != NULL && i < sz; ti++, i++ )
   {
-    if ( !check_arg(**si, **ti) )
-      return call_res_t(CALL_BADARG, params->idx(si)+1);
+    if ( !check_arg(*params[i], **ti) )
+      return call_res_t(CALL_BADARG, i+1);
   }
-
-  if ( *ti != NULL || si != params->end() )
-    return call_res_t(CALL_NUMARGS, count_args(args));
 
   return call_res_t(CALL_OK);
 }
@@ -766,12 +766,12 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 }
 
 //-----------------------------------------------------------------------------
-static void process_var_list(symlist_t *list, primitive_t prim)
+static void process_var_list(symvec_t *vec, primitive_t prim)
 {
-  ASSERT(1007, list != NULL);
+  ASSERT(1007, vec != NULL);
 
-  symlist_t::iterator i;
-  for ( i = list->begin(); i != list->end(); i++ )
+  symvec_t::iterator i;
+  for ( i = vec->begin(); i != vec->end(); i++ )
   {
     ASSERT(1008, *i != NULL);
     (*i)->set_base(prim);
@@ -787,7 +787,7 @@ static fdecl_res_t validate_func_decl(const symbol_t &func, return_type_t rt, bo
 
   if ( has_ellipsis(func) )
   {
-    symlist_t *params = func.params();
+    symvec_t *params = func.params();
 
     return (func.name() == "printf"
          && rt == RT_VOID
@@ -821,7 +821,7 @@ static void process_fdecl_error(fdecl_res_t res, symbol_t *sym)
 }
 
 //-----------------------------------------------------------------------------
-static void init_builtin_function(const char *name, symlist_t *params)
+static void init_builtin_function(const char *name, symvec_t *params)
 {
   symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, ST_FUNCTION, params);
   bfunc->set_rt(RT_VOID);
@@ -830,9 +830,9 @@ static void init_builtin_function(const char *name, symlist_t *params)
 }
 
 //-----------------------------------------------------------------------------
-static symlist_t *init_builtin_param(const char *name, symbol_type_t type, primitive_t base)
+static symvec_t *init_builtin_param(const char *name, symbol_type_t type, primitive_t base)
 {
-  symlist_t *params = new symlist_t;
+  symvec_t *params = new symvec_t;
   symbol_t  *param  = new symbol_t(SF_PARAMETER, name, -1, type);
 
   param->set_base(base);
@@ -844,20 +844,20 @@ static symlist_t *init_builtin_param(const char *name, symbol_type_t type, primi
 //-----------------------------------------------------------------------------
 static void init_print_functions()
 {
-  symlist_t *pi_param = init_builtin_param("val", ST_PRIMITIVE, PRIM_INT);
+  symvec_t *pi_param = init_builtin_param("val", ST_PRIMITIVE, PRIM_INT);
   init_builtin_function(BI_PRINT_INT, pi_param);
 
-  symlist_t *ps_param = init_builtin_param("str", ST_ARRAY, PRIM_CHAR);
+  symvec_t *ps_param = init_builtin_param("str", ST_ARRAY, PRIM_CHAR);
   init_builtin_function(BI_PRINT_STRING, ps_param);
 }
 
 //-----------------------------------------------------------------------------
-static void process_func_list(symlist_t *list, return_type_t rt, bool is_extern)
+static void process_func_list(symvec_t *vec, return_type_t rt, bool is_extern)
 {
-  ASSERT(1010, list != NULL);
+  ASSERT(1010, vec != NULL);
   ASSERT(1025, rt != RT_UNKNOWN);
 
-  for ( symlist_t::iterator i = list->begin(); i != list->end(); i++ )
+  for ( symvec_t::iterator i = vec->begin(); i != vec->end(); i++ )
   {
     ASSERT(1011, *i != NULL);
 
@@ -900,31 +900,31 @@ static array_sfx_t process_array_sfx(int size, int line)
 }
 
 //-----------------------------------------------------------------------------
-static symlist_t *process_first_sym(symbol_t *first, symlist_t *rest)
+static symvec_t *process_first_sym(symbol_t *first, symvec_t *rest)
 {
-  symlist_t *list = rest == NULL ? new symlist_t() : rest;
+  symvec_t *vec = rest == NULL ? new symvec_t() : rest;
 
   if ( first != NULL )
-    list->insert(list->begin(), first);
+    vec->insert(vec->begin(), first);
 
-  return list;
+  return vec;
 }
 
 //-----------------------------------------------------------------------------
-static symlist_t *process_sym_list(symlist_t *prev, symbol_t *to_ins)
+static symvec_t *process_sym_list(symvec_t *prev, symbol_t *to_ins)
 {
-  symlist_t *symlist = prev == NULL ? new symlist_t() : prev;
+  symvec_t *symvec = prev == NULL ? new symvec_t() : prev;
 
   if ( to_ins != NULL )
-    symlist->push_back(to_ins);
+    symvec->push_back(to_ins);
 
-  return symlist;
+  return symvec;
 }
 
 //-----------------------------------------------------------------------------
-static symlist_t *process_param_list(symbol_t *first, symlist_t *rest, symbol_t *ellipsis)
+static symvec_t *process_param_list(symbol_t *first, symvec_t *rest, symbol_t *ellipsis)
 {
-  symlist_t *params = process_first_sym(first, rest);
+  symvec_t *params = process_first_sym(first, rest);
 
   return process_sym_list(params, ellipsis);
 }

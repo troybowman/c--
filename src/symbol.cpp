@@ -19,7 +19,7 @@ symbol_t::symbol_t(uint32_t flags, const char *name, int line, symbol_type_t typ
     case ST_FUNCTION:
       _rt      = RT_UNKNOWN;
       _symbols = new symtab_t();
-      _params  = va_arg(va, symlist_t *);
+      _params  = va_arg(va, symvec_t *);
       ASSERT(1088, _params != NULL);
       break;
     default:
@@ -59,7 +59,7 @@ symbol_t::~symbol_t()
 {
   if ( is_func() )
   {
-    for ( symlist_t::iterator i = _params->begin(); i != _params->end(); i++ )
+    for ( symvec_t::iterator i = _params->begin(); i != _params->end(); i++ )
       delete *i;
     delete _params;
 

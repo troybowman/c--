@@ -322,28 +322,27 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
           cmtout(indent+1, "none\n");
         else
         {
-          symlist_t *params = s->params();
-          symlist_t::const_iterator i;
-          for ( i = params->begin(); i != params->end(); i++ )
+          symvec_t &params = *s->params();
+          for ( size_t i = 0, sz = params.size(); i < sz ; i++ )
           {
-            symbol_t *p = *i;
+            symbol_t &p = *params[i];
             int pindent = indent+1;
-            if ( p->type() == ST_ELLIPSIS )
+            if ( p.type() == ST_ELLIPSIS )
             {
-              cmtout(pindent, "%d: ST_ELLIPSIS\n", params->idx(i));
+              cmtout(pindent, "%d: ST_ELLIPSIS\n", i);
               continue;
             }
-            cmtout(pindent, "%d: %s\n", params->idx(i), p->c_str());
+            cmtout(pindent, "%d: %s\n", i, p.c_str());
             cmtout(++pindent, "type: ");
-            switch ( p->type() )
+            switch ( p.type() )
             {
               case ST_PRIMITIVE:
                 fprintf(dbgfile, "ST_PRIMITIVE\n");
-                cmtout(++pindent, "base: %s\n", prim2str(p->base()));
+                cmtout(++pindent, "base: %s\n", prim2str(p.base()));
                 break;
               case ST_ARRAY:
                 fprintf(dbgfile, "ST_ARRAY\n");
-                cmtout(++pindent, "base: %s\n", prim2str(p->base()));
+                cmtout(++pindent, "base: %s\n", prim2str(p.base()));
                 break;
               default:
                 INTERR(1062);

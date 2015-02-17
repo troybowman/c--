@@ -79,14 +79,14 @@ struct codefunc_t
 };
 
 //-----------------------------------------------------------------------------
-typedef std::list<codefunc_t *> codefuncs_t;
+typedef std::vector<codefunc_t *> codefuncs_t;
 
 //-----------------------------------------------------------------------------
 struct ir_t
 {
   symtab_t gsyms;
   symtab_t strings;
-  symlist_t labels;
+  symvec_t labels;
   codefuncs_t funcs;
 
   ir_t(symtab_t &_gsyms) { gsyms.swap(_gsyms); }

@@ -3,13 +3,12 @@
 
 #include <vector>
 #include <string>
-#include <list>
 #include <map>
 
 #include <offset.h>
 
 class symtab_t;
-class symlist_t;
+class symvec_t;
 class symbol_t;
 
 //-----------------------------------------------------------------------------
@@ -56,31 +55,6 @@ public:
   const char *reg()    const { return _reg;   }
   offset_t stkoff()    const { return _off;   }
   uint8_t flags()      const { return _flags; }
-};
-
-//-----------------------------------------------------------------------------
-class symlist_t : public std::list<symbol_t *>
-{
-  typedef std::list<symbol_t *> inherited;
-
-public:
-  int idx(const_iterator i)
-  {
-    return std::distance(static_cast<const_iterator>(begin()), i);
-  }
-  bool has(const symbol_t *s)
-  {
-    return std::find(begin(), end(), s) != end();
-  }
-  void add_unique(symbol_t *s)
-  {
-    if ( !has(s) )
-      push_back(s);
-  }
-  void assign(const symlist_t &list)
-  {
-    inherited::assign(list.begin(), list.end());
-  }
 };
 
 //-----------------------------------------------------------------------------
@@ -150,7 +124,7 @@ class symbol_t
         struct                // ST_FUNCTION
         {
           return_type_t _rt;
-          symlist_t *_params;
+          symvec_t *_params;
           symtab_t *_symbols;
         };
       };
@@ -187,7 +161,7 @@ public:
   offsize_t size()     const { return _size; }
 
   return_type_t rt()   const { return _rt; }
-  symlist_t *params()  const { return _params; }
+  symvec_t *params()   const { return _params; }
   symtab_t *symbols()  const { return _symbols; }
   bool is_extern()     const { return (_flags & SF_EXTERN) != 0; }
   bool defined()       const { return (_flags & SF_DEFINED) != 0; }
@@ -208,13 +182,50 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+class symvec_t : public std::vector<symbol_t *>
+{
+  typedef std::vector<symbol_t *> inherited;
+
+public:
+  iterator find(const symbol_t *sym)
+  {
+    iterator p;
+    const_iterator e;
+    for ( p = begin(), e = end(); p != e; ++p )
+      if ( sym == *p )
+        break;
+    return p;
+  }
+  const_iterator find(const symbol_t *sym) const
+  {
+    const_iterator p, e;
+    for ( p = begin(), e = end(); p != e; ++p )
+      if ( sym == *p )
+        break;
+    return p;
+  }
+  void assign(const symvec_t &vec)
+  {
+    inherited::assign(vec.begin(), vec.end());
+  }
+  bool has(const symbol_t *sym) const
+  {
+    return find(sym) != end();
+  }
+  iterator erase(const symbol_t *sym)
+  {
+    return inherited::erase(find(sym));
+  }
+};
+
+//-----------------------------------------------------------------------------
 // symbol table
 class symtab_t
 {
   typedef std::map<std::string, symbol_t*> symmap_t;
 
   symmap_t map;   // fast lookups...
-  symlist_t list; // ...while maintaining insertion order
+  symvec_t vec;   // ...while maintaining insertion order
 
 public:
   symbol_t *get(const std::string &key) const
@@ -225,7 +236,7 @@ public:
   void insert(const std::string &key, symbol_t *value)
   {
     map[key] = value;
-    list.push_back(value);
+    vec.push_back(value);
   }
   bool insert(symbol_t *value)
   {
@@ -234,34 +245,34 @@ public:
     insert(value->name(), value);
     return true;
   }
-  void erase(symbol_t &sym)
+  void erase(const symbol_t &sym)
   {
     map.erase(sym.name());
-    list.remove(&sym);
+    vec.erase(&sym);
   }
-  symlist_t *as_list() const
+  symvec_t *as_vector() const
   {
-    symlist_t *ret = new symlist_t;
-    ret->assign(list);
+    symvec_t *ret = new symvec_t;
+    ret->assign(vec);
     return ret;
   }
 
-#define DEFINE_TABLE_ITERATOR(iterator, begin, end)       \
-  typedef symlist_t::iterator iterator;                   \
-  typedef symlist_t::const_##iterator const_##iterator;   \
-  iterator begin() { return list.begin(); }               \
-  iterator end()   { return list.end(); }                 \
-  const_##iterator begin() const { return list.begin(); } \
-  const_##iterator end()   const { return list.end(); }
+#define DEFINE_TABLE_ITERATOR(iterator, begin, end)      \
+  typedef symvec_t::iterator iterator;                   \
+  typedef symvec_t::const_##iterator const_##iterator;   \
+  iterator begin() { return vec.begin(); }               \
+  iterator end()   { return vec.end(); }                 \
+  const_##iterator begin() const { return vec.begin(); } \
+  const_##iterator end()   const { return vec.end(); }
 
   DEFINE_TABLE_ITERATOR(iterator, begin, end)
   DEFINE_TABLE_ITERATOR(reverse_iterator, rbegin, rend)
 
 #undef DEFINE_TABLE_ITERATOR
 
-  size_t size() const    { return list.size(); }
-  void swap(symtab_t &r) { map.swap(r.map); list.swap(r.list); }
-  void clear()           { map.clear(); list.clear(); }
+  size_t size() const    { return vec.size(); }
+  void swap(symtab_t &r) { map.swap(r.map); vec.swap(r.vec); }
+  void clear()           { map.clear(); vec.clear(); }
 };
 
 #endif // SYMBOL_H

@@ -311,8 +311,8 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           cf.ra.use(cf.ra.gen_resource());
         }
 
-        symlist_t argvals;
-        symlist_t arglocs;
+        symvec_t argvals;
+        symvec_t arglocs;
 
         for ( tree_iterator_t ti(tree->children[CALL_ARGS]); *ti != NULL; ti++ )
           argvals.push_back(generate(*ti));
@@ -321,8 +321,8 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         for ( int i = 0; i < size; i++ )
           arglocs.push_back(gen_argloc());
 
-        symlist_t::reverse_iterator val = argvals.rbegin();
-        symlist_t::reverse_iterator loc = arglocs.rbegin();
+        symvec_t::reverse_iterator val = argvals.rbegin();
+        symvec_t::reverse_iterator loc = arglocs.rbegin();
 
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
           append(CNT_ARG, *loc, *val);

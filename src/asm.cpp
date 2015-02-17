@@ -73,11 +73,11 @@ static void gen_asm_names(T &syms, const char *pfx, bool make_dummy_names = fals
 }
 
 //-----------------------------------------------------------------------------
-static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symlist_t &labels)
+static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symvec_t &labels)
 {
   gen_asm_names<symtab_t> (src_syms, "_");
   gen_asm_names<symtab_t> (strings,  "_str", true);
-  gen_asm_names<symlist_t>(labels,   "_L",   true);
+  gen_asm_names<symvec_t>(labels,   "_L",   true);
 
   src_syms.clear();
   strings.clear();
@@ -129,18 +129,11 @@ static void gen_data_section()
 //-----------------------------------------------------------------------------
 void frame_section_t::visit_items(frame_item_visitor_t &fiv, uint32_t flags)
 {
-  int idx = 0;
-  if ( (flags & FIV_REVERSE) == 0 )
+  size_t sz = items.size();
+  for ( size_t i = 0; i < sz; i++ )
   {
-    symlist_t::iterator i = items.begin();
-    for ( ; i != items.end(); i++, idx++ )
-      fiv.visit_item(*this, **i, idx);
-  }
-  else
-  {
-    symlist_t::reverse_iterator i = items.rbegin();
-    for ( ; i != items.rend(); i++, idx++ )
-      fiv.visit_item(*this, **i, idx);
+    size_t idx = (flags & FIV_REVERSE) == 0 ? i : sz - 1 - i;
+    fiv.visit_item(*this, *items[idx], i);
   }
 }
 
@@ -734,10 +727,10 @@ static void init_reserved_temps()
 //-----------------------------------------------------------------------------
 static void init_temps(resource_manager_t &rm)
 {
-  symlist_t temps;
+  symvec_t temps;
   rm.get_used_resources(temps);
 
-  for ( symlist_t::iterator i = temps.begin(); i != temps.end(); i++ )
+  for ( symvec_t::iterator i = temps.begin(); i != temps.end(); i++ )
   {
     symbol_t &temp = **i;
     temp.loc.set_reg(tempreg_names[temp.val()]);
