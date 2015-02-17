@@ -567,12 +567,8 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
 }
 
 //-----------------------------------------------------------------------------
-static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
+static call_res_t validate_args(const symvec_t &params, const treenode_t *args)
 {
-  if ( !f.is_func() )
-    return call_res_t(CALL_NOFUNC);
-
-  symvec_t &params = *f.params();
   size_t sz    = params.size();
   size_t nargs = count_args(args);
 
@@ -586,7 +582,16 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
       return call_res_t(CALL_BADARG, i+1);
   }
 
-  return call_res_t(CALL_OK);
+  return CALL_OK;
+}
+
+//-----------------------------------------------------------------------------
+static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
+{
+  if ( !f.is_func() )
+    return CALL_NOFUNC;
+
+  return validate_args(*f.params(), args);
 }
 
 //-----------------------------------------------------------------------------
