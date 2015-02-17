@@ -43,22 +43,17 @@ def simplify_inpath(path):
 #------------------------------------------------------------------------------
 class StderrMonitor:
 
-    def __init__(self, path):
-        self.errpath = replace_ext(path, "stderr")
+    def __init__(self, outpath):
+        self.errpath = replace_ext(outpath, "stderr")
 
     def __enter__(self):
         self.errfile = open(self.errpath, "w")
-        return self
-
-    def __exit__(self, t, v, tr):
-        if os.path.getsize(self.errpath) == 0:
-            os.remove(self.errpath)
-
-    def file(self):
         return self.errfile
 
-    def append(self, text):
-        self.errfile.write(text)
+    def __exit__(self, t, v, tr):
+        self.errfile.close()
+        if os.path.getsize(self.errpath) == 0:
+            os.remove(self.errpath)
 
 #------------------------------------------------------------------------------
 class Directory:
@@ -89,11 +84,11 @@ class TesterPhase:
         argv = self.argv() + [ "-o", outpath, inpath ]
         with StderrMonitor(outpath) as errors:
             try:
-                subprocess.call(argv, stdout=errors.file(), stderr=errors.file())
+                subprocess.call(argv, stdout=errors, stderr=errors)
             except OSError as e:
-                errors.append("couldn't launch c--: %s\n" % e.strerror)
+                errors.write("couldn't launch c--: %s\n" % e.strerror)
             except:
-                errors.append("idk wtf happened\n")
+                errors.write("idk wtf happened\n")
                 raise
 
     def execute(self):
