@@ -375,7 +375,7 @@ static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
 
   return !prev.is_func()                              ? COL_REDECL
        :  prev.is_extern()                            ? COL_EXT
-       :  prev.defined()                              ? COL_REDEF
+       :  prev.is_defined()                           ? COL_REDEF
        : !check_params(*prev.params(), *sym.params()) ? COL_PARAMS
        :  prev.rt() != sym.rt()                       ? COL_RET
        :                                                COL_OK;
@@ -479,7 +479,7 @@ static void func_leave(symbol_t *f, treenode_t *tree)
 
   f->set_defined();
 
-  if ( !f->ret_resolved() )
+  if ( !f->is_ret_resolved() )
     usererr("error: non-void funcion %s must return a value\n", f->c_str());
 
   functions.push_back(treefunc_t(*f, tree));
@@ -834,7 +834,7 @@ static void init_builtin_function(const char *name, symvec_t *params)
 static symvec_t *init_builtin_param(const char *name, symbol_type_t type, primitive_t base)
 {
   symvec_t *params = new symvec_t;
-  symbol_t  *param  = new symbol_t(SF_PARAMETER, name, -1, type);
+  symbol_t *param  = new symbol_t(SF_PARAMETER, name, -1, type);
 
   param->set_base(base);
   params->push_back(param);
@@ -843,8 +843,11 @@ static symvec_t *init_builtin_param(const char *name, symbol_type_t type, primit
 }
 
 //-----------------------------------------------------------------------------
-static void init_print_functions()
+static void init_print_functions(symbol_t *printf)
 {
+  ASSERT(0, printf != NULL);
+  printf->set_builtin_printf();
+
   symvec_t *pi_param = init_builtin_param("val", ST_PRIMITIVE, PRIM_INT);
   init_builtin_function(BI_PRINT_INT, pi_param);
 
@@ -872,7 +875,7 @@ static void process_func_list(symvec_t *vec, return_type_t rt, bool is_extern)
     }
 
     if ( res.code == FDECL_PRINTF_OK )
-      init_print_functions();
+      init_print_functions(sym);
 
     sym->set_rt(rt);
 

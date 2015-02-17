@@ -144,28 +144,29 @@ public:
 
   ~symbol_t();
 
-  bool is_prim()       const { return _type  == ST_PRIMITIVE; }
-  bool is_array()      const { return _type  == ST_ARRAY; }
-  bool is_func()       const { return _type  == ST_FUNCTION; }
-  bool is_param()      const { return (_flags & SF_PARAMETER) != 0; }
+  bool is_prim()           const { return _type  == ST_PRIMITIVE; }
+  bool is_array()          const { return _type  == ST_ARRAY; }
+  bool is_func()           const { return _type  == ST_FUNCTION; }
+  bool is_param()          const { return (_flags & SF_PARAMETER) != 0; }
 
-  symbol_type_t type() const { return _type; }
-  uint32_t flags()     const { return _flags; }
-  std::string name()   const { return _name; }
-  const char *c_str()  const { return _name.c_str(); }
-  int line()           const { return _line; }
-  const char *str()    const { return _str; }
-  int val()            const { return _val; }
+  symbol_type_t type()     const { return _type; }
+  uint32_t flags()         const { return _flags; }
+  std::string name()       const { return _name; }
+  const char *c_str()      const { return _name.c_str(); }
+  int line()               const { return _line; }
+  const char *str()        const { return _str; }
+  int val()                const { return _val; }
 
-  primitive_t base()   const { return _base; }
-  offsize_t size()     const { return _size; }
+  primitive_t base()       const { return _base; }
+  offsize_t size()         const { return _size; }
 
-  return_type_t rt()   const { return _rt; }
-  symvec_t *params()   const { return _params; }
-  symtab_t *symbols()  const { return _symbols; }
-  bool is_extern()     const { return (_flags & SF_EXTERN) != 0; }
-  bool defined()       const { return (_flags & SF_DEFINED) != 0; }
-  bool ret_resolved()  const { return (_flags & SF_RET_RESOLVED) != 0; }
+  return_type_t rt()       const { return _rt; }
+  symvec_t *params()       const { return _params; }
+  symtab_t *symbols()      const { return _symbols; }
+  bool is_extern()         const { return (_flags & SF_EXTERN) != 0; }
+  bool is_defined()        const { return (_flags & SF_DEFINED) != 0; }
+  bool is_ret_resolved()   const { return (_flags & SF_RET_RESOLVED) != 0; }
+  bool is_builtin_printf() const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
 
   void set_name(const char *name)  { _name.assign(name); }
 
@@ -204,18 +205,9 @@ public:
         break;
     return p;
   }
-  void assign(const symvec_t &vec)
-  {
-    inherited::assign(vec.begin(), vec.end());
-  }
-  bool has(const symbol_t *sym) const
-  {
-    return find(sym) != end();
-  }
-  iterator erase(const symbol_t *sym)
-  {
-    return inherited::erase(find(sym));
-  }
+  bool has(const symbol_t *sym) const { return find(sym) != end(); }
+  iterator erase(const symbol_t *sym) { return inherited::erase(find(sym)); }
+  void assign(const symvec_t &vec)    { inherited::assign(vec.begin(), vec.end()); }
 };
 
 //-----------------------------------------------------------------------------
