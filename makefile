@@ -23,11 +23,11 @@ endif
 
 OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o  $(OBJ)symbol.o   \
 					 $(OBJ)treenode.o $(OBJ)codenode.o $(OBJ)messages.o \
-					 $(OBJ)main.o     $(OBJ)asm.o
+					 $(OBJ)main.o     $(OBJ)asm.o 		 $(OBJ)printf.o
 
 HFILES   = $(I)offset.h   $(I)symbol.h   $(I)treenode.h \
 					 $(I)codenode.h $(I)messages.h $(I)parse.h    \
-					 $(I)resource.h $(I)asm.h
+					 $(I)resource.h $(I)printf.h	 $(I)asm.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
@@ -53,6 +53,9 @@ $(OBJ)symbol.o: $(SRC)symbol.cpp $(HFILES)
 
 $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
+
+$(OBJ)printf.o: $(SRC)printf.cpp $(HFILES)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)codenode.o: $(SRC)codenode.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
