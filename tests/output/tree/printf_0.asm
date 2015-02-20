@@ -272,7 +272,7 @@
 # child CALL_ARGS for node 102
 # node 103: type: TNT_ARG
 # child SEQ_CUR for node 103
-# node 104: type: TNT_STRCON str: " % % "
+# node 104: type: TNT_STRCON str: " %q %r "
 # child SEQ_NEXT for node 101
 # node 105: type: TNT_STMT
 # child SEQ_CUR for node 105
@@ -288,4 +288,4 @@
 # child CALL_ARGS for node 110
 # node 111: type: TNT_ARG
 # child SEQ_CUR for node 111
-# node 112: type: TNT_STRCON str: " % %"
+# node 112: type: TNT_STRCON str: " %t %u"
