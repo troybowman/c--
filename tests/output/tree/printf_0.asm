@@ -289,3 +289,95 @@
 # node 111: type: TNT_ARG
 # child SEQ_CUR for node 111
 # node 112: type: TNT_STRCON str: " %t %u"
+# child SEQ_NEXT for node 99
+# node 113: type: TNT_STMT
+# child SEQ_CUR for node 113
+# node 114: type: TNT_PRINTF
+# child PRINTF_TREE for node 114
+# node 115: type: TNT_STMT
+# child SEQ_CUR for node 115
+# node 116: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 116
+# node 117: type: TNT_ARG
+# child SEQ_CUR for node 117
+# node 118: type: TNT_STRCON str: "%"
+# child SEQ_NEXT for node 115
+# node 119: type: TNT_STMT
+# child SEQ_CUR for node 119
+# node 120: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 120
+# node 121: type: TNT_ARG
+# child SEQ_CUR for node 121
+# node 122: type: TNT_STRCON str: "one"
+# child SEQ_NEXT for node 119
+# node 123: type: TNT_STMT
+# child SEQ_CUR for node 123
+# node 124: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 124
+# node 125: type: TNT_ARG
+# child SEQ_CUR for node 125
+# node 126: type: TNT_STRCON str: "%"
+# child SEQ_NEXT for node 123
+# node 127: type: TNT_STMT
+# child SEQ_CUR for node 127
+# node 128: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 128
+# node 129: type: TNT_ARG
+# child SEQ_CUR for node 129
+# node 130: type: TNT_STRCON str: "two"
+# child SEQ_NEXT for node 127
+# node 131: type: TNT_STMT
+# child SEQ_CUR for node 131
+# node 132: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 132
+# node 133: type: TNT_ARG
+# child SEQ_CUR for node 133
+# node 134: type: TNT_STRCON str: "%%%"
+# child SEQ_NEXT for node 131
+# node 135: type: TNT_STMT
+# child SEQ_CUR for node 135
+# node 136: type: TNT_CALL sym: _print_int
+# child CALL_ARGS for node 136
+# node 137: type: TNT_ARG
+# child SEQ_CUR for node 137
+# node 138: type: TNT_INTCON val: 3
+# child SEQ_NEXT for node 135
+# node 139: type: TNT_STMT
+# child SEQ_CUR for node 139
+# node 140: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 140
+# node 141: type: TNT_ARG
+# child SEQ_CUR for node 141
+# node 142: type: TNT_STRCON str: "dd"
+# child SEQ_NEXT for node 139
+# node 143: type: TNT_STMT
+# child SEQ_CUR for node 143
+# node 144: type: TNT_CALL sym: _print_int
+# child CALL_ARGS for node 144
+# node 145: type: TNT_ARG
+# child SEQ_CUR for node 145
+# node 146: type: TNT_INTCON val: 4
+# child SEQ_NEXT for node 143
+# node 147: type: TNT_STMT
+# child SEQ_CUR for node 147
+# node 148: type: TNT_CALL sym: _print_char
+# child CALL_ARGS for node 148
+# node 149: type: TNT_ARG
+# child SEQ_CUR for node 149
+# node 150: type: TNT_CHARCON str: '5'
+# child SEQ_NEXT for node 147
+# node 151: type: TNT_STMT
+# child SEQ_CUR for node 151
+# node 152: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 152
+# node 153: type: TNT_ARG
+# child SEQ_CUR for node 153
+# node 154: type: TNT_STRCON str: "cs"
+# child SEQ_NEXT for node 151
+# node 155: type: TNT_STMT
+# child SEQ_CUR for node 155
+# node 156: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 156
+# node 157: type: TNT_ARG
+# child SEQ_CUR for node 157
+# node 158: type: TNT_STRCON str: "six"
