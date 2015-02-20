@@ -62,7 +62,7 @@
   static   symbol_t *process_stmt_id(const char *, int);
   static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
   static treenode_t *process_assg(treenode_t *, treenode_t *, int);
-  static treenode_t *process_call(const symbol_t *, treenode_t *, int);
+  static treenode_t *process_call(symbol_t *, treenode_t *, int);
   static treenode_t *process_call_ctx(treenode_t *, int, bool);
   static treenode_t *process_ret_stmt(treenode_t *, int line);
   static treenode_t *process_bool_expr(treenode_t *, treenode_type_t, treenode_t *, int);
@@ -567,16 +567,20 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
 }
 
 //-----------------------------------------------------------------------------
-static call_res_t validate_args(const symvec_t &params, const treenode_t *args)
+static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
 {
-  size_t sz    = params.size();
+  if ( !f.is_func() )
+    return CALL_NOFUNC;
+
+  const symvec_t &params = *f.params();
+  size_t nparams = params.size();
   size_t nargs = count_args(args);
 
-  if ( sz != nargs )
+  if ( nparams != nargs )
     return call_res_t(CALL_NUMARGS, nargs);
 
   tree_iterator_t ti(args);
-  for ( size_t i = 0; *ti != NULL && i < sz; ti++, i++ )
+  for ( size_t i = 0; *ti != NULL && i < nparams; ti++, i++ )
   {
     if ( !check_arg(*params[i], **ti) )
       return call_res_t(CALL_BADARG, i+1);
@@ -586,43 +590,198 @@ static call_res_t validate_args(const symvec_t &params, const treenode_t *args)
 }
 
 //-----------------------------------------------------------------------------
-static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
+static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_t *fmtargs)
 {
-  if ( !f.is_func() )
-    return CALL_NOFUNC;
+  if ( fmtargs == NULL )
+    return PRINTF_NOARGS;
 
-  return validate_args(*f.params(), args);
+  if ( fmtargs->children[SEQ_CUR]->type != TNT_STRCON )
+    return PRINTF_STRCON;
+
+  // ignore leading, trailing "
+  const char *fmt = fmtargs->children[SEQ_CUR]->str + 1;
+  const char *ptr = fmt;
+  const char *const end = fmt + strlen(fmt) - 1;
+  const char *cursub = ptr;
+
+  tree_iterator_t ti(fmtargs->children[SEQ_NEXT]);
+
+  for ( ; ptr != end; ptr++ )
+  {
+    if ( *ptr == '%' && ptr+1 < end )
+    {
+      char c = *(ptr+1);
+
+      if ( c == FMTS || c == FMTD || c == FMTC )
+      {
+        allargs.push_back(printf_arg_t(cursub, ptr));
+        cursub = ptr+2;
+
+        const treenode_t *arg = *ti++;
+        if ( arg == NULL )
+          return PRINTF_NUMARGS;
+
+        switch ( c )
+        {
+          case FMTD:
+          case FMTC:
+            {
+              if ( !arg->is_int_compat() )
+                return PRINTF_BADARG;
+              int argtype = c == FMTD ? PF_ARG_INT : PF_ARG_CHAR;
+              allargs.push_back(printf_arg_t(argtype, arg));
+            }
+            break;
+          case FMTS:
+            {
+              if ( !arg->is_string_compat() )
+                return PRINTF_BADARG;
+              allargs.push_back(printf_arg_t(PF_ARG_STR, arg));
+            }
+            break;
+        }
+      }
+    }
+  }
+
+  allargs.push_back(printf_arg_t(cursub, ptr));
+
+  if ( *ti != NULL )
+    return PRINTF_NUMARGS;
+
+  return PRINTF_OK;
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_call(const symbol_t *f, treenode_t *args, int line)
+static treenode_t *build_printf_tree(symbol_t *printf, const printf_args_t &allargs)
+{
+  symbol_t *ps = gsyms.get(BI_PRINT_STRING);
+  symbol_t *pi = gsyms.get(BI_PRINT_INT);
+  symbol_t *pc = gsyms.get(BI_PRINT_CHAR);
+
+  seq_t seq;
+  seq.head = seq.tail = NULL;
+
+  for ( int i = 0; i < allargs.size(); i++ )
+  {
+    const printf_arg_t &arg = allargs[i];
+
+    switch ( arg.type )
+    {
+      case PF_ARG_STR:
+      case PF_ARG_INT:
+      case PF_ARG_CHAR:
+        {
+          treenode_t *args = new treenode_t(TNT_ARG);
+          args->children[SEQ_CUR] = const_cast<treenode_t *>(arg.node);
+          args->children[SEQ_NEXT] = NULL;
+          symbol_t *func = arg.type == PF_ARG_STR ? ps
+                         : arg.type == PF_ARG_INT ? pi
+                         :                          pc;
+          treenode_t *call = new treenode_t(TNT_CALL, func, args);
+          seq_append(seq, call, TNT_STMT);
+        }
+        break;
+      case PF_ARG_SUBSTR:
+        {
+          int len = arg.e - arg.s;
+          if ( len > 0 )
+          {
+            char *str = (char *)malloc(cmax(len,0)+3);
+            char *ptr = str;
+            APPCHAR(ptr, '"', 1);
+            APPSTR (ptr, arg.s, len);
+            APPCHAR(ptr, '"', 1);
+            *ptr = '\0';
+            treenode_t *args = new treenode_t(TNT_ARG);
+            args->children[SEQ_CUR] = new treenode_t(TNT_STRCON, str);
+            args->children[SEQ_NEXT] = NULL;
+            treenode_t *call = new treenode_t(TNT_CALL, ps, args);
+            seq_append(seq, call, TNT_STMT);
+          }
+        }
+        break;
+      default:
+        INTERR(0);
+    }
+  }
+
+  return seq.head == NULL ? ERRNODE : new treenode_t(TNT_PRINTF, printf, seq.head);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_printf_error(printf_res_t res, treenode_t *args, int line)
+{
+  switch ( res )
+  {
+    case PRINTF_NOARGS:
+      usererr("error: printf() expects at least one string constant argument, line %d\n", line);
+      break;
+    case PRINTF_STRCON:
+      usererr("error: first argument to printf() must be a string constant, line %d\n", line);
+      break;
+    case PRINTF_BADARG:
+      usererr("error: incompatible argument for format specifier, line %d\n", line);
+      break;
+    case PRINTF_NUMARGS:
+      usererr("error: invalid number of format arguments, line %d\n", line);
+      break;
+    default:
+      INTERR(0);
+  }
+  delete args;
+  return ERRNODE;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line)
+{
+  printf_args_t allargs;
+
+  printf_res_t res = validate_printf_call(allargs, args);
+
+  if ( res != PRINTF_OK )
+    return process_printf_error(res, args, line);
+
+  return build_printf_tree(printf, allargs);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_call_error(call_res_t res, const symbol_t &f, treenode_t *args, int line)
+{
+  switch ( res.code )
+  {
+    case CALL_NUMARGS:
+      usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
+              f.params()->size(), f.c_str(), res.info, line);
+      break;
+    case CALL_BADARG:
+      usererr("error: argument %d to function %s is of incompatible type, line %d\n",
+              res.info, f.c_str(), line);
+      break;
+    case CALL_NOFUNC:
+      usererr("error: symbol %s used a function but is not of function type, line %d\n",
+              f.c_str(), line);
+      break;
+    default:
+      INTERR(1032);
+  }
+  delete args;
+  return ERRNODE;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_call(symbol_t *f, treenode_t *args, int line)
 {
   ASSERT(1042, f != NULL);
+
+  if ( f->is_builtin_printf() )
+    return process_printf_call(f, args, line);
 
   call_res_t res = validate_call(*f, args);
 
   if ( res.code != CALL_OK )
-  {
-    switch ( res.code )
-    {
-      case CALL_NUMARGS:
-        usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
-                f->params()->size(), f->c_str(), res.info, line);
-        break;
-      case CALL_BADARG:
-        usererr("error: argument %d to function %s is of incompatible type, line %d\n",
-                res.info, f->c_str(), line);
-        break;
-      case CALL_NOFUNC:
-        usererr("error: symbol %s used a function but is not of function type, line %d\n",
-                f->c_str(), line);
-        break;
-      default:
-        INTERR(1032);
-    }
-    delete args;
-    return ERRNODE;
-  }
+    return process_call_error(res, *f, args, line);
 
   return new treenode_t(TNT_CALL, f, args);
 }
@@ -633,9 +792,10 @@ static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
   if ( call.type == TNT_ERROR )
     return CCTX_OK;
 
-  ASSERT(1043, call.type == TNT_CALL);
+  ASSERT(1043, call.type == TNT_CALL || call.type == TNT_PRINTF);
 
   return_type_t rt = call.sym->rt();
+
   if ( expr )
     return rt == RT_VOID ? CCTX_EXPR : CCTX_OK;
   else
@@ -827,24 +987,23 @@ static void process_fdecl_error(fdecl_res_t res, symbol_t *sym)
 }
 
 //-----------------------------------------------------------------------------
-static void init_builtin_function(const char *name, symvec_t *params)
-{
-  symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, ST_FUNCTION, params);
-  bfunc->set_rt(RT_VOID);
-  ASSERT(0, gsyms.get(bfunc->name()) == NULL);
-  gsyms.insert(bfunc);
-}
-
-//-----------------------------------------------------------------------------
-static symvec_t *init_builtin_param(const char *name, symbol_type_t type, primitive_t base)
+static void init_builtin_function(
+    const char *name,
+    const char *pname,
+    symbol_type_t ptype,
+    primitive_t pbase)
 {
   symvec_t *params = new symvec_t;
-  symbol_t *param  = new symbol_t(SF_PARAMETER, name, -1, type);
+  symbol_t *param  = new symbol_t(SF_PARAMETER, pname, -1, ptype);
 
-  param->set_base(base);
+  param->set_base(pbase);
   params->push_back(param);
 
-  return params;
+  symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, ST_FUNCTION, params);
+  bfunc->set_rt(RT_VOID);
+
+  ASSERT(0, gsyms.get(bfunc->name()) == NULL);
+  gsyms.insert(bfunc);
 }
 
 //-----------------------------------------------------------------------------
@@ -853,11 +1012,9 @@ static void init_print_functions(symbol_t *printf)
   ASSERT(0, printf != NULL);
   printf->set_builtin_printf();
 
-  symvec_t *pi_param = init_builtin_param("val", ST_PRIMITIVE, PRIM_INT);
-  init_builtin_function(BI_PRINT_INT, pi_param);
-
-  symvec_t *ps_param = init_builtin_param("str", ST_ARRAY, PRIM_CHAR);
-  init_builtin_function(BI_PRINT_STRING, ps_param);
+  init_builtin_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT);
+  init_builtin_function(BI_PRINT_STRING, "str",  ST_ARRAY,     PRIM_CHAR);
+  init_builtin_function(BI_PRINT_CHAR,   "c",    ST_PRIMITIVE, PRIM_CHAR);
 }
 
 //-----------------------------------------------------------------------------

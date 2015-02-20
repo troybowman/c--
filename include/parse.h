@@ -2,6 +2,17 @@
 #define PARSE_H
 
 #include <stdio.h>
+#include <vector>
+
+//-----------------------------------------------------------------------------
+// builtin function names
+#define BI_PRINT_INT    "_print_int"
+#define BI_PRINT_STRING "_print_string"
+#define BI_PRINT_CHAR   "_print_char"
+
+#define FMTS 's'
+#define FMTD 'd'
+#define FMTC 'c'
 
 class symtab_t;
 class treefuncs_t;
@@ -91,8 +102,46 @@ enum lookup_res_t
 };
 
 //-----------------------------------------------------------------------------
-// builtin function names
-#define BI_PRINT_INT    "_print_int"
-#define BI_PRINT_STRING "_print_string"
+struct substring_t
+{
+  const char *s;
+  const char *e;
+  substring_t(const char *_s, const char *_e) : s(_s), e(_e) {}
+};
+
+//-----------------------------------------------------------------------------
+struct printf_arg_t
+{
+  int type;
+#define PF_ARG_STR    0
+#define PF_ARG_INT    1
+#define PF_ARG_CHAR   2
+#define PF_ARG_SUBSTR 3
+  union
+  {
+    const treenode_t *node;
+    struct // substring
+    {
+      const char *s;
+      const char *e;
+    };
+  };
+  printf_arg_t(const char *_s, const char *_e)
+    : type(PF_ARG_SUBSTR), s(_s), e(_e) {}
+  printf_arg_t(int _type, const treenode_t *_node)
+    : type(_type), node(_node) {}
+};
+
+typedef std::vector<printf_arg_t> printf_args_t;
+
+//-----------------------------------------------------------------------------
+enum printf_res_t
+{
+  PRINTF_OK,
+  PRINTF_NOARGS,
+  PRINTF_STRCON,
+  PRINTF_NUMARGS,
+  PRINTF_BADARG,
+};
 
 #endif // PARSE_H

@@ -1,4 +1,4 @@
-#include <list>
+#include <vector>
 #include <string>
 
 #include <messages.h>
@@ -10,15 +10,15 @@
 #define MAXERRS   50
 #define MAXERRLEN 1024
 
-typedef std::list<std::string> errlist_t;
+typedef std::vector<std::string> errvec_t;
 
 //-----------------------------------------------------------------------------
-static errlist_t errmsgs;
+static errvec_t errmsgs;
 
 //-----------------------------------------------------------------------------
 void purge_and_exit(int code)
 {
-  errlist_t::const_iterator i;
+  errvec_t::const_iterator i;
   for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
     fprintf(stderr, i->c_str());
   exit(code);
@@ -138,6 +138,7 @@ static const char *tnt2str(treenode_type_t tnt)
     case TNT_NOT:          return "TNT_NOT";
     case TNT_NEG:          return "TNT_NEG";
     case TNT_WHILE:        return "TNT_WHILE";
+    case TNT_PRINTF:       return "TNT_PRINTF";
     default:
       INTERR(1030);
   }
@@ -191,6 +192,9 @@ static const char *child2str(treenode_type_t type, int child)
     case TNT_WHILE:
       ASSERT(1067, child == WHILE_COND || child == WHILE_BODY);
       return child == WHILE_COND ? "WHILE_COND" : "WHILE_BODY";
+    case TNT_PRINTF:
+      ASSERT(0, child == PRINTF_TREE);
+      return "PRINTF_TREE";
     default:
       INTERR(1035);
   }

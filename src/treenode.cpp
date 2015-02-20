@@ -93,6 +93,12 @@ treenode_t::treenode_t(treenode_type_t _type, ...)
       children[WHILE_BODY] = va_arg(va, treenode_t *);
       ASSERT(1074, children[WHILE_COND] != NULL);
       break;
+    case TNT_PRINTF:
+      sym                   = va_arg(va, symbol_t *);
+      children[PRINTF_TREE] = va_arg(va, treenode_t *);
+      ASSERT(1100, sym != NULL && sym->is_builtin_printf());
+      ASSERT(1099, children[PRINTF_TREE] != NULL);
+      break;
     default:
       INTERR(1020);
   }
@@ -148,6 +154,20 @@ bool treenode_t::is_bool_compat() const
     case TNT_OR:
     case TNT_NOT:
     case TNT_ERROR:
+      return true;
+    default:
+      return false;
+  }
+}
+
+//-----------------------------------------------------------------------------
+bool treenode_t::is_string_compat() const
+{
+  switch ( type )
+  {
+    case TNT_SYMBOL:
+      return sym->is_array() && sym->base() == PRIM_CHAR;
+    case TNT_STRCON:
       return true;
     default:
       return false;

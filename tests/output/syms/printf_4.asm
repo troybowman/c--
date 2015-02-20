@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
-# size: 6
+# size: 7
 # sym: print_int
 #   line: 1
 #   type: ST_FUNCTION
@@ -36,6 +36,15 @@
 #     params:
 #       0: str
 #         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: yes
+# sym: _print_char
+#   line: -1
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: c
+#         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: yes
 # sym: printf

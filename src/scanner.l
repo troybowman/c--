@@ -69,7 +69,7 @@
                                            return ID;
                                          }
 
-"\""[[:print:]]{-}["]{-}[\n]+"\""	{
+"\""[[:print:]]{-}["]{-}[\n]*"\""	{
                                     yylval.str = strdup(yytext);
                                     return STRING;
                                   }
