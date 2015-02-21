@@ -151,10 +151,10 @@ class SpimRunner(TesterPhase):
     def __init__(self, t, name):
         TesterPhase.__init__(self, t, name)
 
-    def validate(self):
-        # TODO: run all asm files and check output
-        #self.status()
-        pass
+    #def validate(self):
+        ## TODO: run all asm files and check output
+        ##self.status()
+        #pass
 
 #------------------------------------------------------------------------------
 class OptPhase(SpimRunner):
@@ -180,11 +180,11 @@ class RealPhase(SpimRunner):
     def argv(self):
         return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
 
-    def execute(self):
-        print WARNING + "real: TODO" + ENDCOLOR
+    #def execute(self):
+        #print WARNING + "real: TODO" + ENDCOLOR
 
-    def validate(self):
-        pass
+    #def validate(self):
+        #pass
 
 #------------------------------------------------------------------------------
 class Tester:

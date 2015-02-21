@@ -449,6 +449,11 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         append(CNT_LABEL, NULL, end);
         break;
       }
+    case TNT_PRINTF:
+      {
+        generate(tree->children[PRINTF_TREE]);
+        break;
+      }
     default:
       INTERR(1059);
   }

@@ -8,8 +8,8 @@ void main(void)
   x = 1;
   c = 'a';
 
-  printf("one: %d\n", x)
-  printf("two: %c\n", c)
+  printf("one: %d\n", x);
+  printf("two: %c\n", c);
   printf("three %s\n", "hello");
 
   printf("all together: (%d, %c, %s)\n",
