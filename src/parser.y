@@ -1,80 +1,80 @@
 %{
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-  #include <parse.h>
-  #include <symbol.h>
-  #include <treenode.h>
-  #include <codenode.h>
-  #include <messages.h>
-  #include <printf.h>
+#include <parse.h>
+#include <symbol.h>
+#include <treenode.h>
+#include <codenode.h>
+#include <messages.h>
+#include <printf.h>
 
-  extern "C" FILE *yyin;
-  extern "C" int yylex();
-  extern "C" int yyparse();
-  extern "C" int yylineno;
-  int yyerror(const char *s);
+extern "C" FILE *yyin;
+extern "C" int yylex();
+extern "C" int yyparse();
+extern "C" int yylineno;
+int yyerror(const char *s);
 
-  //---------------------------------------------------------------------------
-  static symtab_t gsyms;        // global symbol table
-  static treefuncs_t functions; // functions, (along with their syntax trees)
-                                // in order as they appear in the source file
-  static struct
-  {
-    int mode;
+//---------------------------------------------------------------------------
+static symtab_t gsyms;        // global symbol table
+static treefuncs_t functions; // functions, (along with their syntax trees)
+                              // in order as they appear in the source file
+static struct
+{
+  int mode;
 #define CTX_GLOBAL 0
 #define CTX_LOCAL  1
 #define CTX_TEMP   2
-    union
-    {
-      symtab_t *syms; // pointer to currently active symbol table
-      symbol_t *func; // pointer to function we are currently parsing
-    };
+  union
+  {
+    symtab_t *syms; // pointer to currently active symbol table
+    symbol_t *func; // pointer to function we are currently parsing
+  };
 
-    void setglobal()           { mode = CTX_GLOBAL; syms = &gsyms; }
-    void setlocal(symbol_t *f) { mode = CTX_LOCAL;  func = f; }
-    void settemp()             { mode = CTX_TEMP;   syms = new symtab_t(); }
-    void trash()               { delete syms; setglobal(); }
+  void setglobal()           { mode = CTX_GLOBAL; syms = &gsyms; }
+  void setlocal(symbol_t *f) { mode = CTX_LOCAL;  func = f; }
+  void settemp()             { mode = CTX_TEMP;   syms = new symtab_t(); }
+  void trash()               { delete syms; setglobal(); }
 
-    void insert(symbol_t *sym)
-    {
-      if ( mode == CTX_GLOBAL || mode == CTX_TEMP )
-        syms->insert(sym);
-      else
-        func->symbols()->insert(sym);
-    }
+  void insert(symbol_t *sym)
+  {
+    if ( mode == CTX_GLOBAL || mode == CTX_TEMP )
+      syms->insert(sym);
+    else
+      func->symbols()->insert(sym);
+  }
 
-    symbol_t *get(const std::string &key)
-    {
-      return mode == CTX_GLOBAL || mode == CTX_TEMP
-           ? syms->get(key)
-           : func->symbols()->get(key);
-    }
-  } ctx;
+  symbol_t *get(const std::string &key)
+  {
+    return mode == CTX_GLOBAL || mode == CTX_TEMP
+         ? syms->get(key)
+         : func->symbols()->get(key);
+  }
+} ctx;
 
-  //---------------------------------------------------------------------------
-  static void func_enter(symbol_t *, return_type_t);
-  static void func_leave(symbol_t *, treenode_t *);
-  static       void  process_var_list(symvec_t *, primitive_t);
-  static       void  process_func_list(symvec_t *, return_type_t, bool);
-  static   symbol_t *process_var_decl(const char *, int, array_sfx_t, uint32_t flags = 0);
-  static   symbol_t *process_stmt_id(const char *, int);
-  static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
-  static treenode_t *process_assg(treenode_t *, treenode_t *, int);
-  static treenode_t *process_call(symbol_t *, treenode_t *, int);
-  static treenode_t *process_call_ctx(treenode_t *, int, bool);
-  static treenode_t *process_ret_stmt(treenode_t *, int line);
-  static treenode_t *process_bool_expr(treenode_t *, treenode_type_t, treenode_t *, int);
-  static treenode_t *process_if_stmt(treenode_t *, treenode_t *, treenode_t *, int);
-  static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
-  static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
-  static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
-  static   symvec_t *process_sym_list(symvec_t *, symbol_t *);
-  static   symvec_t *process_first_sym(symbol_t *, symvec_t *);
-  static   symvec_t *process_param_list(symbol_t *, symvec_t *, symbol_t *);
-  static array_sfx_t process_array_sfx(int, int);
-  static        void process_fdecl_error(fdecl_res_t, symbol_t *);
+//---------------------------------------------------------------------------
+static void func_enter(symbol_t *, return_type_t);
+static void func_leave(symbol_t *, treenode_t *);
+static       void  process_var_list(symvec_t *, primitive_t);
+static       void  process_func_list(symvec_t *, return_type_t, bool);
+static   symbol_t *process_var_decl(const char *, int, array_sfx_t, uint32_t flags = 0);
+static   symbol_t *process_stmt_id(const char *, int);
+static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
+static treenode_t *process_assg(treenode_t *, treenode_t *, int);
+static treenode_t *process_call(symbol_t *, treenode_t *, int);
+static treenode_t *process_call_ctx(treenode_t *, int, bool);
+static treenode_t *process_ret_stmt(treenode_t *, int line);
+static treenode_t *process_bool_expr(treenode_t *, treenode_type_t, treenode_t *, int);
+static treenode_t *process_if_stmt(treenode_t *, treenode_t *, treenode_t *, int);
+static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
+static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
+static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
+static   symvec_t *process_sym_list(symvec_t *, symbol_t *);
+static   symvec_t *process_first_sym(symbol_t *, symvec_t *);
+static   symvec_t *process_param_list(symbol_t *, symvec_t *, symbol_t *);
+static array_sfx_t process_array_sfx(int, int);
+static        void process_fdecl_error(fdecl_res_t, symbol_t *);
 %}
 
 /*---------------------------------------------------------------------------*/
