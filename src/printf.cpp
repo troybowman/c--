@@ -55,51 +55,22 @@ void build_print_functions(symbol_t *printf, symtab_t &gsyms)
 //-----------------------------------------------------------------------------
 static treenode_t *build_printf_tree(symbol_t *printf, const printf_args_t &allargs)
 {
-  seq_t seq;
-  seq.head = seq.tail = NULL;
+  seq_t seq = { NULL, NULL };
 
+  // build sequence of calls to print_(string|int|char)
   for ( int i = 0; i < allargs.size(); i++ )
   {
     const printf_arg_t &arg = allargs[i];
 
-    switch ( arg.type )
-    {
-      case PF_ARG_STR:
-      case PF_ARG_INT:
-      case PF_ARG_CHAR:
-        {
-          treenode_t *args = new treenode_t(TNT_ARG);
-          args->children[SEQ_CUR] = const_cast<treenode_t *>(arg.node);
-          args->children[SEQ_NEXT] = NULL;
-          symbol_t *func = arg.type == PF_ARG_STR ? _print_string
-                         : arg.type == PF_ARG_INT ? _print_int
-                         :                          _print_char;
-          treenode_t *call = new treenode_t(TNT_CALL, func, args);
-          seq_append(seq, call, TNT_STMT);
-        }
-        break;
-      case PF_ARG_SUBSTR:
-        {
-          int len = arg.e - arg.s;
-          if ( len > 0 )
-          {
-            char *str = (char *)malloc(cmax(len,0)+3);
-            char *ptr = str;
-            APPCHAR(ptr, '"', 1);
-            APPSTR (ptr, arg.s, len);
-            APPCHAR(ptr, '"', 1);
-            *ptr = '\0';
-            treenode_t *args = new treenode_t(TNT_ARG);
-            args->children[SEQ_CUR] = new treenode_t(TNT_STRCON, str);
-            args->children[SEQ_NEXT] = NULL;
-            treenode_t *call = new treenode_t(TNT_CALL, _print_string, args);
-            seq_append(seq, call, TNT_STMT);
-          }
-        }
-        break;
-      default:
-        INTERR(0);
-    }
+    treenode_t *args =
+        new treenode_t(TNT_ARG, const_cast<treenode_t *>(arg.node), NULL);
+
+    symbol_t *func = arg.type == PF_ARG_STR ? _print_string
+                   : arg.type == PF_ARG_INT ? _print_int
+                   :                          _print_char;
+
+    treenode_t *call = new treenode_t(TNT_CALL, func, args);
+    seq_append(seq, call, TNT_STMT);
   }
 
   return seq.head == NULL ? ERRNODE : new treenode_t(TNT_PRINTF, printf, seq.head);
@@ -130,6 +101,27 @@ static treenode_t *process_printf_error(printf_res_t res, treenode_t *args, int 
 }
 
 //-----------------------------------------------------------------------------
+static void prepare_substring_arg(
+      printf_args_t &allargs,
+      const char *const start,
+      const char *const end)
+{
+  int len = end - start;
+  if ( len <= 0 )
+    return;
+
+  char *str = (char *)malloc(cmax(len,0)+3);
+  char *ptr = str;
+  APPCHAR(ptr, '"', 1);
+  APPSTR (ptr, start, len);
+  APPCHAR(ptr, '"', 1);
+  *ptr = '\0';
+
+  treenode_t *node = new treenode_t(TNT_STRCON, str);
+  allargs.push_back(printf_arg_t(PF_ARG_STR, node));
+}
+
+//-----------------------------------------------------------------------------
 static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_t *fmtargs)
 {
   if ( fmtargs == NULL )
@@ -154,7 +146,7 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
 
       if ( c == FMTS || c == FMTD || c == FMTC )
       {
-        allargs.push_back(printf_arg_t(cursub, ptr));
+        prepare_substring_arg(allargs, cursub, ptr);
         cursub = ptr+2;
 
         const treenode_t *arg = *ti++;
@@ -184,7 +176,7 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
     }
   }
 
-  allargs.push_back(printf_arg_t(cursub, ptr));
+  prepare_substring_arg(allargs, cursub, ptr);
 
   if ( *ti != NULL )
     return PRINTF_NUMARGS;

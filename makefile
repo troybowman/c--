@@ -57,16 +57,16 @@ $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
 $(OBJ)printf.o: $(SRC)printf.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(OBJ)codenode.o: $(SRC)codenode.cpp $(HFILES)
-	$(CC) $(CFLAGS) -c -o $@ $<
-
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
 
-$(OBJ)main.o: $(SRC)main.cpp $(HFILES)
+$(OBJ)codenode.o: $(SRC)codenode.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)asm.o: $(SRC)asm.cpp $(HFILES)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJ)main.o: $(SRC)main.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 #------------------------------------------------------------------------------
