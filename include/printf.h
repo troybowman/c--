@@ -22,14 +22,6 @@ treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line);
 void build_print_functions(symbol_t *printf, symtab_t &gsyms);
 
 //-----------------------------------------------------------------------------
-struct substring_t
-{
-  const char *s;
-  const char *e;
-  substring_t(const char *_s, const char *_e) : s(_s), e(_e) {}
-};
-
-//-----------------------------------------------------------------------------
 struct printf_arg_t
 {
   int type;
