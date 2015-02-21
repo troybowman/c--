@@ -433,7 +433,7 @@ __leave_char_at:
   la $sp, 0($sp)
   jr $ra
 
-_main:
+main:
 
   # |--------------------------------|
   # |           <padding>            |
@@ -486,11 +486,11 @@ _L4:
   jal _char_at
   move $t0, $v0
   sw $t0, 24($sp)
-  j __leave_main
+  j __leavemain
   j _L4
 _L5:
 
-__leave_main:
+__leavemain:
   lw $ra, 16($sp)
   la $sp, 32($sp)
   jr $ra

@@ -563,7 +563,7 @@
 
 .text
 
-_main:
+main:
 
   # |--------------------------------|
   # |               c                |
@@ -632,7 +632,7 @@ _main:
   move $a0, $t0
   jal __print_string
 
-__leave_main:
+__leavemain:
   lw $ra, 16($sp)
   la $sp, 32($sp)
   jr $ra

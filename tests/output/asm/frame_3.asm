@@ -362,12 +362,12 @@ __leave_another:
   la $sp, 48($sp)
   jr $ra
 
-_main:
+main:
 
   # |--------------------------------|
   la $sp, -0($sp)
 
 
-__leave_main:
+__leavemain:
   la $sp, 0($sp)
   jr $ra

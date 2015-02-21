@@ -1583,7 +1583,7 @@ __leave_sumchars:
   la $sp, 8($sp)
   jr $ra
 
-_main:
+main:
 
   # |--------------------------------|
   # |              argv              |
@@ -1747,7 +1747,7 @@ _L14:
   j _L2
 _L15:
 
-__leave_main:
+__leavemain:
   lw $s1, 20($sp)
   lw $s0, 16($sp)
   lw $ra, 24($sp)

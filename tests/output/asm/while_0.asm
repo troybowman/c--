@@ -265,7 +265,7 @@
 
 .text
 
-_main:
+main:
 
   # |--------------------------------|
   # |           <padding>            |
@@ -286,7 +286,7 @@ _L0:
   li $t1, 0
   sgt $t2, $t0, $t1
   beq $t2, 0, _L1
-  jal _main
+  jal main
   j _L0
 _L1:
 _L2:
@@ -307,14 +307,14 @@ _L3:
   li $t1, 5
   seq $t2, $t0, $t1
   beq $t2, 0, _L4
-  j __leave_main
+  j __leavemain
   j _L3
 _L4:
 _L5:
   j _L2
 _L6:
 
-__leave_main:
+__leavemain:
   lw $ra, 16($sp)
   la $sp, 32($sp)
   jr $ra

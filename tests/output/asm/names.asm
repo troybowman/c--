@@ -784,7 +784,7 @@ __leave_L4:
   la $sp, 24($sp)
   jr $ra
 
-_main:
+main:
 
   # |--------------------------------|
   # |           <padding>            |
@@ -834,7 +834,7 @@ _L3:
   jal _print_int
 _L5:
 
-__leave_main:
+__leavemain:
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra

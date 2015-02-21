@@ -1168,12 +1168,12 @@ __leave_f17:
   la $sp, 24($sp)
   jr $ra
 
-_main:
+main:
 
   # |--------------------------------|
   la $sp, -0($sp)
 
 
-__leave_main:
+__leavemain:
   la $sp, 0($sp)
   jr $ra
