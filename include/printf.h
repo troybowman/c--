@@ -9,7 +9,7 @@
 #define BI_PRINT_CHAR   "_print_char"
 
 #define FMTS 's' // %s for strings
-#define FMTD 'd' // %s for ints
+#define FMTD 'd' // %d for ints
 #define FMTC 'c' // %c for chars
 
 //-----------------------------------------------------------------------------
