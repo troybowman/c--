@@ -84,8 +84,8 @@ static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symvec_t &labels)
     gsyms.insert(main);
   }
 
-  gen_asm_names<symtab_t> (src_syms, "_");
-  gen_asm_names<symtab_t> (strings,  "_str", true);
+  gen_asm_names<symtab_t>(src_syms, "_");
+  gen_asm_names<symtab_t>(strings,  "_str", true);
   gen_asm_names<symvec_t>(labels,   "_L",   true);
 
   src_syms.clear();

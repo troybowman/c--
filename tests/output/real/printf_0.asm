@@ -143,7 +143,7 @@
 # child CALL_ARGS for node 40
 # node 41: type: TNT_ARG
 # child SEQ_CUR for node 41
-# node 42: type: TNT_STRCON str: "three "
+# node 42: type: TNT_STRCON str: "three: "
 # child SEQ_NEXT for node 39
 # node 43: type: TNT_STMT
 # child SEQ_CUR for node 43
@@ -357,7 +357,7 @@
 # CNT_LEA
 # -------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_STRCON ("three ")
+# src1 -> ST_STRCON ("three: ")
 # |
 # >
 # CNT_ARG
@@ -538,7 +538,7 @@
     .align 2
 
   _str3:
-    .asciiz "three "
+    .asciiz "three: "
     .align 2
 
   _str4:

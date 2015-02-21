@@ -10,7 +10,7 @@ void main(void)
 
   printf("one: %d\n", x);
   printf("two: %c\n", c);
-  printf("three %s\n", "hello");
+  printf("three: %s\n", "hello");
 
   printf("all together: (%d, %c, %s)\n",
           x, c, "hello again");

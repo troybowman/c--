@@ -151,10 +151,23 @@ class SpimRunner(TesterPhase):
     def __init__(self, t, name):
         TesterPhase.__init__(self, t, name)
 
-    #def validate(self):
-        ## TODO: run all asm files and check output
-        ##self.status()
-        #pass
+    def run(self):
+        with Directory(self.output):
+            for asm in glob.iglob("*.asm"):
+                with open(replace_ext(asm, "out"), "w") as outfile:
+                    try:
+                        output = subprocess.check_output(["spim", "-file", asm])
+                        output = re.sub("Loaded:.*exceptions\.s\n", "", output)
+                        outfile.write(output)
+                    except OSError as e:
+                        outfile.write("couldn't launch spim: %s\n" % e.strerror)
+                    except:
+                        outfile.write("idk wtf happened\n")
+                        raise
+
+    def validate(self):
+        self.run()
+        self.status()
 
 #------------------------------------------------------------------------------
 class OptPhase(SpimRunner):
@@ -179,12 +192,6 @@ class RealPhase(SpimRunner):
 
     def argv(self):
         return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
-
-    #def execute(self):
-        #print WARNING + "real: TODO" + ENDCOLOR
-
-    #def validate(self):
-        #pass
 
 #------------------------------------------------------------------------------
 class Tester:
