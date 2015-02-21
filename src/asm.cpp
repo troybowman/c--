@@ -3,6 +3,7 @@
 
 #include <asm.h>
 #include <resource.h>
+#include <printf.h>
 
 #define MAXNAMELEN 32
 
@@ -782,8 +783,9 @@ static void gen_text_section(codefuncs_t &funcs)
     frame.gen_epilogue();
   }
 
-  gen_builtin_function("_print_int", 1);
-  gen_builtin_function("_print_string", 4);
+  gen_builtin_function("_"BI_PRINT_STRING, 4);
+  gen_builtin_function("_"BI_PRINT_INT, 1);
+  gen_builtin_function("_"BI_PRINT_CHAR, 11);
 }
 
 //-----------------------------------------------------------------------------
