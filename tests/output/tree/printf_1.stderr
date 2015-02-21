@@ -1,0 +1,12 @@
+error: line 9 - function printf called as part of an expression but does not return a value
+error: line 10 - function printf called as part of an expression but does not return a value
+error: line 11 - function printf called as part of an expression but does not return a value
+error: first argument to printf() must be a string constant, line 11
+error: first argument to printf() must be a string constant, line 13
+error: first argument to printf() must be a string constant, line 14
+error: incompatible argument for format specifier, line 16
+error: incompatible argument for format specifier, line 17
+error: incompatible argument for format specifier, line 18
+error: invalid number of format arguments, line 20
+error: invalid number of format arguments, line 22
+error: invalid number of format arguments, line 23

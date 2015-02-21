@@ -1,5 +1,6 @@
 #include <printf.h>
 #include <parse.h>
+#include <treenode.h>
 #include <messages.h>
 
 static symbol_t *_print_string;
@@ -122,6 +123,18 @@ static void prepare_substring_arg(
 }
 
 //-----------------------------------------------------------------------------
+static printf_res_t handle_empty_fmt(printf_args_t &allargs, const treenode_t *fmtargs)
+{
+  if ( count_args(fmtargs) > 0 )
+    return PRINTF_NUMARGS;
+
+  treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING));
+  allargs.push_back(printf_arg_t(PF_ARG_STR, node));
+
+  return PRINTF_OK;
+}
+
+//-----------------------------------------------------------------------------
 static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_t *fmtargs)
 {
   if ( fmtargs == NULL )
@@ -130,8 +143,12 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
   if ( fmtargs->children[SEQ_CUR]->type != TNT_STRCON )
     return PRINTF_STRCON;
 
+  const char *fmt = fmtargs->children[SEQ_CUR]->str;
+  if ( strcmp(fmt, EMPTYSTRING) == 0 ) // special case
+    return handle_empty_fmt(allargs, fmtargs->children[SEQ_NEXT]);
+
   // ignore leading, trailing "
-  const char *fmt = fmtargs->children[SEQ_CUR]->str + 1;
+  fmt += 1;
   const char *ptr = fmt;
   const char *const end = fmt + strlen(fmt) - 1;
   const char *cursub = ptr;

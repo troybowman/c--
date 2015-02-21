@@ -174,7 +174,17 @@ bool treenode_t::is_string_compat() const
   }
 }
 
+//-----------------------------------------------------------------------------
+int count_args(const treenode_t *args)
+{
+  int ret = 0;
+  for ( tree_iterator_t ti(args); *ti != NULL; ti++ )
+    ret++;
+  return ret;
+}
+
 #ifndef NDEBUG
+//-----------------------------------------------------------------------------
 bool is_seq_type(treenode_type_t type)
 {
   switch ( type )

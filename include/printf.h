@@ -12,6 +12,8 @@
 #define FMTD 'd' // %d for ints
 #define FMTC 'c' // %c for chars
 
+#define EMPTYSTRING "\"\""
+
 //-----------------------------------------------------------------------------
 bool validate_printf_decl(const symbol_t &func, return_type_t rt, bool is_extern);
 
