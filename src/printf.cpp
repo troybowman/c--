@@ -78,30 +78,6 @@ static treenode_t *build_printf_tree(symbol_t *printf, const printf_args_t &alla
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_printf_error(printf_res_t res, treenode_t *args, int line)
-{
-  switch ( res )
-  {
-    case PRINTF_NOARGS:
-      usererr("error: printf() expects at least one string constant argument, line %d\n", line);
-      break;
-    case PRINTF_STRCON:
-      usererr("error: first argument to printf() must be a string constant, line %d\n", line);
-      break;
-    case PRINTF_BADARG:
-      usererr("error: incompatible argument for format specifier, line %d\n", line);
-      break;
-    case PRINTF_NUMARGS:
-      usererr("error: invalid number of format arguments, line %d\n", line);
-      break;
-    default:
-      INTERR(0);
-  }
-  delete args;
-  return ERRNODE;
-}
-
-//-----------------------------------------------------------------------------
 static void prepare_substring_arg(
       printf_args_t &allargs,
       const char *const start,
@@ -209,7 +185,27 @@ treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line)
   printf_res_t res = validate_printf_call(allargs, args);
 
   if ( res != PRINTF_OK )
-    return process_printf_error(res, args, line);
+  {
+    switch ( res )
+    {
+      case PRINTF_NOARGS:
+        usererr("error: printf() expects at least one string constant argument, line %d\n", line);
+        break;
+      case PRINTF_STRCON:
+        usererr("error: first argument to printf() must be a string constant, line %d\n", line);
+        break;
+      case PRINTF_BADARG:
+        usererr("error: incompatible argument for format specifier, line %d\n", line);
+        break;
+      case PRINTF_NUMARGS:
+        usererr("error: invalid number of format arguments, line %d\n", line);
+        break;
+      default:
+        INTERR(0);
+    }
+    delete args;
+    return ERRNODE;
+  }
 
   return build_printf_tree(printf, allargs);
 }

@@ -581,30 +581,6 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_call_error(call_res_t res, const symbol_t &f, treenode_t *args, int line)
-{
-  switch ( res.code )
-  {
-    case CALL_NUMARGS:
-      usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
-              f.params()->size(), f.c_str(), res.info, line);
-      break;
-    case CALL_BADARG:
-      usererr("error: argument %d to function %s is of incompatible type, line %d\n",
-              res.info, f.c_str(), line);
-      break;
-    case CALL_NOFUNC:
-      usererr("error: symbol %s used a function but is not of function type, line %d\n",
-              f.c_str(), line);
-      break;
-    default:
-      INTERR(1032);
-  }
-  delete args;
-  return ERRNODE;
-}
-
-//-----------------------------------------------------------------------------
 static treenode_t *process_call(symbol_t *f, treenode_t *args, int line)
 {
   ASSERT(1042, f != NULL);
@@ -615,7 +591,27 @@ static treenode_t *process_call(symbol_t *f, treenode_t *args, int line)
   call_res_t res = validate_call(*f, args);
 
   if ( res.code != CALL_OK )
-    return process_call_error(res, *f, args, line);
+  {
+    switch ( res.code )
+    {
+      case CALL_NUMARGS:
+        usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
+                f->params()->size(), f->c_str(), res.info, line);
+        break;
+      case CALL_BADARG:
+        usererr("error: argument %d to function %s is of incompatible type, line %d\n",
+                res.info, f->c_str(), line);
+        break;
+      case CALL_NOFUNC:
+        usererr("error: symbol %s used a function but is not of function type, line %d\n",
+                f->c_str(), line);
+        break;
+      default:
+        INTERR(1032);
+    }
+    delete args;
+    return ERRNODE;
+  }
 
   return new treenode_t(TNT_CALL, f, args);
 }
