@@ -3,31 +3,46 @@
 import sys, os, glob, subprocess, re
 
 #------------------------------------------------------------------------------
-DBG_NO_PARSE   = 0x01
-DBG_DUMP_GSYMS = 0x02
-DBG_DUMP_LSYMS = 0x04
-DBG_DUMP_TREE  = 0x08
-DBG_NO_IR      = 0x10
-DBG_DUMP_IR    = 0x20
-DBG_NO_CODE    = 0x40
-
-DBG_ALL_SYMS = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
-DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
-DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
-
 FAILURE  = '\033[91m'
 SUCCESS  = '\033[92m'
 WARNING  = '\033[93m'
 ENDCOLOR = '\033[0m'
 
-SYMS = "syms"
-TREE = "tree"
-IR   = "ir"
-ASM  = "asm"
-REAL = "real"
-OPT  = "opt"
+#------------------------------------------------------------------------------
+class Tester:
 
-phase_names = [ SYMS, TREE, IR, ASM, REAL, OPT ]
+    def __init__(self):
+        cur = os.getcwd()
+        while not os.path.basename(cur).lower() == "c--":
+            parent = os.path.dirname(cur)
+            if parent == cur:
+                raise Exception("Error: could not find c-- root directory!")
+            cur = parent
+        self.home = cur
+
+        self.dbg = os.path.join(self.home, "bin", "debug", "c--")
+        if not os.path.exists(self.dbg):
+            self.dbg = None
+
+        self.opt = os.path.join(self.home, "bin", "release", "c--")
+        if not os.path.exists(self.opt):
+            self.opt = None
+
+    def cmmhome(self):
+        return self.home
+
+    def cmmdbg(self):
+        if self.dbg is None:
+            raise Exception("Error: could not find c-- debug binary!")
+        return self.dbg
+
+    def cmmopt(self):
+        if self.opt is None:
+            raise Exception("Error: could not find c-- release binary!")
+        return self.opt
+
+#------------------------------------------------------------------------------
+t = Tester()
 
 #------------------------------------------------------------------------------
 def replace_ext(path, ext):
@@ -72,8 +87,7 @@ class Directory:
 #------------------------------------------------------------------------------
 class TesterPhase:
 
-    def __init__(self, t, name):
-        self.t      = t
+    def __init__(self, name):
         self.input  = os.path.join(t.cmmhome(), "tests", "input",  name)
         self.output = os.path.join(t.cmmhome(), "tests", "output", name)
         self.name   = name
@@ -110,49 +124,32 @@ class TesterPhase:
         self.status()
 
 #------------------------------------------------------------------------------
-class SymsPhase(TesterPhase):
+class DbgPhase(TesterPhase):
 
-    def __init__(self, t):
-        TesterPhase.__init__(self, t, SYMS)
+    DBG_NO_PARSE   = 0x01
+    DBG_DUMP_GSYMS = 0x02
+    DBG_DUMP_LSYMS = 0x04
+    DBG_DUMP_TREE  = 0x08
+    DBG_NO_IR      = 0x10
+    DBG_DUMP_IR    = 0x20
+    DBG_NO_CODE    = 0x40
 
-    def argv(self):
-        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_SYMS | DBG_NO_IR) ]
+    DBG_ALL_SYMS = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
+    DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
+    DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
 
-#------------------------------------------------------------------------------
-class TreePhase(TesterPhase):
-
-    def __init__(self, t):
-        TesterPhase.__init__(self, t, TREE)
-
-    def argv(self):
-        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_TREE | DBG_NO_IR) ]
-
-#------------------------------------------------------------------------------
-class IrPhase(TesterPhase):
-
-    def __init__(self, t):
-        TesterPhase.__init__(self, t, IR)
+    def __init__(self, name, flags):
+        TesterPhase.__init__(self, name)
+        self.flags = flags
 
     def argv(self):
-        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR | DBG_NO_CODE) ]
+        return [ t.cmmdbg(), "-v", hex(self.flags) ]
 
 #------------------------------------------------------------------------------
-class AsmPhase(TesterPhase):
+class SpimRunner:
 
-    def __init__(self, t):
-        TesterPhase.__init__(self, t, ASM)
-
-    def argv(self):
-        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
-
-#------------------------------------------------------------------------------
-class SpimRunner(TesterPhase):
-
-    def __init__(self, t, name):
-        TesterPhase.__init__(self, t, name)
-
-    def run(self):
-        with Directory(self.output):
+    def run(self, outdir):
+        with Directory(outdir):
             for asm in glob.iglob("*.asm"):
                 with open(replace_ext(asm, "out"), "w") as outfile:
                     try:
@@ -165,82 +162,55 @@ class SpimRunner(TesterPhase):
                         outfile.write("idk wtf happened\n")
                         raise
 
-    def validate(self):
-        self.run()
-        self.status()
-
 #------------------------------------------------------------------------------
-class OptPhase(SpimRunner):
+class OptPhase(TesterPhase, SpimRunner):
 
-    def __init__(self, t):
-        SpimRunner.__init__(self, t, OPT)
+    def __init__(self):
+        TesterPhase.__init__(self, OPT)
 
     def argv(self):
-        return [ self.t.cmmopt() ]
+        return [ t.cmmopt() ]
 
     def execute(self):
         print WARNING + "opt: TODO" + ENDCOLOR
 
     def validate(self):
         pass
+        #self.run(self.output)
+        #self.status()
 
 #------------------------------------------------------------------------------
-class RealPhase(SpimRunner):
-
-    def __init__(self, t):
-        SpimRunner.__init__(self, t, REAL)
-
-    def argv(self):
-        return [ self.t.cmmdbg(), "-v", hex(DBG_ALL_IR) ]
-
-#------------------------------------------------------------------------------
-class Tester:
+class RealPhase(DbgPhase, SpimRunner):
 
     def __init__(self):
-        cur = os.getcwd()
-        while not os.path.basename(cur).lower() == "c--":
-            parent = os.path.dirname(cur)
-            if parent == cur:
-                raise Exception("Error: could not find c-- root directory!")
-            cur = parent
-        self.home = cur
+        DbgPhase.__init__(self, REAL, DbgPhase.DBG_ALL_IR)
 
-        self.dbg = os.path.join(self.home, "bin", "debug", "c--")
-        if not os.path.exists(self.dbg):
-            self.dbg = None
-
-        self.opt = os.path.join(self.home, "bin", "release", "c--")
-        if not os.path.exists(self.opt):
-            self.opt = None
-
-    def cmmhome(self):
-        return self.home
-
-    def cmmdbg(self):
-        if self.dbg is None:
-            raise Exception("Error: could not find c-- debug binary!")
-        return self.dbg
-
-    def cmmopt(self):
-        if self.opt is None:
-            raise Exception("Error: could not find c-- release binary!")
-        return self.opt
+    def validate(self):
+        self.run(self.output)
+        self.status()
 
 #------------------------------------------------------------------------------
-phases = {
-    SYMS : SymsPhase,
-    TREE : TreePhase,
-    IR   : IrPhase,
-    ASM  : AsmPhase,
-    REAL : RealPhase,
-    OPT  : OptPhase,
-    }
+SYMS = "syms"
+TREE = "tree"
+IR   = "ir"
+ASM  = "asm"
+REAL = "real"
+OPT  = "opt"
 
-t = Tester()
+phase_names = [ SYMS, TREE, IR, ASM, REAL, OPT ]
+
+phases = {
+    SYMS : DbgPhase(SYMS, DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
+    TREE : DbgPhase(TREE, DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
+    IR   : DbgPhase(IR,   DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
+    ASM  : DbgPhase(ASM,  DbgPhase.DBG_ALL_IR),
+    REAL : RealPhase(),
+    OPT  : OptPhase(),
+    }
 
 phase_spec = phase_names if len(sys.argv) <= 1 else sys.argv[1].split(',')
 
 for p in phase_spec:
-    phase = phases[p](t)
+    phase = phases[p]
     phase.execute()
     phase.validate()
