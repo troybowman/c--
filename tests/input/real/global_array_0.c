@@ -2,8 +2,7 @@
 
 int x[10];
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -11,6 +10,5 @@ void main(void)
 
   x[7] = 3142;
   y = x[7];
-  print_int(y);
-  print_string("\n");
+  printf("%d\n", y);
 }
