@@ -24,18 +24,18 @@ treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line);
 void build_print_functions(symbol_t *printf, symtab_t &gsyms);
 
 //-----------------------------------------------------------------------------
-struct printf_arg_t
+struct format_arg_t
 {
   int type;
 #define PF_ARG_STR    0
 #define PF_ARG_INT    1
 #define PF_ARG_CHAR   2
   const treenode_t *node;
-  printf_arg_t(int _type, const treenode_t *_node)
+  format_arg_t(int _type, const treenode_t *_node)
     : type(_type), node(_node) {}
 };
 
-typedef std::vector<printf_arg_t> printf_args_t;
+typedef std::vector<format_arg_t> format_args_t;
 
 //-----------------------------------------------------------------------------
 enum printf_res_t

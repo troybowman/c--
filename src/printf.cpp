@@ -54,14 +54,14 @@ void build_print_functions(symbol_t *printf, symtab_t &gsyms)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *build_printf_tree(symbol_t *printf, const printf_args_t &allargs)
+static treenode_t *build_printf_tree(symbol_t *printf, const format_args_t &fmtargs)
 {
   seq_t seq = { NULL, NULL };
 
   // build sequence of calls to print_(string|int|char)
-  for ( int i = 0; i < allargs.size(); i++ )
+  for ( int i = 0; i < fmtargs.size(); i++ )
   {
-    const printf_arg_t &arg = allargs[i];
+    const format_arg_t &arg = fmtargs[i];
 
     treenode_t *args =
         new treenode_t(TNT_ARG, const_cast<treenode_t *>(arg.node), NULL);
@@ -79,7 +79,7 @@ static treenode_t *build_printf_tree(symbol_t *printf, const printf_args_t &alla
 
 //-----------------------------------------------------------------------------
 static void prepare_substring_arg(
-      printf_args_t &allargs,
+      format_args_t &fmtargs,
       const char *const start,
       const char *const end)
 {
@@ -87,7 +87,7 @@ static void prepare_substring_arg(
   if ( len <= 0 )
     return;
 
-  char *str = (char *)malloc(cmax(len,0)+3);
+  char *str = (char *)malloc(len+3);
   char *ptr = str;
   APPCHAR(ptr, '"', 1);
   APPSTR (ptr, start, len);
@@ -95,33 +95,33 @@ static void prepare_substring_arg(
   *ptr = '\0';
 
   treenode_t *node = new treenode_t(TNT_STRCON, str);
-  allargs.push_back(printf_arg_t(PF_ARG_STR, node));
+  fmtargs.push_back(format_arg_t(PF_ARG_STR, node));
 }
 
 //-----------------------------------------------------------------------------
-static printf_res_t handle_empty_fmt(printf_args_t &allargs, const treenode_t *fmtargs)
+static printf_res_t handle_empty_fmt(format_args_t &fmtargs, const treenode_t *argtree)
 {
-  if ( count_args(fmtargs) > 0 )
+  if ( count_args(argtree) > 0 )
     return PRINTF_NUMARGS;
 
   treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING));
-  allargs.push_back(printf_arg_t(PF_ARG_STR, node));
+  fmtargs.push_back(format_arg_t(PF_ARG_STR, node));
 
   return PRINTF_OK;
 }
 
 //-----------------------------------------------------------------------------
-static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_t *fmtargs)
+static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_t *allargs)
 {
-  if ( fmtargs == NULL )
+  if ( allargs == NULL )
     return PRINTF_NOARGS;
 
-  if ( fmtargs->children[SEQ_CUR]->type != TNT_STRCON )
+  if ( allargs->children[SEQ_CUR]->type != TNT_STRCON )
     return PRINTF_STRCON;
 
-  const char *fmt = fmtargs->children[SEQ_CUR]->str;
+  const char *fmt = allargs->children[SEQ_CUR]->str;
   if ( strcmp(fmt, EMPTYSTRING) == 0 ) // special case
-    return handle_empty_fmt(allargs, fmtargs->children[SEQ_NEXT]);
+    return handle_empty_fmt(fmtargs, allargs->children[SEQ_NEXT]);
 
   // ignore leading, trailing "
   fmt += 1;
@@ -129,7 +129,7 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
   const char *const end = fmt + strlen(fmt) - 1;
   const char *cursub = ptr;
 
-  tree_iterator_t ti(fmtargs->children[SEQ_NEXT]);
+  tree_iterator_t ti(allargs->children[SEQ_NEXT]);
 
   for ( ; ptr != end; ptr++ )
   {
@@ -139,7 +139,7 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
 
       if ( c == FMTS || c == FMTD || c == FMTC )
       {
-        prepare_substring_arg(allargs, cursub, ptr);
+        prepare_substring_arg(fmtargs, cursub, ptr);
         cursub = ptr+2;
 
         const treenode_t *arg = *ti++;
@@ -154,14 +154,14 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
               if ( !arg->is_int_compat() )
                 return PRINTF_BADARG;
               int argtype = c == FMTD ? PF_ARG_INT : PF_ARG_CHAR;
-              allargs.push_back(printf_arg_t(argtype, arg));
+              fmtargs.push_back(format_arg_t(argtype, arg));
             }
             break;
           case FMTS:
             {
               if ( !arg->is_string_compat() )
                 return PRINTF_BADARG;
-              allargs.push_back(printf_arg_t(PF_ARG_STR, arg));
+              fmtargs.push_back(format_arg_t(PF_ARG_STR, arg));
             }
             break;
         }
@@ -169,7 +169,7 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
     }
   }
 
-  prepare_substring_arg(allargs, cursub, ptr);
+  prepare_substring_arg(fmtargs, cursub, ptr);
 
   if ( *ti != NULL )
     return PRINTF_NUMARGS;
@@ -178,11 +178,11 @@ static printf_res_t validate_printf_call(printf_args_t &allargs, const treenode_
 }
 
 //-----------------------------------------------------------------------------
-treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line)
+treenode_t *process_printf_call(symbol_t *printf, treenode_t *allargs, int line)
 {
-  printf_args_t allargs;
+  format_args_t fmtargs;
 
-  printf_res_t res = validate_printf_call(allargs, args);
+  printf_res_t res = validate_printf_call(fmtargs, allargs);
 
   if ( res != PRINTF_OK )
   {
@@ -203,9 +203,9 @@ treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line)
       default:
         INTERR(0);
     }
-    delete args;
+    delete allargs;
     return ERRNODE;
   }
 
-  return build_printf_tree(printf, allargs);
+  return build_printf_tree(printf, fmtargs);
 }
