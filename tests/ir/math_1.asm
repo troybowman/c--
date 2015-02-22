@@ -132,14 +132,14 @@
 # child LHS for node 45
 # node 46: type: TNT_INTCON val: 1
 # child RHS for node 45
-# node 47: type: TNT_DIV
+# node 47: type: TNT_MULT
 # child LHS for node 47
-# node 48: type: TNT_INTCON val: 2
-# child RHS for node 47
-# node 49: type: TNT_MULT
-# child LHS for node 49
+# node 48: type: TNT_DIV
+# child LHS for node 48
+# node 49: type: TNT_INTCON val: 2
+# child RHS for node 48
 # node 50: type: TNT_INTCON val: 3
-# child RHS for node 49
+# child RHS for node 47
 # node 51: type: TNT_INTCON val: 4
 # child RHS for node 44
 # node 52: type: TNT_INTCON val: 5
@@ -397,24 +397,24 @@
 # src1 -> ST_INTCON (3)
 # |
 # >
+# CNT_DIV
+# -------
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (2)
+# |
+# >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (3)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_MUL
 # -------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (3)
-# |
-# >
-# CNT_DIV
-# -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (4)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ADD

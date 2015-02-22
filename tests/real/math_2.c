@@ -3,6 +3,7 @@
 int x, y, z;
 
 extern void printf(char format[], ...);
+/*#include <stdio.h>*/
 
 void main(void)
 {
@@ -11,9 +12,16 @@ void main(void)
   x = 2;
   y = 3;
   z = 4;
-  a = 'a'*x;
-  b = a/(x+y)*z;
-  c = a/(x+y)*z-a+b;
 
+  a = 'a'*x;
+  printf("%d\n", a);
+
+  b = a*(x+y)/z;
+  printf("%d\n", b);
+
+  b = a/(x+y)*z;
+  printf("%d\n", b);
+
+  c = a/(x+y)*z-a+b;
   printf("%d\n", c);
 }

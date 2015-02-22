@@ -109,16 +109,10 @@ static        void process_fdecl_error(fdecl_res_t, symbol_t *);
 /* precedence increases as we go down the list */
 %left OR
 %left AND
-%left NEQ
-%left EQ
-%left GEQ
-%left '>'
-%left LEQ
-%left '<'
-%left '-'
-%left '+'
-%left '/'
-%left '*'
+%left NEQ EQ
+%left GEQ '>' LEQ '<'
+%left '-' '+'
+%left '/' '*'
 %right UNARY
 
 %start prog
