@@ -254,6 +254,7 @@ static const char *st2str(symbol_type_t type)
     case ST_REG_ARGUMENT:    return "ST_REG_ARGUMENT";
     case ST_STACK_ARGUMENT:  return "ST_STACK_ARGUMENT";
     case ST_RETVAL:          return "ST_RETVAL";
+    case ST_ZERO:            return "ST_ZERO";
     default:
       INTERR(1061);
   }
@@ -285,6 +286,7 @@ static const char *addr2str(char *buf, size_t bufsize, const symbol_t *addr)
       snprintf(buf, bufsize, "%s (%s)", type, addr->str());
       break;
     case ST_RETVAL:
+    case ST_ZERO:
       snprintf(buf, bufsize, "%s", type);
       break;
     default:

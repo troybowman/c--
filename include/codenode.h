@@ -66,6 +66,7 @@ struct codefunc_t
   symbol_t &sym;
   codenode_t *code;
   bool has_call;
+  symbol_t *zero;
 
   ra_manager_t      ra;
   stktemp_manager_t stktemps;
@@ -75,7 +76,8 @@ struct codefunc_t
   stkarg_manager_t  stkargs;
   retval_manager_t  retval;
 
-  codefunc_t(symbol_t &s) : sym(s), code(NULL), has_call(false) {}
+  codefunc_t(symbol_t &s) : sym(s), code(NULL), has_call(false) { zero = new symbol_t(ST_ZERO); }
+  ~codefunc_t() { delete zero; } // TODO: delete code
 };
 
 //-----------------------------------------------------------------------------

@@ -760,13 +760,6 @@ static void init_temps(resource_manager_t &rm)
 }
 
 //-----------------------------------------------------------------------------
-static void init_retval(retval_manager_t &rm)
-{
-  symbol_t *retval = rm.gen_resource();
-  retval->loc.set_reg("$v0");
-}
-
-//-----------------------------------------------------------------------------
 static void gen_builtin_function(const char *name, int syscall)
 {
   symbol_t *func = gsyms.get(name);
@@ -782,6 +775,15 @@ static void gen_builtin_function(const char *name, int syscall)
 }
 
 //-----------------------------------------------------------------------------
+static void init_resources(codefunc_t &cf)
+{
+  init_temps(cf.temps);
+  symbol_t *retval = cf.retval.gen_resource();
+  retval->loc.set_reg("$v0");
+  cf.zero->loc.set_reg("$zero");
+}
+
+//-----------------------------------------------------------------------------
 static void gen_text_section(codefuncs_t &funcs)
 {
   init_reserved_temps();
@@ -791,8 +793,7 @@ static void gen_text_section(codefuncs_t &funcs)
   for ( codefuncs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
   {
     codefunc_t &cf = **i;
-    init_temps(cf.temps);
-    init_retval(cf.retval);
+    init_resources(cf);
 
     fprintf(outfile, "\n%s:\n", cf.sym.c_str());
 

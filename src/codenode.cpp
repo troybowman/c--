@@ -465,6 +465,13 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         generate(tree->children[PRINTF_TREE]);
         break;
       }
+    case TNT_NEG:
+      {
+        symbol_t *val = generate(tree->children[RHS]);
+        symbol_t *neg = gen_temp(ctx.flags);
+        append(CNT_SUB, neg, cf.zero, val);
+        return neg;
+      }
     default:
       INTERR(1059);
   }

@@ -91,7 +91,8 @@ enum symbol_type_t
   ST_RETVAL,          // asm return value location
   ST_RETADDR,         // asm return address location
   ST_REG_ARGUMENT,    // asm function register argument
-  ST_STACK_ARGUMENT   // asm function stack argument
+  ST_STACK_ARGUMENT,  // asm function stack argument
+  ST_ZERO             // asm $zero register
 };
 
 //-----------------------------------------------------------------------------
