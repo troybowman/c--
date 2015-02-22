@@ -88,13 +88,12 @@ ENDCOLOR = '\033[0m'
 class TesterPhase:
 
     def __init__(self, name):
-        self.input  = os.path.join(t.cmmhome(), "tests", "input",  name)
-        self.output = os.path.join(t.cmmhome(), "tests", "output", name)
-        self.name   = name
+        self.dir  = os.path.join(t.cmmhome(), "tests",  name)
+        self.name = name
 
     def compile(self, inpath):
         outfile = replace_ext(os.path.basename(inpath), "asm")
-        outpath = os.path.join(self.output, outfile)
+        outpath = os.path.join(self.dir, outfile)
         argv = self.argv() + [ "-o", outpath, inpath ]
         with StderrMonitor(outpath) as errors:
             try:
@@ -106,14 +105,14 @@ class TesterPhase:
                 raise
 
     def execute(self):
-        pattern = os.path.join(self.input, "*.c")
+        pattern = os.path.join(self.dir, "*.c")
         for inpath in glob.iglob(pattern):
             print "compiling: %s" % simplify_inpath(inpath)
             self.compile(inpath)
 
     def status(self):
         print "checking diffs for phase %s..." % self.name
-        with Directory(self.output):
+        with Directory(self.dir):
             status = subprocess.check_output(["git", "ls-files", "-dmo"])
             if len(status) > 0:
                 print FAILURE + status + ENDCOLOR
@@ -148,8 +147,8 @@ class DbgPhase(TesterPhase):
 #------------------------------------------------------------------------------
 class SpimRunner:
 
-    def run(self, outdir):
-        with Directory(outdir):
+    def run(self, dir):
+        with Directory(dir):
             for asm in glob.iglob("*.asm"):
                 with open(replace_ext(asm, "out"), "w") as outfile:
                     try:
@@ -186,7 +185,7 @@ class RealPhase(DbgPhase, SpimRunner):
         DbgPhase.__init__(self, REAL, DbgPhase.DBG_ALL_IR)
 
     def validate(self):
-        self.run(self.output)
+        self.run(self.dir)
         self.status()
 
 #------------------------------------------------------------------------------
