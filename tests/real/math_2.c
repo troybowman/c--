@@ -3,7 +3,6 @@
 int x, y, z;
 
 extern void printf(char format[], ...);
-/*#include <stdio.h>*/
 
 void main(void)
 {
