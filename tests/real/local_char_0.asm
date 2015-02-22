@@ -161,7 +161,7 @@ main:
   la $sp, -32($sp)
   sw $ra, 16($sp)
 
-  li, $t0, 'Q'
+  li $t0, 'Q'
   sb $t0, 24($sp)
   lb $t0, 24($sp)
   move $a0, $t0

@@ -1046,7 +1046,7 @@ main:
 
   li $t0, 66
   sw $t0, 24($sp)
-  li, $t0, 'a'
+  li $t0, 'a'
   sb $t0, 28($sp)
   la $t0, _str0
   move $a0, $t0

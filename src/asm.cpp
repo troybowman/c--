@@ -494,7 +494,7 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
               fprintf(outfile, TAB1"li %s, %d\n", dest->loc.reg(), src1->val());
               break;
             case ST_CHARCON:
-              fprintf(outfile, TAB1"li, %s, %s\n", dest->loc.reg(), src1->str());
+              fprintf(outfile, TAB1"li %s, %s\n", dest->loc.reg(), src1->str());
               break;
             default:
               INTERR(1090);
