@@ -2,8 +2,7 @@
 
 int x, y, z;
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -15,6 +14,6 @@ void main(void)
   a = 'a'*x;
   b = a/(x+y)*z;
   c = a/(x+y)*z-a+b;
-  print_int(c);
-  print_string("\n");
+
+  printf("%d\n", c);
 }
