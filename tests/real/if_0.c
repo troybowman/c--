@@ -1,7 +1,6 @@
 /* simple conditionals */
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -17,8 +16,6 @@ void main(void)
     res2 = 3333;
   else
     res2 = 4444;
-  print_int(res1);
-  print_string("\n");
-  print_int(res2);
-  print_string("\n");
+
+  printf("%d %d\n", res1, res2);
 }
