@@ -2,8 +2,7 @@
 
 char y[5];
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -18,6 +17,6 @@ void main(void)
   x[4] = 4;  y[4] = 55;
 
   u = x[2*x[1]-1]+y[4]/(y[x[2]+y[0]]+x[1]);
-  print_int(u);
-  print_string("\n");
+
+  printf("%d\n", u);
 }
