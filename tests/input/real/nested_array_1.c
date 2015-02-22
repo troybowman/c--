@@ -1,13 +1,10 @@
 /* nested array assignents: local arrays */
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
   int x[10];
-
-  int u;
 
   x[0] = 1;
   x[1] = 2;
@@ -20,7 +17,5 @@ void main(void)
   x[8] = 9;
   x[9] = 10;
 
-  u = x[x[x[x[x[x[x[x[x[x[0]]]]]]]]]];
-  print_int(u);
-  print_string("\n");
+  printf("%d\n", x[x[x[x[x[x[x[x[x[x[0]]]]]]]]]]);
 }
