@@ -374,17 +374,24 @@
 # src1 -> ST_PRIMITIVE (idx)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (array)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW

@@ -165,17 +165,24 @@
 # src1 -> ST_INTCON (10)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_ARRAY (l2)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_SW

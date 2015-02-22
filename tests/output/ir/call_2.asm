@@ -372,17 +372,24 @@
 # src1 -> ST_INTCON (0)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (array)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -397,17 +404,24 @@
 # src1 -> ST_INTCON (1)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_ARRAY (array)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_LW
@@ -429,17 +443,24 @@
 # src1 -> ST_INTCON (2)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (array)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -473,17 +494,24 @@
 # src1 -> ST_PRIMITIVE (idx1)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (array)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -498,17 +526,24 @@
 # src1 -> ST_PRIMITIVE (idx2)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_ARRAY (array)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_LW
@@ -530,17 +565,24 @@
 # src1 -> ST_PRIMITIVE (idx3)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (array)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -623,17 +665,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -678,17 +727,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_SW
@@ -721,17 +777,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -758,17 +821,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -813,17 +883,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -850,17 +927,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_SW
@@ -948,17 +1032,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (4)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (4)
+# dest -> ST_TEMPORARY (3)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (5)
-# src1 -> ST_TEMPORARY (4)
-# src2 -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_TEMPORARY (4)
 # |
 # >
 # CNT_LW
@@ -1047,17 +1138,24 @@
 # src1 -> ST_INTCON (33)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_LW
@@ -1121,17 +1219,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (4)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (4)
+# dest -> ST_TEMPORARY (3)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (5)
-# src1 -> ST_TEMPORARY (4)
-# src2 -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_TEMPORARY (4)
 # |
 # >
 # CNT_LW
@@ -1201,17 +1306,24 @@
 # src1 -> ST_RETVAL
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_SW

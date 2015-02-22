@@ -748,17 +748,24 @@
 # src1 -> ST_PRIMITIVE (y)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -1047,17 +1054,24 @@
 # src1 -> ST_INTCON (444)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_SW
@@ -1077,17 +1091,24 @@
 # src1 -> ST_INTCON (888)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -1096,17 +1117,24 @@
 # src1 -> ST_TEMPORARY (2)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -1218,17 +1246,24 @@
 # src1 -> ST_PRIMITIVE (y)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_LW
@@ -1269,17 +1304,24 @@
 # src1 -> ST_INTCON (999)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (4)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (4)
+# dest -> ST_TEMPORARY (3)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (5)
-# src1 -> ST_TEMPORARY (4)
-# src2 -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (3)
+# src2 -> ST_TEMPORARY (4)
 # |
 # >
 # CNT_LW
@@ -1339,17 +1381,24 @@
 # src1 -> ST_INTCON (0)
 # |
 # >
+# CNT_SLL
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_INTCON (2)
+# |
+# >
 # CNT_LEA
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_ARRAY (x)
 # |
 # >
 # CNT_ADD
 # -------
 # dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
@@ -1626,8 +1675,9 @@ _L4:
   beq $t0, 0, _L13
 _L5:
   lb $t0, 72($sp)
-  la $t1, 32($sp)
-  add $t2, $t1, $t0
+  sll $t1, $t0, 2
+  la $t0, 32($sp)
+  add $t2, $t0, $t1
   lw $s0, ($t2)
   lb $t0, 72($sp)
   li $t1, 111
@@ -1675,16 +1725,19 @@ _L6:
   move $t0, $v0
   add $t1, $s1, $t0
   li $t0, 444
-  la $t2, 32($sp)
-  add $t3, $t2, $t0
+  sll $t2, $t0, 2
+  la $t0, 32($sp)
+  add $t3, $t0, $t2
   sw $t1, ($t3)
 _L7:
   li $t0, 888
-  la $t1, 32($sp)
-  add $t2, $t1, $t0
+  sll $t1, $t0, 2
+  la $t0, 32($sp)
+  add $t2, $t0, $t1
   lw $t0, ($t2)
-  la $t1, 32($sp)
-  add $t2, $t1, $t0
+  sll $t1, $t0, 2
+  la $t0, 32($sp)
+  add $t2, $t0, $t1
   lw $s0, ($t2)
   lb $t0, 72($sp)
   lb $t1, 72($sp)
@@ -1703,16 +1756,18 @@ _L7:
   jal _half
   move $t0, $v0
   lb $t1, 72($sp)
-  la $t2, 32($sp)
-  add $t3, $t2, $t1
+  sll $t2, $t1, 2
+  la $t1, 32($sp)
+  add $t3, $t1, $t2
   lw $t1, ($t3)
   slt $t2, $t0, $t1
   and $t0, $s1, $t2
   lb $t1, 72($sp)
   lb $t2, 72($sp)
   li $t3, 999
-  la $t4, 32($sp)
-  add $t5, $t4, $t3
+  sll $t4, $t3, 2
+  la $t3, 32($sp)
+  add $t5, $t3, $t4
   lw $t3, ($t5)
   mul $t4, $t2, $t3
   add $t2, $t1, $t4
@@ -1722,8 +1777,9 @@ _L7:
   beq $t1, 0, _L10
 _L8:
   li $t0, 0
-  la $t1, 32($sp)
-  add $t2, $t1, $t0
+  sll $t1, $t0, 2
+  la $t0, 32($sp)
+  add $t2, $t0, $t1
   lw $t0, ($t2)
   li $t1, 1001
   seq $t2, $t0, $t1

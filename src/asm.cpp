@@ -706,6 +706,19 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
                   cnt2instr(node->type), dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
         }
         break;
+      case CNT_SLL:
+        {
+          ensure_compatible_operands(node, REQUIRE_REG_DEST | REQUIRE_REG_SRC1);
+
+          symbol_t *dest = node->dest;
+          symbol_t *src1 = node->src1;
+          symbol_t *src2 = node->src2;
+
+          ASSERT(0, src2->type() == ST_INTCON);
+
+          fprintf(outfile, TAB1"sll %s, %s, %d\n", dest->loc.reg(), src1->loc.reg(), src2->val());
+        }
+        break;
       case CNT_CALL:
         fprintf(outfile, TAB1"jal %s\n", node->src1->c_str());
         break;

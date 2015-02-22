@@ -285,6 +285,17 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         treenode_t *idxtree = tree->children[AL_OFFSET];
         symbol_t *idx = generate(idxtree);
 
+        symbol_t *off;
+        if ( tree->sym->base() == PRIM_INT )
+        {
+          off = gen_temp();
+          append(CNT_SLL, off, idx, new symbol_t(ST_INTCON, WORDSIZE/2));
+        }
+        else
+        {
+          off = idx;
+        }
+
         symbol_t *base = gen_temp();
         append(CNT_LEA, base, tree->sym, NULL);
 
@@ -292,12 +303,12 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( (ctx.flags & TCTX_LVAL) != 0 )
         {
           dest = gen_temp();
-          append(CNT_ADD, dest, base, idx);
+          append(CNT_ADD, dest, base, off);
         }
         else
         {
           symbol_t *loc = gen_temp();
-          append(CNT_ADD, loc, base, idx);
+          append(CNT_ADD, loc, base, off);
           dest = gen_temp(ctx.flags);
           append(CNT_LOAD(tree->sym), dest, loc);
         }
