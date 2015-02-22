@@ -2,8 +2,7 @@
 
 int x[10];
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -21,6 +20,6 @@ void main(void)
   x[9] = 10;
 
   u = x[x[x[x[x[x[x[x[x[x[0]]]]]]]]]];
-  print_int(u);
-  print_string("\n");
+
+  printf("%d %d\n", u, x[x[x[x[x[2]]]]]);
 }
