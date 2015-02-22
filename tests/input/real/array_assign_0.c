@@ -3,8 +3,7 @@
 int x[10];
 int y[10];
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -13,6 +12,5 @@ void main(void)
   y[7] = 1234;
   x[0] = y[7];
   u = x[0];
-  print_int(u);
-  print_string("\n");
+  printf("%d\n", u);
 }
