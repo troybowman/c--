@@ -52,7 +52,7 @@
 #       1: ST_ELLIPSIS
 #     is_extern: yes
 # sym: main
-#   line: 8
+#   line: 7
 #   type: ST_FUNCTION
 #     rt_type: RT_VOID
 #     params:
@@ -63,15 +63,15 @@
 #-----------------------------------------------------------------------------
 # size: 3
 # sym: a
-#   line: 10
+#   line: 9
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
 # sym: b
-#   line: 10
+#   line: 9
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
 # sym: c
-#   line: 10
+#   line: 9
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
 #-----------------------------------------------------------------------------

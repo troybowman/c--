@@ -2,8 +2,7 @@
 
 char x, y, z;
 
-/*extern void printf(char format[], ...);*/
-#include <stdio.h>
+extern void printf(char format[], ...);
 
 void main(void)
 {
