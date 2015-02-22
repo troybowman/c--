@@ -98,12 +98,12 @@ static        void process_fdecl_error(fdecl_res_t, symbol_t *);
 %token WHILE RETURN EXTERN IF ELSE FOR
 %token EQ NEQ LEQ GEQ AND OR ELLIPSIS
 
-%type<prim>     type
-%type<sym>      var_decl func_decl param_decl ellipsis
-%type<symvec>   var_decls var_decl_list func_decls func_decl_list params param_decl_list
-%type<tree>     func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
-%type<asfx>     decl_array_sfx param_array_sfx
-%type<seq>      stmts arg_list
+%type<prim>    type
+%type<sym>     var_decl func_decl param_decl ellipsis
+%type<symvec>  var_decls var_decl_list func_decls func_decl_list params param_decl_list
+%type<tree>    func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
+%type<asfx>    decl_array_sfx param_array_sfx
+%type<seq>     stmts arg_list
 
 /*---------------------------------------------------------------------------*/
 /* precedence increases as we go down the list */
