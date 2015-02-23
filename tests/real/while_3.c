@@ -17,16 +17,16 @@ void main(void)
       k = (i+j)/2;
       if (k > i)
       {
-	      a = 0;
-	      while (a < 5)
+        a = 0;
+        while (a < 5)
         {
-	        b = (a+k)/2;
-	        if (b > j)
-	          res = res + b;
-	        else
-	          res = res + k;
-	        a = a+1;
-	      }
+          b = (a+k)/2;
+          if (b > j)
+            res = res + b;
+          else
+            res = res + k;
+          a = a+1;
+        }
       }
       j = j+1;
     }

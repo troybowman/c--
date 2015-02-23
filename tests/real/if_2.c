@@ -12,21 +12,21 @@ void main(void)
   if (a < b)
     if (b >= c)
       if (c < d)
-	      if ( (d != e) )
-	        if (e < f)
-	          if (g < f)
-	            if (g < a)
-		            res = 1111;
-	            else
-		            res = 2222;
-	          else
-	            res = 3333;
-	        else
-	          res = 4444;
-	      else
-	        res = 5555;
+        if ( (d != e) )
+          if (e < f)
+            if (g < f)
+              if (g < a)
+                res = 1111;
+              else
+                res = 2222;
+            else
+              res = 3333;
+          else
+            res = 4444;
+        else
+          res = 5555;
       else
-	      res = 6666;
+        res = 6666;
     else
       res = 7777;
   else

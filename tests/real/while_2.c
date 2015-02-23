@@ -18,18 +18,18 @@ void main(void)
       c = 0;
       while (c < LIM)
       {
-	      d = 0;
-	      while (d < LIM)
+        d = 0;
+        while (d < LIM)
         {
-	        e = 0;
-	        while (e < LIM)
+          e = 0;
+          while (e < LIM)
           {
-	          res = res + 1;
-	          e = e+1;
-	        }
-	        d = d+1;
-	      }
-	      c = c+1;
+            res = res + 1;
+            e = e+1;
+          }
+          d = d+1;
+        }
+        c = c+1;
       }
       b = b+1;
     }
