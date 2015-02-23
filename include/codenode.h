@@ -12,7 +12,7 @@ enum codenode_type_t
 {
   CNT_LW,   CNT_OR,   CNT_MOV,    CNT_LI,
   CNT_LB,   CNT_AND,  CNT_ARG,    CNT_SLL,
-  CNT_SW,   CNT_SLT,  CNT_CALL,
+  CNT_SW,   CNT_SLT,  CNT_CALL,   CNT_XOR,
   CNT_SB,   CNT_SGT,  CNT_RET,
   CNT_ADD,  CNT_SGE,  CNT_LEA,
   CNT_SUB,  CNT_SLE,  CNT_CNDJMP,

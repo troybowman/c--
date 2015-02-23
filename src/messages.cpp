@@ -231,6 +231,7 @@ static const char *cnt2str(codenode_type_t type)
     case CNT_JUMP:    return "CNT_JUMP\n# --------";
     case CNT_LI:      return "CNT_LI\n# ------";
     case CNT_SLL:     return "CNT_SLL\n# ------";
+    case CNT_XOR:     return "CNT_XOR\n# ------";
     default:
       INTERR(1060);
   }

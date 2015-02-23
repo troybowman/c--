@@ -707,6 +707,7 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         }
         break;
       case CNT_SLL:
+      case CNT_XOR:
         {
           ensure_compatible_operands(node, REQUIRE_REG_DEST | REQUIRE_REG_SRC1);
 
@@ -716,7 +717,8 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
 
           ASSERT(0, src2->type() == ST_INTCON);
 
-          fprintf(outfile, TAB1"sll %s, %s, %d\n", dest->loc.reg(), src1->loc.reg(), src2->val());
+          fprintf(outfile, TAB1"%s %s, %s, %d\n", node->type == CNT_SLL ? "sll" : "xor",
+                                   dest->loc.reg(), src1->loc.reg(), src2->val());
         }
         break;
       case CNT_CALL:

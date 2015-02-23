@@ -472,6 +472,13 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         append(CNT_SUB, neg, cf.zero, val);
         return neg;
       }
+    case TNT_NOT:
+      {
+        symbol_t *val = generate(tree->children[RHS]);
+        symbol_t *no  = gen_temp(ctx.flags);
+        append(CNT_XOR, no, val, new symbol_t(ST_INTCON, 1));
+        return no;
+      }
     default:
       INTERR(1059);
   }
