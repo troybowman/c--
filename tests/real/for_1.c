@@ -1,7 +1,6 @@
 /* simple for loops */
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -20,8 +19,7 @@ void main(void)
   for (i = 0; ; i = i+1) {
     res = res+i;
     if (i > 10) {
-      print_int(res);
-  print_string("\n");
+      printf("%d\n", res);
       return;
     }
   }
