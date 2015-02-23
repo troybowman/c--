@@ -3,8 +3,7 @@
 int i, x[5];
 int res;
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -14,11 +13,10 @@ void main(void)
     i = i+1;
   }
   res = 123;
-  while (!(x[i/5] <= x[i/4] && x[i/4] <= x[i/3] && 
+  while (!(x[i/5] <= x[i/4] && x[i/4] <= x[i/3] &&
       !!!(x[i/2] > x[i/3] || x[i/3] > x[i/4] || x[i/4] > x[i/5]))) {
     res = res * i;
     i = i - 1;
   }
-  print_int(res);
-  print_string("\n");
+  printf("%d\n", res);
 }
