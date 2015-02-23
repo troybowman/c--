@@ -1,7 +1,6 @@
 /* mixed for loops, while loops, and conditionals */
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -14,17 +13,17 @@ void main(void)
     while (j < 5) {
       k = (i+j)/2;
       if (k > i) {
-	for (a = 0; a < 5; a = a+1) {
-	  b = (a+k)/2;
-	  if (b > j) 
-	    res = res + b;
-	  else
-	    res = res + k;
-	}
+        for (a = 0; a < 5; a = a+1) {
+          b = (a+k)/2;
+          if (b > j)
+            res = res + b;
+          else
+            res = res + k;
+        }
       }
       j = j+1;
     }
   }
-  print_int(res);
-  print_string("\n");
+
+  printf("%d\n", res);
 }
