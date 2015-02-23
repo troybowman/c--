@@ -5,8 +5,7 @@ int id(int x)
   return x;
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -15,6 +14,6 @@ void main(void)
   f = 1;
   for (n = 7; n > 0; n = n-1)
     f = id(n)*f;
-  print_int(f);
-  print_string("\n");
+
+  printf("%d\n", f);
 }
