@@ -24,8 +24,7 @@ int count(int x[], int n)
   return c;
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -33,6 +32,6 @@ void main(void)
 
   z = init(x, 10);
   z = z+count(x, 10);
-  print_int(z);
-  print_string("\n");
+
+  printf("%d\n", z);
 }
