@@ -7,8 +7,7 @@ void acc(int x)
   y = y*x;
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -17,6 +16,6 @@ void main(void)
   y = 1;
   for (n = 7; n > 0; n = n-1)
     acc(n);
-  print_int(y);
-  print_string("\n");
+
+  printf("%d\n", y);
 }
