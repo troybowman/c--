@@ -123,6 +123,10 @@ public:
     ++(*this);
     return tmp;
   }
+  const treenode_t *next() const
+  {
+    return ptr != NULL ? ptr->children[SEQ_NEXT] : NULL;
+  }
 };
 
 #endif // TREENODE_H

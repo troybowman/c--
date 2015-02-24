@@ -397,8 +397,8 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:    7
-# svregs used:   1
+# temps used:    4
+# svregs used:   4
 # stktemps used: 0
 # regargs used:  4
 # stkargs used:  1
@@ -422,20 +422,20 @@
 # >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_SAVED_TEMPORARY (0)
 # src1 -> ST_RETVAL
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (444)
 # |
 # >
 # CNT_ARG
 # -------
 # dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_CALL
@@ -446,20 +446,20 @@
 # >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_RETVAL
 # |
 # >
 # CNT_ARG
 # -------
 # dest -> ST_REG_ARGUMENT (1)
-# src1 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_ARG
 # -------
 # dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
+# src1 -> ST_SAVED_TEMPORARY (0)
 # |
 # >
 # CNT_CALL
@@ -500,215 +500,20 @@
 # >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_SAVED_TEMPORARY (0)
 # src1 -> ST_RETVAL
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (666)
 # |
 # >
 # CNT_LW
 # ------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_PRIMITIVE (x)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (1)
-# src1 -> ST_TEMPORARY (2)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (1)
-# |
-# >
-# CNT_CALL
-# --------
-# dest -> ST_RETVAL
-# src1 -> ST_FUNCTION (sum)
-# |
-# >
-# CNT_MOV
-# -------
 # dest -> ST_TEMPORARY (1)
-# src1 -> ST_RETVAL
-# |
-# >
-# CNT_LW
-# ------
-# dest -> ST_TEMPORARY (2)
 # src1 -> ST_PRIMITIVE (x)
-# |
-# >
-# CNT_LW
-# ------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_PRIMITIVE (x)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (1)
-# src1 -> ST_TEMPORARY (3)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (2)
-# |
-# >
-# CNT_CALL
-# --------
-# dest -> ST_RETVAL
-# src1 -> ST_FUNCTION (diff)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_RETVAL
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_INTCON (777)
-# |
-# >
-# CNT_LEA
-# -------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_ARRAY (y)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (5)
-# src1 -> ST_TEMPORARY (4)
-# src2 -> ST_TEMPORARY (3)
-# |
-# >
-# CNT_LB
-# ------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (5)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (3)
-# |
-# >
-# CNT_CALL
-# --------
-# dest -> ST_RETVAL
-# src1 -> ST_FUNCTION (dub)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_RETVAL
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_INTCON (888)
-# |
-# >
-# CNT_LEA
-# -------
-# dest -> ST_TEMPORARY (5)
-# src1 -> ST_ARRAY (y)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_TEMPORARY (6)
-# src1 -> ST_TEMPORARY (5)
-# src2 -> ST_TEMPORARY (4)
-# |
-# >
-# CNT_LB
-# ------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_TEMPORARY (6)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (5)
-# src1 -> ST_INTCON (999)
-# |
-# >
-# CNT_LEA
-# -------
-# dest -> ST_TEMPORARY (6)
-# src1 -> ST_ARRAY (y)
-# |
-# >
-# CNT_ADD
-# -------
-# dest -> ST_SAVED_TEMPORARY (0)
-# src1 -> ST_TEMPORARY (6)
-# src2 -> ST_TEMPORARY (5)
-# |
-# >
-# CNT_LB
-# ------
-# dest -> ST_TEMPORARY (5)
-# src1 -> ST_SAVED_TEMPORARY (0)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (1)
-# src1 -> ST_TEMPORARY (5)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (4)
-# |
-# >
-# CNT_CALL
-# --------
-# dest -> ST_RETVAL
-# src1 -> ST_FUNCTION (diff)
-# |
-# >
-# CNT_MOV
-# -------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_RETVAL
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_STACK_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (4)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (3)
-# src1 -> ST_TEMPORARY (3)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (2)
-# src1 -> ST_TEMPORARY (2)
 # |
 # >
 # CNT_ARG
@@ -721,6 +526,201 @@
 # -------
 # dest -> ST_REG_ARGUMENT (0)
 # src1 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_CALL
+# --------
+# dest -> ST_RETVAL
+# src1 -> ST_FUNCTION (sum)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_SAVED_TEMPORARY (1)
+# src1 -> ST_RETVAL
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (1)
+# src1 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (0)
+# src1 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_CALL
+# --------
+# dest -> ST_RETVAL
+# src1 -> ST_FUNCTION (diff)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_SAVED_TEMPORARY (2)
+# src1 -> ST_RETVAL
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_INTCON (777)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_ARRAY (y)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (0)
+# src1 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_CALL
+# --------
+# dest -> ST_RETVAL
+# src1 -> ST_FUNCTION (dub)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_SAVED_TEMPORARY (3)
+# src1 -> ST_RETVAL
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_INTCON (888)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_ARRAY (y)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_TEMPORARY (1)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_TEMPORARY (2)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_INTCON (999)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMPORARY (2)
+# src1 -> ST_ARRAY (y)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (3)
+# src1 -> ST_TEMPORARY (2)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_TEMPORARY (3)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (1)
+# src1 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (0)
+# src1 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_CALL
+# --------
+# dest -> ST_RETVAL
+# src1 -> ST_FUNCTION (diff)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_RETVAL
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_STACK_ARGUMENT (0)
+# src1 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (3)
+# src1 -> ST_SAVED_TEMPORARY (3)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (2)
+# src1 -> ST_SAVED_TEMPORARY (2)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (1)
+# src1 -> ST_SAVED_TEMPORARY (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (0)
+# src1 -> ST_SAVED_TEMPORARY (0)
 # |
 # >
 # CNT_CALL
