@@ -26,8 +26,7 @@ int sum(char b[])
   return sum;
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -35,6 +34,6 @@ void main(void)
 
   y = copy("hello world", x);
   y = y+sum(x);
-  print_int(y);
-  print_string("\n");
+
+  printf("%d\n", y);
 }
