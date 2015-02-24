@@ -12,12 +12,10 @@ void f(char s[], int n)
   }
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
   f("hello world", 0);
-  print_int(u);
-  print_string("\n");
+  printf("%d\n", u);
 }

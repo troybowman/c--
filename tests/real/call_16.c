@@ -6,7 +6,7 @@ void incr(int x);
 
 int f(int u)
 {
-  if (u == 0) 
+  if (u == 0)
     return 1;
   else {
     incr(u);
@@ -19,8 +19,7 @@ void incr(int x)
   u = x+u;
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -29,6 +28,6 @@ void main(void)
   u = 1;
   x = f(6);
   x = u+x;
-  print_int(x);
-  print_string("\n");
+
+  printf("%d\n", x);
 }

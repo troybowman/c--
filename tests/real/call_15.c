@@ -8,8 +8,7 @@ void add(int x)
   return;
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -25,6 +24,6 @@ void main(void)
     add(2);
     f = f*y;
   }
-  print_int(f);
-  print_string("\n");  
+
+  printf("%d\n", f);
 }
