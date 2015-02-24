@@ -5,6 +5,11 @@ import sys, os, glob, subprocess, re
 #------------------------------------------------------------------------------
 class Tester:
 
+    FAILURE  = '\033[91m'
+    SUCCESS  = '\033[92m'
+    WARNING  = '\033[93m'
+    ENDCOLOR = '\033[0m'
+
     def __init__(self):
         cur = os.getcwd()
         while not os.path.basename(cur).lower() == "c--":
@@ -63,35 +68,21 @@ class StderrMonitor:
             os.remove(self.errpath)
 
 #------------------------------------------------------------------------------
-class Directory:
-
-    def __init__(self, target):
-        self.prev = os.getcwd()
-        self.target = target
-
-    def __enter__(self):
-        os.chdir(self.target)
-        return self
-
-    def __exit__(self, tp, v, tr):
-        os.chdir(self.prev)
-
-#------------------------------------------------------------------------------
-FAILURE  = '\033[91m'
-SUCCESS  = '\033[92m'
-WARNING  = '\033[93m'
-ENDCOLOR = '\033[0m'
-
-#------------------------------------------------------------------------------
 class TesterPhase:
 
-    def __init__(self, name, t):
-        self.t    = t
-        self.dir  = os.path.join(self.t.cmmhome(), "tests",  name)
-        self.name = name
+    def __init__(self, dir):
+        self.dir     = dir
+        self.prevdir = os.getcwd()
 
-    def compile(self, inpath):
-        argv = self.argv() + [ inpath ]
+    def __enter__(self):
+        os.chdir(self.dir)
+        return self
+
+    def __exit__(self, typ, val, tb):
+        os.chdir(self.prevdir)
+
+    def compile(self, t, inpath):
+        argv = self.argv(t) + [ inpath ]
         with StderrMonitor(inpath) as errors:
             try:
                 subprocess.call(argv, stdout=errors, stderr=errors)
@@ -101,24 +92,36 @@ class TesterPhase:
                 errors.write("idk wtf happened\n")
                 raise
 
-    def execute(self):
-        with Directory(self.dir):
-            pattern = os.path.join("*.c")
-            for inpath in glob.iglob(pattern):
-                print "compiling: %s" % simplify_inpath(inpath)
-                self.compile(inpath)
+    def execute(self, t):
+        pattern = os.path.join("*.c")
+        for inpath in glob.iglob(pattern):
+            print "compiling: %s" % simplify_inpath(inpath)
+            self.compile(t, inpath)
+        self.validate(t)
 
-    def status(self):
-        print "checking diffs for phase %s..." % self.name
-        with Directory(self.dir):
-            status = subprocess.check_output(["git", "ls-files", "-dmo"])
-            if len(status) > 0:
-                print FAILURE + status + ENDCOLOR
-            else:
-                print SUCCESS + "Clean!" + ENDCOLOR
+    def status(self, t):
+        print "checking diffs for phase %s..." % os.path.basename(self.dir)
+        status = subprocess.check_output(["git", "ls-files", "-dmo"])
+        if len(status) > 0:
+            print t.FAILURE + status + t.ENDCOLOR
+        else:
+            print t.SUCCESS + "Clean!" + t.ENDCOLOR
 
-    def validate(self):
-        self.status()
+    def execAsmFiles(self, t):
+        for asm in glob.iglob("*.asm"):
+            with open(replace_ext(asm, "out"), "w") as outfile:
+                try:
+                    output = subprocess.check_output(["spim", "-file", asm])
+                    output = re.sub("Loaded:.*exceptions\.s\n", "", output)
+                    outfile.write(output)
+                except OSError as e:
+                    outfile.write("couldn't launch spim: %s\n" % e.strerror)
+                except:
+                    outfile.write("idk wtf happened\n")
+                    raise
+
+    def validate(self, t):
+        self.status(t)
 
 #------------------------------------------------------------------------------
 class DbgPhase(TesterPhase):
@@ -135,54 +138,39 @@ class DbgPhase(TesterPhase):
     DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
     DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
 
-    def __init__(self, name, t, flags):
-        TesterPhase.__init__(self, name, t)
+    def __init__(self, dir, flags):
+        TesterPhase.__init__(self, dir)
         self.flags = flags
 
-    def argv(self):
-        return [ self.t.cmmdbg(), "-v", hex(self.flags) ]
-
-#------------------------------------------------------------------------------
-def execAsmFiles(dir):
-    with Directory(dir):
-        for asm in glob.iglob("*.asm"):
-            with open(replace_ext(asm, "out"), "w") as outfile:
-                try:
-                    output = subprocess.check_output(["spim", "-file", asm])
-                    output = re.sub("Loaded:.*exceptions\.s\n", "", output)
-                    outfile.write(output)
-                except OSError as e:
-                    outfile.write("couldn't launch spim: %s\n" % e.strerror)
-                except:
-                    outfile.write("idk wtf happened\n")
-                    raise
+    def argv(self, t):
+        return [ t.cmmdbg(), "-v", hex(self.flags) ]
 
 #------------------------------------------------------------------------------
 class OptPhase(TesterPhase):
 
-    def __init__(self, t):
-        TesterPhase.__init__(self, OPT, t)
+    def __init__(self, dir):
+        TesterPhase.__init__(self, dir)
 
-    def argv(self):
-        return [ self.t.cmmopt() ]
+    def argv(self, t):
+        return [ t.cmmopt() ]
 
-    def execute(self):
-        print WARNING + "opt: TODO" + ENDCOLOR
+    def execute(self, t):
+        print t.WARNING + "opt: TODO" + t.ENDCOLOR
 
-    def validate(self):
-        pass
-        #self.run(self.output)
+    def validate(self, t):
+        #self.execAsmFiles()
         #self.status()
+        pass
 
 #------------------------------------------------------------------------------
 class RealPhase(DbgPhase):
 
-    def __init__(self, t):
-        DbgPhase.__init__(self, REAL, t, DbgPhase.DBG_ALL_IR)
+    def __init__(self, dir):
+        DbgPhase.__init__(self, dir, DbgPhase.DBG_ALL_IR)
 
-    def validate(self):
-        execAsmFiles(self.dir)
-        self.status()
+    def validate(self, t):
+        self.execAsmFiles(t)
+        self.status(t)
 
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
@@ -196,13 +184,15 @@ if __name__ == "__main__":
     REAL = "real"
     OPT  = "opt"
 
+    tests = os.path.join(t.cmmhome(), "tests")
+
     phases = {
-        SYMS : DbgPhase(SYMS, t, DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
-        TREE : DbgPhase(TREE, t, DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
-        IR   : DbgPhase(IR,   t, DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
-        ASM  : DbgPhase(ASM,  t, DbgPhase.DBG_ALL_IR),
-        REAL : RealPhase(t),
-        OPT  : OptPhase(t),
+        SYMS : DbgPhase(  os.path.join(tests, SYMS),  DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
+        TREE : DbgPhase(  os.path.join(tests, TREE),  DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
+        IR   : DbgPhase(  os.path.join(tests, IR  ),  DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
+        ASM  : DbgPhase(  os.path.join(tests, ASM ),  DbgPhase.DBG_ALL_IR),
+        REAL : RealPhase( os.path.join(tests, REAL)),
+        OPT  : OptPhase(  os.path.join(tests, OPT )),
         }
 
     if len(sys.argv) == 1:
@@ -210,7 +200,6 @@ if __name__ == "__main__":
     else:
         phase_spec = sys.argv[1].split(',')
 
-    for p in phase_spec:
-        phase = phases[p]
-        phase.execute()
-        phase.validate()
+    for step in phase_spec:
+        with phases[step] as p:
+            p.execute(t)
