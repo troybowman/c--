@@ -36,13 +36,11 @@ class Tester:
         return self.opt
 
 #------------------------------------------------------------------------------
-t = Tester()
-
-#------------------------------------------------------------------------------
 def replace_ext(path, ext):
     base = os.path.splitext(path)[0]
     return base + "." + ext
 
+#------------------------------------------------------------------------------
 def simplify_inpath(path):
     f = os.path.basename(path)
     b = os.path.dirname(path)
@@ -52,14 +50,14 @@ def simplify_inpath(path):
 #------------------------------------------------------------------------------
 class StderrMonitor:
 
-    def __init__(self, outpath):
-        self.errpath = replace_ext(outpath, "stderr")
+    def __init__(self, inpath):
+        self.errpath = replace_ext(inpath, "stderr")
 
     def __enter__(self):
         self.errfile = open(self.errpath, "w")
         return self.errfile
 
-    def __exit__(self, t, v, tr):
+    def __exit__(self, tp, v, tr):
         self.errfile.close()
         if os.path.getsize(self.errpath) == 0:
             os.remove(self.errpath)
@@ -75,7 +73,7 @@ class Directory:
         os.chdir(self.target)
         return self
 
-    def __exit__(self, t, v, tr):
+    def __exit__(self, tp, v, tr):
         os.chdir(self.prev)
 
 #------------------------------------------------------------------------------
@@ -87,15 +85,14 @@ ENDCOLOR = '\033[0m'
 #------------------------------------------------------------------------------
 class TesterPhase:
 
-    def __init__(self, name):
-        self.dir  = os.path.join(t.cmmhome(), "tests",  name)
+    def __init__(self, name, t):
+        self.t    = t
+        self.dir  = os.path.join(self.t.cmmhome(), "tests",  name)
         self.name = name
 
     def compile(self, inpath):
-        outfile = replace_ext(os.path.basename(inpath), "asm")
-        outpath = os.path.join(self.dir, outfile)
-        argv = self.argv() + [ "-o", outpath, inpath ]
-        with StderrMonitor(outpath) as errors:
+        argv = self.argv() + [ inpath ]
+        with StderrMonitor(inpath) as errors:
             try:
                 subprocess.call(argv, stdout=errors, stderr=errors)
             except OSError as e:
@@ -105,10 +102,11 @@ class TesterPhase:
                 raise
 
     def execute(self):
-        pattern = os.path.join(self.dir, "*.c")
-        for inpath in glob.iglob(pattern):
-            print "compiling: %s" % simplify_inpath(inpath)
-            self.compile(inpath)
+        with Directory(self.dir):
+            pattern = os.path.join("*.c")
+            for inpath in glob.iglob(pattern):
+                print "compiling: %s" % simplify_inpath(inpath)
+                self.compile(inpath)
 
     def status(self):
         print "checking diffs for phase %s..." % self.name
@@ -137,38 +135,36 @@ class DbgPhase(TesterPhase):
     DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
     DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
 
-    def __init__(self, name, flags):
-        TesterPhase.__init__(self, name)
+    def __init__(self, name, t, flags):
+        TesterPhase.__init__(self, name, t)
         self.flags = flags
 
     def argv(self):
-        return [ t.cmmdbg(), "-v", hex(self.flags) ]
+        return [ self.t.cmmdbg(), "-v", hex(self.flags) ]
 
 #------------------------------------------------------------------------------
-class SpimRunner:
-
-    def run(self, dir):
-        with Directory(dir):
-            for asm in glob.iglob("*.asm"):
-                with open(replace_ext(asm, "out"), "w") as outfile:
-                    try:
-                        output = subprocess.check_output(["spim", "-file", asm])
-                        output = re.sub("Loaded:.*exceptions\.s\n", "", output)
-                        outfile.write(output)
-                    except OSError as e:
-                        outfile.write("couldn't launch spim: %s\n" % e.strerror)
-                    except:
-                        outfile.write("idk wtf happened\n")
-                        raise
+def execAsmFiles(dir):
+    with Directory(dir):
+        for asm in glob.iglob("*.asm"):
+            with open(replace_ext(asm, "out"), "w") as outfile:
+                try:
+                    output = subprocess.check_output(["spim", "-file", asm])
+                    output = re.sub("Loaded:.*exceptions\.s\n", "", output)
+                    outfile.write(output)
+                except OSError as e:
+                    outfile.write("couldn't launch spim: %s\n" % e.strerror)
+                except:
+                    outfile.write("idk wtf happened\n")
+                    raise
 
 #------------------------------------------------------------------------------
-class OptPhase(TesterPhase, SpimRunner):
+class OptPhase(TesterPhase):
 
-    def __init__(self):
-        TesterPhase.__init__(self, OPT)
+    def __init__(self, t):
+        TesterPhase.__init__(self, OPT, t)
 
     def argv(self):
-        return [ t.cmmopt() ]
+        return [ self.t.cmmopt() ]
 
     def execute(self):
         print WARNING + "opt: TODO" + ENDCOLOR
@@ -179,37 +175,42 @@ class OptPhase(TesterPhase, SpimRunner):
         #self.status()
 
 #------------------------------------------------------------------------------
-class RealPhase(DbgPhase, SpimRunner):
+class RealPhase(DbgPhase):
 
-    def __init__(self):
-        DbgPhase.__init__(self, REAL, DbgPhase.DBG_ALL_IR)
+    def __init__(self, t):
+        DbgPhase.__init__(self, REAL, t, DbgPhase.DBG_ALL_IR)
 
     def validate(self):
-        self.run(self.dir)
+        execAsmFiles(self.dir)
         self.status()
 
 #------------------------------------------------------------------------------
-SYMS = "syms"
-TREE = "tree"
-IR   = "ir"
-ASM  = "asm"
-REAL = "real"
-OPT  = "opt"
+if __name__ == "__main__":
 
-phase_names = [ SYMS, TREE, IR, ASM, REAL, OPT ]
+    t = Tester()
 
-phases = {
-    SYMS : DbgPhase(SYMS, DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
-    TREE : DbgPhase(TREE, DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
-    IR   : DbgPhase(IR,   DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
-    ASM  : DbgPhase(ASM,  DbgPhase.DBG_ALL_IR),
-    REAL : RealPhase(),
-    OPT  : OptPhase(),
-    }
+    SYMS = "syms"
+    TREE = "tree"
+    IR   = "ir"
+    ASM  = "asm"
+    REAL = "real"
+    OPT  = "opt"
 
-phase_spec = phase_names if len(sys.argv) <= 1 else sys.argv[1].split(',')
+    phases = {
+        SYMS : DbgPhase(SYMS, t, DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
+        TREE : DbgPhase(TREE, t, DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
+        IR   : DbgPhase(IR,   t, DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
+        ASM  : DbgPhase(ASM,  t, DbgPhase.DBG_ALL_IR),
+        REAL : RealPhase(t),
+        OPT  : OptPhase(t),
+        }
 
-for p in phase_spec:
-    phase = phases[p]
-    phase.execute()
-    phase.validate()
+    if len(sys.argv) == 1:
+        phase_spec = [ SYMS, TREE, IR, ASM, REAL, OPT ]
+    else:
+        phase_spec = sys.argv[1].split(',')
+
+    for p in phase_spec:
+        phase = phases[p]
+        phase.execute()
+        phase.validate()
