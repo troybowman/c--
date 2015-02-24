@@ -15,8 +15,7 @@ int f(int i)
   return y;
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
@@ -25,6 +24,6 @@ void main(void)
   x = 1;
   a = f(6);
   x = a+x;
-  print_int(x);
-  print_string("\n");
+
+  printf("%d\n", x);
 }
