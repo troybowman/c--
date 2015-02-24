@@ -53,7 +53,6 @@ symbol_t::symbol_t(symbol_type_t type, ...) : _type(type)
   va_end(va);
 }
 
-
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()
 {

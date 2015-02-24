@@ -170,6 +170,7 @@ public:
   bool is_builtin_printf() const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
 
   void set_name(const char *name)  { _name.assign(name); }
+  void set_line(int line)          { _line = line; }
 
   void set_base(primitive_t base)  { _base = base; }
   void set_size(offsize_t size)    { _size = size; }

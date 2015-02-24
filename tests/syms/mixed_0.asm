@@ -47,6 +47,18 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
+# sym: func3
+#   line: 24
+#   type: ST_FUNCTION
+#     rt_type: RT_VOID
+#     params:
+#       0: buf
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       1: bufsize
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
 # sym: a
 #   line: 21
 #   type: ST_ARRAY
@@ -62,18 +74,6 @@
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xf
-# sym: func3
-#   line: 24
-#   type: ST_FUNCTION
-#     rt_type: RT_VOID
-#     params:
-#       0: buf
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: bufsize
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
 # sym: func4
 #   line: 33
 #   type: ST_FUNCTION

@@ -55,7 +55,7 @@ static struct
 
 //---------------------------------------------------------------------------
 static void func_enter(symbol_t *, return_type_t);
-static void func_leave(symbol_t *, treenode_t *);
+static void func_leave(treenode_t *);
 static       void  process_var_list(symvec_t *, primitive_t);
 static       void  process_func_list(symvec_t *, return_type_t, bool);
 static   symbol_t *process_var_decl(const char *, int, array_sfx_t, uint32_t flags = 0);
@@ -203,13 +203,13 @@ func : type func_decl
        '{'
           { func_enter($2, return_type_t($1)); }
           func_body
-          { func_leave($2, $5); }
+          { func_leave($5); }
        '}'
      | VOID func_decl
        '{'
           { func_enter($2, RT_VOID); }
           func_body
-          { func_leave($2, $5); }
+          { func_leave($5); }
        '}'
      | error '{' { purge_and_exit(FATAL_FUNCDEF); } /* avoid processing an invaild function */
      | error '}' { yyerrok; }  /* start over at '}' */
@@ -430,6 +430,27 @@ static bool has_ellipsis(const symbol_t &f)
 }
 
 //-----------------------------------------------------------------------------
+static void set_decl_srcinfo(symbol_t &f1, const symbol_t &f2)
+{
+  f1.set_line(f2.line());
+
+  symvec_t &params1 = *f1.params();
+  const symvec_t &params2 = *f2.params();
+
+  symvec_t::iterator i = params1.begin();
+  symvec_t::const_iterator j = params2.begin();
+
+  for ( ; i != params1.end() && j != params2.end(); i++, j++ )
+  {
+    symbol_t &p1 = **i;
+    const symbol_t &p2 = **j;
+
+    p1.set_name(p2.c_str());
+    p1.set_line(p2.line());
+  }
+}
+
+//-----------------------------------------------------------------------------
 static void func_enter(symbol_t *f, return_type_t rt)
 {
   ASSERT(1004, f != NULL);
@@ -456,21 +477,27 @@ static void func_enter(symbol_t *f, return_type_t rt)
       // we do not try to recover from them
       purge_and_exit(FATAL_FUNCDEF);
     }
-    // existing symbol for decl is replaced with definition
-    gsyms.erase(*prev);
-    delete prev;
+
+    // definition provides param names/line #s that are actually used
+    set_decl_srcinfo(*prev, *f);
+    delete f;
+    f = prev;
+  }
+  else
+  {
+    gsyms.insert(f);
   }
 
   init_lsyms(*f);
-  gsyms.insert(f);
   ctx.setlocal(f);
 }
 
 //-----------------------------------------------------------------------------
-static void func_leave(symbol_t *f, treenode_t *tree)
+static void func_leave(treenode_t *tree)
 {
-  ASSERT(1005, f != NULL);
+  ASSERT(1005, ctx.func != NULL);
 
+  symbol_t *f = ctx.func;
   f->set_defined();
 
   if ( !f->is_ret_resolved() )
