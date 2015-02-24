@@ -146,6 +146,16 @@ class DbgPhase(TesterPhase):
         return [ t.cmmdbg(), "-v", hex(self.flags) ]
 
 #------------------------------------------------------------------------------
+class RealPhase(DbgPhase):
+
+    def __init__(self, dir):
+        DbgPhase.__init__(self, dir, DbgPhase.DBG_ALL_IR)
+
+    def validate(self, t):
+        self.execAsmFiles(t)
+        self.status(t)
+
+#------------------------------------------------------------------------------
 class OptPhase(TesterPhase):
 
     def __init__(self, dir):
@@ -161,16 +171,6 @@ class OptPhase(TesterPhase):
         #self.execAsmFiles()
         #self.status()
         pass
-
-#------------------------------------------------------------------------------
-class RealPhase(DbgPhase):
-
-    def __init__(self, dir):
-        DbgPhase.__init__(self, dir, DbgPhase.DBG_ALL_IR)
-
-    def validate(self, t):
-        self.execAsmFiles(t)
-        self.status(t)
 
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
