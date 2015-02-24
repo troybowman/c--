@@ -68,13 +68,13 @@ struct codefunc_t
   bool has_call;
   symbol_t *zero;
 
-  ra_manager_t      ra;
+  ra_manager_t ra;
   stktemp_manager_t stktemps;
-  temp_manager_t    temps;
-  svreg_manager_t   svregs;
-  argreg_manager_t  regargs;
-  stkarg_manager_t  stkargs;
-  retval_manager_t  retval;
+  temp_manager_t temps;
+  svreg_manager_t svregs;
+  argreg_manager_t regargs;
+  stkarg_manager_t stkargs;
+  retval_manager_t retval;
 
   codefunc_t(symbol_t &s) : sym(s), code(NULL), has_call(false) { zero = new symbol_t(ST_ZERO); }
   ~codefunc_t() { delete zero; } // TODO: delete code
