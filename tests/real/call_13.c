@@ -8,14 +8,12 @@ int sum(char x[], int i)
     return x[i] + sum(x, i+1);
 }
 
-extern void print_int (int n);
-extern void print_string (char s[]);
+extern void printf(char format[], ...);
 
 void main(void)
 {
   int x;
 
   x = sum("hello world", 0);
-  print_int(x);
-  print_string("\n");
+  printf("%d\n", x);
 }
