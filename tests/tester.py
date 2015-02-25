@@ -149,8 +149,8 @@ class DbgPhase(TesterPhase):
 #------------------------------------------------------------------------------
 class RealPhase(DbgPhase):
 
-    def __init__(self, dir):
-        DbgPhase.__init__(self, dir, DbgPhase.DBG_ALL_IR)
+    def __init__(self, tests):
+        DbgPhase.__init__(self, os.path.join(tests, REAL), DbgPhase.DBG_ALL_IR)
 
     def validate(self, t):
         self.execAsmFiles(t)
@@ -160,7 +160,7 @@ class RealPhase(DbgPhase):
 class OptPhase(TesterPhase):
 
     def __init__(self, dir):
-        TesterPhase.__init__(self, dir)
+        TesterPhase.__init__(self, os.path.join(tests, OPT))
 
     def argv(self, t):
         return [ t.cmmopt() ]
@@ -188,12 +188,12 @@ if __name__ == "__main__":
     tests = os.path.join(t.cmmhome(), "tests")
 
     phases = {
-        SYMS : DbgPhase(  os.path.join(tests, SYMS),  DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
-        TREE : DbgPhase(  os.path.join(tests, TREE),  DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
-        IR   : DbgPhase(  os.path.join(tests, IR  ),  DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
-        ASM  : DbgPhase(  os.path.join(tests, ASM ),  DbgPhase.DBG_ALL_IR),
-        REAL : RealPhase( os.path.join(tests, REAL)),
-        OPT  : OptPhase(  os.path.join(tests, OPT )),
+        SYMS : DbgPhase(os.path.join(tests, SYMS),  DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
+        TREE : DbgPhase(os.path.join(tests, TREE),  DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
+        IR   : DbgPhase(os.path.join(tests, IR  ),  DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
+        ASM  : DbgPhase(os.path.join(tests, ASM ),  DbgPhase.DBG_ALL_IR),
+        REAL : RealPhase(tests),
+        OPT  : OptPhase(tests),
         }
 
     if len(sys.argv) == 1:
