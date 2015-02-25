@@ -112,7 +112,8 @@ class TesterPhase:
             with open(replace_ext(asm, "out"), "w") as outfile:
                 try:
                     output = subprocess.check_output(["spim", "-file", asm])
-                    output = re.sub("Loaded:.*exceptions\.s\n", "", output)
+                    bullshit = re.compile("(SPIM Version)?.*Loaded:.*exceptions\.s\n", re.DOTALL)
+                    output   = re.sub(bullshit, "", output)
                     outfile.write(output)
                 except OSError as e:
                     outfile.write("couldn't launch spim: %s\n" % e.strerror)

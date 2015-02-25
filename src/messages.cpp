@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <vector>
 #include <string>
 
@@ -452,7 +453,7 @@ void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags)
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     treefunc_t tf = *i;
-    symbol_t &f = tf.sym;
+    symbol_t &f = *tf.sym;
     treenode_t *tree = tf.tree;
 
     ASSERT(1080, f.is_func());
@@ -523,7 +524,7 @@ void stack_frame_t::dump()
   // PARAMS -------------------------------------------------------------------
   struct param_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &param, int idx) // TODO: const?
+    virtual void visit_item(frame_section_t &sec, symbol_t &param, uint32_t idx) // TODO: const?
     {
       if ( param.loc.is_stkoff() )
         print_frame_item(param.loc.stkoff(), param.c_str());
@@ -543,7 +544,7 @@ void stack_frame_t::dump()
   // LVARS --------------------------------------------------------------------
   struct lvar_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &, symbol_t &lvar, int)
+    virtual void visit_item(frame_section_t &, symbol_t &lvar, uint32_t)
     {
       if ( !lvar.is_param() )
         print_frame_item(lvar.loc.stkoff(), lvar.c_str());
@@ -559,7 +560,7 @@ void stack_frame_t::dump()
   // RA -----------------------------------------------------------------------
   struct ra_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &ra, int)
+    virtual void visit_item(frame_section_t &sec, symbol_t &ra, uint32_t)
     {
       print_frame_item(sec.start, ra.loc.reg());
     }
@@ -570,7 +571,7 @@ void stack_frame_t::dump()
   // STKTEMPS -----------------------------------------------------------------
   struct stktemp_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &, symbol_t &stktemp, int)
+    virtual void visit_item(frame_section_t &, symbol_t &stktemp, uint32_t)
     {
       print_frame_item(stktemp.loc.stkoff(), "<stktemp %d>", stktemp.val());
     }
@@ -581,7 +582,7 @@ void stack_frame_t::dump()
   // SVREGS -------------------------------------------------------------------
   struct svregs_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &svreg, int idx)
+    virtual void visit_item(frame_section_t &sec, symbol_t &svreg, uint32_t idx)
     {
       print_frame_item(sec.top() - idx * WORDSIZE, svreg.loc.reg());
     }
@@ -592,7 +593,7 @@ void stack_frame_t::dump()
   // STKARGS ------------------------------------------------------------------
   struct stkargs_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &, symbol_t &stkarg, int)
+    virtual void visit_item(frame_section_t &, symbol_t &stkarg, uint32_t)
     {
       print_frame_item(stkarg.loc.stkoff(), "<stkarg %d>", stkarg.val());
     }

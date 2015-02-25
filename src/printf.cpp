@@ -59,7 +59,7 @@ static treenode_t *build_printf_tree(symbol_t *printf, const format_args_t &fmta
   seq_t seq = { NULL, NULL };
 
   // build sequence of calls to print_(string|int|char)
-  for ( int i = 0; i < fmtargs.size(); i++ )
+  for ( size_t i = 0; i < fmtargs.size(); i++ )
   {
     const format_arg_t &arg = fmtargs[i];
 

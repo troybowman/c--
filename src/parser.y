@@ -503,7 +503,7 @@ static void func_leave(treenode_t *tree)
   if ( !f->is_ret_resolved() )
     usererr("error: non-void funcion %s must return a value\n", f->c_str());
 
-  functions.push_back(treefunc_t(*f, tree));
+  functions.push_back(treefunc_t(f, tree));
 
   ctx.setglobal();
 }

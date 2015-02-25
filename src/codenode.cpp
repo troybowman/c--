@@ -508,7 +508,7 @@ void generate_ir(ir_t &ir, const treefuncs_t &functions)
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     treefunc_t tf = *i;
-    codefunc_t *cf = new codefunc_t(tf.sym);
+    codefunc_t *cf = new codefunc_t(*tf.sym);
 
     codefunc_engine_t e(*cf, ir);
     e.start(tf.tree);

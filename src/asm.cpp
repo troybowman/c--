@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include <asm.h>
 #include <resource.h>
@@ -158,7 +159,7 @@ void stack_frame_t::build_regargs_section()
 
   struct regargs_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &, symbol_t &regarg, int)
+    virtual void visit_item(frame_section_t &, symbol_t &regarg, uint32_t)
     {
       regarg.loc.set_reg(argreg_names[regarg.val()]);
     }
@@ -178,7 +179,7 @@ void stack_frame_t::build_stkargs_section()
 
   struct stkargs_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &stkarg, int)
+    virtual void visit_item(frame_section_t &sec, symbol_t &stkarg, uint32_t)
     {
       stkarg.loc.set_stkoff(sec.end);
       sec.end += WORDSIZE;
@@ -199,7 +200,7 @@ void stack_frame_t::build_svregs_section()
 
   struct svregs_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &svreg, int)
+    virtual void visit_item(frame_section_t &sec, symbol_t &svreg, uint32_t)
     {
       svreg.loc.set_reg(svreg_names[svreg.val()]);
       sec.end += WORDSIZE;
@@ -220,7 +221,7 @@ void stack_frame_t::build_stktemps_section()
 
   struct stktemps_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &stktemp, int)
+    virtual void visit_item(frame_section_t &sec, symbol_t &stktemp, uint32_t)
     {
       stktemp.loc.set_stkoff(sec.end);
       sec.end += WORDSIZE;
@@ -241,7 +242,7 @@ void stack_frame_t::build_ra_section()
 
   struct ra_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &sym, int)
+    virtual void visit_item(frame_section_t &sec, symbol_t &sym, uint32_t)
     {
       sym.loc.set_reg("$ra");
       sec.end += WORDSIZE;
@@ -271,7 +272,7 @@ void stack_frame_t::build_lvars_section()
 
   struct lvars_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &lvar, int)
+    virtual void visit_item(frame_section_t &sec, symbol_t &lvar, uint32_t)
     {
       if ( lvar.is_param() )
         return;
@@ -310,9 +311,9 @@ void stack_frame_t::build_params_section()
 
   struct params_builder_t : public frame_item_visitor_t
   {
-    int nregargs;
+    uint32_t nregargs;
 
-    virtual void visit_item(frame_section_t &sec, symbol_t &param, int idx)
+    virtual void visit_item(frame_section_t &sec, symbol_t &param, uint32_t idx)
     {
       if ( idx < ARGREGQTY && idx >= nregargs )
         param.loc.set_reg(argreg_names[idx]);
@@ -322,7 +323,7 @@ void stack_frame_t::build_params_section()
       sec.end += WORDSIZE;
     }
 
-    params_builder_t(int _nregargs) : nregargs(_nregargs) {}
+    params_builder_t(uint32_t _nregargs) : nregargs(_nregargs) {}
   };
 
   params_builder_t b(sections[FS_REGARGS].nitems());
@@ -350,7 +351,7 @@ stack_frame_t::stack_frame_t(const codefunc_t &_cf) : cf(_cf)
 void stack_frame_t::reg_saver_t::visit_item(
     frame_section_t &sec,
     symbol_t &reg,
-    int idx)
+    uint32_t idx)
 {
   fprintf(outfile,
           TAB1"%s %s, %d($sp)\n",
@@ -364,7 +365,7 @@ void stack_frame_t::reg_saver_t::visit_item(
 void stack_frame_t::argreg_saver_t::visit_item(
     frame_section_t &,
     symbol_t &reg,
-    int idx)
+    uint32_t idx)
 {
   if ( idx < params.nitems() )
   {
@@ -395,12 +396,10 @@ void stack_frame_t::gen_epilogue()
 {
   fprintf(outfile, "\n%s:\n", epilogue_lbl->c_str());
 
-  reg_saver_t svreg_saver;
-  svreg_saver.restore = true;
+  reg_saver_t svreg_saver(true);
   sections[FS_SVREGS].visit_items(svreg_saver, FIV_REVERSE);
 
-  reg_saver_t ra_saver;
-  ra_saver.restore = true;
+  reg_saver_t ra_saver(true);
   sections[FS_RA].visit_items(ra_saver, FIV_REVERSE);
 
   fprintf(outfile, TAB1"la $sp, %u($sp)\n", size());

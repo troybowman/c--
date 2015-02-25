@@ -2,6 +2,7 @@
 #define TREENODE_H
 
 #include <vector>
+#include <messages.h>
 
 class symbol_t;
 struct treenode_t;
@@ -82,9 +83,12 @@ struct treenode_t
 //-----------------------------------------------------------------------------
 struct treefunc_t
 {
-  symbol_t &sym;
+  symbol_t *sym;
   treenode_t *tree;
-  treefunc_t(symbol_t &_sym, treenode_t *_tree) : sym(_sym), tree(_tree) {}
+  treefunc_t(symbol_t *_sym, treenode_t *_tree) : sym(_sym), tree(_tree)
+  {
+    ASSERT(0, sym != NULL);
+  }
 };
 
 class treefuncs_t : public std::vector<treefunc_t> {};

@@ -15,7 +15,7 @@ void generate_mips_asm(FILE *outfile, ir_t &ir);
 //-----------------------------------------------------------------------------
 struct frame_item_visitor_t
 {
-  virtual void visit_item(frame_section_t &sec, symbol_t &sym, int idx) = 0;
+  virtual void visit_item(frame_section_t &sec, symbol_t &sym, uint32_t idx) = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -69,13 +69,14 @@ class stack_frame_t
   struct reg_saver_t : public frame_item_visitor_t
   {
     bool restore;
-    virtual void visit_item(frame_section_t &, symbol_t &, int);
+    virtual void visit_item(frame_section_t &, symbol_t &, uint32_t);
+    reg_saver_t(bool _restore = false) : frame_item_visitor_t(), restore(_restore) {}
   };
 
   struct argreg_saver_t : public frame_item_visitor_t
   {
     frame_section_t &params;
-    virtual void visit_item(frame_section_t &, symbol_t &, int);
+    virtual void visit_item(frame_section_t &, symbol_t &, uint32_t);
     argreg_saver_t(frame_section_t &_params) : params(_params) {}
   };
 
