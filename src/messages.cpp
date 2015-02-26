@@ -490,7 +490,7 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
   vsnprintf(namestr, FMTLEN, fmt, va);
   va_end(va);
 
-  char item[NAMELEN+TABLEN+5]; // \t,#, ,|,name,|,\0
+  char item[TABLEN+NAMELEN+5]; // '\t' + '#' + ' ' + '|' + name + '|' + '\0'
   char *ptr = item;
 
   const char *pfx = TAB1"# |";
@@ -533,8 +533,8 @@ void stack_frame_t::dump()
                          "<%s is in %s>",
                          param.c_str(), param.loc.reg());
     }
-  };
-  param_printer_t pp;
+  } pp;
+
   sections[FS_PARAMS].visit_items(pp, FIV_REVERSE);
 
   // PADDING2 -----------------------------------------------------------------
@@ -549,8 +549,8 @@ void stack_frame_t::dump()
       if ( !lvar.is_param() )
         print_frame_item(lvar.loc.stkoff(), lvar.c_str());
     }
-  };
-  lvar_printer_t lvp;
+  } lvp;
+
   sections[FS_LVARS].visit_items(lvp, FIV_REVERSE);
 
   // PADDING1 -----------------------------------------------------------------
@@ -564,8 +564,8 @@ void stack_frame_t::dump()
     {
       print_frame_item(sec.start, ra.loc.reg());
     }
-  };
-  ra_printer_t rap;
+  } rap;
+
   sections[FS_RA].visit_items(rap, FIV_REVERSE);
 
   // STKTEMPS -----------------------------------------------------------------
@@ -575,8 +575,8 @@ void stack_frame_t::dump()
     {
       print_frame_item(stktemp.loc.stkoff(), "<stktemp %d>", stktemp.val());
     }
-  };
-  stktemp_printer_t stp;
+  } stp;
+
   sections[FS_STKTEMPS].visit_items(stp, FIV_REVERSE);
 
   // SVREGS -------------------------------------------------------------------
@@ -586,8 +586,8 @@ void stack_frame_t::dump()
     {
       print_frame_item(sec.top() - idx * WORDSIZE, svreg.loc.reg());
     }
-  };
-  svregs_printer_t srp;
+  } srp;
+
   sections[FS_SVREGS].visit_items(srp, FIV_REVERSE);
 
   // STKARGS ------------------------------------------------------------------
@@ -597,8 +597,8 @@ void stack_frame_t::dump()
     {
       print_frame_item(stkarg.loc.stkoff(), "<stkarg %d>", stkarg.val());
     }
-  };
-  stkargs_printer_t sag;
+  } sag;
+
   sections[FS_STKARGS].visit_items(sag, FIV_REVERSE);
 
   // REGARGS ------------------------------------------------------------------

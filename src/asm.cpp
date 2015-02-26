@@ -163,9 +163,8 @@ void stack_frame_t::build_regargs_section()
     {
       regarg.loc.set_reg(argreg_names[regarg.val()]);
     }
-  };
+  } b;
 
-  regargs_builder_t b;
   regargs.visit_items(b);
 }
 
@@ -184,9 +183,8 @@ void stack_frame_t::build_stkargs_section()
       stkarg.loc.set_stkoff(sec.end);
       sec.end += WORDSIZE;
     }
-  };
+  } b;
 
-  stkargs_builder_t b;
   stkargs.visit_items(b);
 }
 
@@ -205,9 +203,8 @@ void stack_frame_t::build_svregs_section()
       svreg.loc.set_reg(svreg_names[svreg.val()]);
       sec.end += WORDSIZE;
     }
-  };
+  } b;
 
-  svregs_builder_t b;
   svregs.visit_items(b);
 }
 
@@ -226,9 +223,8 @@ void stack_frame_t::build_stktemps_section()
       stktemp.loc.set_stkoff(sec.end);
       sec.end += WORDSIZE;
     }
-  };
+  } b;
 
-  stktemps_builder_t b;
   stktemps.visit_items(b);
 };
 
@@ -247,9 +243,8 @@ void stack_frame_t::build_ra_section()
       sym.loc.set_reg("$ra");
       sec.end += WORDSIZE;
     }
-  };
+  } b;
 
-  ra_builder_t b;
   ra.visit_items(b);
 }
 
@@ -295,9 +290,8 @@ void stack_frame_t::build_lvars_section()
 
       sec.end = ALIGN(sec.end, WORDSIZE); // align to word boundary
     }
-  };
+  } b;
 
-  lvars_builder_t b;
   lvars.visit_items(b);
 }
 
@@ -324,9 +318,9 @@ void stack_frame_t::build_params_section()
     }
 
     params_builder_t(uint32_t _nregargs) : nregargs(_nregargs) {}
-  };
 
-  params_builder_t b(sections[FS_REGARGS].nitems());
+  } b(sections[FS_REGARGS].nitems());
+
   params.visit_items(b);
 }
 
@@ -348,45 +342,49 @@ stack_frame_t::stack_frame_t(const codefunc_t &_cf) : cf(_cf)
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::reg_saver_t::visit_item(
-    frame_section_t &sec,
-    symbol_t &reg,
-    uint32_t idx)
+struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
 {
-  fprintf(outfile,
-          TAB1"%s %s, %d($sp)\n",
-          restore ? "lw" : "sw",
-          reg.loc.reg(),
-          restore ? (sec.top() - idx * WORDSIZE)
-                  : (sec.start + idx * WORDSIZE));
-}
+  bool restore;
 
-//-----------------------------------------------------------------------------
-void stack_frame_t::argreg_saver_t::visit_item(
-    frame_section_t &,
-    symbol_t &reg,
-    uint32_t idx)
-{
-  if ( idx < params.nitems() )
+  virtual void visit_item(frame_section_t &sec, symbol_t &reg, uint32_t idx)
   {
-    fprintf(outfile, TAB1"sw %s, %d($sp)\n",
-            reg.loc.reg(), params.start + idx * WORDSIZE);
+    fprintf(outfile,
+            TAB1"%s %s, %d($sp)\n",
+            restore ? "lw" : "sw",
+            reg.loc.reg(),
+            restore ? (sec.top() - idx * WORDSIZE)
+                    : (sec.start + idx * WORDSIZE));
   }
-}
+
+  reg_saver_t(bool _restore = false) : frame_item_visitor_t(), restore(_restore) {}
+};
 
 //-----------------------------------------------------------------------------
 void stack_frame_t::gen_prologue()
 {
   fprintf(outfile, TAB1"la $sp, -%u($sp)\n", size());
 
-  reg_saver_t ra_saver;
-  sections[FS_RA].visit_items(ra_saver);
+  reg_saver_t ras;
+  sections[FS_RA].visit_items(ras);
 
-  argreg_saver_t argregs_saver(sections[FS_PARAMS]);
-  sections[FS_REGARGS].visit_items(argregs_saver);
+  struct argreg_saver_t : public frame_item_visitor_t
+  {
+    frame_section_t &params;
+    virtual void visit_item(frame_section_t &, symbol_t &reg, uint32_t idx)
+    {
+      if ( idx < params.nitems() )
+      {
+        fprintf(outfile, TAB1"sw %s, %d($sp)\n",
+                reg.loc.reg(), params.start + idx * WORDSIZE);
+      }
+    }
+    argreg_saver_t(frame_section_t &_params) : params(_params) {}
+  } as(sections[FS_PARAMS]);
 
-  reg_saver_t svreg_saver;
-  sections[FS_SVREGS].visit_items(svreg_saver);
+  sections[FS_REGARGS].visit_items(as);
+
+  reg_saver_t srs;
+  sections[FS_SVREGS].visit_items(srs);
 
   fprintf(outfile, "\n");
 }
@@ -396,11 +394,11 @@ void stack_frame_t::gen_epilogue()
 {
   fprintf(outfile, "\n%s:\n", epilogue_lbl->c_str());
 
-  reg_saver_t svreg_saver(true);
-  sections[FS_SVREGS].visit_items(svreg_saver, FIV_REVERSE);
+  reg_saver_t sv_r(true);
+  sections[FS_SVREGS].visit_items(sv_r, FIV_REVERSE);
 
-  reg_saver_t ra_saver(true);
-  sections[FS_RA].visit_items(ra_saver, FIV_REVERSE);
+  reg_saver_t ra_r(true);
+  sections[FS_RA].visit_items(ra_r, FIV_REVERSE);
 
   fprintf(outfile, TAB1"la $sp, %u($sp)\n", size());
   fprintf(outfile, TAB1"jr $ra\n");
@@ -748,19 +746,6 @@ static void init_reserved_temps()
 }
 
 //-----------------------------------------------------------------------------
-static void init_temps(resource_manager_t &rm)
-{
-  symvec_t temps;
-  rm.get_used_resources(temps);
-
-  for ( symvec_t::iterator i = temps.begin(); i != temps.end(); i++ )
-  {
-    symbol_t &temp = **i;
-    temp.loc.set_reg(tempreg_names[temp.val()]);
-  }
-}
-
-//-----------------------------------------------------------------------------
 static void gen_builtin_function(const char *name, int syscall)
 {
   symbol_t *func = gsyms.get(name);
@@ -778,9 +763,21 @@ static void gen_builtin_function(const char *name, int syscall)
 //-----------------------------------------------------------------------------
 static void init_resources(codefunc_t &cf)
 {
-  init_temps(cf.temps);
+  // temps
+  symvec_t temps;
+  cf.temps.get_used_resources(temps);
+
+  for ( symvec_t::iterator i = temps.begin(); i != temps.end(); i++ )
+  {
+    symbol_t &temp = **i;
+    temp.loc.set_reg(tempreg_names[temp.val()]);
+  }
+
+  // $v0
   symbol_t *retval = cf.retval.gen_resource();
   retval->loc.set_reg("$v0");
+
+  // $zero
   cf.zero->loc.set_reg("$zero");
 }
 
