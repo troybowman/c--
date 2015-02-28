@@ -5,6 +5,7 @@ import os
 import re
 import glob
 import subprocess
+import mmap
 from argparse import *
 
 #------------------------------------------------------------------------------
@@ -54,6 +55,12 @@ class Tester(ArgumentParser):
             metavar="LEVEL",
             type=int,
             default=self.INFO)
+
+        self.add_argument(
+            "-g", "--grind",
+            help="enable valgrind memory checks",
+            action="store_true",
+            default=False)
 
     def __find_cmm__(self):
         cur = os.getcwd()
@@ -136,6 +143,40 @@ class StderrMonitor:
             os.remove(self.errpath)
 
 #------------------------------------------------------------------------------
+class MemoryMonitor:
+
+    def __init__(self, enabled, phase_argv, inpath):
+        self.enabled  = enabled
+        self.def_argv = phase_argv + [ inpath ]
+        self.log      = replace_ext(inpath, "vgd")
+
+    def __enter__(self):
+        if not self.enabled:
+            return self.def_argv
+        else:
+            return [ "valgrind",
+                     "--leak-check=full",   "--show-reachable=yes",
+                     "--malloc-fill=DD",    "--free-fill=BB",
+                     "--track-origins=yes", "--log-file=" + self.log, "-v",
+                     ] + self.def_argv
+
+    def __exit__(self, tp, v, tr):
+        if self.enabled:
+            with open(self.log, "r+b") as log:
+                pattern  = re.compile(r"""
+                    LEAK\s+SUMMARY.*
+                    definitely\s+lost:\s+0\s+bytes.*
+                    indirectly\s+lost:\s+0\s+bytes.*
+                    possibly\s+  lost:\s+0\s+bytes.*
+                    still\s+reachable:\s+0\s+bytes.*
+                    ERROR\s+SUMMARY:\s+0\s+errors.*
+                    ERROR\s+SUMMARY:\s+0\s+errors.*
+                    """, re.VERBOSE | re.DOTALL)
+                found = re.search(pattern, mmap.mmap(log.fileno(), 0))
+            if found:
+                os.remove(self.log)
+
+#------------------------------------------------------------------------------
 class TesterPhase:
 
     def __init__(self, dir):
@@ -151,15 +192,15 @@ class TesterPhase:
 
     def compile(self, t, inpath):
         t.verb("compiling: %s\n" % simplify_inpath(inpath))
-        argv = self.argv(t) + [ inpath ]
         with StderrMonitor(inpath) as errors:
-            try:
-                subprocess.call(argv, stdout=errors, stderr=errors)
-            except OSError as e:
-                errors.write("couldn't launch c--: %s\n" % e.strerror)
-            except:
-                errors.write("idk wtf happened\n")
-                raise
+            with MemoryMonitor(t.args.grind, self.argv(t), inpath) as argv:
+                try:
+                    subprocess.call(argv, stdout=errors, stderr=errors)
+                except OSError as e:
+                    errors.write("couldn't launch c--: %s\n" % e.strerror)
+                except:
+                    errors.write("idk wtf happened\n")
+                    raise
 
     def execute(self, t):
         t.info("running phase: %s\n" % os.path.basename(self.dir))
