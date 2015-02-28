@@ -1,9 +1,28 @@
 #!/usr/bin/env python
 
-import sys, os, glob, subprocess, re
+import sys
+import os
+import re
+import glob
+import subprocess
+from argparse import *
 
 #------------------------------------------------------------------------------
-class Tester:
+SYMS = "syms"
+TREE = "tree"
+IR   = "ir"
+ASM  = "asm"
+REAL = "real"
+OPT  = "opt"
+
+phase_names = [ SYMS, TREE, IR, ASM, REAL, OPT ]
+
+#------------------------------------------------------------------------------
+class Tester(ArgumentParser):
+
+    INFO = 0
+    VERB = 1
+    TRCE = 2
 
     FAILURE  = '\033[91m'
     SUCCESS  = '\033[92m'
@@ -11,6 +30,32 @@ class Tester:
     ENDCOLOR = '\033[0m'
 
     def __init__(self):
+        self.__find_cmm__() # fail if we're not in the c-- directory tree
+
+        ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
+
+        self.add_argument(
+            "-p", "--phase_spec",
+            help="list of phases to run",
+            metavar="PHASES",
+            nargs="+",
+            choices=phase_names,
+            default=phase_names)
+
+        self.add_argument(
+            "-f", "--file_pattern",
+            help="only compile files matching the given pattern",
+            metavar="FILES",
+            default="*.c")
+
+        self.add_argument(
+            "-v", "--verbosity",
+            help="set verbosity level: 0=sparse, 1=verbose, 2=trace",
+            metavar="LEVEL",
+            type=int,
+            default=self.INFO)
+
+    def __find_cmm__(self):
         cur = os.getcwd()
         while not os.path.basename(cur).lower() == "c--":
             parent = os.path.dirname(cur)
@@ -27,18 +72,41 @@ class Tester:
         if not os.path.exists(self.opt):
             self.opt = None
 
-    def cmmhome(self):
-        return self.home
+    def parse_args(self):
+        self.args = super(Tester, self).parse_args()
 
-    def cmmdbg(self):
+    def debug(self):
         if self.dbg is None:
             raise Exception("Error: could not find c-- debug binary!")
         return self.dbg
 
-    def cmmopt(self):
+    def release(self):
         if self.opt is None:
             raise Exception("Error: could not find c-- release binary!")
         return self.opt
+
+    def out(self, verbosity, text, color=""):
+        if self.args.verbosity >= verbosity:
+            endcolor = "" if color is "" else self.ENDCOLOR
+            sys.stdout.write(color + text + endcolor)
+
+    def info(self, text, color=""):
+        self.out(self.INFO, text, color)
+
+    def verb(self, text, color=""):
+        self.out(self.VERB, text, color)
+
+    def trce(self, text, color=""):
+        self.out(self.TRCE, text, color)
+
+    def success(self, text):
+        self.info(text, self.SUCCESS)
+
+    def failure(self, text):
+        self.info(text, self.FAILURE)
+
+    def warning(self, text):
+        self.info(text, self.WARNING)
 
 #------------------------------------------------------------------------------
 def replace_ext(path, ext):
@@ -82,6 +150,7 @@ class TesterPhase:
         os.chdir(self.prevdir)
 
     def compile(self, t, inpath):
+        t.verb("compiling: %s\n" % simplify_inpath(inpath))
         argv = self.argv(t) + [ inpath ]
         with StderrMonitor(inpath) as errors:
             try:
@@ -91,26 +160,30 @@ class TesterPhase:
             except:
                 errors.write("idk wtf happened\n")
                 raise
+        return 1
 
     def execute(self, t):
-        pattern = os.path.join("*.c")
+        t.info("running phase: %s\n" % os.path.basename(self.dir))
+        pattern = t.args.file_pattern
+        if not pattern.endswith(".c"):
+            pattern += ".c"
         for inpath in glob.iglob(pattern):
-            print "compiling: %s" % simplify_inpath(inpath)
             self.compile(t, inpath)
         self.validate(t)
 
     def status(self, t):
-        print "checking diffs for phase %s..." % os.path.basename(self.dir)
+        t.info("status:")
         status = subprocess.check_output(["git", "ls-files", "-dmo"])
         if len(status) > 0:
-            print t.FAILURE + status + t.ENDCOLOR
+            t.failure("\n" + status + "\n")
         else:
-            print t.SUCCESS + "Clean!" + t.ENDCOLOR
+            t.success(" Clean!\n\n")
 
     def execAsmFiles(self, t):
         for asm in glob.iglob("*.asm"):
             with open(replace_ext(asm, "out"), "w") as outfile:
                 try:
+                    t.verb("executing: %s\n" % asm)
                     output = subprocess.check_output(["spim", "-file", asm])
                     bullshit = re.compile("(SPIM Version)?.*Loaded:.*exceptions\.s\n", re.DOTALL)
                     output   = re.sub(bullshit, "", output)
@@ -144,7 +217,7 @@ class DbgPhase(TesterPhase):
         self.flags = flags
 
     def argv(self, t):
-        return [ t.cmmdbg(), "-v", hex(self.flags) ]
+        return [ t.debug(), "-v", hex(self.flags) ]
 
 #------------------------------------------------------------------------------
 class RealPhase(DbgPhase):
@@ -163,10 +236,10 @@ class OptPhase(TesterPhase):
         TesterPhase.__init__(self, os.path.join(tests, OPT))
 
     def argv(self, t):
-        return [ t.cmmopt() ]
+        return [ t.release() ]
 
     def execute(self, t):
-        print t.WARNING + "opt: TODO" + t.ENDCOLOR
+        t.warning("opt: TODO\n")
 
     def validate(self, t):
         #self.execAsmFiles()
@@ -178,14 +251,7 @@ if __name__ == "__main__":
 
     t = Tester()
 
-    SYMS = "syms"
-    TREE = "tree"
-    IR   = "ir"
-    ASM  = "asm"
-    REAL = "real"
-    OPT  = "opt"
-
-    tests = os.path.join(t.cmmhome(), "tests")
+    tests = os.path.join(t.home, "tests")
 
     phases = {
         SYMS : DbgPhase(os.path.join(tests, SYMS),  DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
@@ -196,11 +262,8 @@ if __name__ == "__main__":
         OPT  : OptPhase(tests),
         }
 
-    if len(sys.argv) == 1:
-        phase_spec = [ SYMS, TREE, IR, ASM, REAL, OPT ]
-    else:
-        phase_spec = sys.argv[1].split(',')
+    t.parse_args()
 
-    for step in phase_spec:
+    for step in t.args.phase_spec:
         with phases[step] as p:
             p.execute(t)

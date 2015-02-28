@@ -27,14 +27,7 @@ class symloc_t
   union
   {
     const char *_reg;
-    struct
-    {
-      offset_t _off;
-      uint8_t  _flags;
-#define SLF_FP  0x1
-#define SLF_SP  0x2
-#define SLF_SUB 0x4
-    };
+    offset_t _off;
   };
 
 public:
@@ -48,13 +41,12 @@ public:
     { _type = SLT_GLOBAL; }
   void set_reg(const char *reg)
     { _type = SLT_REG; _reg = reg; }
-  void set_stkoff(uint32_t off, uint8_t flags = SLF_SP)
-    { _type = SLT_STKOFF; _flags = flags; _off = off; }
+  void set_stkoff(uint32_t off)
+    { _type = SLT_STKOFF; _off = off; }
 
   symloc_type_t type() const { return _type;  }
   const char *reg()    const { return _reg;   }
   offset_t stkoff()    const { return _off;   }
-  uint8_t flags()      const { return _flags; }
 };
 
 //-----------------------------------------------------------------------------
@@ -77,26 +69,26 @@ enum return_type_t
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_PRIMITIVE,       // source level primitive (int/char)
-  ST_ARRAY,           // source level array. base type is a primitive
-  ST_FUNCTION,        // source level function
+  ST_PRIMITIVE,       // primitive (int/char)
+  ST_ARRAY,           // array (base type is a primitive)
+  ST_FUNCTION,        // function
   ST_ELLIPSIS,        // identifies "..." parameter declaration
-  ST_TEMPORARY,       // asm temporary value
+  ST_TEMPORARY,       // temporary value
   ST_SAVED_TEMPORARY, // temporary that must persist across a function call
   ST_STACK_TEMPORARY, // temporary that must be stored on the stack
   ST_INTCON,          // integer constant
   ST_CHARCON,         // character constant
   ST_STRCON,          // string constant
-  ST_LABEL,           // asm label
-  ST_RETVAL,          // asm return value location
-  ST_RETADDR,         // asm return address location
-  ST_REG_ARGUMENT,    // asm function register argument
-  ST_STACK_ARGUMENT,  // asm function stack argument
-  ST_ZERO             // asm $zero register
+  ST_LABEL,           // label
+  ST_RETVAL,          // return value location
+  ST_RETADDR,         // return address location
+  ST_REG_ARGUMENT,    // function register argument
+  ST_STACK_ARGUMENT,  // function stack argument
+  ST_ZERO             // zero register
 };
 
 //-----------------------------------------------------------------------------
-class symbol_t
+class symbol_t // represents anything a codenode_t needs to point to
 {
   symbol_type_t _type;
 
@@ -105,7 +97,7 @@ class symbol_t
 #define SF_EXTERN          0x02 // is extern?
 #define SF_DEFINED         0x04 // has been defined?
 #define SF_RET_RESOLVED    0x08 // have we seen a 'return expr' statement yet? (for non-void funcs)
-#define SF_BUILTIN_PRINTF  0x10 // denotes the builtin printf function
+#define SF_BUILTIN_PRINTF  0x10 // indentifies the builtin printf function
 
   std::string _name;
 
