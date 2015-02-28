@@ -160,7 +160,6 @@ class TesterPhase:
             except:
                 errors.write("idk wtf happened\n")
                 raise
-        return 1
 
     def execute(self, t):
         t.info("running phase: %s\n" % os.path.basename(self.dir))

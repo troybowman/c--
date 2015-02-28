@@ -259,6 +259,8 @@ public:
   size_t size() const    { return vec.size(); }
   void swap(symtab_t &r) { map.swap(r.map); vec.swap(r.vec); }
   void clear()           { map.clear(); vec.clear(); }
+
+  void assign_to(symvec_t &out) const { out.assign(vec); }
 };
 
 #endif // SYMBOL_H

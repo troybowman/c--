@@ -29,7 +29,7 @@ public:
   void init(const symvec_t &vec)
     { items.assign(vec); }
   void init(const symtab_t &table)
-    { symvec_t *vec = table.as_vector(); items.assign(*vec); delete vec; }
+    { table.assign_to(items); }
   void init(const resource_manager_t &rm)
     { rm.get_used_resources(items); }
 
