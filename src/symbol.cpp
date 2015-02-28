@@ -29,7 +29,7 @@ symbol_t::symbol_t(uint32_t flags, const char *name, int line, symbol_type_t typ
 }
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(symbol_type_t type, ...) : _type(type)
+symbol_t::symbol_t(symbol_type_t type, ...) : _type(type), _flags(0)
 {
   va_list va;
   va_start(va, type);
