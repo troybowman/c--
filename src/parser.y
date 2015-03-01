@@ -164,6 +164,7 @@ func_decls : func_decl func_decl_list { $$ = process_first_sym($1, $2); }
 func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
               $$ = new symbol_t(0, $1, yylineno, ST_FUNCTION, $4);
+              free($1);
             }
           ;
 
