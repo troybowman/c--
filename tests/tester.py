@@ -204,9 +204,7 @@ class TesterPhase:
 
     def execute(self, t):
         t.info("running phase: %s\n" % os.path.basename(self.dir))
-        pattern = t.args.file_pattern
-        if not pattern.endswith(".c"):
-            pattern += ".c"
+        pattern = replace_ext(t.args.file_pattern, "c")
         for inpath in glob.iglob(pattern):
             self.compile(t, inpath)
         self.validate(t)
@@ -220,7 +218,8 @@ class TesterPhase:
             t.success(" Clean!\n\n")
 
     def execAsmFiles(self, t):
-        for asm in glob.iglob("*.asm"):
+        pattern = replace_ext(t.args.file_pattern, "asm")
+        for asm in glob.iglob(pattern):
             with open(replace_ext(asm, "out"), "w") as outfile:
                 try:
                     t.verb("executing: %s\n" % asm)
