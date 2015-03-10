@@ -131,10 +131,12 @@ class symbol_t // represents anything a codenode_t needs to point to
 public:
   symloc_t loc;
 
-  symbol_t(uint32_t flags, const char *name, int line, symbol_type_t type, ...);
-
-  symbol_t(symbol_type_t type, ...);
-
+  symbol_t(uint32_t flags, const char *name, int line);
+  symbol_t(uint32_t flags, const char *name, int line, offsize_t size);
+  symbol_t(uint32_t flags, const char *name, int line, symvec_t *params);
+  symbol_t(symbol_type_t type, int val);
+  symbol_t(symbol_type_t type, const char *str);
+  symbol_t(symbol_type_t type);
   ~symbol_t();
 
   bool is_prim()           const { return _type  == ST_PRIMITIVE; }

@@ -163,7 +163,7 @@ func_decls : func_decl func_decl_list { $$ = process_first_sym($1, $2); }
 
 func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
-              $$ = new symbol_t(0, $1, yylineno, ST_FUNCTION, $4);
+              $$ = new symbol_t(0, $1, yylineno, $4);
               free($1);
             }
           ;
@@ -338,8 +338,8 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, 
   }
 
   symbol_t *sym = asfx.code == ASFX_NONE
-                ? new symbol_t(flags, name, line, ST_PRIMITIVE)
-                : new symbol_t(flags, name, line, ST_ARRAY, asfx.size);
+                ? new symbol_t(flags, name, line)
+                : new symbol_t(flags, name, line, asfx.size);
   ctx.insert(sym);
   return sym;
 }

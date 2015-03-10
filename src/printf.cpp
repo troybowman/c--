@@ -29,12 +29,14 @@ static symbol_t *build_print_function(
     symtab_t &gsyms)
 {
   symvec_t *params = new symvec_t;
-  symbol_t *param  = new symbol_t(SF_PARAMETER, pname, -1, ptype);
+  symbol_t *param  = ptype == ST_PRIMITIVE
+                   ? new symbol_t(SF_PARAMETER, pname, -1)
+                   : new symbol_t(SF_PARAMETER, pname, -1, BADOFFSET);
 
   param->set_base(pbase);
   params->push_back(param);
 
-  symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, ST_FUNCTION, params);
+  symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, params);
   bfunc->set_rt(RT_VOID);
 
   ASSERT(0, gsyms.get(bfunc->name()) == NULL);

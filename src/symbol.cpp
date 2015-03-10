@@ -4,54 +4,37 @@
 #include <messages.h>
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(uint32_t flags, const char *name, int line, symbol_type_t type, ...)
-  : _type(type), _flags(flags), _name(name), _line(line)
+symbol_t::symbol_t(uint32_t flags, const char *name, int line, symvec_t *params)
+  : _type(ST_FUNCTION), _flags(flags), _name(name), _line(line)
 {
-  va_list va;
-  va_start(va, type);
-  switch ( type )
-  {
-    case ST_ARRAY:
-      _size = va_arg(va, offsize_t);
-    case ST_PRIMITIVE:
-      _base = PRIM_UNKNOWN;
-      break;
-    case ST_FUNCTION:
-      _rt      = RT_UNKNOWN;
-      _symbols = new symtab_t();
-      _params  = va_arg(va, symvec_t *);
-      ASSERT(1088, _params != NULL);
-      break;
-    default:
-      INTERR(1065);
-  }
-  va_end(va);
+  _rt      = RT_UNKNOWN;
+  _params  = params;
+  _symbols = new symtab_t;
 }
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(symbol_type_t type, ...) : _type(type), _flags(0)
+symbol_t::symbol_t(uint32_t flags, const char *name, int line)
+  : _type(ST_PRIMITIVE), _flags(flags), _name(name), _line(line), _base(PRIM_UNKNOWN) {}
+
+//-----------------------------------------------------------------------------
+symbol_t::symbol_t(uint32_t flags, const char *name, int line, offsize_t size)
+  : _type(ST_ARRAY), _flags(flags), _name(name), _line(line)
 {
-  va_list va;
-  va_start(va, type);
-  switch ( type )
-  {
-    case ST_INTCON:
-    case ST_TEMPORARY:
-    case ST_SAVED_TEMPORARY:
-    case ST_STACK_TEMPORARY:
-    case ST_REG_ARGUMENT:
-    case ST_STACK_ARGUMENT:
-      _val = va_arg(va, int);
-      break;
-    case ST_STRCON:
-    case ST_CHARCON:
-      _str = va_arg(va, const char *);
-      break;
-    default:
-      break;
-  }
-  va_end(va);
+  _base = PRIM_UNKNOWN;
+  _size = size;
 }
+
+//-----------------------------------------------------------------------------
+symbol_t::symbol_t(symbol_type_t type, int val)
+  : _type(type), _val(val) {}
+
+//-----------------------------------------------------------------------------
+symbol_t::symbol_t(symbol_type_t type, const char *str)
+  : _type(type), _str(str) {}
+
+//-----------------------------------------------------------------------------
+symbol_t::symbol_t(symbol_type_t type)
+  : _type(type) {}
 
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()
