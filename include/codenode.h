@@ -3,7 +3,6 @@
 
 #include <resource.h>
 
-class symbol_t;
 struct codenode_t;
 class treefuncs_t;
 
@@ -24,12 +23,12 @@ enum codenode_type_t
 struct codenode_t
 {
   codenode_type_t type;
-  symbol_t *dest;
-  symbol_t *src1;
-  symbol_t *src2;
+  symref_t dest;
+  symref_t src1;
+  symref_t src2;
   codenode_t *next;
 
-  codenode_t(codenode_type_t t, symbol_t *d, symbol_t *s1, symbol_t *s2)
+  codenode_t(codenode_type_t t, symref_t d, symref_t s1, symref_t s2)
     : type(t), dest(d), src1(s1), src2(s2), next(NULL) {}
 };
 
@@ -63,10 +62,10 @@ public:
 // intermediate representation of a function
 struct codefunc_t
 {
-  symbol_t &sym;
+  symref_t sym;
   codenode_t *code;
   bool has_call;
-  symbol_t *zero;
+  symref_t zero;
 
   ra_manager_t ra;
   stktemp_manager_t stktemps;
@@ -76,8 +75,8 @@ struct codefunc_t
   stkarg_manager_t stkargs;
   retval_manager_t retval;
 
-  codefunc_t(symbol_t &s) : sym(s), code(NULL), has_call(false) { zero = new symbol_t(ST_ZERO); }
-  ~codefunc_t() { delete zero; } // TODO: delete code
+  codefunc_t(symref_t s)
+    : sym(s), code(NULL), has_call(false), zero(new symbol_t(ST_ZERO)) {}
 };
 
 //-----------------------------------------------------------------------------

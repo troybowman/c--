@@ -18,10 +18,10 @@
 bool validate_printf_decl(const symbol_t &func, return_type_t rt, bool is_extern);
 
 //-----------------------------------------------------------------------------
-treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line);
+treenode_t *process_printf_call(symref_t printf, treenode_t *args, int line);
 
 //-----------------------------------------------------------------------------
-void build_print_functions(symbol_t *printf, symtab_t &gsyms);
+void build_print_functions(symref_t printf, symtab_t &gsyms);
 
 //-----------------------------------------------------------------------------
 struct format_arg_t

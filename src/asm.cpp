@@ -25,16 +25,16 @@ static const char *argreg_names[ARGREGQTY] =
 #define RESERVED_TEMP2 "$t8"
 #define RESERVED_TEMP3 "$t9"
 
-static symbol_t *t7;
-static symbol_t *t8;
-static symbol_t *t9;
+static symref_t t7(NULL);
+static symref_t t8(NULL);
+static symref_t t9(NULL);
 
 //-----------------------------------------------------------------------------
 static FILE *outfile;
 static symtab_t gsyms; // all named symbols (labels, strings, src symbols)
 
 //-----------------------------------------------------------------------------
-static bool prepare_named_symbol(symbol_t *sym, const char *fmt, ...)
+static bool prepare_named_symbol(symref_t sym, const char *fmt, ...)
 {
   va_list va;
   va_start(va, fmt);
@@ -61,7 +61,7 @@ static void gen_asm_names(T &syms, const char *pfx, bool make_dummy_names = fals
   size_t counter = 0;
   for ( typename T::iterator i = syms.begin(); i != syms.end(); i++ )
   {
-    symbol_t *sym = *i;
+    symref_t sym = *i;
     if ( make_dummy_names )
     {
       while ( !prepare_named_symbol(sym, "%s%lu", pfx, counter) )
@@ -78,10 +78,10 @@ static void gen_asm_names(T &syms, const char *pfx, bool make_dummy_names = fals
 static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symvec_t &labels)
 {
   // 'main' must remain as is - i.e. no auto-generated name
-  symbol_t *main = src_syms.get("main");
+  symref_t main = src_syms.get("main");
   if ( main != NULL )
   {
-    src_syms.erase(*main);
+    src_syms.erase(main);
     gsyms.insert(main);
   }
 
@@ -101,7 +101,7 @@ static void gen_data_section()
 
   for ( symtab_t::const_iterator i = gsyms.begin(); i != gsyms.end(); i++ )
   {
-    symbol_t &sym = **i;
+    const symbol_t &sym = **i;
 
     if ( sym.type() == ST_FUNCTION || sym.type() == ST_LABEL )
       continue;
@@ -139,10 +139,9 @@ static void gen_data_section()
 //-----------------------------------------------------------------------------
 void frame_section_t::visit_items(frame_item_visitor_t &fiv, uint32_t flags)
 {
-  size_t sz = items.size();
-  for ( size_t i = 0; i < sz; i++ )
+  for ( size_t i = 0; i < items.size(); i++ )
   {
-    size_t idx = (flags & FIV_REVERSE) == 0 ? i : sz - 1 - i;
+    size_t idx = (flags & FIV_REVERSE) == 0 ? i : items.size() - 1 - i;
     fiv.visit_item(*this, *items[idx], i);
   }
 }
@@ -262,7 +261,7 @@ void stack_frame_t::build_lvars_section()
 {
   frame_section_t &lvars = sections[FS_LVARS];
 
-  lvars.init(*cf.sym.symbols());
+  lvars.init(*cf.sym->symbols());
   lvars.start = lvars.end = sections[FS_PADDING1].end;
 
   struct lvars_builder_t : public frame_item_visitor_t
@@ -300,7 +299,7 @@ void stack_frame_t::build_params_section()
 {
   frame_section_t &params = sections[FS_PARAMS];
 
-  params.init(*cf.sym.params());
+  params.init(*cf.sym->params());
   params.start = params.end = sections[FS_PADDING2].end;
 
   struct params_builder_t : public frame_item_visitor_t
@@ -325,8 +324,11 @@ void stack_frame_t::build_params_section()
 }
 
 //-----------------------------------------------------------------------------
-stack_frame_t::stack_frame_t(const codefunc_t &_cf) : cf(_cf)
+stack_frame_t::stack_frame_t(const codefunc_t &_cf)
+  : cf(_cf), epilogue_lbl(new symbol_t(ST_LABEL))
 {
+  prepare_named_symbol(epilogue_lbl, "%s%s", "__leave", cf.sym->c_str());
+
   build_regargs_section();
   build_stkargs_section();
   build_svregs_section();
@@ -336,9 +338,6 @@ stack_frame_t::stack_frame_t(const codefunc_t &_cf) : cf(_cf)
   build_lvars_section();
   build_padding_section(FS_PADDING2, FS_LVARS);
   build_params_section();
-
-  epilogue_lbl = new symbol_t(ST_LABEL);
-  prepare_named_symbol(epilogue_lbl, "%s%s", "__leave", cf.sym.c_str());
 }
 
 //-----------------------------------------------------------------------------
@@ -412,9 +411,9 @@ void stack_frame_t::gen_epilogue()
 //-----------------------------------------------------------------------------
 static void ensure_compatible_operands(codenode_t *node, uint32_t flags)
 {
-  symbol_t *dest = node->dest;
-  symbol_t *src1 = node->src1;
-  symbol_t *src2 = node->src2;
+  symref_t dest = node->dest;
+  symref_t src1 = node->src1;
+  symref_t src2 = node->src2;
 
   if ( (flags & REQUIRE_REG_SRC1) != 0 && !src1->loc.is_reg() )
   {
@@ -438,9 +437,9 @@ static void ensure_compatible_operands(codenode_t *node, uint32_t flags)
 
   if ( (flags & REQUIRE_REG_DEST) != 0 && !dest->loc.is_reg() )
   {
-    symbol_t *olddest = node->dest;
+    symref_t olddest = node->dest;
     node->dest = t9;
-    codenode_t *store = new codenode_t(CNT_SW, olddest, t9, NULL);
+    codenode_t *store = new codenode_t(CNT_SW, olddest, t9, symref_t(NULL));
     codenode_t *oldnext = node->next;
     node->next = store;
     store->next = oldnext;
@@ -470,7 +469,7 @@ static const char *cnt2instr(codenode_type_t type)
 }
 
 //-----------------------------------------------------------------------------
-static void gen_func_body(codenode_t *code, symbol_t *epilogue)
+static void gen_func_body(codenode_t *code, symref_t epilogue)
 {
   for ( code_iterator_t ci(code); *ci != NULL; ci++ )
   {
@@ -482,8 +481,8 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         {
           ensure_compatible_operands(node, REQUIRE_REG_DEST);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           switch ( src1->type() )
           {
@@ -502,8 +501,8 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         {
           ensure_compatible_operands(node, REQUIRE_REG_SRC1);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           switch ( dest->loc.type() )
           {
@@ -525,8 +524,8 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         {
           ensure_compatible_operands(node, REQUIRE_REG_DEST);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           switch ( src1->loc.type() )
           {
@@ -552,8 +551,8 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         {
           ensure_compatible_operands(node, REQUIRE_REG_SRC1);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           const char *store = node->type == CNT_SB ? "sb" : "sw";
 
@@ -581,8 +580,8 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         {
           ensure_compatible_operands(node, REQUIRE_REG_DEST);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           const char *load = node->type == CNT_LB ? "lb" : "lw";
 
@@ -607,8 +606,8 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         break;
       case CNT_ARG:
         {
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           switch ( dest->loc.type() )
           {
@@ -647,16 +646,16 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         {
           ensure_compatible_operands(node, REQUIRE_REG_SRC1);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           fprintf(outfile, TAB1"beq %s, 0, %s\n", src1->loc.reg(), dest->c_str());
         }
         break;
       case CNT_RET:
         {
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
 
           if ( dest != NULL )
           {
@@ -695,9 +694,9 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
           ensure_compatible_operands(node,
               REQUIRE_REG_DEST | REQUIRE_REG_SRC1 | REQUIRE_REG_SRC2);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
-          symbol_t *src2 = node->src2;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
+          symref_t src2 = node->src2;
 
           fprintf(outfile, TAB1"%s %s, %s, %s\n",
                   cnt2instr(node->type), dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
@@ -708,9 +707,9 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
         {
           ensure_compatible_operands(node, REQUIRE_REG_DEST | REQUIRE_REG_SRC1);
 
-          symbol_t *dest = node->dest;
-          symbol_t *src1 = node->src1;
-          symbol_t *src2 = node->src2;
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
+          symref_t src2 = node->src2;
 
           ASSERT(0, src2->type() == ST_INTCON);
 
@@ -736,9 +735,9 @@ static void gen_func_body(codenode_t *code, symbol_t *epilogue)
 //-----------------------------------------------------------------------------
 static void init_reserved_temps()
 {
-  t7 = new symbol_t(ST_TEMPORARY);
-  t8 = new symbol_t(ST_TEMPORARY);
-  t9 = new symbol_t(ST_TEMPORARY);
+  t7 = symref_t(new symbol_t(ST_TEMPORARY));
+  t8 = symref_t(new symbol_t(ST_TEMPORARY));
+  t9 = symref_t(new symbol_t(ST_TEMPORARY));
 
   t7->loc.set_reg(RESERVED_TEMP1);
   t8->loc.set_reg(RESERVED_TEMP2);
@@ -748,7 +747,7 @@ static void init_reserved_temps()
 //-----------------------------------------------------------------------------
 static void gen_builtin_function(const char *name, int syscall)
 {
-  symbol_t *func = gsyms.get(name);
+  symref_t func = gsyms.get(name);
 
   if ( func != NULL && func->is_extern() )
   {
@@ -774,7 +773,7 @@ static void init_resources(codefunc_t &cf)
   }
 
   // $v0
-  symbol_t *retval = cf.retval.gen_resource();
+  symref_t retval = cf.retval.gen_resource();
   retval->loc.set_reg("$v0");
 
   // $zero
@@ -793,7 +792,7 @@ static void gen_text_section(codefuncs_t &funcs)
     codefunc_t &cf = **i;
     init_resources(cf);
 
-    fprintf(outfile, "\n%s:\n", cf.sym.c_str());
+    fprintf(outfile, "\n%s:\n", cf.sym->c_str());
 
     stack_frame_t frame(cf);
     DBG_FRAME_SUMMARY(frame);

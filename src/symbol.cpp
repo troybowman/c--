@@ -1,7 +1,6 @@
-#include <stdarg.h>
-
 #include <symbol.h>
 #include <messages.h>
+#include <stdarg.h>
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(uint32_t flags, const char *name, int line, symvec_t *params)
@@ -41,12 +40,7 @@ symbol_t::~symbol_t()
 {
   if ( is_func() )
   {
-    for ( symvec_t::iterator i = _params->begin(); i != _params->end(); i++ )
-      delete *i;
     delete _params;
-
-    for ( symtab_t::iterator i = _symbols->begin(); i != _symbols->end(); i++ )
-      delete *i;
     delete _symbols;
   }
 }
