@@ -36,7 +36,7 @@ static symref_t build_print_function(
   param->set_base(pbase);
   params->push_back(param);
 
-  symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, params);
+  symref_t bfunc = symref_t(new symbol_t(SF_EXTERN, name, -1, params));
   bfunc->set_rt(RT_VOID);
 
   ASSERT(0, gsyms.get(bfunc->name()) == NULL);

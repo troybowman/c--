@@ -43,9 +43,9 @@ public:
   void set_stkoff(uint32_t off)
     { _type = SLT_STKOFF; _off = off; }
 
-  symloc_type_t type() const { return _type;  }
-  const char *reg()    const { return _reg;   }
-  offset_t stkoff()    const { return _off;   }
+  symloc_type_t type() const { return _type; }
+  const char *reg()    const { return _reg;  }
+  offset_t stkoff()    const { return _off;  }
 };
 
 //-----------------------------------------------------------------------------

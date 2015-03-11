@@ -13,7 +13,10 @@ symbol_t::symbol_t(uint32_t flags, const char *name, int line, symvec_t *params)
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(uint32_t flags, const char *name, int line)
-  : _type(ST_PRIMITIVE), _flags(flags), _name(name), _line(line), _base(PRIM_UNKNOWN) {}
+  : _type(ST_PRIMITIVE), _flags(flags), _name(name), _line(line)
+{
+  _base = PRIM_UNKNOWN;
+}
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(uint32_t flags, const char *name, int line, offsize_t size)
