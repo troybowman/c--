@@ -1,6 +1,5 @@
-#include <symbol.h>
-#include <treenode.h>
 #include <codenode.h>
+#include <treenode.h>
 #include <messages.h>
 
 //-----------------------------------------------------------------------------
@@ -11,9 +10,9 @@ struct tree_ctx_t
 #define TCTX_SAVE 0x2
 #define TCTX_IF   0x4
 
-  symbol_t *endif;
+  symref_t endif;
 
-  tree_ctx_t(symbol_t *_endif) : flags(TCTX_IF), endif(_endif) {}
+  tree_ctx_t(symref_t _endif) : flags(TCTX_IF), endif(_endif) {}
   tree_ctx_t(uint32_t _flags = 0) : flags(_flags), endif(NULL) {}
 };
 
@@ -29,19 +28,19 @@ class codefunc_engine_t
   int lblcnt;
 
 private:
-  void check_dest(symbol_t *src);
-  void check_src(symbol_t *src);
+  void check_dest(symref_t src);
+  void check_src(symref_t src);
 
-  symbol_t *gen_temp(uint32_t flags = 0);
-  symbol_t *gen_argloc();
+  symref_t gen_temp(uint32_t flags = 0);
+  symref_t gen_argloc();
 
   void append(
       codenode_type_t type,
-      symbol_t *dest = NULL,
-      symbol_t *src1 = NULL,
-      symbol_t *src2 = NULL);
+      symref_t dest = symref_t(NULL),
+      symref_t src1 = symref_t(NULL),
+      symref_t src2 = symref_t(NULL));
 
-  symbol_t *generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
+  symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 
 public:
   codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
@@ -61,7 +60,7 @@ static bool has_call(const treenode_t *tree)
 {
   if ( tree == NULL )
     return false;
-  if ( tree->type == TNT_CALL )
+  if ( tree->type() == TNT_CALL )
     return true;
 
   for ( int i = 0; i < 4; i++ )
@@ -94,7 +93,7 @@ static codenode_type_t tnt2cnt(treenode_type_t type)
 }
 
 //-----------------------------------------------------------------------------
-void codefunc_engine_t::check_dest(symbol_t *sym)
+void codefunc_engine_t::check_dest(symref_t sym)
 {
   if ( sym == NULL )
     return;
@@ -127,7 +126,7 @@ void codefunc_engine_t::check_dest(symbol_t *sym)
 }
 
 //-----------------------------------------------------------------------------
-void codefunc_engine_t::check_src(symbol_t *sym)
+void codefunc_engine_t::check_src(symref_t sym)
 {
   if ( sym == NULL )
     return;
@@ -160,9 +159,9 @@ void codefunc_engine_t::check_src(symbol_t *sym)
 }
 
 //-----------------------------------------------------------------------------
-symbol_t *codefunc_engine_t::gen_temp(uint32_t flags)
+symref_t codefunc_engine_t::gen_temp(uint32_t flags)
 {
-  symbol_t *temp;
+  symref_t temp(NULL);
 
   if ( (flags & TCTX_SAVE) == 0 )
   {
@@ -182,24 +181,28 @@ symbol_t *codefunc_engine_t::gen_temp(uint32_t flags)
   if ( temp == NULL )
     temp = cf.stktemps.gen_resource();
 
+  ASSERT(0, temp != NULL);
   return temp;
 }
 
 //-----------------------------------------------------------------------------
-symbol_t *codefunc_engine_t::gen_argloc()
+symref_t codefunc_engine_t::gen_argloc()
 {
-  symbol_t *argloc = cf.regargs.gen_resource();
+  symref_t argloc = cf.regargs.gen_resource();
+
   if ( argloc == NULL )
     argloc = cf.stkargs.gen_resource();
+
+  ASSERT(0, argloc != NULL);
   return argloc;
 }
 
 //-----------------------------------------------------------------------------
 void codefunc_engine_t::append(
     codenode_type_t type,
-    symbol_t *dest,
-    symbol_t *src1,
-    symbol_t *src2)
+    symref_t dest,
+    symref_t src1,
+    symref_t src2)
 {
   check_dest(dest);
   check_src(src1);
@@ -214,12 +217,12 @@ void codefunc_engine_t::append(
 }
 
 //-----------------------------------------------------------------------------
-symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
+symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 {
   if ( tree == NULL )
-    return NULL;
+    return symref_t(NULL);
 
-  switch ( tree->type )
+  switch ( tree->type() )
   {
     case TNT_STMT:
       {
@@ -230,23 +233,23 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
     case TNT_INTCON:
     case TNT_CHARCON:
       {
-        symbol_t *dest = gen_temp(ctx.flags);
-        symbol_t *src1 = tree->type == TNT_CHARCON
-                       ? new symbol_t(ST_CHARCON, tree->str)
-                       : new symbol_t(ST_INTCON, tree->val);
+        symref_t dest = gen_temp(ctx.flags);
+        symref_t src1 = tree->type() == TNT_CHARCON
+                      ? symref_t(new symbol_t(ST_CHARCON, tree->str()))
+                      : symref_t(new symbol_t(ST_INTCON, tree->val()));
         append(CNT_LI, dest, src1);
         return dest;
       }
     case TNT_STRCON:
       {
-        std::string key(tree->str);
-        symbol_t *str = ir.strings.get(key);
+        std::string key(tree->str());
+        symref_t str = ir.strings.get(key);
         if ( str == NULL )
         {
-          str = new symbol_t(ST_STRCON, tree->str);
+          str = symref_t(new symbol_t(ST_STRCON, tree->str()));
           ir.strings.insert(key, str);
         }
-        symbol_t *dest = gen_temp(ctx.flags);
+        symref_t dest = gen_temp(ctx.flags);
         append(CNT_LEA, dest, str);
         return dest;
       }
@@ -255,19 +258,19 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         treenode_t *rhs = tree->children[RHS];
         treenode_t *lhs = tree->children[LHS];
 
-        symbol_t *src1 = generate(rhs, has_call(lhs) ? TCTX_SAVE : 0);
-        symbol_t *dest = generate(lhs, TCTX_LVAL);
+        symref_t src1 = generate(rhs, has_call(lhs) ? TCTX_SAVE : 0);
+        symref_t dest = generate(lhs, TCTX_LVAL);
 
-        append(CNT_STORE(lhs->sym), dest, src1);
+        append(CNT_STORE(lhs->sym()), dest, src1);
         break;
       }
     case TNT_SYMBOL:
       {
-        symbol_t *sym = tree->sym;
+        symref_t sym = tree->sym();
         if ( (ctx.flags & TCTX_LVAL) != 0 )
           return sym;
 
-        symbol_t *dest;
+        symref_t dest(NULL);
         if ( sym->is_array() )
         {
           dest = gen_temp();
@@ -283,23 +286,24 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
     case TNT_ARRAY_LOOKUP:
       {
         treenode_t *idxtree = tree->children[AL_OFFSET];
-        symbol_t *idx = generate(idxtree);
+        symref_t idx = generate(idxtree);
 
-        symbol_t *off;
-        if ( tree->sym->base() == PRIM_INT )
+        symref_t off(NULL);
+        if ( tree->sym()->base() == PRIM_INT )
         {
+          // multiply by sizeof(int)
           off = gen_temp();
-          append(CNT_SLL, off, idx, new symbol_t(ST_INTCON, WORDSIZE/2));
+          append(CNT_SLL, off, idx, symref_t(new symbol_t(ST_INTCON, WORDSIZE/2)));
         }
         else
         {
           off = idx;
         }
 
-        symbol_t *base = gen_temp();
-        append(CNT_LEA, base, tree->sym, NULL);
+        symref_t base = gen_temp();
+        append(CNT_LEA, base, tree->sym());
 
-        symbol_t *dest;
+        symref_t dest(NULL);
         if ( (ctx.flags & TCTX_LVAL) != 0 )
         {
           dest = gen_temp();
@@ -307,10 +311,10 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         }
         else
         {
-          symbol_t *loc = gen_temp();
+          symref_t loc = gen_temp();
           append(CNT_ADD, loc, base, off);
           dest = gen_temp(ctx.flags);
-          append(CNT_LOAD(tree->sym), dest, loc);
+          append(CNT_LOAD(tree->sym()), dest, loc);
         }
         return dest;
       }
@@ -327,7 +331,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 
         for ( tree_iterator_t ti(tree->children[CALL_ARGS]); *ti != NULL; ti++ )
         {
-          symbol_t *argval = generate(*ti, has_call(ti.next()) ? TCTX_SAVE : 0);
+          symref_t argval = generate(*ti, has_call(ti.next()) ? TCTX_SAVE : 0);
           argvals.push_back(argval);
         }
 
@@ -344,24 +348,24 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         cf.regargs.reset();
         cf.stkargs.reset();
 
-        symbol_t *f = tree->sym;
+        symref_t f = tree->sym();
         if ( f->base() != PRIM_VOID )
         {
-          symbol_t *retval = cf.retval.gen_resource();
+          symref_t retval = cf.retval.gen_resource();
           append(CNT_CALL, retval, f);
 
-          symbol_t *temp = gen_temp(ctx.flags);
+          symref_t temp = gen_temp(ctx.flags);
           append(CNT_MOV, temp, retval);
 
           return temp;
         }
 
-        append(CNT_CALL, NULL, f);
+        append(CNT_CALL, symref_t(NULL), f);
         break;
       }
     case TNT_RET:
       {
-        symbol_t *val = generate(tree->children[RET_EXPR]);
+        symref_t val = generate(tree->children[RET_EXPR]);
         if ( val != NULL )
           append(CNT_RET, cf.retval.gen_resource(), val);
         else
@@ -384,30 +388,30 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         treenode_t *lhs = tree->children[LHS];
         treenode_t *rhs = tree->children[RHS];
 
-        symbol_t *src1 = generate(lhs, has_call(rhs) ? TCTX_SAVE : 0);
-        symbol_t *src2 = generate(rhs);
-        symbol_t *dest = gen_temp(ctx.flags);
+        symref_t src1 = generate(lhs, has_call(rhs) ? TCTX_SAVE : 0);
+        symref_t src2 = generate(rhs);
+        symref_t dest = gen_temp(ctx.flags);
 
-        append(tnt2cnt(tree->type), dest, src1, src2);
+        append(tnt2cnt(tree->type()), dest, src1, src2);
         return dest;
       }
     case TNT_IF:
       {
-        symbol_t *endif;
-        symbol_t *cond_target;
+        symref_t endif(NULL);
+        symref_t cond_target(NULL);
 
         if ( (ctx.flags & TCTX_IF) != 0 )
           endif = ctx.endif;
         else
-          endif = new symbol_t(ST_LABEL);
+          endif = symref_t(new symbol_t(ST_LABEL));
 
         treenode_t *elsetree = tree->children[IF_ELSE];
         if ( elsetree == NULL )
           cond_target = endif;
         else
-          cond_target = new symbol_t(ST_LABEL);
+          cond_target = symref_t(new symbol_t(ST_LABEL));
 
-        symbol_t *cond = generate(tree->children[IF_COND]);
+        symref_t cond = generate(tree->children[IF_COND]);
         append(CNT_CNDJMP, cond_target, cond);
 
         tree_ctx_t ifctx(endif);
@@ -416,51 +420,51 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( elsetree != NULL )
         {
           append(CNT_JUMP, endif);
-          append(CNT_LABEL, NULL, cond_target);
+          append(CNT_LABEL, symref_t(NULL), cond_target);
           generate(elsetree, ifctx);
         }
 
         if ( (ctx.flags & TCTX_IF) == 0 )
-          append(CNT_LABEL, NULL, endif);
+          append(CNT_LABEL, symref_t(NULL), endif);
         break;
       }
     case TNT_FOR:
       {
         generate(tree->children[FOR_INIT]);
 
-        symbol_t *check = new symbol_t(ST_LABEL);
-        append(CNT_LABEL, NULL, check);
+        symref_t check = symref_t(new symbol_t(ST_LABEL));
+        append(CNT_LABEL, symref_t(NULL), check);
 
-        symbol_t *cond = generate(tree->children[FOR_COND]);
+        symref_t cond = generate(tree->children[FOR_COND]);
         if ( cond == NULL )
         {
           cond = gen_temp();
-          append(CNT_LI, cond, new symbol_t(ST_INTCON, 1));
+          append(CNT_LI, cond, symref_t(new symbol_t(ST_INTCON, 1)));
         }
 
-        symbol_t *end = new symbol_t(ST_LABEL);
+        symref_t end = symref_t(new symbol_t(ST_LABEL));
         append(CNT_CNDJMP, end, cond);
 
         generate(tree->children[FOR_BODY]);
         generate(tree->children[FOR_INC]);
         append(CNT_JUMP, check);
 
-        append(CNT_LABEL, NULL, end);
+        append(CNT_LABEL, symref_t(NULL), end);
         break;
       }
     case TNT_WHILE:
       {
-        symbol_t *loop = new symbol_t(ST_LABEL);
-        append(CNT_LABEL, NULL, loop);
+        symref_t loop = symref_t(new symbol_t(ST_LABEL));
+        append(CNT_LABEL, symref_t(NULL), loop);
 
-        symbol_t *cond = generate(tree->children[WHILE_COND]);
-        symbol_t *end  = new symbol_t(ST_LABEL);
+        symref_t cond = generate(tree->children[WHILE_COND]);
+        symref_t end  = symref_t(new symbol_t(ST_LABEL));
         append(CNT_CNDJMP, end, cond);
 
         generate(tree->children[WHILE_BODY]);
         append(CNT_JUMP, loop);
 
-        append(CNT_LABEL, NULL, end);
+        append(CNT_LABEL, symref_t(NULL), end);
         break;
       }
     case TNT_PRINTF:
@@ -470,16 +474,16 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_NEG:
       {
-        symbol_t *val = generate(tree->children[RHS]);
-        symbol_t *neg = gen_temp(ctx.flags);
+        symref_t val = generate(tree->children[RHS]);
+        symref_t neg = gen_temp(ctx.flags);
         append(CNT_SUB, neg, cf.zero, val);
         return neg;
       }
     case TNT_NOT:
       {
-        symbol_t *val = generate(tree->children[RHS]);
-        symbol_t *no  = gen_temp(ctx.flags);
-        append(CNT_XOR, no, val, new symbol_t(ST_INTCON, 1));
+        symref_t val = generate(tree->children[RHS]);
+        symref_t no  = gen_temp(ctx.flags);
+        append(CNT_XOR, no, val, symref_t(new symbol_t(ST_INTCON, 1)));
         return no;
       }
     default:
@@ -491,7 +495,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
   cf.stktemps.reset();
   cf.retval.reset();
 
-  return NULL;
+  return symref_t(NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -508,7 +512,7 @@ void generate_ir(ir_t &ir, const treefuncs_t &functions)
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     treefunc_t tf = *i;
-    codefunc_t *cf = new codefunc_t(*tf.sym);
+    codefunc_t *cf = new codefunc_t(tf.sym);
 
     codefunc_engine_t e(*cf, ir);
     e.start(tf.tree);
