@@ -1,8 +1,8 @@
+#include <messages.h>
+#include <string.h>
 #include <stdarg.h>
 #include <vector>
 #include <string>
-
-#include <messages.h>
 
 //-----------------------------------------------------------------------------
 // Error messages
@@ -54,7 +54,6 @@ void checkerr()
 
 #ifndef NDEBUG
 
-#include <offset.h>
 #include <symbol.h>
 #include <treenode.h>
 #include <codenode.h>
@@ -253,16 +252,16 @@ static const char *st2str(symbol_type_t type)
 }
 
 //-----------------------------------------------------------------------------
-static const char *addr2str(char *buf, size_t bufsize, const symbol_t *addr)
+static const char *addr2str(char *buf, size_t bufsize, const symbol_t &addr)
 {
-  const char *type = st2str(addr->type());
+  const char *type = st2str(addr.type());
 
-  switch ( addr->type() )
+  switch ( addr.type() )
   {
     case ST_PRIMITIVE:
     case ST_ARRAY:
     case ST_FUNCTION:
-      snprintf(buf, bufsize, "%s (%s)", type, addr->c_str());
+      snprintf(buf, bufsize, "%s (%s)", type, addr.c_str());
       break;
     case ST_TEMPORARY:
     case ST_SAVED_TEMPORARY:
@@ -271,11 +270,11 @@ static const char *addr2str(char *buf, size_t bufsize, const symbol_t *addr)
     case ST_STACK_ARGUMENT:
     case ST_INTCON:
     case ST_LABEL:
-      snprintf(buf, bufsize, "%s (%d)", type, addr->val());
+      snprintf(buf, bufsize, "%s (%d)", type, addr.val());
       break;
     case ST_CHARCON:
     case ST_STRCON:
-      snprintf(buf, bufsize, "%s (%s)", type, addr->str());
+      snprintf(buf, bufsize, "%s (%s)", type, addr.str());
       break;
     case ST_RETVAL:
     case ST_ZERO:
@@ -297,34 +296,34 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
   for ( i = syms.begin(); i != syms.end(); i++ )
   {
     int indent = 0;
-    const symbol_t *s = *i;
-    cmtout(indent, "sym: %s\n", s->c_str());
-    cmtout(++indent, "line: %d\n", s->line());
+    const symbol_t &s = **i;
+    cmtout(indent, "sym: %s\n", s.c_str());
+    cmtout(++indent, "line: %d\n", s.line());
 
     cmtout(indent, "type: ");
-    switch ( s->type() )
+    switch ( s.type() )
     {
       case ST_PRIMITIVE:
         fprintf(dbgfile,  "ST_PRIMITIVE\n");
-        cmtout(++indent, "base: %s\n", prim2str(s->base()));
+        cmtout(++indent, "base: %s\n", prim2str(s.base()));
         break;
       case ST_ARRAY:
         fprintf(dbgfile,  "ST_ARRAY\n");
-        cmtout(++indent, "base: %s\n", prim2str(s->base()));
-        cmtout(indent,   "size: 0x%x\n", s->size());
+        cmtout(++indent, "base: %s\n", prim2str(s.base()));
+        cmtout(indent,   "size: 0x%x\n", s.size());
         break;
       case ST_FUNCTION:
         fprintf(dbgfile,  "ST_FUNCTION\n");
         cmtout(++indent, "rt_type: %s\n", prim2str(s->base()));
         cmtout(indent,   "params:\n");
-        if ( s->params()->size() < 1 )
+        if ( s.params()->size() < 1 )
           cmtout(indent+1, "none\n");
         else
         {
-          symvec_t &params = *s->params();
+          symvec_t &params = *s.params();
           for ( size_t i = 0, sz = params.size(); i < sz ; i++ )
           {
-            symbol_t &p = *params[i];
+            const symbol_t &p = *params[i];
             int pindent = indent+1;
             if ( p.type() == ST_ELLIPSIS )
             {
@@ -348,7 +347,7 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
             }
           }
         }
-        cmtout(indent, "is_extern: %s\n", s->is_extern() ? "yes" : "no");
+        cmtout(indent, "is_extern: %s\n", s.is_extern() ? "yes" : "no");
         break;
       default:
         INTERR(1063);
@@ -364,20 +363,20 @@ void print_tree(const treenode_t *node, int *cnt)
   ASSERT(1068, cnt != NULL);
   (*cnt)++;
   int curnode = *cnt;
-  cmtout(0, "node %d: type: %s", curnode, tnt2str(node->type));
-  switch ( node->type )
+  cmtout(0, "node %d: type: %s", curnode, tnt2str(node->type()));
+  switch ( node->type() )
   {
     case TNT_INTCON:
-      fprintf(dbgfile, " val: %d", node->val);
+      fprintf(dbgfile, " val: %d", node->val());
       break;
     case TNT_CHARCON:
     case TNT_STRCON:
-      fprintf(dbgfile, " str: %s", node->str);
+      fprintf(dbgfile, " str: %s", node->str());
       break;
     case TNT_SYMBOL:
     case TNT_ARRAY_LOOKUP:
     case TNT_CALL:
-      fprintf(dbgfile, " sym: %s", node->sym->c_str());
+      fprintf(dbgfile, " sym: %s", node->sym()->c_str());
       break;
     default:
       break;
@@ -388,7 +387,7 @@ void print_tree(const treenode_t *node, int *cnt)
     treenode_t *child = node->children[i];
     if ( child != NULL )
     {
-      cmtout(0, "child %s for node %d\n", child2str(node->type, i), curnode);
+      cmtout(0, "child %s for node %d\n", child2str(node->type(), i), curnode);
       print_tree(node->children[i], cnt);
     }
   }
@@ -406,11 +405,11 @@ static void print_ir_code(const codenode_t *code)
     char buf[MAXADDRSTR];
 
     if ( ptr->dest != NULL )
-      cmtout(0, "dest -> %s\n", addr2str(buf, MAXADDRSTR, ptr->dest));
+      cmtout(0, "dest -> %s\n", addr2str(buf, MAXADDRSTR, *ptr->dest));
     if ( ptr->src1 != NULL )
-      cmtout(0, "src1 -> %s\n", addr2str(buf, MAXADDRSTR, ptr->src1));
+      cmtout(0, "src1 -> %s\n", addr2str(buf, MAXADDRSTR, *ptr->src1));
     if ( ptr->src2 != NULL )
-      cmtout(0, "src2 -> %s\n", addr2str(buf, MAXADDRSTR, ptr->src2));
+      cmtout(0, "src2 -> %s\n", addr2str(buf, MAXADDRSTR, *ptr->src2));
 
     ptr = ptr->next;
 
@@ -426,7 +425,7 @@ void print_ir(const ir_t &ir)
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
     codefunc_t *cf = *i;
-    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", cf->sym.c_str());
+    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", cf->sym->c_str());
     cmtout(0, "temps used:    %d\n", cf->temps.count());
     cmtout(0, "svregs used:   %d\n", cf->svregs.count());
     cmtout(0, "stktemps used: %d\n", cf->stktemps.count());
@@ -442,9 +441,9 @@ void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags)
   treefuncs_t::const_iterator i;
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
-    treefunc_t tf = *i;
-    symbol_t &f = *tf.sym;
-    treenode_t *tree = tf.tree;
+    treefunc_t tf     = *i;
+    const symbol_t &f = *tf.sym;
+    treenode_t *tree  = tf.tree;
 
     ASSERT(1080, f.is_func());
 
