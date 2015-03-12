@@ -54,7 +54,6 @@ enum symbol_type_t
   ST_PRIMITIVE,       // primitive (int/char)
   ST_ARRAY,           // array (base type is a primitive)
   ST_FUNCTION,        // function (return type + local vars)
-  ST_ELLIPSIS,        // identifies "..." parameter declaration
   ST_TEMPORARY,       // temporary value
   ST_SAVED_TEMPORARY, // temporary that must persist across a function call
   ST_STACK_TEMPORARY, // temporary that must be stored on the stack
@@ -66,6 +65,7 @@ enum symbol_type_t
   ST_RETADDR,         // return address location
   ST_REG_ARGUMENT,    // function register argument
   ST_STACK_ARGUMENT,  // function stack argument
+  ST_ELLIPSIS,        // identifies "..." parameter declaration
   ST_ZERO             // zero register
 };
 

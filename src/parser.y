@@ -781,7 +781,7 @@ static vdecl_res_t validate_var_decl(const symbol_t &sym, primitive_t type)
   if ( type == PRIM_VOID )
     return VDECL_BAD_VOID;
 
-  symbol_t *prev = ctx.get(sym.name());
+  symref_t prev = ctx.get(sym->name());
   if ( prev != NULL )
     return vdecl_res_t(VDECL_REDECL, prev->line());
 
@@ -793,7 +793,7 @@ static void process_var_decl(symref_t sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
-  vdecl_res_t res = validate_var_decl(*sym, type);
+  vdecl_res_t res = validate_var_decl(**sym, type);
 
   if ( res.code != VDECL_OK )
   {
@@ -831,7 +831,7 @@ static void process_var_list(symvec_t *vec, primitive_t type)
 //-----------------------------------------------------------------------------
 static fdecl_res_t validate_func_decl(const symbol_t &func, primitive_t rt, bool is_extern)
 {
-  symbol_t *prev = gsyms.get(func.name());
+  symref_t prev = gsyms.get(func.name());
   if ( prev != NULL )
     return fdecl_res_t(FDECL_REDECL, prev->line());
 
@@ -858,7 +858,7 @@ static void process_fdecl_error(fdecl_res_t res, symref_t sym)
     default:
       INTERR(0);
   }
-  /*sym->release();*/
+  sym->release();
 }
 
 //-----------------------------------------------------------------------------
