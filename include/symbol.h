@@ -132,44 +132,44 @@ public:
 
   virtual ~symbol_t(); // TODO: why does it have to be virtual? (release())
 
-  bool is_prim()           const { return _type  == ST_PRIMITIVE; }
-  bool is_array()          const { return _type  == ST_ARRAY; }
-  bool is_func()           const { return _type  == ST_FUNCTION; }
-  bool is_param()          const { return (_flags & SF_PARAMETER) != 0; }
+  bool is_prim()            const { return _type  == ST_PRIMITIVE; }
+  bool is_array()           const { return _type  == ST_ARRAY; }
+  bool is_func()            const { return _type  == ST_FUNCTION; }
+  bool is_param()           const { return (_flags & SF_PARAMETER) != 0; }
 
-  symbol_type_t type()     const { return _type; }
-  uint32_t flags()         const { return _flags; }
-  std::string name()       const { return _name; }
-  const char *c_str()      const { return _name.c_str(); }
-  int line()               const { return _line; }
-  const char *str()        const { return _str; }
-  int val()                const { return _val; }
+  symbol_type_t type()      const { return _type; }
+  uint32_t flags()          const { return _flags; }
+  std::string name()        const { return _name; }
+  const char *c_str()       const { return _name.c_str(); }
+  int line()                const { return _line; }
+  const char *str()         const { return _str; }
+  int val()                 const { return _val; }
 
-  primitive_t base()       const { return _base; }
+  primitive_t base()        const { return _base; }
 
-  offsize_t size()         const { return _size; }
+  offsize_t size()          const { return _size; }
 
-  symvec_t *params()       const { return _params; }
-  symtab_t *symbols()      const { return _symbols; }
-  bool is_extern()         const { return (_flags & SF_EXTERN) != 0; }
-  bool is_defined()        const { return (_flags & SF_DEFINED) != 0; }
-  bool is_ret_resolved()   const { return (_flags & SF_RET_RESOLVED) != 0; }
-  bool is_builtin_printf() const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
+  symvec_t *params()        const { return _params; }
+  symtab_t *symbols()       const { return _symbols; }
+  bool is_extern()          const { return (_flags & SF_EXTERN) != 0; }
+  bool is_defined()         const { return (_flags & SF_DEFINED) != 0; }
+  bool is_ret_resolved()    const { return (_flags & SF_RET_RESOLVED) != 0; }
+  bool is_builtin_printf()  const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
 
-  void set_name(const char *name)  { _name.assign(name); }
-  void set_line(int line)          { _line = line; }
-  void set_base(primitive_t base)  { _base = base; }
+  void set_name(const char *name) { _name.assign(name); }
+  void set_line(int line)         { _line = line; }
+  void set_base(primitive_t base) { _base = base; }
 
-  void set_size(offsize_t size)    { _size = size; }
+  void set_size(offsize_t size)   { _size = size; }
 
-  void set_extern()                { _flags |= SF_EXTERN; }
-  void set_defined()               { _flags |= SF_DEFINED; }
-  void set_ret_resolved()          { _flags |= SF_RET_RESOLVED; }
-  void set_builtin_printf()        { _flags |= SF_BUILTIN_PRINTF; }
+  void set_extern()               { _flags |= SF_EXTERN; }
+  void set_defined()              { _flags |= SF_DEFINED; }
+  void set_ret_resolved()         { _flags |= SF_RET_RESOLVED; }
+  void set_builtin_printf()       { _flags |= SF_BUILTIN_PRINTF; }
 
-  void set_val(int val)            { _val = val; }
+  void set_val(int val)           { _val = val; }
 
-  virtual void release()           { delete this; }
+  virtual void release()          { delete this; }
 };
 
 //-----------------------------------------------------------------------------
@@ -180,7 +180,6 @@ class symvec_t : public std::vector<symref_t>
 {
   typedef std::vector<symref_t> inherited;
 
-public:
   iterator find(symref_t sym)
   {
     iterator p;
@@ -190,18 +189,8 @@ public:
         break;
     return p;
   }
-  const_iterator find(symref_t sym) const
-  {
-    const_iterator p, e;
-    for ( p = begin(), e = end(); p != e; ++p )
-      if ( sym == *p )
-        break;
-    return p;
-  }
-  bool has(symref_t sym) const
-  {
-    return find(sym) != end();
-  }
+
+public:
   iterator erase(symref_t sym)
   {
     return inherited::erase(find(sym));

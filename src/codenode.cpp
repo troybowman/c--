@@ -270,7 +270,7 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( (ctx.flags & TCTX_LVAL) != 0 )
           return sym;
 
-        symref_t dest(NULL);
+        symref_t dest;
         if ( sym->is_array() )
         {
           dest = gen_temp();
@@ -288,7 +288,7 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         treenode_t *idxtree = tree->children[AL_OFFSET];
         symref_t idx = generate(idxtree);
 
-        symref_t off(NULL);
+        symref_t off;
         if ( tree->sym()->base() == PRIM_INT )
         {
           // multiply by sizeof(int)
@@ -303,7 +303,7 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t base = gen_temp();
         append(CNT_LEA, base, tree->sym());
 
-        symref_t dest(NULL);
+        symref_t dest;
         if ( (ctx.flags & TCTX_LVAL) != 0 )
         {
           dest = gen_temp();
@@ -397,8 +397,8 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_IF:
       {
-        symref_t endif(NULL);
-        symref_t cond_target(NULL);
+        symref_t endif;
+        symref_t cond_target;
 
         if ( (ctx.flags & TCTX_IF) != 0 )
           endif = ctx.endif;
