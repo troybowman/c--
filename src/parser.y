@@ -63,14 +63,14 @@ public:
 } ctx;
 
 //---------------------------------------------------------------------------
-static void func_enter(symbol_t *, primitive_t);
+static void func_enter(symref_t, primitive_t);
 static void func_leave(treenode_t *);
 static       void  process_var_list(symvec_t *, primitive_t);
 static       void  process_func_list(symvec_t *, primitive_t, bool);
-static       void  process_var_decl(symbol_t *, primitive_t);
-static   symbol_t *process_var_id(const char *, int, array_sfx_t, uint32_t);
-static   symbol_t *process_stmt_id(const char *, int);
-static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
+static       void  process_var_decl(symref_t, primitive_t);
+static   symref_t  process_var_id(const char *, int, array_sfx_t, uint32_t);
+static   symref_t  process_stmt_id(const char *, int);
+static treenode_t *process_stmt_var(symref_t, treenode_t *, int);
 static treenode_t *process_assg(treenode_t *, treenode_t *, int);
 static treenode_t *process_call(symref_t, treenode_t *, int);
 static treenode_t *process_call_ctx(treenode_t *, int, bool);
@@ -192,17 +192,10 @@ ellipsis : ',' ELLIPSIS { $$ = new symbol_t(ST_ELLIPSIS); }
 
 param_decl : type ID param_array_sfx
              {
-<<<<<<< HEAD
-               symbol_t *sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
+               symref_t sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
                if ( sym != NULL )
                  process_var_decl(sym, $1);
-               $$ = sym;
-=======
-               symref_t sym = process_var_decl($2, yylineno, $3, SF_PARAMETER);
-               if ( sym != NULL )
-                 sym->set_base($1);
                $$ = (symbol_t *)sym;
->>>>>>> parent of 046d788... Revert "introduce symref_t - a symbol_t smart pointer"
                free($2);
              }
            ;
@@ -334,14 +327,14 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
 %%
 
 //-----------------------------------------------------------------------------
-static symbol_t *process_var_id(const char *name, int line, array_sfx_t asfx, uint32_t flags)
+static symref_t process_var_id(const char *name, int line, array_sfx_t asfx, uint32_t flags)
 {
   if ( asfx.code == ASFX_ERROR )
     return symref_t(NULL);
 
   return asfx.code == ASFX_NONE
-       ? new symbol_t(flags, name, line)
-       : new symbol_t(flags, name, line, asfx.size);
+       ? symref_t(new symbol_t(flags, name, line))
+       : symref_t(new symbol_t(flags, name, line, asfx.size));
 }
 
 //-----------------------------------------------------------------------------
@@ -509,7 +502,7 @@ static void func_leave(treenode_t *tree)
 //-----------------------------------------------------------------------------
 static ret_res_t validate_ret_stmt(const treenode_t *expr)
 {
-  if ( ctx.func->base() == PRIM_VOID )
+  if ( ctx.func()->base() == PRIM_VOID )
     return expr != NULL ? RET_EXTRA : RET_OK;
   else
     return expr == NULL           ? RET_MISSING
@@ -643,7 +636,7 @@ static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
 
   ASSERT(1043, call.type() == TNT_CALL || call.type() == TNT_PRINTF);
 
-  primitive_t rt = call.sym->base();
+  primitive_t rt = call.sym()->base();
 
   if ( expr )
     return rt == PRIM_VOID ? CCTX_EXPR : CCTX_OK;
@@ -780,7 +773,7 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 }
 
 //-----------------------------------------------------------------------------
-static void process_var_decl(symbol_t *sym, primitive_t type)
+static void process_var_decl(symref_t sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
@@ -788,14 +781,14 @@ static void process_var_decl(symbol_t *sym, primitive_t type)
 do                                  \
 {                                   \
   usererr(msg, __VA_ARGS__);        \
-  delete sym;                       \
+  sym->release();                   \
   return;                           \
 } while ( false );
 
   if ( type == PRIM_VOID )
     VAR_DECL_ERR(sym, "error: void type is only valid for parameter declarations, line %d\n", sym->line());
 
-  symbol_t *prev = ctx.get(sym->name());
+  symref_t prev = ctx.get(sym->name());
   if ( prev != NULL )
     VAR_DECL_ERR(sym, "error: variable %s redeclared at line %d (previous declaration at line %d)\n",
                  prev->c_str(), sym->line(), prev->line());
@@ -820,7 +813,7 @@ static void process_var_list(symvec_t *vec, primitive_t type)
 //-----------------------------------------------------------------------------
 static fdecl_res_t validate_func_decl(const symbol_t &func, primitive_t rt, bool is_extern)
 {
-  symbol_t *prev = gsyms.get(func.name());
+  symref_t prev = gsyms.get(func.name());
   if ( prev != NULL )
     return fdecl_res_t(FDECL_REDECL, prev->line());
 
@@ -847,7 +840,7 @@ static void process_fdecl_error(fdecl_res_t res, symref_t sym)
     default:
       INTERR(0);
   }
-  /*sym->release();*/
+  sym->release();
 }
 
 //-----------------------------------------------------------------------------

@@ -314,7 +314,7 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
         break;
       case ST_FUNCTION:
         fprintf(dbgfile,  "ST_FUNCTION\n");
-        cmtout(++indent, "rt_type: %s\n", prim2str(s->base()));
+        cmtout(++indent, "rt_type: %s\n", prim2str(s.base()));
         cmtout(indent,   "params:\n");
         if ( s.params()->size() < 1 )
           cmtout(indent+1, "none\n");

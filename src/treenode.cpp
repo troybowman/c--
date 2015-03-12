@@ -152,7 +152,7 @@ bool treenode_t::is_int_compat() const
     case TNT_SYMBOL:
       return sym()->is_prim();
     case TNT_CALL:
-      return sym->base() != PRIM_VOID;
+      return sym()->base() != PRIM_VOID;
     default:
       return false;
   }
