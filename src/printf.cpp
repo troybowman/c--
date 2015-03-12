@@ -3,9 +3,9 @@
 #include <treenode.h>
 #include <messages.h>
 
-static symref_t _print_string(NULL);
-static symref_t _print_int(NULL);
-static symref_t _print_char(NULL);
+static symref_t _print_string;
+static symref_t _print_int;
+static symref_t _print_char;
 
 //-----------------------------------------------------------------------------
 bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_extern)
