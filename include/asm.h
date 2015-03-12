@@ -71,7 +71,7 @@ class stack_frame_t
   const codefunc_t &cf;
 
 public:
-  symref_t epilogue_lbl;
+  symbol_t *epilogue_lbl;
 
   stack_frame_t(const codefunc_t &_cf);
 

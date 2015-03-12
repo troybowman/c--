@@ -4,7 +4,8 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <pro.h>
+
+#include <offset.h>
 
 class symtab_t;
 class symvec_t;
@@ -87,8 +88,7 @@ enum symbol_type_t
 };
 
 //-----------------------------------------------------------------------------
-// represents anything a 3-address code node would need to point to
-class symbol_t : public refcnt_obj_t
+class symbol_t // represents anything a codenode_t needs to point to
 {
   symbol_type_t _type;
 
@@ -137,31 +137,31 @@ public:
   symbol_t(symbol_type_t type, int val);
   symbol_t(symbol_type_t type, const char *str);
   symbol_t(symbol_type_t type);
-  virtual ~symbol_t(); // TODO: why does it have to be virtual? (release())
+  ~symbol_t();
 
-  bool is_prim()             const { return _type  == ST_PRIMITIVE; }
-  bool is_array()            const { return _type  == ST_ARRAY; }
-  bool is_func()             const { return _type  == ST_FUNCTION; }
-  bool is_param()            const { return (_flags & SF_PARAMETER) != 0; }
+  bool is_prim()           const { return _type  == ST_PRIMITIVE; }
+  bool is_array()          const { return _type  == ST_ARRAY; }
+  bool is_func()           const { return _type  == ST_FUNCTION; }
+  bool is_param()          const { return (_flags & SF_PARAMETER) != 0; }
 
-  symbol_type_t type()       const { return _type; }
-  uint32_t flags()           const { return _flags; }
-  std::string name()         const { return _name; }
-  const char *c_str()        const { return _name.c_str(); }
-  int line()                 const { return _line; }
-  const char *str()          const { return _str; }
-  int val()                  const { return _val; }
+  symbol_type_t type()     const { return _type; }
+  uint32_t flags()         const { return _flags; }
+  std::string name()       const { return _name; }
+  const char *c_str()      const { return _name.c_str(); }
+  int line()               const { return _line; }
+  const char *str()        const { return _str; }
+  int val()                const { return _val; }
 
-  primitive_t base()         const { return _base; }
-  offsize_t size()           const { return _size; }
+  primitive_t base()       const { return _base; }
+  offsize_t size()         const { return _size; }
 
-  return_type_t rt()         const { return _rt; }
-  symvec_t *params()         const { return _params; }
-  symtab_t *symbols()        const { return _symbols; }
-  bool is_extern()           const { return (_flags & SF_EXTERN) != 0; }
-  bool is_defined()          const { return (_flags & SF_DEFINED) != 0; }
-  bool is_ret_resolved()     const { return (_flags & SF_RET_RESOLVED) != 0; }
-  bool is_builtin_printf()   const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
+  return_type_t rt()       const { return _rt; }
+  symvec_t *params()       const { return _params; }
+  symtab_t *symbols()      const { return _symbols; }
+  bool is_extern()         const { return (_flags & SF_EXTERN) != 0; }
+  bool is_defined()        const { return (_flags & SF_DEFINED) != 0; }
+  bool is_ret_resolved()   const { return (_flags & SF_RET_RESOLVED) != 0; }
+  bool is_builtin_printf() const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
 
   void set_name(const char *name)  { _name.assign(name); }
   void set_line(int line)          { _line = line; }
@@ -176,20 +176,15 @@ public:
   void set_builtin_printf()        { _flags |= SF_BUILTIN_PRINTF; }
 
   void set_val(int val)            { _val = val; }
-
-  virtual void release()           { delete this; }
 };
 
 //-----------------------------------------------------------------------------
-typedef refcnt_t<symbol_t> symref_t;
-
-//-----------------------------------------------------------------------------
-class symvec_t : public std::vector<symref_t>
+class symvec_t : public std::vector<symbol_t *>
 {
-  typedef std::vector<symref_t> inherited;
+  typedef std::vector<symbol_t *> inherited;
 
 public:
-  iterator find(symref_t sym)
+  iterator find(const symbol_t *sym)
   {
     iterator p;
     const_iterator e;
@@ -198,7 +193,7 @@ public:
         break;
     return p;
   }
-  const_iterator find(symref_t sym) const
+  const_iterator find(const symbol_t *sym) const
   {
     const_iterator p, e;
     for ( p = begin(), e = end(); p != e; ++p )
@@ -206,52 +201,48 @@ public:
         break;
     return p;
   }
-  bool has(symref_t sym) const
-  {
-    return find(sym) != end();
-  }
-  iterator erase(symref_t sym)
-  {
-    return inherited::erase(find(sym));
-  }
-  void assign(const symvec_t &vec)
-  {
-    inherited::assign(vec.begin(), vec.end());
-  }
+  bool has(const symbol_t *sym) const { return find(sym) != end(); }
+  iterator erase(const symbol_t *sym) { return inherited::erase(find(sym)); }
+  void assign(const symvec_t &vec)    { inherited::assign(vec.begin(), vec.end()); }
 };
 
 //-----------------------------------------------------------------------------
 // symbol table
 class symtab_t
 {
-  typedef std::map<std::string, symref_t> symmap_t;
+  typedef std::map<std::string, symbol_t*> symmap_t;
 
   symmap_t map;   // fast lookups...
   symvec_t vec;   // ...while maintaining insertion order
 
 public:
-  symref_t get(const std::string &key) const
+  symbol_t *get(const std::string &key) const
   {
     symmap_t::const_iterator i = map.find(key);
-    return i != map.end() ? i->second : symref_t(NULL);
+    return i != map.end() ? i->second : NULL;
   }
-  void insert(const std::string &key, symref_t value)
+  void insert(const std::string &key, symbol_t *value)
   {
     map[key] = value;
     vec.push_back(value);
   }
-  bool insert(symref_t sym)
+  bool insert(symbol_t *value)
   {
-    if ( sym == NULL )
+    if ( value == NULL )
       return false;
-    insert(sym->name(), sym);
+    insert(value->name(), value);
     return true;
   }
-  bool erase(symref_t sym)
+  void erase(const symbol_t &sym)
   {
-    return sym != NULL
-        && map.erase(sym->name()) != 0
-        && vec.erase(sym) != vec.end();
+    map.erase(sym.name());
+    vec.erase(&sym);
+  }
+  symvec_t *as_vector() const
+  {
+    symvec_t *ret = new symvec_t;
+    ret->assign(vec);
+    return ret;
   }
 
 #define DEFINE_TABLE_ITERATOR(iterator, begin, end)      \
