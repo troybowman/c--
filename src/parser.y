@@ -337,9 +337,9 @@ static symbol_t *process_var_decl(const char *name, int line, array_sfx_t asfx, 
     return NULL;
   }
 
-  symref_t sym = asfx.code == ASFX_NONE
-               ? symref_t(new symbol_t(flags, name, line))
-               : symref_t(new symbol_t(flags, name, line, asfx.size));
+  symbol_t *sym = asfx.code == ASFX_NONE
+                ? new symbol_t(flags, name, line)
+                : new symbol_t(flags, name, line, asfx.size);
   ctx.insert(sym);
   return sym;
 }
