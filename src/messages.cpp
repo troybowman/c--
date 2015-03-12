@@ -90,19 +90,9 @@ static const char *prim2str(primitive_t p)
   {
     case PRIM_INT:  return "PRIM_INT";
     case PRIM_CHAR: return "PRIM_CHAR";
-    default:        return "PRIM_UNKOWN";
-  }
-}
-
-//-----------------------------------------------------------------------------
-static const char *rt2str(return_type_t rt)
-{
-  switch ( rt )
-  {
-    case RT_INT:  return "RT_INT";
-    case RT_CHAR: return "RT_CHAR";
-    case RT_VOID: return "RT_VOID";
-    default:      return "RT_UNKNOWN";
+    case PRIM_VOID: return "PRIM_VOID";
+    default:
+      INTERR(0);
   }
 }
 
@@ -325,7 +315,7 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
         break;
       case ST_FUNCTION:
         fprintf(dbgfile,  "ST_FUNCTION\n");
-        cmtout(++indent, "rt_type: %s\n", rt2str(s->rt()));
+        cmtout(++indent, "rt_type: %s\n", prim2str(s->base()));
         cmtout(indent,   "params:\n");
         if ( s->params()->size() < 1 )
           cmtout(indent+1, "none\n");

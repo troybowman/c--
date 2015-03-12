@@ -50,23 +50,6 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-enum primitive_t
-{
-  PRIM_UNKNOWN,
-  PRIM_INT,
-  PRIM_CHAR
-};
-
-//-----------------------------------------------------------------------------
-enum return_type_t
-{
-  RT_UNKNOWN = PRIM_UNKNOWN,
-  RT_INT     = PRIM_INT,
-  RT_CHAR    = PRIM_CHAR,
-  RT_VOID
-};
-
-//-----------------------------------------------------------------------------
 enum symbol_type_t
 {
   ST_PRIMITIVE,       // primitive (int/char)
@@ -85,6 +68,15 @@ enum symbol_type_t
   ST_REG_ARGUMENT,    // function register argument
   ST_STACK_ARGUMENT,  // function stack argument
   ST_ZERO             // zero register
+};
+
+//-----------------------------------------------------------------------------
+enum primitive_t
+{
+  PRIM_UNKNOWN,
+  PRIM_INT,
+  PRIM_CHAR,
+  PRIM_VOID
 };
 
 //-----------------------------------------------------------------------------
@@ -108,7 +100,7 @@ class symbol_t // represents anything a codenode_t needs to point to
       int _line; // source line
       union      // type
       {
-        primitive_t _base;    // ST_PRIMITIVE/ST_ARRAY
+        primitive_t _base;    // ST_PRIMITIVE
         struct                // ST_ARRAY
         {
           primitive_t _eltyp;
@@ -116,7 +108,7 @@ class symbol_t // represents anything a codenode_t needs to point to
         };
         struct                // ST_FUNCTION
         {
-          return_type_t _rt;
+          primitive_t _rt;
           symvec_t *_params;
           symtab_t *_symbols;
         };
@@ -137,6 +129,7 @@ public:
   symbol_t(symbol_type_t type, int val);
   symbol_t(symbol_type_t type, const char *str);
   symbol_t(symbol_type_t type);
+
   ~symbol_t();
 
   bool is_prim()           const { return _type  == ST_PRIMITIVE; }
@@ -153,9 +146,9 @@ public:
   int val()                const { return _val; }
 
   primitive_t base()       const { return _base; }
+
   offsize_t size()         const { return _size; }
 
-  return_type_t rt()       const { return _rt; }
   symvec_t *params()       const { return _params; }
   symtab_t *symbols()      const { return _symbols; }
   bool is_extern()         const { return (_flags & SF_EXTERN) != 0; }
@@ -165,11 +158,10 @@ public:
 
   void set_name(const char *name)  { _name.assign(name); }
   void set_line(int line)          { _line = line; }
-
   void set_base(primitive_t base)  { _base = base; }
+
   void set_size(offsize_t size)    { _size = size; }
 
-  void set_rt(return_type_t rt)    { _rt = rt; if ( _rt == RT_VOID ) set_ret_resolved(); }
   void set_extern()                { _flags |= SF_EXTERN; }
   void set_defined()               { _flags |= SF_DEFINED; }
   void set_ret_resolved()          { _flags |= SF_RET_RESOLVED; }

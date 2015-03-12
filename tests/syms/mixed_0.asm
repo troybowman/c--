@@ -26,7 +26,7 @@
 # sym: func1
 #   line: 10
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: buf
 #         type: ST_ARRAY
@@ -38,7 +38,7 @@
 # sym: func2
 #   line: 16
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: buf
 #         type: ST_ARRAY
@@ -50,7 +50,7 @@
 # sym: func3
 #   line: 24
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: buf
 #         type: ST_ARRAY
@@ -77,7 +77,7 @@
 # sym: func4
 #   line: 33
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE

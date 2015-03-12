@@ -5,14 +5,14 @@
 # sym: func1
 #   line: 18
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: func2
 #   line: 19
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -30,7 +30,7 @@
 # sym: ignoreme
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -45,7 +45,7 @@
 # sym: func3
 #   line: 20
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: y
 #         type: ST_ARRAY
@@ -54,7 +54,7 @@
 # sym: func4
 #   line: 14
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: aa
 #         type: ST_PRIMITIVE
@@ -72,7 +72,7 @@
 # sym: func5
 #   line: 13
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: aa
 #         type: ST_PRIMITIVE
@@ -84,14 +84,14 @@
 # sym: func6
 #   line: 12
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: func7
 #   line: 11
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: aa
 #         type: ST_ARRAY
@@ -100,7 +100,7 @@
 # sym: emp
 #   line: 16
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

@@ -5,7 +5,7 @@
 # sym: dub
 #   line: 1
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -14,7 +14,7 @@
 # sym: half
 #   line: 2
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -23,7 +23,7 @@
 # sym: sum
 #   line: 4
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -38,7 +38,7 @@
 # sym: sumchars
 #   line: 6
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: string
 #         type: ST_ARRAY
@@ -50,7 +50,7 @@
 # sym: main
 #   line: 15
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: argc
 #         type: ST_PRIMITIVE

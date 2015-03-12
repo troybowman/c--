@@ -5,7 +5,7 @@
 # sym: main
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       none
 #     is_extern: no

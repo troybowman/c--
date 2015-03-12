@@ -14,7 +14,7 @@
 # sym: main
 #   line: 6
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

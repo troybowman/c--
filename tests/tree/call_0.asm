@@ -5,7 +5,7 @@
 # sym: print_string
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: str
 #         type: ST_ARRAY
@@ -14,7 +14,7 @@
 # sym: print_strings
 #   line: 8
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: str1
 #         type: ST_ARRAY
@@ -32,7 +32,7 @@
 # sym: print_int
 #   line: 9
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -41,7 +41,7 @@
 # sym: print_ints
 #   line: 10
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -56,7 +56,7 @@
 # sym: print_misc
 #   line: 11
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_ARRAY
@@ -74,7 +74,7 @@
 # sym: main
 #   line: 13
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

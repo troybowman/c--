@@ -8,12 +8,12 @@ static symbol_t *_print_int;
 static symbol_t *_print_char;
 
 //-----------------------------------------------------------------------------
-bool validate_printf_decl(const symbol_t &func, return_type_t rt, bool is_extern)
+bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_extern)
 {
   const symvec_t *params = func.params();
 
   return func.name() == "printf"
-      && rt == RT_VOID
+      && rt == PRIM_VOID
       && is_extern
       && params->size() == 2
       && params->front()->is_array()
@@ -37,7 +37,7 @@ static symbol_t *build_print_function(
   params->push_back(param);
 
   symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, params);
-  bfunc->set_rt(RT_VOID);
+  bfunc->set_base(PRIM_VOID);
 
   ASSERT(0, gsyms.get(bfunc->name()) == NULL);
   gsyms.insert(bfunc);

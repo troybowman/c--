@@ -9,21 +9,21 @@
 # sym: get5
 #   line: 5
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       none
 #     is_extern: no
 # sym: getc
 #   line: 7
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: PRIM_CHAR
 #     params:
 #       none
 #     is_extern: no
 # sym: print_int
 #   line: 9
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -32,7 +32,7 @@
 # sym: main
 #   line: 11
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       none
 #     is_extern: no

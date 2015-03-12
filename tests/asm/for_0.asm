@@ -5,7 +5,7 @@
 # sym: char_at
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: string
 #         type: ST_ARRAY
@@ -17,7 +17,7 @@
 # sym: main
 #   line: 5
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

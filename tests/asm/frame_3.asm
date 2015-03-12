@@ -5,14 +5,14 @@
 # sym: func
 #   line: 1
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: simple
 #   line: 11
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -30,7 +30,7 @@
 # sym: another
 #   line: 13
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -42,7 +42,7 @@
 # sym: main
 #   line: 20
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

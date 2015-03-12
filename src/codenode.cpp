@@ -345,7 +345,7 @@ symbol_t *codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         cf.stkargs.reset();
 
         symbol_t *f = tree->sym;
-        if ( f->rt() != RT_VOID )
+        if ( f->base() != PRIM_VOID )
         {
           symbol_t *retval = cf.retval.gen_resource();
           append(CNT_CALL, retval, f);

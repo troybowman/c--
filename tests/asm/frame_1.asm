@@ -5,7 +5,7 @@
 # sym: f0
 #   line: 1
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -14,14 +14,14 @@
 # sym: f1
 #   line: 2
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: f2
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -33,14 +33,14 @@
 # sym: f3
 #   line: 4
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: f4
 #   line: 5
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -55,14 +55,14 @@
 # sym: f5
 #   line: 6
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: f6
 #   line: 7
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -80,14 +80,14 @@
 # sym: f7
 #   line: 8
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: f8
 #   line: 9
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -108,14 +108,14 @@
 # sym: f9
 #   line: 10
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: f10
 #   line: 11
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -139,14 +139,14 @@
 # sym: f11
 #   line: 12
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: f12
 #   line: 13
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_PRIMITIVE
@@ -173,14 +173,14 @@
 # sym: f13
 #   line: 14
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: main
 #   line: 15
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

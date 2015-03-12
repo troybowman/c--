@@ -5,7 +5,7 @@
 # sym: checksum0
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -14,7 +14,7 @@
 # sym: checksum1
 #   line: 5
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: array
 #         type: ST_ARRAY
@@ -23,7 +23,7 @@
 # sym: checksum2
 #   line: 7
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: array
 #         type: ST_ARRAY
@@ -41,7 +41,7 @@
 # sym: div
 #   line: 12
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: PRIM_CHAR
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -50,7 +50,7 @@
 # sym: go
 #   line: 14
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: array
 #         type: ST_ARRAY

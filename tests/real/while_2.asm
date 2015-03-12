@@ -33,7 +33,7 @@
 # sym: _print_int
 #   line: -1
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: val
 #         type: ST_PRIMITIVE
@@ -42,7 +42,7 @@
 # sym: _print_string
 #   line: -1
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: str
 #         type: ST_ARRAY
@@ -51,7 +51,7 @@
 # sym: _print_char
 #   line: -1
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: c
 #         type: ST_PRIMITIVE
@@ -60,7 +60,7 @@
 # sym: printf
 #   line: 6
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: format
 #         type: ST_ARRAY
@@ -70,7 +70,7 @@
 # sym: main
 #   line: 8
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

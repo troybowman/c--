@@ -5,7 +5,7 @@
 # sym: right_back
 #   line: 3
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -14,7 +14,7 @@
 # sym: num_at
 #   line: 4
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: array
 #         type: ST_ARRAY
@@ -26,7 +26,7 @@
 # sym: char_at
 #   line: 5
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: PRIM_CHAR
 #     params:
 #       0: string
 #         type: ST_ARRAY
@@ -38,7 +38,7 @@
 # sym: bunch
 #   line: 16
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: one
 #         type: ST_ARRAY
@@ -74,7 +74,7 @@
 # sym: blip
 #   line: 18
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -91,7 +91,7 @@
 # sym: stuff
 #   line: 23
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no

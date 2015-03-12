@@ -7,7 +7,7 @@
 symbol_t::symbol_t(uint32_t flags, const char *name, int line, symvec_t *params)
   : _type(ST_FUNCTION), _flags(flags), _name(name), _line(line)
 {
-  _rt      = RT_UNKNOWN;
+  _base    = PRIM_UNKNOWN;
   _params  = params;
   _symbols = new symtab_t;
 }

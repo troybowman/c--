@@ -15,7 +15,7 @@
 #define EMPTYSTRING "\"\""
 
 //-----------------------------------------------------------------------------
-bool validate_printf_decl(const symbol_t &func, return_type_t rt, bool is_extern);
+bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_extern);
 
 //-----------------------------------------------------------------------------
 treenode_t *process_printf_call(symbol_t *printf, treenode_t *args, int line);

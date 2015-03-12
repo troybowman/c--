@@ -5,7 +5,7 @@
 # sym: print_string
 #   line: 1
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: str
 #         type: ST_ARRAY
@@ -14,7 +14,7 @@
 # sym: print_int
 #   line: 2
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -23,7 +23,7 @@
 # sym: printf
 #   line: 6
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       0: format
 #         type: ST_ARRAY

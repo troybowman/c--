@@ -15,7 +15,7 @@
 # sym: x_at
 #   line: 6
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: idx
 #         type: ST_PRIMITIVE
@@ -24,7 +24,7 @@
 # sym: y_at
 #   line: 8
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: PRIM_CHAR
 #     params:
 #       0: idx
 #         type: ST_PRIMITIVE
@@ -33,7 +33,7 @@
 # sym: char_at
 #   line: 10
 #   type: ST_FUNCTION
-#     rt_type: RT_CHAR
+#     rt_type: PRIM_CHAR
 #     params:
 #       0: string
 #         type: ST_ARRAY
@@ -45,7 +45,7 @@
 # sym: sum
 #   line: 15
 #   type: ST_FUNCTION
-#     rt_type: RT_INT
+#     rt_type: PRIM_INT
 #     params:
 #       0: x
 #         type: ST_PRIMITIVE
@@ -60,7 +60,7 @@
 # sym: main
 #   line: 17
 #   type: ST_FUNCTION
-#     rt_type: RT_VOID
+#     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
