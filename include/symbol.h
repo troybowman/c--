@@ -54,7 +54,7 @@ enum symbol_type_t
 {
   ST_PRIMITIVE,       // primitive (int/char)
   ST_ARRAY,           // array (base type is a primitive)
-  ST_FUNCTION,        // function
+  ST_FUNCTION,        // function (return type + local vars)
   ST_ELLIPSIS,        // identifies "..." parameter declaration
   ST_TEMPORARY,       // temporary value
   ST_SAVED_TEMPORARY, // temporary that must persist across a function call
@@ -62,7 +62,7 @@ enum symbol_type_t
   ST_INTCON,          // integer constant
   ST_CHARCON,         // character constant
   ST_STRCON,          // string constant
-  ST_LABEL,           // label
+  ST_LABEL,           // asm label
   ST_RETVAL,          // return value location
   ST_RETADDR,         // return address location
   ST_REG_ARGUMENT,    // function register argument
@@ -132,42 +132,42 @@ public:
 
   ~symbol_t();
 
-  bool is_prim()           const { return _type  == ST_PRIMITIVE; }
-  bool is_array()          const { return _type  == ST_ARRAY; }
-  bool is_func()           const { return _type  == ST_FUNCTION; }
-  bool is_param()          const { return (_flags & SF_PARAMETER) != 0; }
+  bool is_prim()            const { return _type  == ST_PRIMITIVE; }
+  bool is_array()           const { return _type  == ST_ARRAY; }
+  bool is_func()            const { return _type  == ST_FUNCTION; }
+  bool is_param()           const { return (_flags & SF_PARAMETER) != 0; }
 
-  symbol_type_t type()     const { return _type; }
-  uint32_t flags()         const { return _flags; }
-  std::string name()       const { return _name; }
-  const char *c_str()      const { return _name.c_str(); }
-  int line()               const { return _line; }
-  const char *str()        const { return _str; }
-  int val()                const { return _val; }
+  symbol_type_t type()      const { return _type; }
+  uint32_t flags()          const { return _flags; }
+  std::string name()        const { return _name; }
+  const char *c_str()       const { return _name.c_str(); }
+  int line()                const { return _line; }
+  const char *str()         const { return _str; }
+  int val()                 const { return _val; }
 
-  primitive_t base()       const { return _base; }
+  primitive_t base()        const { return _base; }
 
-  offsize_t size()         const { return _size; }
+  offsize_t size()          const { return _size; }
 
-  symvec_t *params()       const { return _params; }
-  symtab_t *symbols()      const { return _symbols; }
-  bool is_extern()         const { return (_flags & SF_EXTERN) != 0; }
-  bool is_defined()        const { return (_flags & SF_DEFINED) != 0; }
-  bool is_ret_resolved()   const { return (_flags & SF_RET_RESOLVED) != 0; }
-  bool is_builtin_printf() const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
+  symvec_t *params()        const { return _params; }
+  symtab_t *symbols()       const { return _symbols; }
+  bool is_extern()          const { return (_flags & SF_EXTERN) != 0; }
+  bool is_defined()         const { return (_flags & SF_DEFINED) != 0; }
+  bool is_ret_resolved()    const { return (_flags & SF_RET_RESOLVED) != 0; }
+  bool is_builtin_printf()  const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
 
-  void set_name(const char *name)  { _name.assign(name); }
-  void set_line(int line)          { _line = line; }
-  void set_base(primitive_t base)  { _base = base; }
+  void set_name(const char *name) { _name.assign(name); }
+  void set_line(int line)         { _line = line; }
+  void set_base(primitive_t base) { _base = base; }
 
-  void set_size(offsize_t size)    { _size = size; }
+  void set_size(offsize_t size)   { _size = size; }
 
-  void set_extern()                { _flags |= SF_EXTERN; }
-  void set_defined()               { _flags |= SF_DEFINED; }
-  void set_ret_resolved()          { _flags |= SF_RET_RESOLVED; }
-  void set_builtin_printf()        { _flags |= SF_BUILTIN_PRINTF; }
+  void set_extern()               { _flags |= SF_EXTERN; }
+  void set_defined()              { _flags |= SF_DEFINED; }
+  void set_ret_resolved()         { _flags |= SF_RET_RESOLVED; }
+  void set_builtin_printf()       { _flags |= SF_BUILTIN_PRINTF; }
 
-  void set_val(int val)            { _val = val; }
+  void set_val(int val)           { _val = val; }
 };
 
 //-----------------------------------------------------------------------------
@@ -175,7 +175,6 @@ class symvec_t : public std::vector<symbol_t *>
 {
   typedef std::vector<symbol_t *> inherited;
 
-public:
   iterator find(const symbol_t *sym)
   {
     iterator p;
@@ -185,17 +184,16 @@ public:
         break;
     return p;
   }
-  const_iterator find(const symbol_t *sym) const
+
+public:
+  iterator erase(const symbol_t *sym)
   {
-    const_iterator p, e;
-    for ( p = begin(), e = end(); p != e; ++p )
-      if ( sym == *p )
-        break;
-    return p;
+    return inherited::erase(find(sym));
   }
-  bool has(const symbol_t *sym) const { return find(sym) != end(); }
-  iterator erase(const symbol_t *sym) { return inherited::erase(find(sym)); }
-  void assign(const symvec_t &vec)    { inherited::assign(vec.begin(), vec.end()); }
+  void assign(const symvec_t &vec)
+  {
+    inherited::assign(vec.begin(), vec.end());
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -229,12 +227,6 @@ public:
   {
     map.erase(sym.name());
     vec.erase(&sym);
-  }
-  symvec_t *as_vector() const
-  {
-    symvec_t *ret = new symvec_t;
-    ret->assign(vec);
-    return ret;
   }
 
 #define DEFINE_TABLE_ITERATOR(iterator, begin, end)      \

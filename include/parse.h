@@ -92,4 +92,15 @@ enum lookup_res_t
   AL_ERR_IDX
 };
 
+//-----------------------------------------------------------------------------
+struct vdecl_res_t
+{
+  int code;
+#define VDECL_OK       0
+#define VDECL_BAD_VOID 1
+#define VDECL_REDECL   2
+  int info;
+  vdecl_res_t(int c, int i = -1) : code(c), info(i) {}
+};
+
 #endif // PARSE_H

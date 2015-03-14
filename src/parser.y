@@ -54,8 +54,6 @@ static struct
 } ctx;
 
 //---------------------------------------------------------------------------
-static void func_enter(symbol_t *, primitive_t);
-static void func_leave(treenode_t *);
 static       void  process_var_list(symvec_t *, primitive_t);
 static       void  process_func_list(symvec_t *, primitive_t, bool);
 static       void  process_var_decl(symbol_t *, primitive_t);
@@ -71,11 +69,13 @@ static treenode_t *process_if_stmt(treenode_t *, treenode_t *, treenode_t *, int
 static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
 static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
 static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
-static   symvec_t *process_sym_list(symvec_t *, symbol_t *);
-static   symvec_t *process_first_sym(symbol_t *, symvec_t *);
 static   symvec_t *process_param_list(symbol_t *, symvec_t *, symbol_t *);
 static array_sfx_t process_array_sfx(int, int);
-static        void process_fdecl_error(fdecl_res_t, symbol_t *);
+static       void  process_fdecl_error(fdecl_res_t, symbol_t *);
+static   symvec_t *sym_list_append(symvec_t *, symbol_t *);
+static   symvec_t *sym_list_prepend(symbol_t *, symvec_t *);
+static       void  func_enter(symbol_t *, primitive_t);
+static       void  func_leave(treenode_t *);
 %}
 
 /*---------------------------------------------------------------------------*/
@@ -139,7 +139,7 @@ type : INT_TYPE  { $$ = PRIM_INT;  }
      ;
 
 /*---------------------------------------------------------------------------*/
-var_decls : var_decl var_decl_list { $$ = process_first_sym($1, $2); }
+var_decls : var_decl var_decl_list { $$ = sym_list_prepend($1, $2); }
           ;
 
 var_decl : ID decl_array_sfx
@@ -153,12 +153,12 @@ decl_array_sfx : '[' INT ']' { $$ = process_array_sfx($2, yylineno); }
                | /* empty */ { $$.code = ASFX_NONE; }
                ;
 
-var_decl_list : var_decl_list ',' var_decl { $$ = process_sym_list($1, $3); }
+var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, $3); }
               | /* empty */                { $$ = NULL; }
               ;
 
 /*---------------------------------------------------------------------------*/
-func_decls : func_decl func_decl_list { $$ = process_first_sym($1, $2); }
+func_decls : func_decl func_decl_list { $$ = sym_list_prepend($1, $2); }
            ;
 
 func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
@@ -168,7 +168,7 @@ func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             }
           ;
 
-func_decl_list : func_decl_list ',' func_decl { $$ = process_sym_list($1, $3); }
+func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, $3); }
                | /* empty */                  { $$ = NULL; }
                ;
 
@@ -195,7 +195,7 @@ param_array_sfx : '[' ']'     { $$.code = ASFX_OK; $$.size = BADOFFSET; }
                 | /* empty */ { $$.code = ASFX_NONE; }
                 ;
 
-param_decl_list : param_decl_list ',' param_decl { $$ = process_sym_list($1, $3); }
+param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, $3); }
                 | /* empty */                    { $$ = NULL; }
                 ;
 
@@ -482,10 +482,11 @@ static void func_leave(treenode_t *tree)
 {
   symbol_t *f = ctx.func;
 
+  f->set_defined();
+
   if ( f->base() != PRIM_VOID && !f->is_ret_resolved() )
     usererr("error: non-void funcion %s must return a value\n", f->c_str());
 
-  f->set_defined();
   functions.push_back(treefunc_t(f, tree));
 
   ctx.setglobal();
@@ -698,7 +699,7 @@ static symbol_t *process_stmt_id(const char *id, int line)
 }
 
 //-----------------------------------------------------------------------------
-static inline lookup_res_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
+static lookup_res_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
 {
   return !sym.is_array()      ? AL_ERR_BASE
        : !idx.is_int_compat() ? AL_ERR_IDX
@@ -765,27 +766,44 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 }
 
 //-----------------------------------------------------------------------------
+static vdecl_res_t validate_var_decl(const symbol_t &sym, primitive_t type)
+{
+  ASSERT(0, type != PRIM_UNKNOWN);
+
+  if ( type == PRIM_VOID )
+    return VDECL_BAD_VOID;
+
+  symbol_t *prev = ctx.get(sym.name());
+  if ( prev != NULL )
+    return vdecl_res_t(VDECL_REDECL, prev->line());
+
+  return VDECL_OK;
+}
+
+//-----------------------------------------------------------------------------
 static void process_var_decl(symbol_t *sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
-#define VAR_DECL_ERR(sym, msg, ...) \
-do                                  \
-{                                   \
-  usererr(msg, __VA_ARGS__);        \
-  delete sym;                       \
-  return;                           \
-} while ( false );
+  vdecl_res_t res = validate_var_decl(*sym, type);
 
-  if ( type == PRIM_VOID )
-    VAR_DECL_ERR(sym, "error: void type is only valid for parameter declarations, line %d\n", sym->line());
-
-  symbol_t *prev = ctx.get(sym->name());
-  if ( prev != NULL )
-    VAR_DECL_ERR(sym, "error: variable %s redeclared at line %d (previous declaration at line %d)\n",
-                 prev->c_str(), sym->line(), prev->line());
-
-#undef VAR_DECL_ERROR
+  if ( res.code != VDECL_OK )
+  {
+    switch ( res.code )
+    {
+      case VDECL_REDECL:
+        usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
+                sym->c_str(), sym->line(), res.info);
+        break;
+      case VDECL_BAD_VOID:
+        usererr("error: void type is only valid for parameter declarations, line %d\n", sym->line());
+        break;
+      default:
+        INTERR(0);
+    }
+    delete sym;
+    return;
+  }
 
   sym->set_base(type);
   ctx.insert(sym);
@@ -884,7 +902,7 @@ static array_sfx_t process_array_sfx(int size, int line)
 }
 
 //-----------------------------------------------------------------------------
-static symvec_t *process_first_sym(symbol_t *first, symvec_t *rest)
+static symvec_t *sym_list_prepend(symbol_t *first, symvec_t *rest)
 {
   symvec_t *vec = rest == NULL ? new symvec_t : rest;
 
@@ -895,22 +913,22 @@ static symvec_t *process_first_sym(symbol_t *first, symvec_t *rest)
 }
 
 //-----------------------------------------------------------------------------
-static symvec_t *process_sym_list(symvec_t *prev, symbol_t *to_ins)
+static symvec_t *sym_list_append(symvec_t *list, symbol_t *last)
 {
-  symvec_t *symvec = prev == NULL ? new symvec_t : prev;
+  symvec_t *ret = list == NULL ? new symvec_t : list;
 
-  if ( to_ins != NULL )
-    symvec->push_back(to_ins);
+  if ( last != NULL )
+    ret->push_back(last);
 
-  return symvec;
+  return ret;
 }
 
 //-----------------------------------------------------------------------------
 static symvec_t *process_param_list(symbol_t *first, symvec_t *rest, symbol_t *ellipsis)
 {
-  symvec_t *params = process_first_sym(first, rest);
+  symvec_t *params = sym_list_prepend(first, rest);
 
-  return process_sym_list(params, ellipsis);
+  return sym_list_append(params, ellipsis);
 }
 
 //-----------------------------------------------------------------------------
