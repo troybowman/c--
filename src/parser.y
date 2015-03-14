@@ -781,7 +781,7 @@ static vdecl_res_t validate_var_decl(const symbol_t &sym, primitive_t type)
   if ( type == PRIM_VOID )
     return VDECL_BAD_VOID;
 
-  symref_t prev = ctx.get(sym->name());
+  symref_t prev = ctx.get(sym.name());
   if ( prev != NULL )
     return vdecl_res_t(VDECL_REDECL, prev->line());
 
@@ -793,7 +793,7 @@ static void process_var_decl(symref_t sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
-  vdecl_res_t res = validate_var_decl(**sym, type);
+  vdecl_res_t res = validate_var_decl(*sym, type);
 
   if ( res.code != VDECL_OK )
   {
