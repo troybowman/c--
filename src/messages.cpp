@@ -56,7 +56,7 @@ void checkerr()
 
 #include <symbol.h>
 #include <treenode.h>
-#include <codenode.h>
+#include <ir.h>
 #include <asm.h>
 
 //-----------------------------------------------------------------------------
@@ -479,7 +479,7 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
   vsnprintf(namestr, FMTLEN, fmt, va);
   va_end(va);
 
-  char item[TABLEN+NAMELEN+5]; // '\t' + '#' + ' ' + '|' + name + '|' + '\0'
+  char item[TABLEN+NAMELEN+5]; // <tab> + '#' + ' ' + '|' + name + '|' + '\0'
   char *ptr = item;
 
   const char *pfx = TAB1"# |";

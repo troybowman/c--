@@ -1,57 +1,7 @@
-#include <codenode.h>
+#include <ir.h>
 #include <treenode.h>
 #include <messages.h>
 
-//-----------------------------------------------------------------------------
-struct tree_ctx_t
-{
-  uint32_t flags;
-#define TCTX_LVAL 0x1
-#define TCTX_SAVE 0x2
-#define TCTX_IF   0x4
-
-  symref_t endif;
-
-  tree_ctx_t(symref_t _endif) : flags(TCTX_IF), endif(_endif) {}
-  tree_ctx_t(uint32_t _flags = 0) : flags(_flags), endif(NULL) {}
-};
-
-//-----------------------------------------------------------------------------
-class codefunc_engine_t
-{
-  codefunc_t &cf;
-  ir_t &ir;
-
-  codenode_t *head;
-  codenode_t *tail;
-
-  int lblcnt;
-
-private:
-  void check_dest(symref_t src);
-  void check_src(symref_t src);
-
-  symref_t gen_temp(uint32_t flags = 0);
-  symref_t gen_argloc();
-
-  void append(
-      codenode_type_t type,
-      symref_t dest = symref_t(NULL),
-      symref_t src1 = symref_t(NULL),
-      symref_t src2 = symref_t(NULL));
-
-  symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
-
-public:
-  codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
-    : cf(_cf), ir(_ir),
-      head(NULL), tail(NULL),
-      lblcnt(0) {}
-
-  void start(const treenode_t *root);
-};
-
-//-----------------------------------------------------------------------------
 #define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
 #define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
 

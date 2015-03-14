@@ -22,12 +22,12 @@ else
 endif
 
 OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o  $(OBJ)symbol.o   \
-					 $(OBJ)treenode.o $(OBJ)codenode.o $(OBJ)messages.o \
+					 $(OBJ)treenode.o $(OBJ)ir.o 			 $(OBJ)messages.o \
 					 $(OBJ)main.o     $(OBJ)asm.o 		 $(OBJ)printf.o
 
-HFILES   = $(I)pro.h      $(I)symbol.h   $(I)treenode.h \
-					 $(I)codenode.h $(I)messages.h $(I)parse.h    \
-					 $(I)resource.h $(I)printf.h	 $(I)asm.h
+HFILES   = $(I)pro.h $(I)symbol.h   $(I)treenode.h \
+					 $(I)ir.h  $(I)messages.h $(I)parse.h    \
+					 $(I)asm.h $(I)resource.h $(I)printf.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
@@ -57,10 +57,7 @@ $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
 $(OBJ)printf.o: $(SRC)printf.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
-	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
-
-$(OBJ)codenode.o: $(SRC)codenode.cpp $(HFILES)
+$(OBJ)ir.o: $(SRC)ir.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)asm.o: $(SRC)asm.cpp $(HFILES)
@@ -68,6 +65,9 @@ $(OBJ)asm.o: $(SRC)asm.cpp $(HFILES)
 
 $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
+	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
 
 #------------------------------------------------------------------------------
 .PHONY: clean

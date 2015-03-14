@@ -54,7 +54,7 @@ class Tester(ArgumentParser):
             help="set verbosity level: 0=sparse, 1=verbose, 2=trace",
             metavar="LEVEL",
             type=int,
-            default=self.INFO)
+            default=self.VERB)
 
         self.add_argument(
             "-g", "--grind",

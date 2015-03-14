@@ -1,9 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-
 #include <asm.h>
-#include <resource.h>
 #include <printf.h>
 
 #define MAXNAMELEN 32
