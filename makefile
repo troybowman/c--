@@ -21,13 +21,13 @@ else
   LIBFLEX = -lfl
 endif
 
-OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o  $(OBJ)symbol.o   \
-					 $(OBJ)treenode.o $(OBJ)ir.o 			 $(OBJ)messages.o \
-					 $(OBJ)main.o     $(OBJ)asm.o 		 $(OBJ)printf.o
+OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o $(OBJ)symbol.o   \
+					 $(OBJ)treenode.o $(OBJ)ir.o 			$(OBJ)messages.o \
+					 $(OBJ)main.o     $(OBJ)asm.o 		$(OBJ)printf.o
 
 HFILES   = $(I)pro.h $(I)symbol.h   $(I)treenode.h \
 					 $(I)ir.h  $(I)messages.h $(I)parse.h    \
-					 $(I)asm.h $(I)resource.h $(I)printf.h
+					 $(I)asm.h $(I)printf.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
