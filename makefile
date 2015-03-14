@@ -25,7 +25,7 @@ OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o  $(OBJ)symbol.o   \
 					 $(OBJ)treenode.o $(OBJ)codenode.o $(OBJ)messages.o \
 					 $(OBJ)main.o     $(OBJ)asm.o 		 $(OBJ)printf.o
 
-HFILES   = $(I)offset.h   $(I)symbol.h   $(I)treenode.h \
+HFILES   = $(I)pro.h      $(I)symbol.h   $(I)treenode.h \
 					 $(I)codenode.h $(I)messages.h $(I)parse.h    \
 					 $(I)resource.h $(I)printf.h	 $(I)asm.h
 
