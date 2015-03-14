@@ -4,8 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
-
-#include <offset.h>
+#include <pro.h>
 
 class symtab_t;
 class symvec_t;
@@ -55,7 +54,6 @@ enum symbol_type_t
   ST_PRIMITIVE,       // primitive (int/char)
   ST_ARRAY,           // array (base type is a primitive)
   ST_FUNCTION,        // function (return type + local vars)
-  ST_ELLIPSIS,        // identifies "..." parameter declaration
   ST_TEMPORARY,       // temporary value
   ST_SAVED_TEMPORARY, // temporary that must persist across a function call
   ST_STACK_TEMPORARY, // temporary that must be stored on the stack
@@ -67,6 +65,7 @@ enum symbol_type_t
   ST_RETADDR,         // return address location
   ST_REG_ARGUMENT,    // function register argument
   ST_STACK_ARGUMENT,  // function stack argument
+  ST_ELLIPSIS,        // identifies "..." parameter declaration
   ST_ZERO             // zero register
 };
 
@@ -80,7 +79,8 @@ enum primitive_t
 };
 
 //-----------------------------------------------------------------------------
-class symbol_t // represents anything a codenode_t needs to point to
+// represents anything a 3-address code node would need to point to
+class symbol_t : public refcnt_obj_t
 {
   symbol_type_t _type;
 
@@ -130,7 +130,7 @@ public:
   symbol_t(symbol_type_t type, const char *str);
   symbol_t(symbol_type_t type);
 
-  ~symbol_t();
+  virtual ~symbol_t(); // TODO: why does it have to be virtual? (release())
 
   bool is_prim()            const { return _type  == ST_PRIMITIVE; }
   bool is_array()           const { return _type  == ST_ARRAY; }
@@ -168,14 +168,19 @@ public:
   void set_builtin_printf()       { _flags |= SF_BUILTIN_PRINTF; }
 
   void set_val(int val)           { _val = val; }
+
+  virtual void release()          { delete this; }
 };
 
 //-----------------------------------------------------------------------------
-class symvec_t : public std::vector<symbol_t *>
-{
-  typedef std::vector<symbol_t *> inherited;
+typedef refcnt_t<symbol_t> symref_t;
 
-  iterator find(const symbol_t *sym)
+//-----------------------------------------------------------------------------
+class symvec_t : public std::vector<symref_t>
+{
+  typedef std::vector<symref_t> inherited;
+
+  iterator find(symref_t sym)
   {
     iterator p;
     const_iterator e;
@@ -186,7 +191,7 @@ class symvec_t : public std::vector<symbol_t *>
   }
 
 public:
-  iterator erase(const symbol_t *sym)
+  iterator erase(symref_t sym)
   {
     return inherited::erase(find(sym));
   }
@@ -200,33 +205,34 @@ public:
 // symbol table
 class symtab_t
 {
-  typedef std::map<std::string, symbol_t*> symmap_t;
+  typedef std::map<std::string, symref_t> symmap_t;
 
   symmap_t map;   // fast lookups...
   symvec_t vec;   // ...while maintaining insertion order
 
 public:
-  symbol_t *get(const std::string &key) const
+  symref_t get(const std::string &key) const
   {
     symmap_t::const_iterator i = map.find(key);
-    return i != map.end() ? i->second : NULL;
+    return i != map.end() ? i->second : symref_t(NULL);
   }
-  void insert(const std::string &key, symbol_t *value)
+  void insert(const std::string &key, symref_t value)
   {
     map[key] = value;
     vec.push_back(value);
   }
-  bool insert(symbol_t *value)
+  bool insert(symref_t sym)
   {
-    if ( value == NULL )
+    if ( sym == NULL )
       return false;
-    insert(value->name(), value);
+    insert(sym->name(), sym);
     return true;
   }
-  void erase(const symbol_t &sym)
+  bool erase(symref_t sym)
   {
-    map.erase(sym.name());
-    vec.erase(&sym);
+    return sym != NULL
+        && map.erase(sym->name()) != 0
+        && vec.erase(sym) != vec.end();
   }
 
 #define DEFINE_TABLE_ITERATOR(iterator, begin, end)      \

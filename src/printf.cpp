@@ -3,9 +3,9 @@
 #include <treenode.h>
 #include <messages.h>
 
-static symbol_t *_print_string;
-static symbol_t *_print_int;
-static symbol_t *_print_char;
+static symref_t _print_string;
+static symref_t _print_int;
+static symref_t _print_char;
 
 //-----------------------------------------------------------------------------
 bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_extern)
@@ -21,7 +21,7 @@ bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_extern)
 }
 
 //-----------------------------------------------------------------------------
-static symbol_t *build_print_function(
+static symref_t build_print_function(
     const char *name,
     const char *pname,
     symbol_type_t ptype,
@@ -29,14 +29,14 @@ static symbol_t *build_print_function(
     symtab_t &gsyms)
 {
   symvec_t *params = new symvec_t;
-  symbol_t *param  = ptype == ST_PRIMITIVE
-                   ? new symbol_t(SF_PARAMETER, pname, -1)
-                   : new symbol_t(SF_PARAMETER, pname, -1, BADOFFSET);
+  symref_t  param  = ptype == ST_PRIMITIVE
+                   ? symref_t(new symbol_t(SF_PARAMETER, pname, -1))
+                   : symref_t(new symbol_t(SF_PARAMETER, pname, -1, BADOFFSET));
 
   param->set_base(pbase);
   params->push_back(param);
 
-  symbol_t *bfunc = new symbol_t(SF_EXTERN, name, -1, params);
+  symref_t bfunc(new symbol_t(SF_EXTERN, name, -1, params));
   bfunc->set_base(PRIM_VOID);
 
   ASSERT(0, gsyms.get(bfunc->name()) == NULL);
@@ -45,7 +45,7 @@ static symbol_t *build_print_function(
 }
 
 //-----------------------------------------------------------------------------
-void build_print_functions(symbol_t *printf, symtab_t &gsyms)
+void build_print_functions(symref_t printf, symtab_t &gsyms)
 {
   ASSERT(0, printf != NULL);
   printf->set_builtin_printf();
@@ -56,7 +56,7 @@ void build_print_functions(symbol_t *printf, symtab_t &gsyms)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *build_printf_tree(symbol_t *printf, const format_args_t &fmtargs)
+static treenode_t *build_printf_tree(symref_t printf, const format_args_t &fmtargs)
 {
   seq_t seq = { NULL, NULL };
 
@@ -68,15 +68,15 @@ static treenode_t *build_printf_tree(symbol_t *printf, const format_args_t &fmta
     treenode_t *args =
         new treenode_t(TNT_ARG, const_cast<treenode_t *>(arg.node), NULL);
 
-    symbol_t *func = arg.type == PF_ARG_STR ? _print_string
-                   : arg.type == PF_ARG_INT ? _print_int
-                   :                          _print_char;
+    symref_t func = arg.type == PF_ARG_STR ? _print_string
+                  : arg.type == PF_ARG_INT ? _print_int
+                  :                          _print_char;
 
-    treenode_t *call = new treenode_t(TNT_CALL, func, args);
+    treenode_t *call = new treenode_t(TNT_CALL, (symbol_t *)func, args);
     seq_append(seq, call, TNT_STMT);
   }
 
-  return seq.head == NULL ? ERRNODE : new treenode_t(TNT_PRINTF, printf, seq.head);
+  return seq.head == NULL ? ERRNODE : new treenode_t(TNT_PRINTF, (symbol_t *)printf, seq.head);
 }
 
 //-----------------------------------------------------------------------------
@@ -118,10 +118,10 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
   if ( allargs == NULL )
     return PRINTF_NOARGS;
 
-  if ( allargs->children[SEQ_CUR]->type != TNT_STRCON )
+  if ( allargs->children[SEQ_CUR]->type() != TNT_STRCON )
     return PRINTF_STRCON;
 
-  const char *fmt = allargs->children[SEQ_CUR]->str;
+  const char *fmt = allargs->children[SEQ_CUR]->str();
   if ( strcmp(fmt, EMPTYSTRING) == 0 ) // special case
     return handle_empty_fmt(fmtargs, allargs->children[SEQ_NEXT]);
 
@@ -180,7 +180,7 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
 }
 
 //-----------------------------------------------------------------------------
-treenode_t *process_printf_call(symbol_t *printf, treenode_t *allargs, int line)
+treenode_t *process_printf_call(symref_t printf, treenode_t *allargs, int line)
 {
   format_args_t fmtargs;
 
