@@ -2,9 +2,7 @@
 #define MIPS_ASM_H
 
 #include <stdio.h>
-
-#include <symbol.h>
-#include <codenode.h>
+#include <ir.h>
 #include <messages.h>
 
 class frame_section_t;

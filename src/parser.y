@@ -6,7 +6,6 @@
 #include <parse.h>
 #include <symbol.h>
 #include <treenode.h>
-#include <codenode.h>
 #include <messages.h>
 #include <printf.h>
 

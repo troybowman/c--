@@ -6,9 +6,9 @@
 #include <parse.h>
 #include <symbol.h>
 #include <treenode.h>
-#include <codenode.h>
-#include <messages.h>
+#include <ir.h>
 #include <asm.h>
+#include <messages.h>
 
 #define OUTFILE_EXT "asm"
 
