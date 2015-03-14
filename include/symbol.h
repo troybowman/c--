@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <pro.h>
+#include <common.h>
 
 class symtab_t;
 class symvec_t;
