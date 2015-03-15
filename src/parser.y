@@ -20,7 +20,7 @@ static symtab_t gsyms;        // global symbol table
 static treefuncs_t functions; // functions, (along with their syntax trees)
                               // in order as they appear in the source file
 //---------------------------------------------------------------------------
-static class
+static class ctx_t
 {
   int mode;
 #define CTX_GLOBAL 0
@@ -34,17 +34,18 @@ static class
     uint8_t reserve[sizeof(symref_t)];
   };
 
-  void _set_func(symref_t f) { new ((symref_t *)reserve) symref_t(f); }
-
 public:
-  void clear()               { if ( mode == CTX_LOCAL ) func().~symref_t(); }
+  ctx_t()                   { setglobal(); }
+  ~ctx_t()                  { clear(); }
 
-  void setglobal()           { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
-  void setlocal(symref_t f)  { clear(); mode = CTX_LOCAL;  _set_func(f); }
-  void settemp()             { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
-  void trash()               { delete syms; setglobal(); }
+  void clear()              { if ( mode == CTX_LOCAL ) func().~symref_t(); }
 
-  symref_t func()      const { return *(symref_t *)reserve; }
+  void setglobal()          { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
+  void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(reserve, f); }
+  void settemp()            { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
+  void trash()              { delete syms; setglobal(); }
+
+  symref_t &func()    const { return getref(reserve); }
 
   void insert(symref_t sym)
   {
@@ -65,7 +66,7 @@ public:
 //---------------------------------------------------------------------------
 static       void  process_var_list(symvec_t *, primitive_t);
 static       void  process_func_list(symvec_t *, primitive_t, bool);
-static       void  process_var_decl(symref_t, primitive_t);
+static       bool  process_var_decl(symref_t, primitive_t);
 static   symref_t  process_var_id(const char *, int, array_sfx_t, uint32_t);
 static   symref_t  process_stmt_id(const char *, int);
 static treenode_t *process_stmt_var(symref_t, treenode_t *, int);
@@ -85,6 +86,8 @@ static   symvec_t *sym_list_append(symvec_t *, symref_t);
 static   symvec_t *sym_list_prepend(symref_t, symvec_t *);
 static       void  func_enter(symref_t, primitive_t);
 static       void  func_leave(treenode_t *);
+static       void  yyputref(uint8_t const [], symref_t);
+static    symref_t yygetref(uint8_t const []);
 %}
 
 /*---------------------------------------------------------------------------*/
@@ -93,12 +96,12 @@ static       void  func_leave(treenode_t *);
   int i;
   char *str;
   primitive_t prim;
-  symbol_t *sym;
   symvec_t *symvec;
   treenode_t *tree;
   symtab_t *symtab;
   array_sfx_t asfx;
   seq_t seq;
+  uint8_t sym[sizeof(symref_t)];
 }
 
 %token<i>   INT
@@ -108,12 +111,12 @@ static       void  func_leave(treenode_t *);
 %token WHILE RETURN EXTERN IF ELSE FOR
 %token EQ NEQ LEQ GEQ AND OR ELLIPSIS
 
-%type<prim>    type
-%type<sym>     var_decl func_decl param_decl ellipsis
-%type<symvec>  var_decls var_decl_list func_decls func_decl_list params param_decl_list
-%type<tree>    func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
-%type<asfx>    decl_array_sfx param_array_sfx
-%type<seq>     stmts arg_list
+%type<prim>   type
+%type<sym>    var_decl func_decl param_decl ellipsis
+%type<symvec> var_decls var_decl_list func_decls func_decl_list params param_decl_list
+%type<tree>   func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
+%type<asfx>   decl_array_sfx param_array_sfx
+%type<seq>    stmts arg_list
 
 /*---------------------------------------------------------------------------*/
 /* precedence increases as we go down the list */
@@ -148,12 +151,13 @@ type : INT_TYPE  { $$ = PRIM_INT;  }
      ;
 
 /*---------------------------------------------------------------------------*/
-var_decls : var_decl var_decl_list { $$ = sym_list_prepend(symref_t($1), $2); }
+var_decls : var_decl var_decl_list { $$ = sym_list_prepend(yygetref($1), $2); }
           ;
 
 var_decl : ID decl_array_sfx
            {
-             $$ = (symbol_t *)process_var_id($1, yylineno, $2, 0);
+             symref_t ref = process_var_id($1, yylineno, $2, 0);
+             yyputref($$, ref);
              free($1);
            }
          ;
@@ -162,40 +166,44 @@ decl_array_sfx : '[' INT ']' { $$ = process_array_sfx($2, yylineno); }
                | /* empty */ { $$.code = ASFX_NONE; }
                ;
 
-var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, symref_t($3)); }
+var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, yygetref($3)); }
               | /* empty */                { $$ = NULL; }
               ;
 
 /*---------------------------------------------------------------------------*/
-func_decls : func_decl func_decl_list { $$ = sym_list_prepend(symref_t($1), $2); }
+func_decls : func_decl func_decl_list { $$ = sym_list_prepend(yygetref($1), $2); }
            ;
 
 func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
-              $$ = new symbol_t(0, $1, yylineno, $4);
+              symref_t func(new symbol_t(0, $1, yylineno, $4));
+              yyputref($$, func);
               free($1);
             }
           ;
 
-func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, symref_t($3)); }
+func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, yygetref($3)); }
                | /* empty */                  { $$ = NULL; }
                ;
 
 /*---------------------------------------------------------------------------*/
-params : param_decl param_decl_list ellipsis { $$ = process_param_list(symref_t($1), $2, symref_t($3)); }
-       | VOID                                { $$ = new symvec_t(); }
+params : param_decl param_decl_list ellipsis
+         {
+           $$ = process_param_list(yygetref($1), $2, yygetref($3));
+         }
+       | VOID { $$ = new symvec_t; }
        ;
 
-ellipsis : ',' ELLIPSIS { $$ = new symbol_t(ST_ELLIPSIS); }
-         | /* empty */  { $$ = NULL; }
+ellipsis : ',' ELLIPSIS { yyputref($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
+         | /* empty */  { yyputref($$, symref_t(NULL)); }
          ;
 
 param_decl : type ID param_array_sfx
              {
                symref_t sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
-               if ( sym != NULL )
-                 process_var_decl(sym, $1);
-               $$ = (symbol_t *)sym;
+               if ( sym != NULL && !process_var_decl(sym, $1) )
+                 sym = symref_t(NULL);
+               yyputref($$, sym);
                free($2);
              }
            ;
@@ -204,14 +212,14 @@ param_array_sfx : '[' ']'     { $$.code = ASFX_OK; $$.size = BADOFFSET; }
                 | /* empty */ { $$.code = ASFX_NONE; }
                 ;
 
-param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, symref_t($3)); }
+param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, yygetref($3)); }
                 | /* empty */                    { $$ = NULL; }
                 ;
 
 /*---------------------------------------------------------------------------*/
 func : type func_decl
        '{'
-          { func_enter(symref_t($2), $1); }
+          { func_enter(yygetref($2), $1); }
           func_body
           { func_leave($5); }
        '}'
@@ -693,6 +701,22 @@ seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type)
 }
 
 //-----------------------------------------------------------------------------
+static inline void yyputref(uint8_t const addr[], symref_t ref)
+{
+  unionize(addr, ref);
+}
+
+//-----------------------------------------------------------------------------
+// deletes the reference after extracting
+static symref_t yygetref(uint8_t const addr[])
+{
+  symref_t &yyref = getref(addr);
+  symref_t ret = yyref;
+  yyref.~symref_t();
+  return ret;
+}
+
+//-----------------------------------------------------------------------------
 static symref_t process_stmt_id(const char *id, int line)
 {
   std::string key(id);
@@ -789,7 +813,7 @@ static vdecl_res_t validate_var_decl(const symbol_t &sym, primitive_t type)
 }
 
 //-----------------------------------------------------------------------------
-static void process_var_decl(symref_t sym, primitive_t type)
+static bool process_var_decl(symref_t sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
@@ -810,11 +834,12 @@ static void process_var_decl(symref_t sym, primitive_t type)
         INTERR(0);
     }
     delete sym;
-    return;
+    return false;
   }
 
   sym->set_base(type);
   ctx.insert(sym);
+  return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1090,12 +1115,9 @@ void parse(symtab_t &_gsyms, treefuncs_t &_functions, FILE *infile)
 {
   yyin = infile;
 
-  ctx.setglobal();
   yyparse();
   checkerr();
 
   _gsyms.swap(gsyms);
   _functions.swap(functions);
-
-  ctx.clear();
 }

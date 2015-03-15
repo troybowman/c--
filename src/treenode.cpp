@@ -28,7 +28,7 @@ treenode_t::treenode_t(treenode_type_t type, ...)
       break;
     case TNT_SYMBOL:
       _sym = va_arg(va, symbol_t *);
-      _set_sym(symref_t(_sym));
+      putref(reserve, symref_t(_sym));
       ASSERT(1014, sym() != NULL);
       break;
     case TNT_ASSG:
@@ -59,7 +59,7 @@ treenode_t::treenode_t(treenode_type_t type, ...)
     case TNT_ARRAY_LOOKUP:
       _sym                = va_arg(va, symbol_t *);
       children[AL_OFFSET] = va_arg(va, treenode_t *);
-      _set_sym(symref_t(_sym));
+      putref(reserve, symref_t(_sym));
       ASSERT(1017, sym() != NULL);
       ASSERT(1018, children[AL_OFFSET] != NULL);
       break;
@@ -77,7 +77,7 @@ treenode_t::treenode_t(treenode_type_t type, ...)
     case TNT_CALL:
       _sym                = va_arg(va, symbol_t *);
       children[CALL_ARGS] = va_arg(va, treenode_t *);
-      _set_sym(symref_t(_sym));
+      putref(reserve, symref_t(_sym));
       ASSERT(1023, sym() != NULL);
       ASSERT(1038, sym()->is_func());
       break;
@@ -98,7 +98,7 @@ treenode_t::treenode_t(treenode_type_t type, ...)
     case TNT_PRINTF:
       _sym                  = va_arg(va, symbol_t *);
       children[PRINTF_TREE] = va_arg(va, treenode_t *);
-      _set_sym(symref_t(_sym));
+      putref(reserve, symref_t(_sym));
       ASSERT(1100, sym() != NULL && sym()->is_builtin_printf());
       ASSERT(1099, children[PRINTF_TREE] != NULL);
       break;

@@ -177,6 +177,16 @@ public:
 typedef refcnt_t<symbol_t> symref_t;
 
 //-----------------------------------------------------------------------------
+inline void putref(uint8_t const addr[], symref_t ref)
+{
+  unionize<symref_t>(addr, ref);
+}
+inline symref_t &getref(uint8_t const addr[])
+{
+  return deunionize<symref_t>(addr);
+}
+
+//-----------------------------------------------------------------------------
 class symvec_t : public std::vector<symref_t>
 {
   typedef std::vector<symref_t> inherited;

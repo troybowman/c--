@@ -6,21 +6,6 @@
 #include <stdlib.h>
 
 //-----------------------------------------------------------------------------
-#ifndef __EA64__
-typedef uint32_t offset_t;
-typedef uint32_t offsize_t;
-#define WORDSIZE 4
-#else
-typedef uint64_t offset_t;
-typedef uint64_t offsize_t;
-#define WORDSIZE 8
-#endif
-
-#define BADOFFSET offset_t(-1)
-#define DWORDSIZE (WORDSIZE*2)
-#define ALIGN(off, val) ((off + (val-1)) & ~(val-1))
-
-//-----------------------------------------------------------------------------
 #define INTERR(code)                            \
 do                                              \
 {                                               \
@@ -64,18 +49,6 @@ do                            \
 //-----------------------------------------------------------------------------
 #define cmin(a,b) ((a) < (b)? (a) : (b))
 #define cmax(a,b) ((a) > (b)? (a) : (b))
-
-//-----------------------------------------------------------------------------
-struct area_t
-{
-  offset_t start;
-  offset_t end;
-
-  area_t() : start(0), end(0) {}
-  area_t(offset_t o1, offset_t o2) : start(o1), end(o2) {}
-
-  offsize_t size() const { return end - start; }
-};
 
 //-----------------------------------------------------------------------------
 class refcnt_obj_t
@@ -140,6 +113,44 @@ public:
   {
     return !(*this == r);
   }
+};
+
+//-----------------------------------------------------------------------------
+// used to stuff smart pointers into union members. because I said so.
+template <class T> inline void unionize(uint8_t const addr[], T &obj)
+{
+  new ((T *)addr) T(obj);
+}
+template <class T> inline T &deunionize(uint8_t const addr[])
+{
+  return *(T *)addr;
+}
+
+//-----------------------------------------------------------------------------
+#ifndef __EA64__
+typedef uint32_t offset_t;
+typedef uint32_t offsize_t;
+#define WORDSIZE 4
+#else
+typedef uint64_t offset_t;
+typedef uint64_t offsize_t;
+#define WORDSIZE 8
+#endif
+
+#define BADOFFSET offset_t(-1)
+#define DWORDSIZE (WORDSIZE*2)
+#define ALIGN(off, val) ((off + (val-1)) & ~(val-1))
+
+//-----------------------------------------------------------------------------
+struct area_t
+{
+  offset_t start;
+  offset_t end;
+
+  area_t() : start(0), end(0) {}
+  area_t(offset_t o1, offset_t o2) : start(o1), end(o2) {}
+
+  offsize_t size() const { return end - start; }
 };
 
 #endif // PRO_H
