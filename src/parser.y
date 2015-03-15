@@ -833,7 +833,6 @@ static bool process_var_decl(symref_t sym, primitive_t type)
       default:
         INTERR(0);
     }
-    delete sym;
     return false;
   }
 
@@ -883,7 +882,6 @@ static void process_fdecl_error(fdecl_res_t res, symref_t sym)
     default:
       INTERR(0);
   }
-  sym->release();
 }
 
 //-----------------------------------------------------------------------------
