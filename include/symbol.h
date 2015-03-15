@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+
 #include <common.h>
 
 class symtab_t;
@@ -79,7 +80,7 @@ enum primitive_t
 };
 
 //-----------------------------------------------------------------------------
-// represents anything a 3-address code node would need to point to
+// symbolic address in a three-address code node
 class symbol_t : public refcnt_obj_t
 {
   symbol_type_t _type;
