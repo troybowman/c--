@@ -703,7 +703,7 @@ seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type)
 //-----------------------------------------------------------------------------
 static inline void yyputref(uint8_t const addr[], symref_t ref)
 {
-  unionize(addr, ref);
+  putref(addr, ref);
 }
 
 //-----------------------------------------------------------------------------
