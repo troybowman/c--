@@ -80,7 +80,8 @@ enum primitive_t
 };
 
 //-----------------------------------------------------------------------------
-class symbol_t // represents anything a codenode_t needs to point to
+// symbolic address in a three-address code node
+class symbol_t
 {
   symbol_type_t _type;
 

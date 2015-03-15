@@ -264,10 +264,10 @@ call : ID '(' args ')'
 args : expr arg_list
        {
          // append arg_list to 1st arg
-         treenode_t *head = new treenode_t(TNT_ARG, $1, NULL);
+         treenode_t *first = new treenode_t(TNT_ARG, $1, NULL);
          if ( $2.head != NULL )
-           head->children[SEQ_NEXT] = $2.head;
-         $$ = head;
+           first->children[SEQ_NEXT] = $2.head;
+         $$ = first;
        }
      | /* empty */ { $$ = NULL; }
      ;
@@ -297,20 +297,20 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
      | STRING               { $$ = new treenode_t(TNT_STRCON, $1); }
      | call                 { $$ = process_call_ctx($1, yylineno, true); }
      | stmt_var             { $$ = $1; }
-     | expr EQ  expr        { $$ = process_bool_expr($1, TNT_EQ,    $3, yylineno); }
-     | expr NEQ expr        { $$ = process_bool_expr($1, TNT_NEQ,   $3, yylineno); }
-     | expr '<' expr        { $$ = process_bool_expr($1, TNT_LT,    $3, yylineno); }
-     | expr LEQ expr        { $$ = process_bool_expr($1, TNT_LEQ,   $3, yylineno); }
-     | expr '>' expr        { $$ = process_bool_expr($1, TNT_GT,    $3, yylineno); }
-     | expr GEQ expr        { $$ = process_bool_expr($1, TNT_GEQ,   $3, yylineno); }
-     | expr AND expr        { $$ = process_bool_expr($1, TNT_AND,   $3, yylineno); }
-     | expr OR  expr        { $$ = process_bool_expr($1, TNT_OR,    $3, yylineno); }
-     | expr '+' expr        { $$ = process_math_expr($1, TNT_PLUS,  $3, yylineno); }
-     | expr '-' expr        { $$ = process_math_expr($1, TNT_MINUS, $3, yylineno); }
-     | expr '*' expr        { $$ = process_math_expr($1, TNT_MULT,  $3, yylineno); }
-     | expr '/' expr        { $$ = process_math_expr($1, TNT_DIV,   $3, yylineno); }
-     | '!' expr %prec UNARY { $$ = process_bool_expr(NULL, TNT_NOT, $2, yylineno); }
-     | '-' expr %prec UNARY { $$ = process_math_expr(NULL, TNT_NEG, $2, yylineno); }
+     | expr EQ  expr        { $$ = process_bool_expr($1,   TNT_EQ,    $3, yylineno); }
+     | expr NEQ expr        { $$ = process_bool_expr($1,   TNT_NEQ,   $3, yylineno); }
+     | expr '<' expr        { $$ = process_bool_expr($1,   TNT_LT,    $3, yylineno); }
+     | expr LEQ expr        { $$ = process_bool_expr($1,   TNT_LEQ,   $3, yylineno); }
+     | expr '>' expr        { $$ = process_bool_expr($1,   TNT_GT,    $3, yylineno); }
+     | expr GEQ expr        { $$ = process_bool_expr($1,   TNT_GEQ,   $3, yylineno); }
+     | expr AND expr        { $$ = process_bool_expr($1,   TNT_AND,   $3, yylineno); }
+     | expr OR  expr        { $$ = process_bool_expr($1,   TNT_OR,    $3, yylineno); }
+     | expr '+' expr        { $$ = process_math_expr($1,   TNT_PLUS,  $3, yylineno); }
+     | expr '-' expr        { $$ = process_math_expr($1,   TNT_MINUS, $3, yylineno); }
+     | expr '*' expr        { $$ = process_math_expr($1,   TNT_MULT,  $3, yylineno); }
+     | expr '/' expr        { $$ = process_math_expr($1,   TNT_DIV,   $3, yylineno); }
+     | '!' expr %prec UNARY { $$ = process_bool_expr(NULL, TNT_NOT,   $2, yylineno); }
+     | '-' expr %prec UNARY { $$ = process_math_expr(NULL, TNT_NEG,   $2, yylineno); }
      | '(' expr ')'         { $$ = $2; }
      ;
 
