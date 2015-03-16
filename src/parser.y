@@ -55,7 +55,7 @@ static struct
 //---------------------------------------------------------------------------
 static       void  process_var_list(symvec_t *, primitive_t);
 static       void  process_func_list(symvec_t *, primitive_t, bool);
-static       void  process_var_decl(symbol_t *, primitive_t);
+static       bool  process_var_decl(symbol_t *, primitive_t);
 static   symbol_t *process_var_id(const char *, int, array_sfx_t, uint32_t);
 static   symbol_t *process_stmt_id(const char *, int);
 static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
@@ -183,8 +183,8 @@ ellipsis : ',' ELLIPSIS { $$ = new symbol_t(ST_ELLIPSIS); }
 param_decl : type ID param_array_sfx
              {
                symbol_t *sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
-               if ( sym != NULL )
-                 process_var_decl(sym, $1);
+               if ( sym != NULL && !process_var_decl(sym, $1) )
+                 sym = NULL;
                $$ = sym;
                free($2);
              }
@@ -780,7 +780,7 @@ static vdecl_res_t validate_var_decl(const symbol_t &sym, primitive_t type)
 }
 
 //-----------------------------------------------------------------------------
-static void process_var_decl(symbol_t *sym, primitive_t type)
+static bool process_var_decl(symbol_t *sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
@@ -801,11 +801,12 @@ static void process_var_decl(symbol_t *sym, primitive_t type)
         INTERR(0);
     }
     delete sym;
-    return;
+    return false;
   }
 
   sym->set_base(type);
   ctx.insert(sym);
+  return true;
 }
 
 //-----------------------------------------------------------------------------
