@@ -70,6 +70,7 @@ public:
   treenode_t *children[4];
 
   treenode_t(treenode_type_t type, ...);
+  treenode_t(symref_t ref, treenode_type_t, ...);
   ~treenode_t();
 
   treenode_type_t type()  const { return _type; }

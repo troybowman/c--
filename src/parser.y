@@ -634,7 +634,7 @@ static treenode_t *process_call(symref_t f, treenode_t *args, int line)
     return ERRNODE;
   }
 
-  return new treenode_t(TNT_CALL, (symbol_t *)f, args);
+  return new treenode_t(f, TNT_CALL, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -744,7 +744,7 @@ static treenode_t *process_stmt_var(symref_t sym, treenode_t *idx, int line)
   ASSERT(1045, sym != NULL);
 
   if ( idx == NULL )
-    return new treenode_t(TNT_SYMBOL, (symbol_t *)sym);
+    return new treenode_t(sym, TNT_SYMBOL);
 
   lookup_res_t res = validate_array_lookup(*sym, *idx);
 
@@ -766,7 +766,7 @@ static treenode_t *process_stmt_var(symref_t sym, treenode_t *idx, int line)
     return ERRNODE;
   }
 
-  return new treenode_t(TNT_ARRAY_LOOKUP, (symbol_t *)sym, idx);
+  return new treenode_t(sym, TNT_ARRAY_LOOKUP, idx);
 }
 
 //-----------------------------------------------------------------------------

@@ -72,11 +72,11 @@ static treenode_t *build_printf_tree(symref_t printf, const format_args_t &fmtar
                   : arg.type == PF_ARG_INT ? _print_int
                   :                          _print_char;
 
-    treenode_t *call = new treenode_t(TNT_CALL, (symbol_t *)func, args);
+    treenode_t *call = new treenode_t(func, TNT_CALL, args);
     seq_append(seq, call, TNT_STMT);
   }
 
-  return seq.head == NULL ? ERRNODE : new treenode_t(TNT_PRINTF, (symbol_t *)printf, seq.head);
+  return seq.head == NULL ? ERRNODE : new treenode_t(printf, TNT_PRINTF, seq.head);
 }
 
 //-----------------------------------------------------------------------------
