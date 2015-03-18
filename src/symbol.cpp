@@ -31,7 +31,7 @@ symbol_t::symbol_t(symbol_type_t type, int val)
   : _type(type), _val(val) {}
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(symbol_type_t type, const char *str)
+symbol_t::symbol_t(symbol_type_t type, char *str)
   : _type(type), _str(str) {}
 
 //-----------------------------------------------------------------------------
@@ -41,9 +41,17 @@ symbol_t::symbol_t(symbol_type_t type)
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()
 {
-  if ( is_func() )
+  switch ( _type )
   {
-    delete _params;
-    delete _symbols;
+    case ST_FUNCTION:
+      delete _params;
+      delete _symbols;
+      break;
+    case ST_STRCON:
+    case ST_CHARCON:
+      free(_str);
+      break;
+    default:
+      break;
   }
 }

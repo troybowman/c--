@@ -118,7 +118,7 @@ class symbol_t : public refcnt_obj_t
     // ST_INTCON, ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_LABEL
     // ST_STACK_TEMPORARY, ST_STACK_ARGUMENT, ST_REG_ARGUMENT
     int _val;
-    const char *_str; // ST_STRCON, ST_CHARCON
+    char *_str; // ST_STRCON, ST_CHARCON
   };
 
 public:
@@ -128,7 +128,7 @@ public:
   symbol_t(uint32_t flags, const char *name, int line, offsize_t size);
   symbol_t(uint32_t flags, const char *name, int line, symvec_t *params);
   symbol_t(symbol_type_t type, int val);
-  symbol_t(symbol_type_t type, const char *str);
+  symbol_t(symbol_type_t type, char *str);
   symbol_t(symbol_type_t type);
 
   virtual ~symbol_t(); // TODO: why does it have to be virtual? (release())

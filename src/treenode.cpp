@@ -120,10 +120,6 @@ treenode_t::~treenode_t()
 {
   switch ( _type )
   {
-    case TNT_CHARCON:
-    case TNT_STRCON:
-      free(_str);
-      break;
     case TNT_SYMBOL:
     case TNT_ARRAY_LOOKUP:
     case TNT_CALL:

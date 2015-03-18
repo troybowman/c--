@@ -468,5 +468,6 @@ void generate_ir(ir_t &ir, const treefuncs_t &functions)
     e.start(tf.tree);
 
     ir.funcs.push_back(cf);
+    delete tf.tree;
   }
 }

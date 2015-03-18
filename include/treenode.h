@@ -75,7 +75,7 @@ public:
 
   treenode_type_t type()  const { return _type; }
   int val()               const { return _val;  }
-  const char *str()       const { return _str;  }
+  char *str()             const { return _str;  }
   symref_t &sym()         const { return getref(reserve); }
 
   bool is_int_compat()    const;
@@ -88,10 +88,9 @@ struct treefunc_t
 {
   symref_t sym;
   treenode_t *tree;
-  treefunc_t(symref_t _sym, treenode_t *_tree) : sym(_sym), tree(_tree)
-  {
-    ASSERT(0, sym != NULL);
-  }
+
+  treefunc_t(symref_t _sym, treenode_t *_tree)
+    : sym(_sym), tree(_tree) {}
 };
 
 class treefuncs_t : public std::vector<treefunc_t> {};
