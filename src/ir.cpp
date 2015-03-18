@@ -111,7 +111,7 @@ void codefunc_engine_t::check_src(symref_t sym)
 //-----------------------------------------------------------------------------
 symref_t codefunc_engine_t::gen_temp(uint32_t flags)
 {
-  symref_t temp(NULL);
+  symref_t temp;
 
   if ( (flags & TCTX_SAVE) == 0 )
   {

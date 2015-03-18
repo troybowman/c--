@@ -23,9 +23,9 @@ static const char *argreg_names[ARGREGQTY] =
 #define RESERVED_TEMP2 "$t8"
 #define RESERVED_TEMP3 "$t9"
 
-static symref_t t7(NULL);
-static symref_t t8(NULL);
-static symref_t t9(NULL);
+static symref_t t7;
+static symref_t t8;
+static symref_t t9;
 
 //-----------------------------------------------------------------------------
 static FILE *outfile;
