@@ -3,9 +3,8 @@
 
 #include <symbol.h>
 
-class symbol_t;
 class treefuncs_t;
-struct treenode_t;
+class treenode_t;
 struct codenode_t;
 struct ir_t;
 
@@ -32,13 +31,15 @@ enum codenode_type_t
 struct codenode_t
 {
   codenode_type_t type;
-  symbol_t *dest;
-  symbol_t *src1;
-  symbol_t *src2;
+  symref_t dest;
+  symref_t src1;
+  symref_t src2;
   codenode_t *next;
 
-  codenode_t(codenode_type_t t, symbol_t *d, symbol_t *s1, symbol_t *s2)
+  codenode_t(codenode_type_t t, symref_t d, symref_t s1, symref_t s2)
     : type(t), dest(d), src1(s1), src2(s2), next(NULL) {}
+
+  ~codenode_t() { delete next; }
 };
 
 //-----------------------------------------------------------------------------
@@ -82,28 +83,28 @@ protected:
   symbol_type_t _type;
   int _cnt;
 
-  typedef std::map<int, symbol_t *> rmap_t;
+  typedef std::map<int, symref_t> rmap_t;
   rmap_t _free;
   rmap_t _used;
 
-  symbol_t *get_first_available()
+  symref_t get_first_available()
   {
     if ( _free.size() > 0 )
     {
-      symbol_t *ret = _free.begin()->second;
+      symref_t ret = _free.begin()->second;
       _free.erase(_free.begin());
       return ret;
     }
-    return NULL;
+    return symref_t(NULL);
   }
 
 public:
   resource_manager_t(symbol_type_t type) : _type(type), _cnt(0) {}
 
-  void free(symbol_t *s) { _free[s->val()] = s; }
-  void use(symbol_t *s)  { _used[s->val()] = s; }
+  void free(symref_t s) { _free[s->val()] = s; }
+  void use(symref_t s)  { _used[s->val()] = s; }
 
-  virtual symbol_t *gen_resource() = 0;
+  virtual symref_t gen_resource() = 0;
 
   int count() const { return _used.size(); }
 
@@ -133,11 +134,11 @@ public:
   reg_manager_t(symbol_type_t type, int max)
     : resource_manager_t(type), _max(max) {}
 
-  virtual symbol_t *gen_resource()
+  virtual symref_t gen_resource()
   {
-    symbol_t *ret = get_first_available();
+    symref_t ret = get_first_available();
     if ( ret == NULL && _cnt < _max )
-      ret = new symbol_t(_type, _cnt++);
+      ret = symref_t(new symbol_t(_type, _cnt++));
     return ret;
   }
 };
@@ -149,11 +150,11 @@ class stack_manager_t : public resource_manager_t
 public:
   stack_manager_t(symbol_type_t type) : resource_manager_t(type) {}
 
-  virtual symbol_t *gen_resource()
+  virtual symref_t gen_resource()
   {
-    symbol_t *ret = get_first_available();
+    symref_t ret = get_first_available();
     if ( ret == NULL )
-      ret = new symbol_t(_type, _cnt++);
+      ret = symref_t(new symbol_t(_type, _cnt++));
     return ret;
   }
 };
@@ -162,13 +163,13 @@ public:
 // return address location is a special case
 class ra_manager_t : public resource_manager_t
 {
-  symbol_t *ra;
+  symref_t ra;
 
 public:
-  ra_manager_t() : resource_manager_t(ST_RETADDR)
-    { ra = new symbol_t(_type); }
+  ra_manager_t()
+    : resource_manager_t(ST_RETADDR), ra(new symbol_t(_type)) {}
 
-  virtual symbol_t *gen_resource() { return ra; }
+  virtual symref_t gen_resource() { return ra; }
 };
 
 //-----------------------------------------------------------------------------
@@ -176,15 +177,15 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// intermediate representation of a function
-// codefunc_t objects own all the resources that they use
+// intermediate representation of a function.
 struct codefunc_t
 {
-  symbol_t &sym;
+  symref_t sym;
   codenode_t *code;
   bool has_call;
-  symbol_t *zero;
 
+  // codefunc objects own all the resources that they use
+  symref_t zero;
   ra_manager_t ra;
 
   stack_manager_t stktemps;
@@ -195,7 +196,7 @@ struct codefunc_t
   reg_manager_t regargs;
   reg_manager_t retval;
 
-  codefunc_t(symbol_t &s)
+  codefunc_t(symref_t s)
     : sym(s), code(NULL), has_call(false), zero(new symbol_t(ST_ZERO)),
       stktemps(ST_STACK_TEMPORARY),
       stkargs (ST_STACK_ARGUMENT),
@@ -204,7 +205,7 @@ struct codefunc_t
       regargs (ST_REG_ARGUMENT,    ARGREGQTY),
       retval  (ST_RETVAL,          1) {}
 
-  ~codefunc_t() { delete zero; } // TODO: delete code
+  ~codefunc_t() { delete code; }
 };
 
 //-----------------------------------------------------------------------------
@@ -233,14 +234,14 @@ struct tree_ctx_t
 #define TCTX_SAVE 0x2
 #define TCTX_IF   0x4
 
-  symbol_t *endif;
+  symref_t endif;
 
-  tree_ctx_t(symbol_t *_endif) : flags(TCTX_IF), endif(_endif) {}
+  tree_ctx_t(symref_t _endif) : flags(TCTX_IF), endif(_endif) {}
   tree_ctx_t(uint32_t _flags = 0) : flags(_flags), endif(NULL) {}
 };
 
 //-----------------------------------------------------------------------------
-// this the intermediate code generator
+// intermediate code generator
 class codefunc_engine_t
 {
   codefunc_t &cf;
@@ -252,19 +253,19 @@ class codefunc_engine_t
   int lblcnt;
 
 private:
-  void check_dest(symbol_t *src);
-  void check_src(symbol_t *src);
+  void check_dest(symref_t src);
+  void check_src(symref_t src);
 
-  symbol_t *gen_temp(uint32_t flags = 0);
-  symbol_t *gen_argloc();
+  symref_t gen_temp(uint32_t flags = 0);
+  symref_t gen_argloc();
 
   void append(
       codenode_type_t type,
-      symbol_t *dest = NULL,
-      symbol_t *src1 = NULL,
-      symbol_t *src2 = NULL);
+      symref_t dest = symref_t(NULL),
+      symref_t src1 = symref_t(NULL),
+      symref_t src2 = symref_t(NULL));
 
-  symbol_t *generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
+  symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 
 public:
   codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)

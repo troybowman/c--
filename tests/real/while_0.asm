@@ -270,7 +270,7 @@ _L0:
   lw $t0, _i
   li $t1, 100
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, _i
   move $a0, $t0
   jal __print_int

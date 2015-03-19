@@ -1,11 +1,6 @@
 #ifndef MESSAGES_H
 #define MESSAGES_H
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-
 //-----------------------------------------------------------------------------
 // Error messages
 //-----------------------------------------------------------------------------
@@ -22,45 +17,15 @@ void purge_and_exit(int code);
 void usererr(const char *format, ...);
 
 //-----------------------------------------------------------------------------
-#define INTERR(code)                            \
-do                                              \
-{                                               \
-  /* TODO: if ( debugged ) __asm__("int $3") */ \
-  fprintf(stderr, "interr: %d\n", code);        \
-  exit(code);                                   \
-} while ( false );
-
-#define APPCHAR(ptr, c, len) \
-do                           \
-{                            \
-  int l = len;               \
-  while ( l-- > 0)           \
-    { *ptr = c; ptr++; }     \
-} while ( false ) ;
-
-#define APPSTR(ptr, str, len) \
-do                            \
-{                             \
-  strncpy(ptr, str, len);     \
-  ptr += len;                 \
-} while ( false )
-
-#define cmin(a,b) ((a) < (b)? (a) : (b))
-#define cmax(a,b) ((a) > (b)? (a) : (b))
-
-//-----------------------------------------------------------------------------
 // Debug/Logging messages
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 #ifndef NDEBUG
 
-#define ASSERT(code, cond) \
-do                         \
-{                          \
-  if ( !(cond) )           \
-    INTERR(code);          \
-} while ( false );
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
 
 typedef uint32_t dbg_flags_t;
 
@@ -140,7 +105,6 @@ do                                      \
 
 //-----------------------------------------------------------------------------
 #define DBG(flag, ...)                      // nothing
-#define ASSERT(code, cond)                  // nothing
 #define DBG_PARSE_RESULTS(gsyms, functions) // nothing
 #define DBG_IR(code)                        // nothing
 #define DBG_CHECK_PHASE_FLAG(flags)         // nothing

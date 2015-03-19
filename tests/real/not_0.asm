@@ -568,7 +568,7 @@ main:
   lw $t1, 28($sp)
   seq $t2, $t0, $t1
   xor $t0, $t2, 1
-  beq $t0, 0, _L0
+  beq $t0, $zero, _L0
   la $t0, _str0
   move $a0, $t0
   jal __print_string
@@ -581,7 +581,7 @@ _L0:
   sne $t3, $t0, $t1
   xor $t0, $t3, 1
   and $t1, $t2, $t0
-  beq $t1, 0, _L1
+  beq $t1, $zero, _L1
   la $t0, _str1
   move $a0, $t0
   jal __print_string
@@ -594,7 +594,7 @@ _L1:
   seq $t3, $t0, $t1
   and $t0, $t2, $t3
   xor $t1, $t0, 1
-  beq $t1, 0, _L2
+  beq $t1, $zero, _L2
   la $t0, _str2
   move $a0, $t0
   jal __print_string
@@ -606,7 +606,7 @@ _L2:
   xor $t1, $t0, 1
   xor $t0, $t1, 1
   xor $t1, $t0, 1
-  beq $t1, 0, _L3
+  beq $t1, $zero, _L3
   la $t0, _str3
   move $a0, $t0
   jal __print_string

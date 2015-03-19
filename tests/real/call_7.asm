@@ -1066,7 +1066,7 @@ main:
   jal _id
   move $t0, $v0
   sgt $t1, $s0, $t0
-  beq $t1, 0, _L0
+  beq $t1, $zero, _L0
   li $t0, 321
   sw $t0, 24($sp)
 _L0:
@@ -1085,7 +1085,7 @@ _L1:
   move $t0, $v0
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L2
+  beq $t2, $zero, _L2
   lw $t0, 24($sp)
   li $t1, 1
   sub $t2, $t0, $t1
@@ -1126,7 +1126,7 @@ _L3:
   move $t0, $v0
   li $t1, 6
   slt $t2, $t0, $t1
-  beq $t2, 0, _L4
+  beq $t2, $zero, _L4
   lw $t0, 24($sp)
   li $t1, 2
   add $t2, $t0, $t1

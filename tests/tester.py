@@ -32,9 +32,7 @@ class Tester(ArgumentParser):
 
     def __init__(self):
         self.__find_cmm__() # fail if we're not in the c-- directory tree
-
         ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
-
         self.add_argument(
             "-p", "--phase_spec",
             help="list of phases to run",
@@ -42,20 +40,17 @@ class Tester(ArgumentParser):
             nargs="+",
             choices=phase_names,
             default=phase_names)
-
         self.add_argument(
             "-f", "--file_pattern",
             help="only compile files matching the given pattern",
             metavar="FILES",
             default="*.c")
-
         self.add_argument(
             "-v", "--verbosity",
             help="set verbosity level: 0=sparse, 1=verbose, 2=trace",
             metavar="LEVEL",
             type=int,
             default=self.VERB)
-
         self.add_argument(
             "-g", "--grind",
             help="enable valgrind memory checks",
@@ -70,11 +65,9 @@ class Tester(ArgumentParser):
                 raise Exception("Error: could not find c-- root directory!")
             cur = parent
         self.home = cur
-
         self.dbg = os.path.join(self.home, "bin", "debug", "c--")
         if not os.path.exists(self.dbg):
             self.dbg = None
-
         self.opt = os.path.join(self.home, "bin", "release", "c--")
         if not os.path.exists(self.opt):
             self.opt = None
@@ -86,7 +79,6 @@ class Tester(ArgumentParser):
         if self.dbg is None:
             raise Exception("Error: could not find c-- debug binary!")
         return self.dbg
-
     def release(self):
         if self.opt is None:
             raise Exception("Error: could not find c-- release binary!")
@@ -99,19 +91,15 @@ class Tester(ArgumentParser):
 
     def info(self, text, color=""):
         self.out(self.INFO, text, color)
-
     def verb(self, text, color=""):
         self.out(self.VERB, text, color)
-
     def trce(self, text, color=""):
         self.out(self.TRCE, text, color)
 
     def success(self, text):
         self.info(text, self.SUCCESS)
-
     def failure(self, text):
         self.info(text, self.FAILURE)
-
     def warning(self, text):
         self.info(text, self.WARNING)
 

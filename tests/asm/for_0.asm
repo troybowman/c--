@@ -451,7 +451,7 @@ main:
 
 _L0:
   li $t0, 1
-  beq $t0, 0, _L1
+  beq $t0, $zero, _L1
   li $t0, 1
   sw $t0, 24($sp)
   j _L0
@@ -462,7 +462,7 @@ _L2:
   lw $t0, 24($sp)
   li $t1, 10
   slt $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   la $t0, _str0
   lw $t1, 24($sp)
   move $a1, $t1
@@ -478,7 +478,7 @@ _L4:
   lw $t0, 24($sp)
   li $t1, 10
   slt $t2, $t0, $t1
-  beq $t2, 0, _L5
+  beq $t2, $zero, _L5
   la $t0, _str0
   lw $t1, 24($sp)
   move $a1, $t1

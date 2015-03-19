@@ -285,7 +285,7 @@ _L0:
   lw $t0, 24($sp)
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   jal main
   j _L0
 _L1:
@@ -297,16 +297,16 @@ _L2:
   li $t1, 6
   seq $t3, $t0, $t1
   or $t0, $t2, $t3
-  beq $t0, 0, _L6
+  beq $t0, $zero, _L6
   lw $t0, 24($sp)
   li $t1, 1
   slt $t2, $t0, $t1
-  beq $t2, 0, _L5
+  beq $t2, $zero, _L5
 _L3:
   li $t0, 4
   li $t1, 5
   seq $t2, $t0, $t1
-  beq $t2, 0, _L4
+  beq $t2, $zero, _L4
   j __leavemain
   j _L3
 _L4:

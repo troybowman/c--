@@ -476,7 +476,7 @@ _L0:
   move $t0, $a0
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, _x
   move $t1, $a0
   mul $t2, $t0, $t1

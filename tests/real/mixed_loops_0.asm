@@ -584,21 +584,21 @@ _L0:
   lw $t0, 24($sp)
   li $t1, 5
   slt $t2, $t0, $t1
-  beq $t2, 0, _L5
+  beq $t2, $zero, _L5
   li $t0, 0
   sw $t0, 28($sp)
 _L1:
   lw $t0, 28($sp)
   li $t1, 10
   slt $t2, $t0, $t1
-  beq $t2, 0, _L4
+  beq $t2, $zero, _L4
   li $t0, 0
   sw $t0, 32($sp)
 _L2:
   lw $t0, 32($sp)
   li $t1, 15
   slt $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   lw $t0, 36($sp)
   lw $t1, 24($sp)
   lw $t2, 28($sp)

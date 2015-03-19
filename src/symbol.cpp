@@ -1,7 +1,6 @@
-#include <stdarg.h>
-
 #include <symbol.h>
 #include <messages.h>
+#include <stdarg.h>
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(uint32_t flags, const char *name, int line, symvec_t *params)
@@ -32,7 +31,7 @@ symbol_t::symbol_t(symbol_type_t type, int val)
   : _type(type), _val(val) {}
 
 //-----------------------------------------------------------------------------
-symbol_t::symbol_t(symbol_type_t type, const char *str)
+symbol_t::symbol_t(symbol_type_t type, char *str)
   : _type(type), _str(str) {}
 
 //-----------------------------------------------------------------------------
@@ -42,14 +41,17 @@ symbol_t::symbol_t(symbol_type_t type)
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()
 {
-  if ( is_func() )
+  switch ( _type )
   {
-    for ( symvec_t::iterator i = _params->begin(); i != _params->end(); i++ )
-      delete *i;
-    delete _params;
-
-    for ( symtab_t::iterator i = _symbols->begin(); i != _symbols->end(); i++ )
-      delete *i;
-    delete _symbols;
+    case ST_FUNCTION:
+      delete _params;
+      delete _symbols;
+      break;
+    case ST_STRCON:
+    case ST_CHARCON:
+      free(_str);
+      break;
+    default:
+      break;
   }
 }

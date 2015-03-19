@@ -1,11 +1,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
-#include <vector>
-#include <messages.h>
-
-class symbol_t;
-struct treenode_t;
+#include <symbol.h>
 
 //-----------------------------------------------------------------------------
 enum treenode_type_t
@@ -60,35 +56,41 @@ enum treenode_type_t
 };
 
 //-----------------------------------------------------------------------------
-struct treenode_t
+class treenode_t
 {
-  treenode_type_t type;
+  treenode_type_t _type;
   union
   {
-    int val;
-    char *str;
-    symbol_t *sym;
+    int _val;
+    char *_str;
+    uint8_t reserve[sizeof(symref_t)];
   };
 
+public:
   treenode_t *children[4];
 
-  treenode_t(treenode_type_t _type, ...);
+  treenode_t(treenode_type_t type, ...);
+  treenode_t(symref_t ref, treenode_type_t, ...);
   ~treenode_t();
 
-  bool is_int_compat() const;
-  bool is_bool_compat() const;
+  treenode_type_t type()  const { return _type; }
+  int val()               const { return _val;  }
+  char *str()             const { return _str;  }
+  symref_t &sym()         const { return getref(reserve); }
+
+  bool is_int_compat()    const;
+  bool is_bool_compat()   const;
   bool is_string_compat() const;
 };
 
 //-----------------------------------------------------------------------------
 struct treefunc_t
 {
-  symbol_t *sym;
+  symref_t sym;
   treenode_t *tree;
-  treefunc_t(symbol_t *_sym, treenode_t *_tree) : sym(_sym), tree(_tree)
-  {
-    ASSERT(0, sym != NULL);
-  }
+
+  treefunc_t(symref_t _sym, treenode_t *_tree)
+    : sym(_sym), tree(_tree) {}
 };
 
 class treefuncs_t : public std::vector<treefunc_t> {};

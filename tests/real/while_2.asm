@@ -804,35 +804,35 @@ _L0:
   lw $t0, _a
   lw $t1, _LIM
   slt $t2, $t0, $t1
-  beq $t2, 0, _L9
+  beq $t2, $zero, _L9
   li $t0, 0
   sw $t0, _b
 _L1:
   lw $t0, _b
   lw $t1, _LIM
   slt $t2, $t0, $t1
-  beq $t2, 0, _L8
+  beq $t2, $zero, _L8
   li $t0, 0
   sw $t0, _c
 _L2:
   lw $t0, _c
   lw $t1, _LIM
   slt $t2, $t0, $t1
-  beq $t2, 0, _L7
+  beq $t2, $zero, _L7
   li $t0, 0
   sw $t0, _d
 _L3:
   lw $t0, _d
   lw $t1, _LIM
   slt $t2, $t0, $t1
-  beq $t2, 0, _L6
+  beq $t2, $zero, _L6
   li $t0, 0
   sw $t0, _e
 _L4:
   lw $t0, _e
   lw $t1, _LIM
   slt $t2, $t0, $t1
-  beq $t2, 0, _L5
+  beq $t2, $zero, _L5
   lw $t0, _res
   li $t1, 1
   add $t2, $t0, $t1

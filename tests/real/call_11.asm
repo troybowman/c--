@@ -753,7 +753,7 @@ _L0:
   lw $t0, 0($sp)
   move $t1, $a1
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, 0($sp)
   lw $t1, 0($sp)
   sll $t2, $t1, 2
@@ -797,7 +797,7 @@ _L2:
   move $t0, $a1
   li $t1, 0
   sge $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   lw $t0, 0($sp)
   move $t1, $a1
   sll $t2, $t1, 2
