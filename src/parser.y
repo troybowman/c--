@@ -66,17 +66,10 @@ public:
 //---------------------------------------------------------------------------
 static       void  process_var_list(symvec_t *, primitive_t);
 static       void  process_func_list(symvec_t *, primitive_t, bool);
-<<<<<<< HEAD
-static       bool  process_var_decl(symbol_t *, primitive_t);
-static   symbol_t *process_var_id(const char *, int, array_sfx_t, uint32_t);
-static   symbol_t *process_stmt_id(const char *, int);
-static treenode_t *process_stmt_var(const symbol_t *, treenode_t *, int);
-=======
 static       bool  process_var_decl(symref_t, primitive_t);
 static   symref_t  process_var_id(const char *, int, array_sfx_t, uint32_t);
 static   symref_t  process_stmt_id(const char *, int);
 static treenode_t *process_stmt_var(symref_t, treenode_t *, int);
->>>>>>> symref_t
 static treenode_t *process_assg(treenode_t *, treenode_t *, int);
 static treenode_t *process_call(symref_t, treenode_t *, int);
 static treenode_t *process_call_ctx(treenode_t *, int, bool);
@@ -207,17 +200,10 @@ ellipsis : ',' ELLIPSIS { yyputref($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
 
 param_decl : type ID param_array_sfx
              {
-<<<<<<< HEAD
-               symbol_t *sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
-               if ( sym != NULL && !process_var_decl(sym, $1) )
-                 sym = NULL;
-               $$ = sym;
-=======
                symref_t sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
                if ( sym != NULL && !process_var_decl(sym, $1) )
                  sym = symref_t(NULL);
                yyputref($$, sym);
->>>>>>> symref_t
                free($2);
              }
            ;
@@ -827,11 +813,7 @@ static vdecl_res_t validate_var_decl(const symbol_t &sym, primitive_t type)
 }
 
 //-----------------------------------------------------------------------------
-<<<<<<< HEAD
-static bool process_var_decl(symbol_t *sym, primitive_t type)
-=======
 static bool process_var_decl(symref_t sym, primitive_t type)
->>>>>>> symref_t
 {
   ASSERT(0, sym != NULL);
 
@@ -851,10 +833,6 @@ static bool process_var_decl(symref_t sym, primitive_t type)
       default:
         INTERR(0);
     }
-<<<<<<< HEAD
-    delete sym;
-=======
->>>>>>> symref_t
     return false;
   }
 
