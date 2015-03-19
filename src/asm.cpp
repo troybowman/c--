@@ -798,6 +798,8 @@ static void gen_text_section(codefuncs_t &funcs)
     frame.gen_prologue();
     gen_func_body(cf.code, frame.epilogue_lbl);
     frame.gen_epilogue();
+
+    delete *i;
   }
 
   gen_builtin_function("_"BI_PRINT_STRING, 4);

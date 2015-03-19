@@ -38,6 +38,8 @@ struct codenode_t
 
   codenode_t(codenode_type_t t, symref_t d, symref_t s1, symref_t s2)
     : type(t), dest(d), src1(s1), src2(s2), next(NULL) {}
+
+  ~codenode_t() { delete next; }
 };
 
 //-----------------------------------------------------------------------------
@@ -175,15 +177,15 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// intermediate representation of a function
-// codefunc_t objects own all the resources that they use
+// intermediate representation of a function.
 struct codefunc_t
 {
   symref_t sym;
   codenode_t *code;
   bool has_call;
-  symref_t zero;
 
+  // codefunc objects own all the resources that they use
+  symref_t zero;
   ra_manager_t ra;
 
   stack_manager_t stktemps;
@@ -203,7 +205,7 @@ struct codefunc_t
       regargs (ST_REG_ARGUMENT,    ARGREGQTY),
       retval  (ST_RETVAL,          1) {}
 
-  ~codefunc_t() { delete zero; } // TODO: delete code
+  ~codefunc_t() { delete code; }
 };
 
 //-----------------------------------------------------------------------------
@@ -239,7 +241,7 @@ struct tree_ctx_t
 };
 
 //-----------------------------------------------------------------------------
-// this the intermediate code generator
+// intermediate code generator
 class codefunc_engine_t
 {
   codefunc_t &cf;
