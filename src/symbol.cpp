@@ -1,6 +1,4 @@
 #include <symbol.h>
-#include <messages.h>
-#include <stdarg.h>
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(uint32_t flags, const char *name, int line, symvec_t *params)

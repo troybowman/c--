@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include <parse.h>
 #include <symbol.h>
@@ -80,12 +81,13 @@ struct args_t
   {
     char c;
     const char *str;
+    char *outpath;
   };
   args_t(int _code) : code(_code) {}
   args_t(int _code, char _c) : code(_code), c(_c) {}
   args_t(int _code, const char *_str) : code(_code), str(_str) {}
-  args_t(FILE *_infile, const char *_str)
-    : code(ARGS_OK), infile(_infile), str(_str) {}
+  args_t(FILE *_infile, char *_outpath)
+    : code(ARGS_OK), infile(_infile), outpath(_outpath) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -189,7 +191,7 @@ int main(int argc, char **argv)
 
   fclose(args.infile);
 
-  DBG_INIT_OUTFILE(args.str);
+  DBG_INIT_OUTFILE(args.outpath);
   DBG_PARSE_RESULTS(gsyms, functions);
   DBG_CHECK_PHASE_FLAG(dbg_no_ir);
 
@@ -202,10 +204,11 @@ int main(int argc, char **argv)
   DBG_CHECK_PHASE_FLAG(dbg_no_code);
 
   // backend ------------------------------------------------------------------
-  OPT_INIT_OUTFILE(args.str);
+  OPT_INIT_OUTFILE(args.outpath);
   generate_mips_asm(outfile, ir);
   //---------------------------------------------------------------------------
 
+  free(args.outpath);
   fclose(outfile);
   return 0;
 }
