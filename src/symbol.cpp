@@ -28,15 +28,15 @@ symbol_t::symbol_t(uint32_t flags, const char *name, int line, offsize_t size)
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(symbol_type_t type, int val)
-  : _type(type), _val(val) {}
+  : _type(type), _flags(0), _val(val) {}
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(symbol_type_t type, char *str)
-  : _type(type), _str(str) {}
+  : _type(type), _flags(0), _str(str) {}
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(symbol_type_t type)
-  : _type(type) {}
+  : _type(type), _flags(0) {}
 
 //-----------------------------------------------------------------------------
 symbol_t::~symbol_t()

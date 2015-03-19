@@ -199,11 +199,11 @@ struct codefunc_t
   codefunc_t(symref_t s)
     : sym(s), code(NULL), has_call(false), zero(new symbol_t(ST_ZERO)),
       stktemps(ST_STACK_TEMPORARY),
-      stkargs (ST_STACK_ARGUMENT),
-      temps   (ST_TEMPORARY,       TEMPREGQTY),
-      svregs  (ST_SAVED_TEMPORARY, SVREGQTY),
-      regargs (ST_REG_ARGUMENT,    ARGREGQTY),
-      retval  (ST_RETVAL,          1) {}
+       stkargs(ST_STACK_ARGUMENT),
+         temps(ST_TEMPORARY,       TEMPREGQTY),
+        svregs(ST_SAVED_TEMPORARY, SVREGQTY),
+       regargs(ST_REG_ARGUMENT,    ARGREGQTY),
+        retval(ST_RETVAL,          1) {}
 
   ~codefunc_t() { delete code; }
 };

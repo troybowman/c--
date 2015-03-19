@@ -79,6 +79,7 @@ class Tester(ArgumentParser):
         if self.dbg is None:
             raise Exception("Error: could not find c-- debug binary!")
         return self.dbg
+
     def release(self):
         if self.opt is None:
             raise Exception("Error: could not find c-- release binary!")
