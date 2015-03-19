@@ -484,7 +484,7 @@ _f:
   lw $t0, 24($sp)
   li $t1, 0
   seq $t2, $t0, $t1
-  beq $t2, 0, _L0
+  beq $t2, $zero, _L0
   li $t0, 1
   move $v0, $t0
   j __leave_f

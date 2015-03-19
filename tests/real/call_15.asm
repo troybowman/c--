@@ -561,7 +561,7 @@ _L0:
   lw $t0, 24($sp)
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, 24($sp)
   sw $t0, _y
   li $t0, 0

@@ -423,7 +423,7 @@ _f:
   lb $t0, ($t2)
   li $t1, 0
   seq $t2, $t0, $t1
-  beq $t2, 0, _L0
+  beq $t2, $zero, _L0
   j __leave_f
   j _L1
 _L0:

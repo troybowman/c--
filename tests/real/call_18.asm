@@ -1282,7 +1282,7 @@ _L0:
   lw $t0, 24($sp)
   li $t1, 10
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, 24($sp)
   lw $t1, 24($sp)
   sll $t2, $t1, 2

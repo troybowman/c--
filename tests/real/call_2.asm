@@ -675,7 +675,7 @@ _L0:
   lw $t0, 52($sp)
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $s0, 56($sp)
   li $s1, 1
   li $s2, 2

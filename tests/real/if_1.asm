@@ -853,7 +853,7 @@ main:
   xor $t2, $t1, 1
   xor $t1, $t2, 1
   and $t2, $t0, $t1
-  beq $t2, 0, _L0
+  beq $t2, $zero, _L0
   li $t0, 1111
   sw $t0, _res
   j _L1

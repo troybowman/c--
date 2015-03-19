@@ -435,7 +435,7 @@ main:
   li $t0, 1
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L0
+  beq $t2, $zero, _L0
   li $t0, 1111
   sw $t0, 32($sp)
   j _L1
@@ -451,7 +451,7 @@ _L1:
   lw $t0, 24($sp)
   lw $t1, 28($sp)
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L2
+  beq $t2, $zero, _L2
   li $t0, 3333
   sw $t0, 36($sp)
   j _L3

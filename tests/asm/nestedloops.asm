@@ -1610,7 +1610,7 @@ _L0:
   lw $t0, 0($sp)
   move $t1, $a1
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, 4($sp)
   lw $t1, 0($sp)
   move $t2, $a0
@@ -1664,15 +1664,15 @@ main:
 
 _L2:
   li $t0, 1
-  beq $t0, 0, _L15
+  beq $t0, $zero, _L15
 _L3:
   li $t0, 0
   li $t1, 0
   seq $t2, $t0, $t1
-  beq $t2, 0, _L14
+  beq $t2, $zero, _L14
 _L4:
   li $t0, 1
-  beq $t0, 0, _L13
+  beq $t0, $zero, _L13
 _L5:
   lb $t0, 72($sp)
   sll $t1, $t0, 2
@@ -1686,7 +1686,7 @@ _L5:
   jal _dub
   move $t0, $v0
   seq $t1, $s0, $t0
-  beq $t1, 0, _L12
+  beq $t1, $zero, _L12
 _L6:
   la $t0, _str0
   li $t1, 222
@@ -1701,7 +1701,7 @@ _L6:
   jal _sumchars
   move $t0, $v0
   slt $t1, $s0, $t0
-  beq $t1, 0, _L11
+  beq $t1, $zero, _L11
   li $t0, 555
   move $a0, $t0
   jal _dub
@@ -1774,7 +1774,7 @@ _L7:
   li $t1, 1000
   sne $t3, $t2, $t1
   or $t1, $t0, $t3
-  beq $t1, 0, _L10
+  beq $t1, $zero, _L10
 _L8:
   li $t0, 0
   sll $t1, $t0, 2
@@ -1783,7 +1783,7 @@ _L8:
   lw $t0, ($t2)
   li $t1, 1001
   seq $t2, $t0, $t1
-  beq $t2, 0, _L9
+  beq $t2, $zero, _L9
   lb $t0, 72($sp)
   li $t1, 1002
   sub $t2, $t0, $t1

@@ -441,7 +441,7 @@ _sum:
   lb $t0, ($t2)
   li $t1, 0
   seq $t2, $t0, $t1
-  beq $t2, 0, _L0
+  beq $t2, $zero, _L0
   li $t0, 0
   move $v0, $t0
   j __leave_sum

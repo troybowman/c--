@@ -647,7 +647,7 @@ static void gen_func_body(codenode_t *code, symref_t epilogue)
           symref_t dest = node->dest;
           symref_t src1 = node->src1;
 
-          fprintf(outfile, TAB1"beq %s, 0, %s\n", src1->loc.reg(), dest->c_str());
+          fprintf(outfile, TAB1"beq %s, $zero, %s\n", src1->loc.reg(), dest->c_str());
         }
         break;
       case CNT_RET:

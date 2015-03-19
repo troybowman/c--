@@ -786,14 +786,14 @@ _L0:
   lw $t0, 24($sp)
   li $t1, 5
   slt $t2, $t0, $t1
-  beq $t2, 0, _L8
+  beq $t2, $zero, _L8
   li $t0, 0
   sw $t0, 28($sp)
 _L1:
   lw $t0, 28($sp)
   li $t1, 5
   slt $t2, $t0, $t1
-  beq $t2, 0, _L7
+  beq $t2, $zero, _L7
   lw $t0, 24($sp)
   lw $t1, 28($sp)
   add $t2, $t0, $t1
@@ -803,14 +803,14 @@ _L1:
   lw $t0, 32($sp)
   lw $t1, 24($sp)
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L6
+  beq $t2, $zero, _L6
   li $t0, 0
   sw $t0, 36($sp)
 _L2:
   lw $t0, 36($sp)
   li $t1, 5
   slt $t2, $t0, $t1
-  beq $t2, 0, _L5
+  beq $t2, $zero, _L5
   lw $t0, 36($sp)
   lw $t1, 32($sp)
   add $t2, $t0, $t1
@@ -820,7 +820,7 @@ _L2:
   lw $t0, 40($sp)
   lw $t1, 28($sp)
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   lw $t0, 44($sp)
   lw $t1, 40($sp)
   add $t2, $t0, $t1

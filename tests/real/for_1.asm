@@ -624,7 +624,7 @@ _L0:
   lw $t0, 24($sp)
   li $t1, 10
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, 28($sp)
   lw $t1, 24($sp)
   add $t2, $t0, $t1
@@ -641,7 +641,7 @@ _L2:
   lw $t0, 24($sp)
   li $t1, 10
   slt $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   lw $t0, 28($sp)
   lw $t1, 24($sp)
   add $t2, $t0, $t1
@@ -656,7 +656,7 @@ _L3:
   sw $t0, 24($sp)
 _L4:
   li $t0, 1
-  beq $t0, 0, _L6
+  beq $t0, $zero, _L6
   lw $t0, 28($sp)
   lw $t1, 24($sp)
   add $t2, $t0, $t1
@@ -664,7 +664,7 @@ _L4:
   lw $t0, 24($sp)
   li $t1, 10
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L5
+  beq $t2, $zero, _L5
   lw $t0, 28($sp)
   move $a0, $t0
   jal __print_int

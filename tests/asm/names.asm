@@ -814,7 +814,7 @@ main:
   lb $t0, _str1
   lb $t1, _str3
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lb $t0, _str1
   move $a0, $t0
   jal _print_int
@@ -823,7 +823,7 @@ _L1:
   lb $t0, _str5
   li $t1, 16
   seq $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   lb $t0, _str3
   move $a0, $t0
   jal _print_int

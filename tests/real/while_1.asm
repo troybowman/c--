@@ -1082,7 +1082,7 @@ _L0:
   lw $t0, _i
   li $t1, 5
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, _i
   lw $t1, _i
   sll $t2, $t1, 2
@@ -1181,7 +1181,7 @@ _L2:
   xor $t1, $t2, 1
   and $t2, $t0, $t1
   xor $t0, $t2, 1
-  beq $t0, 0, _L3
+  beq $t0, $zero, _L3
   lw $t0, _res
   lw $t1, _i
   mul $t2, $t0, $t1

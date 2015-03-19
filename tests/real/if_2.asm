@@ -776,31 +776,31 @@ main:
   lw $t0, _a
   lw $t1, _b
   slt $t2, $t0, $t1
-  beq $t2, 0, _L6
+  beq $t2, $zero, _L6
   lw $t0, _b
   lw $t1, _c
   sge $t2, $t0, $t1
-  beq $t2, 0, _L5
+  beq $t2, $zero, _L5
   lw $t0, _c
   lw $t1, _d
   slt $t2, $t0, $t1
-  beq $t2, 0, _L4
+  beq $t2, $zero, _L4
   lw $t0, _d
   lw $t1, _e
   sne $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   lw $t0, _e
   lw $t1, _f
   slt $t2, $t0, $t1
-  beq $t2, 0, _L2
+  beq $t2, $zero, _L2
   lw $t0, _g
   lw $t1, _f
   slt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, _g
   lw $t1, _a
   slt $t2, $t0, $t1
-  beq $t2, 0, _L0
+  beq $t2, $zero, _L0
   li $t0, 1111
   sw $t0, _res
   j _L7

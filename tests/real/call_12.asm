@@ -838,7 +838,7 @@ _L0:
   lb $t0, ($t2)
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L1
+  beq $t2, $zero, _L1
   lw $t0, 0($sp)
   move $t1, $a0
   add $t2, $t1, $t0
@@ -888,7 +888,7 @@ _L2:
   lb $t0, ($t2)
   li $t1, 0
   sgt $t2, $t0, $t1
-  beq $t2, 0, _L3
+  beq $t2, $zero, _L3
   lw $t0, 4($sp)
   lw $t1, 0($sp)
   move $t2, $a0
