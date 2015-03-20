@@ -76,13 +76,16 @@ struct args_t
 #define ARGS_MISSING 2
 #define ARGS_INFILE  3
 #define ARGS_NOINPUT 4
+
   FILE *infile;
+
   union
   {
     char c;
     const char *str;
     char *outpath;
   };
+
   args_t(int _code) : code(_code) {}
   args_t(int _code, char _c) : code(_code), c(_c) {}
   args_t(int _code, const char *_str) : code(_code), str(_str) {}

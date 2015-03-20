@@ -180,6 +180,17 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
 }
 
 //-----------------------------------------------------------------------------
+static void cleanup_format_string(treenode_t *root)
+{
+  treenode_t *fmt = root->children[SEQ_CUR];
+  free(fmt->str());
+  delete fmt;
+  root->children[SEQ_CUR]  = NULL;
+  root->children[SEQ_NEXT] = NULL;
+  delete root;
+}
+
+//-----------------------------------------------------------------------------
 treenode_t *process_printf_call(symref_t printf, treenode_t *allargs, int line)
 {
   format_args_t fmtargs;
@@ -208,6 +219,8 @@ treenode_t *process_printf_call(symref_t printf, treenode_t *allargs, int line)
     delete allargs;
     return ERRNODE;
   }
+
+  cleanup_format_string(allargs); // no longer needed
 
   return build_printf_tree(printf, fmtargs);
 }
