@@ -10,18 +10,6 @@ class symtab_t;
 void parse(symtab_t &_gsyms, treefuncs_t &_functions, FILE *infile);
 
 //-----------------------------------------------------------------------------
-// helps build linear sequences of related treenodes
-// (like statements, argument lists, etc)
-struct seq_t
-{
-  treenode_t *head;
-  treenode_t *tail;
-};
-
-//-----------------------------------------------------------------------------
-seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type);
-
-//-----------------------------------------------------------------------------
 struct array_sfx_t
 {
   int code;

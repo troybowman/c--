@@ -206,6 +206,22 @@ int count_args(const treenode_t *args) // TODO: count_seq()/seq_len()
   return ret;
 }
 
+//-----------------------------------------------------------------------------
+seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type)
+{
+  ASSERT(1029, is_seq_type(type));
+
+  treenode_t *to_app = new treenode_t(type, cur, NULL);
+
+  if ( seq.head == NULL )
+    seq.head = to_app;
+  else
+    seq.tail->children[SEQ_NEXT] = to_app;
+
+  seq.tail = to_app;
+  return seq;
+}
+
 #ifndef NDEBUG
 //-----------------------------------------------------------------------------
 bool is_seq_type(treenode_type_t type)

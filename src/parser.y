@@ -685,22 +685,6 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
 }
 
 //-----------------------------------------------------------------------------
-seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type)
-{
-  ASSERT(1029, is_seq_type(type));
-
-  treenode_t *to_app = new treenode_t(type, cur, NULL);
-
-  if ( seq.head == NULL )
-    seq.head = to_app;
-  else
-    seq.tail->children[SEQ_NEXT] = to_app;
-
-  seq.tail = to_app;
-  return seq;
-}
-
-//-----------------------------------------------------------------------------
 static inline void yyputref(uint8_t const addr[], symref_t ref)
 {
   putref(addr, ref);

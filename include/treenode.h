@@ -84,6 +84,22 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+// helps build linear sequences of related treenodes
+// (like statements, argument lists, etc)
+struct seq_t
+{
+  treenode_t *head;
+  treenode_t *tail;
+};
+
+//-----------------------------------------------------------------------------
+seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type);
+
+#ifndef NDEBUG
+bool is_seq_type(treenode_type_t type);
+#endif
+
+//-----------------------------------------------------------------------------
 struct treefunc_t
 {
   symref_t sym;
@@ -92,7 +108,6 @@ struct treefunc_t
   treefunc_t(symref_t _sym, treenode_t *_tree)
     : sym(_sym), tree(_tree) {}
 };
-
 class treefuncs_t : public std::vector<treefunc_t> {};
 
 //-----------------------------------------------------------------------------
@@ -100,10 +115,6 @@ class treefuncs_t : public std::vector<treefunc_t> {};
 
 //-----------------------------------------------------------------------------
 int count_args(const treenode_t *args);
-
-#ifndef NDEBUG
-bool is_seq_type(treenode_type_t type);
-#endif
 
 //-----------------------------------------------------------------------------
 class tree_iterator_t
