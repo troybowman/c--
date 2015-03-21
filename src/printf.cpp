@@ -180,13 +180,15 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
 }
 
 //-----------------------------------------------------------------------------
-static void cleanup_format_string(treenode_t *root)
+static void cleanup_fmtarg_list(treenode_t *root)
 {
   treenode_t *fmt = root->children[SEQ_CUR];
   free(fmt->str());
   delete fmt;
-  root->children[SEQ_CUR]  = NULL;
-  root->children[SEQ_NEXT] = NULL;
+
+  for ( treenode_t *ptr = root; ptr != NULL; ptr = ptr->children[SEQ_NEXT] )
+    ptr->children[SEQ_CUR] = NULL;
+
   delete root;
 }
 
@@ -220,7 +222,7 @@ treenode_t *process_printf_call(symref_t printf, treenode_t *allargs, int line)
     return ERRNODE;
   }
 
-  cleanup_format_string(allargs); // no longer needed
+  cleanup_fmtarg_list(allargs); // original TNT_ARG sequence longer needed
 
   return build_printf_tree(printf, fmtargs);
 }
