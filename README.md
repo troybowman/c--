@@ -7,8 +7,7 @@ It translates a subset of c (called 'c minus minus') into mips asm.
 See spec/ for language specification and calling convention.
 
 
-todo list
-=========
+todo:
 
 1. compiler does not exit gracefully after finding an error,
    and we leak memory at exit time.
