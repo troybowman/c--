@@ -17,7 +17,8 @@ bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_extern)
       && is_extern
       && params->size() == 2
       && params->front()->is_array()
-      && params->front()->base() == PRIM_CHAR;
+      && params->front()->base() == PRIM_CHAR
+      && params->back()->type() == ST_ELLIPSIS;
 }
 
 //-----------------------------------------------------------------------------
