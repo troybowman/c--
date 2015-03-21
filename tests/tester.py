@@ -266,7 +266,6 @@ class OptPhase(TesterPhase):
     def validate(self, t):
         self.execAsmFiles(t)
         self.status(t)
-        pass
 
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
