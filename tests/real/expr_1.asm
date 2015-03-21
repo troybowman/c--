@@ -613,9 +613,71 @@
 # child SEQ_NEXT for node 129
 # node 133: type: TNT_ARG
 # child SEQ_CUR for node 133
-# node 134: type: TNT_ARRAY_LOOKUP sym: y
-# child AL_OFFSET for node 134
+# node 134: type: TNT_PLUS
+# child LHS for node 134
 # node 135: type: TNT_SYMBOL sym: x
+# child RHS for node 134
+# node 136: type: TNT_PLUS
+# child LHS for node 136
+# node 137: type: TNT_SYMBOL sym: x
+# child RHS for node 136
+# node 138: type: TNT_PLUS
+# child LHS for node 138
+# node 139: type: TNT_SYMBOL sym: x
+# child RHS for node 138
+# node 140: type: TNT_PLUS
+# child LHS for node 140
+# node 141: type: TNT_SYMBOL sym: x
+# child RHS for node 140
+# node 142: type: TNT_PLUS
+# child LHS for node 142
+# node 143: type: TNT_SYMBOL sym: x
+# child RHS for node 142
+# node 144: type: TNT_PLUS
+# child LHS for node 144
+# node 145: type: TNT_SYMBOL sym: x
+# child RHS for node 144
+# node 146: type: TNT_PLUS
+# child LHS for node 146
+# node 147: type: TNT_SYMBOL sym: x
+# child RHS for node 146
+# node 148: type: TNT_PLUS
+# child LHS for node 148
+# node 149: type: TNT_SYMBOL sym: x
+# child RHS for node 148
+# node 150: type: TNT_PLUS
+# child LHS for node 150
+# node 151: type: TNT_SYMBOL sym: x
+# child RHS for node 150
+# node 152: type: TNT_PLUS
+# child LHS for node 152
+# node 153: type: TNT_SYMBOL sym: x
+# child RHS for node 152
+# node 154: type: TNT_PLUS
+# child LHS for node 154
+# node 155: type: TNT_SYMBOL sym: x
+# child RHS for node 154
+# node 156: type: TNT_MINUS
+# child LHS for node 156
+# node 157: type: TNT_SYMBOL sym: x
+# child RHS for node 156
+# node 158: type: TNT_MULT
+# child LHS for node 158
+# node 159: type: TNT_SYMBOL sym: x
+# child RHS for node 158
+# node 160: type: TNT_MULT
+# child LHS for node 160
+# node 161: type: TNT_SYMBOL sym: x
+# child RHS for node 160
+# node 162: type: TNT_MINUS
+# child LHS for node 162
+# node 163: type: TNT_SYMBOL sym: x
+# child RHS for node 162
+# node 164: type: TNT_CALL sym: id
+# child CALL_ARGS for node 164
+# node 165: type: TNT_ARG
+# child SEQ_CUR for node 165
+# node 166: type: TNT_SYMBOL sym: x
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: id
 #-----------------------------------------------------------------------------
@@ -941,9 +1003,9 @@
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:    5
+# temps used:    4
 # svregs used:   8
-# stktemps used: 10
+# stktemps used: 26
 # regargs used:  4
 # stkargs used:  16
 # CNT_LI
@@ -1938,59 +2000,246 @@
 # >
 # CNT_MOV
 # -------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_STACK_TEMPORARY (8)
 # src1 -> ST_RETVAL
 # |
 # >
 # CNT_LW
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMPORARY (0)
 # src1 -> ST_PRIMITIVE (x)
 # |
 # >
 # CNT_LB
 # ------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
 # src1 -> ST_PRIMITIVE (z)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (2)
+# dest -> ST_STACK_TEMPORARY (10)
+# src1 -> ST_TEMPORARY (0)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_LW
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_STACK_TEMPORARY (11)
 # src1 -> ST_PRIMITIVE (x)
 # |
 # >
-# CNT_SLL
+# CNT_LW
 # ------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_INTCON (2)
+# dest -> ST_STACK_TEMPORARY (12)
+# src1 -> ST_PRIMITIVE (x)
 # |
 # >
-# CNT_LEA
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (13)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (14)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (15)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (16)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (17)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (18)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (19)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (20)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (21)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (22)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (23)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (24)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_STACK_TEMPORARY (25)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_PRIMITIVE (x)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REG_ARGUMENT (0)
+# src1 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_CALL
+# --------
+# dest -> ST_RETVAL
+# src1 -> ST_FUNCTION (id)
+# |
+# >
+# CNT_MOV
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_RETVAL
+# |
+# >
+# CNT_SUB
 # -------
 # dest -> ST_TEMPORARY (1)
-# src1 -> ST_ARRAY (y)
+# src1 -> ST_STACK_TEMPORARY (25)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_MUL
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (24)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_MUL
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_STACK_TEMPORARY (23)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_SUB
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (22)
+# src2 -> ST_TEMPORARY (1)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (2)
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_STACK_TEMPORARY (21)
+# src2 -> ST_TEMPORARY (0)
 # |
 # >
-# CNT_LW
-# ------
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (20)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ADD
+# -------
 # dest -> ST_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (4)
+# src1 -> ST_STACK_TEMPORARY (19)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (18)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_STACK_TEMPORARY (17)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (16)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_STACK_TEMPORARY (15)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (14)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_STACK_TEMPORARY (13)
+# src2 -> ST_TEMPORARY (0)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (12)
+# src2 -> ST_TEMPORARY (1)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMPORARY (1)
+# src1 -> ST_STACK_TEMPORARY (11)
+# src2 -> ST_TEMPORARY (0)
 # |
 # >
 # CNT_ARG
@@ -2002,13 +2251,13 @@
 # CNT_ARG
 # -------
 # dest -> ST_STACK_ARGUMENT (14)
-# src1 -> ST_TEMPORARY (3)
+# src1 -> ST_STACK_TEMPORARY (10)
 # |
 # >
 # CNT_ARG
 # -------
 # dest -> ST_STACK_ARGUMENT (13)
-# src1 -> ST_TEMPORARY (0)
+# src1 -> ST_STACK_TEMPORARY (8)
 # |
 # >
 # CNT_ARG
@@ -2254,16 +2503,48 @@ main:
 
   # |--------------------------------|
   # |           <padding>            |
-  # |--------------------------------| sp+188
+  # |--------------------------------| sp+252
   # |               z                |
-  # |--------------------------------| sp+184
+  # |--------------------------------| sp+248
   # |               y                |
-  # |--------------------------------| sp+164
+  # |--------------------------------| sp+228
   # |               x                |
-  # |--------------------------------| sp+160
+  # |--------------------------------| sp+224
   # |           <padding>            |
-  # |--------------------------------| sp+156
+  # |--------------------------------| sp+220
   # |              $ra               |
+  # |--------------------------------| sp+216
+  # |          <stktemp 25>          |
+  # |--------------------------------| sp+212
+  # |          <stktemp 24>          |
+  # |--------------------------------| sp+208
+  # |          <stktemp 23>          |
+  # |--------------------------------| sp+204
+  # |          <stktemp 22>          |
+  # |--------------------------------| sp+200
+  # |          <stktemp 21>          |
+  # |--------------------------------| sp+196
+  # |          <stktemp 20>          |
+  # |--------------------------------| sp+192
+  # |          <stktemp 19>          |
+  # |--------------------------------| sp+188
+  # |          <stktemp 18>          |
+  # |--------------------------------| sp+184
+  # |          <stktemp 17>          |
+  # |--------------------------------| sp+180
+  # |          <stktemp 16>          |
+  # |--------------------------------| sp+176
+  # |          <stktemp 15>          |
+  # |--------------------------------| sp+172
+  # |          <stktemp 14>          |
+  # |--------------------------------| sp+168
+  # |          <stktemp 13>          |
+  # |--------------------------------| sp+164
+  # |          <stktemp 12>          |
+  # |--------------------------------| sp+160
+  # |          <stktemp 11>          |
+  # |--------------------------------| sp+156
+  # |          <stktemp 10>          |
   # |--------------------------------| sp+152
   # |          <stktemp 9>           |
   # |--------------------------------| sp+148
@@ -2335,8 +2616,8 @@ main:
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -192($sp)
-  sw $ra, 152($sp)
+  la $sp, -256($sp)
+  sw $ra, 216($sp)
   sw $s0, 80($sp)
   sw $s1, 84($sp)
   sw $s2, 88($sp)
@@ -2347,63 +2628,63 @@ main:
   sw $s7, 108($sp)
 
   li $t0, 1
-  sw $t0, 160($sp)
+  sw $t0, 224($sp)
   li $t0, 0
   li $t1, 0
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 1
   li $t1, 1
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 2
   li $t1, 2
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 3
   li $t1, 3
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 4
   li $t1, 4
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 'b'
-  sb $t0, 184($sp)
+  sb $t0, 248($sp)
   li $s0, 1
   li $s1, 2
   li $s2, 3
   li $s3, 4
   li $s4, 5
-  lw $s5, 160($sp)
-  lw $t0, 160($sp)
-  lw $t1, 160($sp)
+  lw $s5, 224($sp)
+  lw $t0, 224($sp)
+  lw $t1, 224($sp)
   mul $s6, $t0, $t1
-  lw $t0, 160($sp)
-  lw $t1, 160($sp)
+  lw $t0, 224($sp)
+  lw $t1, 224($sp)
   add $t2, $t0, $t1
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   add $s7, $t2, $t0
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   move $a0, $t0
   jal _id
   move $t0, $v0
-  lw $t1, 160($sp)
+  lw $t1, 224($sp)
   div $t9, $t0, $t1
   sw $t9, 112($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -2411,7 +2692,7 @@ main:
   sw $v0, 116($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -2419,7 +2700,7 @@ main:
   sw $v0, 120($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -2428,19 +2709,19 @@ main:
   lw $t7, 120($sp)
   add $t9, $t7, $t0
   sw $t9, 124($sp)
-  lb $t0, 184($sp)
-  lb $t1, 184($sp)
+  lb $t0, 248($sp)
+  lb $t1, 248($sp)
   div $t2, $t0, $t1
-  lb $t0, 184($sp)
+  lb $t0, 248($sp)
   div $t9, $t2, $t0
   sw $t9, 120($sp)
-  lw $t0, 160($sp)
-  lb $t1, 184($sp)
+  lw $t0, 224($sp)
+  lb $t1, 248($sp)
   add $t9, $t0, $t1
   sw $t9, 128($sp)
-  lw $t9, 160($sp)
+  lw $t9, 224($sp)
   sw $t9, 132($sp)
-  lb $t0, 184($sp)
+  lb $t0, 248($sp)
   move $a0, $t0
   jal _id
   move $t0, $v0
@@ -2449,49 +2730,49 @@ main:
   sw $t9, 136($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   li $t1, 3
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   lw $t1, ($t3)
   add $t2, $t0, $t1
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t3, $t0, $t1
   lw $t0, ($t3)
   add $t9, $t2, $t0
   sw $t9, 132($sp)
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t9, ($t2)
   sw $t9, 140($sp)
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t9, ($t2)
   sw $t9, 144($sp)
   li $t0, 4
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -2505,7 +2786,7 @@ main:
   jal _id
   move $t0, $v0
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -2516,18 +2797,80 @@ main:
   move $t0, $v0
   move $a0, $t0
   jal _id
+  sw $v0, 144($sp)
+  lw $t0, 224($sp)
+  lb $t1, 248($sp)
+  add $t9, $t0, $t1
+  sw $t9, 152($sp)
+  lw $t9, 224($sp)
+  sw $t9, 156($sp)
+  lw $t9, 224($sp)
+  sw $t9, 160($sp)
+  lw $t9, 224($sp)
+  sw $t9, 164($sp)
+  lw $t9, 224($sp)
+  sw $t9, 168($sp)
+  lw $t9, 224($sp)
+  sw $t9, 172($sp)
+  lw $t9, 224($sp)
+  sw $t9, 176($sp)
+  lw $t9, 224($sp)
+  sw $t9, 180($sp)
+  lw $t9, 224($sp)
+  sw $t9, 184($sp)
+  lw $t9, 224($sp)
+  sw $t9, 188($sp)
+  lw $t9, 224($sp)
+  sw $t9, 192($sp)
+  lw $t9, 224($sp)
+  sw $t9, 196($sp)
+  lw $t9, 224($sp)
+  sw $t9, 200($sp)
+  lw $t9, 224($sp)
+  sw $t9, 204($sp)
+  lw $t9, 224($sp)
+  sw $t9, 208($sp)
+  lw $t9, 224($sp)
+  sw $t9, 212($sp)
+  lw $t0, 224($sp)
+  move $a0, $t0
+  jal _id
   move $t0, $v0
-  lw $t1, 160($sp)
-  lb $t2, 184($sp)
-  add $t3, $t1, $t2
-  lw $t1, 160($sp)
-  sll $t2, $t1, 2
-  la $t1, 164($sp)
-  add $t4, $t1, $t2
-  lw $t1, ($t4)
+  lw $t7, 212($sp)
+  sub $t1, $t7, $t0
+  lw $t7, 208($sp)
+  mul $t0, $t7, $t1
+  lw $t7, 204($sp)
+  mul $t1, $t7, $t0
+  lw $t7, 200($sp)
+  sub $t0, $t7, $t1
+  lw $t7, 196($sp)
+  add $t1, $t7, $t0
+  lw $t7, 192($sp)
+  add $t0, $t7, $t1
+  lw $t7, 188($sp)
+  add $t1, $t7, $t0
+  lw $t7, 184($sp)
+  add $t0, $t7, $t1
+  lw $t7, 180($sp)
+  add $t1, $t7, $t0
+  lw $t7, 176($sp)
+  add $t0, $t7, $t1
+  lw $t7, 172($sp)
+  add $t1, $t7, $t0
+  lw $t7, 168($sp)
+  add $t0, $t7, $t1
+  lw $t7, 164($sp)
+  add $t1, $t7, $t0
+  lw $t7, 160($sp)
+  add $t0, $t7, $t1
+  lw $t7, 156($sp)
+  add $t1, $t7, $t0
   sw $t1, 76($sp)
-  sw $t3, 72($sp)
-  sw $t0, 68($sp)
+  lw $t7, 152($sp)
+  sw $t7, 72($sp)
+  lw $t7, 144($sp)
+  sw $t7, 68($sp)
   lw $t7, 148($sp)
   sw $t7, 64($sp)
   lw $t7, 140($sp)
@@ -2565,8 +2908,8 @@ __leavemain:
   lw $s2, 88($sp)
   lw $s1, 84($sp)
   lw $s0, 80($sp)
-  lw $ra, 152($sp)
-  la $sp, 192($sp)
+  lw $ra, 216($sp)
+  la $sp, 256($sp)
   jr $ra
 
 __print_string:

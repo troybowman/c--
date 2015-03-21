@@ -81,8 +81,8 @@ __leave_sum:
   jr $ra
 
 main:
-  la $sp, -192($sp)
-  sw $ra, 152($sp)
+  la $sp, -256($sp)
+  sw $ra, 216($sp)
   sw $s0, 80($sp)
   sw $s1, 84($sp)
   sw $s2, 88($sp)
@@ -93,63 +93,63 @@ main:
   sw $s7, 108($sp)
 
   li $t0, 1
-  sw $t0, 160($sp)
+  sw $t0, 224($sp)
   li $t0, 0
   li $t1, 0
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 1
   li $t1, 1
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 2
   li $t1, 2
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 3
   li $t1, 3
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 4
   li $t1, 4
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 'b'
-  sb $t0, 184($sp)
+  sb $t0, 248($sp)
   li $s0, 1
   li $s1, 2
   li $s2, 3
   li $s3, 4
   li $s4, 5
-  lw $s5, 160($sp)
-  lw $t0, 160($sp)
-  lw $t1, 160($sp)
+  lw $s5, 224($sp)
+  lw $t0, 224($sp)
+  lw $t1, 224($sp)
   mul $s6, $t0, $t1
-  lw $t0, 160($sp)
-  lw $t1, 160($sp)
+  lw $t0, 224($sp)
+  lw $t1, 224($sp)
   add $t2, $t0, $t1
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   add $s7, $t2, $t0
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   move $a0, $t0
   jal _id
   move $t0, $v0
-  lw $t1, 160($sp)
+  lw $t1, 224($sp)
   div $t9, $t0, $t1
   sw $t9, 112($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -157,7 +157,7 @@ main:
   sw $v0, 116($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -165,7 +165,7 @@ main:
   sw $v0, 120($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -174,19 +174,19 @@ main:
   lw $t7, 120($sp)
   add $t9, $t7, $t0
   sw $t9, 124($sp)
-  lb $t0, 184($sp)
-  lb $t1, 184($sp)
+  lb $t0, 248($sp)
+  lb $t1, 248($sp)
   div $t2, $t0, $t1
-  lb $t0, 184($sp)
+  lb $t0, 248($sp)
   div $t9, $t2, $t0
   sw $t9, 120($sp)
-  lw $t0, 160($sp)
-  lb $t1, 184($sp)
+  lw $t0, 224($sp)
+  lb $t1, 248($sp)
   add $t9, $t0, $t1
   sw $t9, 128($sp)
-  lw $t9, 160($sp)
+  lw $t9, 224($sp)
   sw $t9, 132($sp)
-  lb $t0, 184($sp)
+  lb $t0, 248($sp)
   move $a0, $t0
   jal _id
   move $t0, $v0
@@ -195,49 +195,49 @@ main:
   sw $t9, 136($sp)
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   li $t1, 3
   sll $t2, $t1, 2
-  la $t1, 164($sp)
+  la $t1, 228($sp)
   add $t3, $t1, $t2
   lw $t1, ($t3)
   add $t2, $t0, $t1
   li $t0, 3
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t3, $t0, $t1
   lw $t0, ($t3)
   add $t9, $t2, $t0
   sw $t9, 132($sp)
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t9, ($t2)
   sw $t9, 140($sp)
-  lw $t0, 160($sp)
+  lw $t0, 224($sp)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t9, ($t2)
   sw $t9, 144($sp)
   li $t0, 4
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -251,7 +251,7 @@ main:
   jal _id
   move $t0, $v0
   sll $t1, $t0, 2
-  la $t0, 164($sp)
+  la $t0, 228($sp)
   add $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
@@ -262,18 +262,80 @@ main:
   move $t0, $v0
   move $a0, $t0
   jal _id
+  sw $v0, 144($sp)
+  lw $t0, 224($sp)
+  lb $t1, 248($sp)
+  add $t9, $t0, $t1
+  sw $t9, 152($sp)
+  lw $t9, 224($sp)
+  sw $t9, 156($sp)
+  lw $t9, 224($sp)
+  sw $t9, 160($sp)
+  lw $t9, 224($sp)
+  sw $t9, 164($sp)
+  lw $t9, 224($sp)
+  sw $t9, 168($sp)
+  lw $t9, 224($sp)
+  sw $t9, 172($sp)
+  lw $t9, 224($sp)
+  sw $t9, 176($sp)
+  lw $t9, 224($sp)
+  sw $t9, 180($sp)
+  lw $t9, 224($sp)
+  sw $t9, 184($sp)
+  lw $t9, 224($sp)
+  sw $t9, 188($sp)
+  lw $t9, 224($sp)
+  sw $t9, 192($sp)
+  lw $t9, 224($sp)
+  sw $t9, 196($sp)
+  lw $t9, 224($sp)
+  sw $t9, 200($sp)
+  lw $t9, 224($sp)
+  sw $t9, 204($sp)
+  lw $t9, 224($sp)
+  sw $t9, 208($sp)
+  lw $t9, 224($sp)
+  sw $t9, 212($sp)
+  lw $t0, 224($sp)
+  move $a0, $t0
+  jal _id
   move $t0, $v0
-  lw $t1, 160($sp)
-  lb $t2, 184($sp)
-  add $t3, $t1, $t2
-  lw $t1, 160($sp)
-  sll $t2, $t1, 2
-  la $t1, 164($sp)
-  add $t4, $t1, $t2
-  lw $t1, ($t4)
+  lw $t7, 212($sp)
+  sub $t1, $t7, $t0
+  lw $t7, 208($sp)
+  mul $t0, $t7, $t1
+  lw $t7, 204($sp)
+  mul $t1, $t7, $t0
+  lw $t7, 200($sp)
+  sub $t0, $t7, $t1
+  lw $t7, 196($sp)
+  add $t1, $t7, $t0
+  lw $t7, 192($sp)
+  add $t0, $t7, $t1
+  lw $t7, 188($sp)
+  add $t1, $t7, $t0
+  lw $t7, 184($sp)
+  add $t0, $t7, $t1
+  lw $t7, 180($sp)
+  add $t1, $t7, $t0
+  lw $t7, 176($sp)
+  add $t0, $t7, $t1
+  lw $t7, 172($sp)
+  add $t1, $t7, $t0
+  lw $t7, 168($sp)
+  add $t0, $t7, $t1
+  lw $t7, 164($sp)
+  add $t1, $t7, $t0
+  lw $t7, 160($sp)
+  add $t0, $t7, $t1
+  lw $t7, 156($sp)
+  add $t1, $t7, $t0
   sw $t1, 76($sp)
-  sw $t3, 72($sp)
-  sw $t0, 68($sp)
+  lw $t7, 152($sp)
+  sw $t7, 72($sp)
+  lw $t7, 144($sp)
+  sw $t7, 68($sp)
   lw $t7, 148($sp)
   sw $t7, 64($sp)
   lw $t7, 140($sp)
@@ -311,8 +373,8 @@ __leavemain:
   lw $s2, 88($sp)
   lw $s1, 84($sp)
   lw $s0, 80($sp)
-  lw $ra, 152($sp)
-  la $sp, 192($sp)
+  lw $ra, 216($sp)
+  la $sp, 256($sp)
   jr $ra
 
 __print_string:
