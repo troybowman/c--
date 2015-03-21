@@ -135,7 +135,7 @@ class MemoryMonitor:
     def __init__(self, enabled, phase_argv, inpath):
         self.enabled  = enabled
         self.def_argv = phase_argv + [ inpath ]
-        self.log      = replace_ext(inpath, "vgd")
+        self.log      = replace_ext(inpath, "vg")
 
     def __enter__(self):
         if not self.enabled:

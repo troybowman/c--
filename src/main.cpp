@@ -167,7 +167,7 @@ static args_t parseargs(int argc, char **argv)
 }
 
 //-----------------------------------------------------------------------------
-FILE *init_outfile(const char *outpath)
+FILE *init_outfile(char *outpath)
 {
   FILE *outfile = fopen(outpath, "w");
   if ( outfile == NULL )
@@ -176,6 +176,7 @@ FILE *init_outfile(const char *outpath)
     exit(FATAL_OUTFILE);
   }
   SET_DBGFILE(outfile);
+  free(outpath);
   return outfile;
 }
 
@@ -211,7 +212,6 @@ int main(int argc, char **argv)
   generate_mips_asm(outfile, ir);
   //---------------------------------------------------------------------------
 
-  free(args.outpath);
   fclose(outfile);
   return 0;
 }

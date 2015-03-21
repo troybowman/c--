@@ -65,7 +65,7 @@ void print_ir(const ir_t &ir);
 void set_dbgfile(FILE *dbgfile);
 
 //-----------------------------------------------------------------------------
-#define DBG_INIT_OUTFILE(outpath) FILE *outfile = init_outfile(args.str);
+#define DBG_INIT_OUTFILE(outpath) FILE *outfile = init_outfile(outpath);
 #define OPT_INIT_OUTFILE(outpath) // nothing
 #define SET_DBGFILE(dbgfile)      do { set_dbgfile(dbgfile); } while ( false );
 
@@ -87,7 +87,7 @@ do                                                \
 do                                 \
 {                                  \
   if ( (dbg_flags & flag) != 0 )   \
-    exit(0);                       \
+    return 0;                      \
 } while ( false );
 
 //-----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ do                                      \
 #define DBG_IR(code)                        // nothing
 #define DBG_CHECK_PHASE_FLAG(flags)         // nothing
 #define DBG_INIT_OUTFILE(outpath)           // nothing
-#define OPT_INIT_OUTFILE(outpath)           FILE *outfile = init_outfile(args.str);
+#define OPT_INIT_OUTFILE(outpath)           FILE *outfile = init_outfile(outpath);
 #define SET_DBGFILE(outfile)                // nothing
 #define DBG_FRAME_SUMMARY(frame)            // nothing
 
