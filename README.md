@@ -18,4 +18,4 @@ todo:
 
 3. short circuit evaluation still needs to be implemented
 
-4. must define something like const\_tree\_iterator\_t (some for codenode too)
+4. must define something like const\_tree\_iterator\_t (same for codenode too)
