@@ -1,0 +1,1 @@
+../real/global_char_0.c

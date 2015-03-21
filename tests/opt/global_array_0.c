@@ -1,0 +1,1 @@
+../real/global_array_0.c

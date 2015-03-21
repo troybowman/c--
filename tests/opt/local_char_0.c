@@ -1,0 +1,1 @@
+../real/local_char_0.c
