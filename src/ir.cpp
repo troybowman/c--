@@ -123,7 +123,7 @@ symref_t codefunc_engine_t::gen_temp(uint32_t flags)
   }
   else
   {
-    // this temp MUST persist across a function call
+    // this temp must persist across a function call
     temp = cf.svregs.gen_resource();
   }
 

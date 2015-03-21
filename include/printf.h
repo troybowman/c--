@@ -32,7 +32,6 @@ struct format_arg_t
   format_arg_t(symref_t _func, const treenode_t *_expr)
     : func(_func), expr(_expr) {}
 };
-
 typedef std::vector<format_arg_t> format_args_t;
 
 //-----------------------------------------------------------------------------

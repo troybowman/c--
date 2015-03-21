@@ -87,7 +87,7 @@ static   symvec_t *sym_list_prepend(symref_t, symvec_t *);
 static       void  func_enter(symref_t, primitive_t);
 static       void  func_leave(treenode_t *);
 static       void  yyputref(uint8_t const [], symref_t);
-static    symref_t yygetref(uint8_t const []);
+static   symref_t  yygetref(uint8_t const []);
 %}
 
 /*---------------------------------------------------------------------------*/
