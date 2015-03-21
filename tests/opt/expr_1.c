@@ -27,5 +27,6 @@ void main(void)
   sum(1, 2, 3, 4, 5,
       x, x*x, x+x+x, id(x)/x, id(y[3]),
       id(y[3])+id(y[3]), z/z/z, x+z, x*id(z), y[3]+y[3]+y[3],
-      y[y[y[x]]], y[y[x]]*id(y[4]), id(id(id(y[id(2)]))), x+z, y[x]);
+      y[y[y[x]]], y[y[x]]*id(y[4]), id(id(id(y[id(2)]))), x+z,
+      x+(x+(x+(x+(x+(x+(x+(x+(x+(x+(x+(x-(x*(x*(x-(id(x)))))))))))))))));
 }
