@@ -9,12 +9,12 @@ import mmap
 from argparse import *
 
 #------------------------------------------------------------------------------
-SYMS = "syms"
-TREE = "tree"
-IR   = "ir"
-ASM  = "asm"
-REAL = "real"
-OPT  = "opt"
+DECL     = "decl"
+TREE     = "tree"
+IR       = "ir"
+ASM      = "asm"
+REAL     = "real"
+RELEASE  = "release"
 
 #------------------------------------------------------------------------------
 class Tester(ArgumentParser):
@@ -36,8 +36,8 @@ class Tester(ArgumentParser):
             help="list of phases to run",
             metavar="PHASES",
             nargs="+",
-            choices=[SYMS, TREE, IR, ASM, REAL, OPT],
-            default=[SYMS, TREE, IR, ASM, REAL])
+            choices=[DECL, TREE, IR, ASM, REAL, RELEASE],
+            default=[DECL, TREE, IR, ASM, REAL])
         self.add_argument(
             "-f", "--file_pattern",
             help="only compile files matching the given pattern",
@@ -233,8 +233,8 @@ class DbgPhase(TesterPhase):
     DBG_DUMP_IR    = 0x20
     DBG_NO_CODE    = 0x40
 
-    DBG_ALL_SYMS = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
-    DBG_ALL_TREE = DBG_ALL_SYMS   | DBG_DUMP_TREE   # 0x0e
+    DBG_ALL_DECL = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
+    DBG_ALL_TREE = DBG_ALL_DECL   | DBG_DUMP_TREE   # 0x0e
     DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
 
     def __init__(self, dir, flags):
@@ -255,10 +255,10 @@ class RealPhase(DbgPhase):
         self.status(t)
 
 #------------------------------------------------------------------------------
-class OptPhase(TesterPhase):
+class ReleasePhase(TesterPhase):
 
     def __init__(self, dir):
-        TesterPhase.__init__(self, os.path.join(tests, OPT))
+        TesterPhase.__init__(self, os.path.join(tests, RELEASE))
 
     def argv(self, t):
         return [ t.release() ]
@@ -274,12 +274,12 @@ if __name__ == "__main__":
 
     tests  = os.path.join(t.home, "tests")
     phases = {
-        SYMS : DbgPhase(os.path.join(tests, SYMS),  DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
-        TREE : DbgPhase(os.path.join(tests, TREE),  DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
-        IR   : DbgPhase(os.path.join(tests, IR  ),  DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
-        ASM  : DbgPhase(os.path.join(tests, ASM ),  DbgPhase.DBG_ALL_IR),
-        REAL : RealPhase(tests),
-        OPT  : OptPhase(tests),
+        DECL    : DbgPhase(os.path.join(tests, DECL),  DbgPhase.DBG_ALL_DECL | DbgPhase.DBG_NO_IR),
+        TREE    : DbgPhase(os.path.join(tests, TREE),  DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
+        IR      : DbgPhase(os.path.join(tests, IR  ),  DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
+        ASM     : DbgPhase(os.path.join(tests, ASM ),  DbgPhase.DBG_ALL_IR),
+        REAL    : RealPhase(tests),
+        RELEASE : ReleasePhase(tests),
         }
 
     t.parse_args()
