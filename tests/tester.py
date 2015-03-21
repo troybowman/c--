@@ -274,10 +274,10 @@ if __name__ == "__main__":
 
     tests  = os.path.join(t.home, "tests")
     phases = {
-        DECL    : DbgPhase(os.path.join(tests, DECL),  DbgPhase.DBG_ALL_DECL | DbgPhase.DBG_NO_IR),
-        TREE    : DbgPhase(os.path.join(tests, TREE),  DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
-        IR      : DbgPhase(os.path.join(tests, IR  ),  DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
-        ASM     : DbgPhase(os.path.join(tests, ASM ),  DbgPhase.DBG_ALL_IR),
+        DECL    : DbgPhase(os.path.join(tests, DECL), DbgPhase.DBG_ALL_DECL | DbgPhase.DBG_NO_IR),
+        TREE    : DbgPhase(os.path.join(tests, TREE), DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
+        IR      : DbgPhase(os.path.join(tests, IR  ), DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
+        ASM     : DbgPhase(os.path.join(tests, ASM ), DbgPhase.DBG_ALL_IR),
         REAL    : RealPhase(tests),
         RELEASE : ReleasePhase(tests),
         }

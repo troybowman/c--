@@ -63,16 +63,12 @@ static treenode_t *build_printf_tree(symref_t printf, const format_args_t &fmtar
   // build sequence of calls to print_(string|int|char)
   for ( size_t i = 0; i < fmtargs.size(); i++ )
   {
-    const format_arg_t &arg = fmtargs[i];
+    const format_arg_t &fmtarg = fmtargs[i];
 
-    treenode_t *args =
-        new treenode_t(TNT_ARG, const_cast<treenode_t *>(arg.node), NULL);
+    treenode_t *argtree =
+        new treenode_t(TNT_ARG, const_cast<treenode_t *>(fmtarg.expr), NULL);
 
-    symref_t func = arg.type == PF_ARG_STR ? _print_string
-                  : arg.type == PF_ARG_INT ? _print_int
-                  :                          _print_char;
-
-    treenode_t *call = new treenode_t(func, TNT_CALL, args);
+    treenode_t *call = new treenode_t(fmtarg.func, TNT_CALL, argtree);
     seq_append(seq, call, TNT_STMT);
   }
 
@@ -97,7 +93,7 @@ static void prepare_substring_arg(
   *ptr = '\0';
 
   treenode_t *node = new treenode_t(TNT_STRCON, str);
-  fmtargs.push_back(format_arg_t(PF_ARG_STR, node));
+  fmtargs.push_back(format_arg_t(_print_string, node));
 }
 
 //-----------------------------------------------------------------------------
@@ -107,7 +103,7 @@ static printf_res_t handle_empty_fmt(format_args_t &fmtargs, const treenode_t *a
     return PRINTF_NUMARGS;
 
   treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING));
-  fmtargs.push_back(format_arg_t(PF_ARG_STR, node));
+  fmtargs.push_back(format_arg_t(_print_string, node));
 
   return PRINTF_OK;
 }
@@ -155,15 +151,15 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
             {
               if ( !arg->is_int_compat() )
                 return PRINTF_BADARG;
-              int argtype = c == FMTD ? PF_ARG_INT : PF_ARG_CHAR;
-              fmtargs.push_back(format_arg_t(argtype, arg));
+              symref_t func = c == FMTD ? _print_int : _print_char;
+              fmtargs.push_back(format_arg_t(func, arg));
             }
             break;
           case FMTS:
             {
               if ( !arg->is_string_compat() )
                 return PRINTF_BADARG;
-              fmtargs.push_back(format_arg_t(PF_ARG_STR, arg));
+              fmtargs.push_back(format_arg_t(_print_string, arg));
             }
             break;
         }
@@ -173,7 +169,7 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
 
   prepare_substring_arg(fmtargs, cursub, ptr);
 
-  if ( *ti != NULL )
+  if ( *ti != NULL ) // extra format arguments
     return PRINTF_NUMARGS;
 
   return PRINTF_OK;
@@ -183,9 +179,11 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
 static void cleanup_fmtarg_list(treenode_t *root)
 {
   treenode_t *fmt = root->children[SEQ_CUR];
-  free(fmt->str());
+  free(fmt->str()); // original fmt string has been split up; it's no longer needed
   delete fmt;
 
+  // trash the original linked list that contained the fmt args.
+  // the args are now maintained by the TNT_PRINTF tree
   for ( treenode_t *ptr = root; ptr != NULL; ptr = ptr->children[SEQ_NEXT] )
     ptr->children[SEQ_CUR] = NULL;
 
