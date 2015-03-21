@@ -1,8 +1,8 @@
-#include <messages.h>
-#include <string.h>
 #include <stdarg.h>
 #include <vector>
 #include <string>
+#include <common.h>
+#include <messages.h>
 
 //-----------------------------------------------------------------------------
 // Error messages

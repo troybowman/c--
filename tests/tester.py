@@ -16,8 +16,6 @@ ASM  = "asm"
 REAL = "real"
 OPT  = "opt"
 
-phase_names = [ SYMS, TREE, IR, ASM, REAL, OPT ]
-
 #------------------------------------------------------------------------------
 class Tester(ArgumentParser):
 
@@ -38,8 +36,8 @@ class Tester(ArgumentParser):
             help="list of phases to run",
             metavar="PHASES",
             nargs="+",
-            choices=phase_names,
-            default=phase_names)
+            choices=[SYMS, TREE, IR, ASM, REAL, OPT],
+            default=[SYMS, TREE, IR, ASM, REAL])
         self.add_argument(
             "-f", "--file_pattern",
             help="only compile files matching the given pattern",
@@ -265,12 +263,9 @@ class OptPhase(TesterPhase):
     def argv(self, t):
         return [ t.release() ]
 
-    def execute(self, t):
-        t.warning("opt: TODO\n")
-
     def validate(self, t):
-        #self.execAsmFiles()
-        #self.status()
+        self.execAsmFiles(t)
+        self.status(t)
         pass
 
 #------------------------------------------------------------------------------
@@ -278,8 +273,7 @@ if __name__ == "__main__":
 
     t = Tester()
 
-    tests = os.path.join(t.home, "tests")
-
+    tests  = os.path.join(t.home, "tests")
     phases = {
         SYMS : DbgPhase(os.path.join(tests, SYMS),  DbgPhase.DBG_ALL_SYMS | DbgPhase.DBG_NO_IR),
         TREE : DbgPhase(os.path.join(tests, TREE),  DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
@@ -290,7 +284,6 @@ if __name__ == "__main__":
         }
 
     t.parse_args()
-
     for step in t.args.phase_spec:
         with phases[step] as p:
             p.execute(t)
