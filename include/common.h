@@ -38,7 +38,7 @@ do                           \
   int l = len;               \
   while ( l-- > 0)           \
     { *ptr = c; ptr++; }     \
-} while ( false ) ;
+} while ( false )
 
 #define APPSTR(ptr, str, len) \
 do                            \
@@ -48,8 +48,8 @@ do                            \
 } while ( false )
 
 //-----------------------------------------------------------------------------
-#define cmin(a,b) ((a) < (b)? (a) : (b))
-#define cmax(a,b) ((a) > (b)? (a) : (b))
+#define cmin(a,b) ((a) < (b) ? (a) : (b))
+#define cmax(a,b) ((a) > (b) ? (a) : (b))
 
 //-----------------------------------------------------------------------------
 class refcnt_obj_t
@@ -106,11 +106,11 @@ public:
   T *operator ->() const { return ptr; }
   T &operator *()  const { return *ptr; }
 
-  bool operator==(refcnt_t r) const
+  bool operator==(const refcnt_t &r) const
   {
     return ptr == r.ptr;
   }
-  bool operator!=(refcnt_t r) const
+  bool operator!=(const refcnt_t &r) const
   {
     return !(*this == r);
   }
