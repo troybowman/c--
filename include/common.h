@@ -1,5 +1,5 @@
-#ifndef PRO_H
-#define PRO_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -154,4 +154,4 @@ struct area_t
   offsize_t size() const { return end - start; }
 };
 
-#endif // PRO_H
+#endif // COMMON_H
