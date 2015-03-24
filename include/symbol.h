@@ -218,8 +218,8 @@ class symtab_t
 {
   typedef std::map<std::string, symref_t> symmap_t;
 
-  symmap_t map;   // fast lookups...
-  symvec_t vec;   // ...while maintaining insertion order
+  symmap_t map;   // fast lookups
+  symvec_t vec;   // maintain insertion order
 
 public:
   symref_t get(const std::string &key) const
@@ -227,17 +227,19 @@ public:
     symmap_t::const_iterator i = map.find(key);
     return i != map.end() ? i->second : symref_t(NULL);
   }
-  void insert(const std::string &key, symref_t value)
+  bool insert(const std::string &key, symref_t value)
   {
+    if ( get(key) != NULL )
+      return false;
     map[key] = value;
     vec.push_back(value);
+    return true;
   }
   bool insert(symref_t sym)
   {
     if ( sym == NULL )
       return false;
-    insert(sym->name(), sym);
-    return true;
+    return insert(sym->name(), sym);
   }
   bool erase(symref_t sym)
   {
