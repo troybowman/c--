@@ -10,8 +10,8 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
   children[3] = NULL;
 
   va_list va;
-  va_start(va, _type);
-  switch ( _type )
+  va_start(va, type);
+  switch ( type )
   {
     case TNT_ERROR:
       break;
@@ -92,7 +92,7 @@ treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
 
   va_list va;
   va_start(va, type);
-  switch ( _type )
+  switch ( type )
   {
     case TNT_SYMBOL:
       break;
