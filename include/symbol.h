@@ -176,11 +176,14 @@ public:
 //-----------------------------------------------------------------------------
 typedef refcnt_t<symbol_t> symref_t;
 
+#define NULLREF symref_t(NULL)
+
 //-----------------------------------------------------------------------------
 inline void putref(uint8_t const addr[], symref_t ref)
 {
   unionize<symref_t>(addr, ref);
 }
+
 inline symref_t &getref(uint8_t const addr[])
 {
   return deunionize<symref_t>(addr);

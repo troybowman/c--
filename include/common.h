@@ -122,6 +122,7 @@ template <class T> inline void unionize(uint8_t const addr[], T &obj)
 {
   new ((T *)addr) T(obj);
 }
+
 template <class T> inline T &deunionize(uint8_t const addr[])
 {
   return *(T *)addr;

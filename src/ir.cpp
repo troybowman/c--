@@ -170,7 +170,7 @@ void codefunc_engine_t::append(
 symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 {
   if ( tree == NULL )
-    return symref_t(NULL);
+    return NULLREF;
 
   switch ( tree->type() )
   {
@@ -314,7 +314,7 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           return temp;
         }
 
-        append(CNT_CALL, symref_t(NULL), f);
+        append(CNT_CALL, NULLREF, f);
         break;
       }
     case TNT_RET:
@@ -374,20 +374,20 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( elsetree != NULL )
         {
           append(CNT_JUMP, endif);
-          append(CNT_LABEL, symref_t(NULL), cond_target);
+          append(CNT_LABEL, NULLREF, cond_target);
           generate(elsetree, ifctx);
         }
 
         if ( (ctx.flags & TCTX_IF) == 0 )
-          append(CNT_LABEL, symref_t(NULL), endif);
+          append(CNT_LABEL, NULLREF, endif);
         break;
       }
     case TNT_FOR:
       {
         generate(tree->children[FOR_INIT]);
 
-        symref_t check = symref_t(new symbol_t(ST_LABEL));
-        append(CNT_LABEL, symref_t(NULL), check);
+        symref_t check(new symbol_t(ST_LABEL));
+        append(CNT_LABEL, NULLREF, check);
 
         symref_t cond = generate(tree->children[FOR_COND]);
         if ( cond == NULL )
@@ -396,29 +396,29 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           append(CNT_LI, cond, symref_t(new symbol_t(ST_INTCON, 1)));
         }
 
-        symref_t end = symref_t(new symbol_t(ST_LABEL));
+        symref_t end(new symbol_t(ST_LABEL));
         append(CNT_CNDJMP, end, cond);
 
         generate(tree->children[FOR_BODY]);
         generate(tree->children[FOR_INC]);
         append(CNT_JUMP, check);
 
-        append(CNT_LABEL, symref_t(NULL), end);
+        append(CNT_LABEL, NULLREF, end);
         break;
       }
     case TNT_WHILE:
       {
-        symref_t loop = symref_t(new symbol_t(ST_LABEL));
-        append(CNT_LABEL, symref_t(NULL), loop);
+        symref_t loop(new symbol_t(ST_LABEL));
+        append(CNT_LABEL, NULLREF, loop);
 
         symref_t cond = generate(tree->children[WHILE_COND]);
-        symref_t end  = symref_t(new symbol_t(ST_LABEL));
+        symref_t end(symref_t(new symbol_t(ST_LABEL)));
         append(CNT_CNDJMP, end, cond);
 
         generate(tree->children[WHILE_BODY]);
         append(CNT_JUMP, loop);
 
-        append(CNT_LABEL, symref_t(NULL), end);
+        append(CNT_LABEL, NULLREF, end);
         break;
       }
     case TNT_PRINTF:
@@ -449,7 +449,7 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
   cf.stktemps.reset();
   cf.retval.reset();
 
-  return symref_t(NULL);
+  return NULLREF;
 }
 
 //-----------------------------------------------------------------------------
