@@ -437,7 +437,7 @@ static void ensure_compatible_operands(codenode_t *node, uint32_t flags)
   {
     symref_t olddest = node->dest;
     node->dest = t9;
-    codenode_t *store = new codenode_t(CNT_SW, olddest, t9, symref_t(NULL));
+    codenode_t *store = new codenode_t(CNT_SW, olddest, t9, NULLREF);
     codenode_t *oldnext = node->next;
     node->next = store;
     store->next = oldnext;

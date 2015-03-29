@@ -228,7 +228,7 @@ public:
   symref_t get(const std::string &key) const
   {
     symmap_t::const_iterator i = map.find(key);
-    return i != map.end() ? i->second : symref_t(NULL);
+    return i != map.end() ? i->second : NULLREF;
   }
   bool insert(const std::string &key, symref_t value)
   {

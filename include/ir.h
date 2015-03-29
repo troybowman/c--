@@ -95,7 +95,7 @@ protected:
       _free.erase(_free.begin());
       return ret;
     }
-    return symref_t(NULL);
+    return NULLREF;
   }
 
 public:
@@ -261,9 +261,9 @@ private:
 
   void append(
       codenode_type_t type,
-      symref_t dest = symref_t(NULL),
-      symref_t src1 = symref_t(NULL),
-      symref_t src2 = symref_t(NULL));
+      symref_t dest = NULLREF,
+      symref_t src1 = NULLREF,
+      symref_t src2 = NULLREF);
 
   symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 

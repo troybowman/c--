@@ -195,14 +195,14 @@ params : param_decl param_decl_list ellipsis
        ;
 
 ellipsis : ',' ELLIPSIS { yyputref($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
-         | /* empty */  { yyputref($$, symref_t(NULL)); }
+         | /* empty */  { yyputref($$, NULLREF); }
          ;
 
 param_decl : type ID param_array_sfx
              {
                symref_t sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
                if ( sym != NULL && !process_var_decl(sym, $1) )
-                 sym = symref_t(NULL);
+                 sym = NULLREF;
                yyputref($$, sym);
                free($2);
              }
@@ -338,7 +338,7 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
 static symref_t process_var_id(const char *name, int line, array_sfx_t asfx, uint32_t flags)
 {
   if ( asfx.code == ASFX_ERROR )
-    return symref_t(NULL);
+    return NULLREF;
 
   return asfx.code == ASFX_NONE
        ? symref_t(new symbol_t(flags, name, line))
