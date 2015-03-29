@@ -232,7 +232,7 @@ public:
   }
   bool insert(const std::string &key, symref_t value)
   {
-    if ( get(key) != NULL )
+    if ( value == NULL || get(key) != NULL )
       return false;
     map[key] = value;
     vec.push_back(value);
