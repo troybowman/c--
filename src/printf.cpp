@@ -67,7 +67,7 @@ static treenode_t *build_printf_tree(symref_t printf, const format_args_t &fmtar
     const format_arg_t &fmtarg = fmtargs[i];
 
     treenode_t *argtree =
-        new treenode_t(TNT_ARG, const_cast<treenode_t *>(fmtarg.expr), NULL);
+        new treenode_t(TNT_ARG, fmtarg.expr, NULL);
 
     treenode_t *call = new treenode_t(fmtarg.func, TNT_CALL, argtree);
     seq_append(seq, call, TNT_STMT);
@@ -100,7 +100,7 @@ static void prepare_substring_arg(
 //-----------------------------------------------------------------------------
 static printf_res_t handle_empty_fmt(format_args_t &fmtargs, const treenode_t *argtree)
 {
-  if ( count_args(argtree) > 0 )
+  if ( calc_seq_len(argtree) > 0 )
     return PRINTF_NUMARGS;
 
   treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING));

@@ -198,10 +198,10 @@ bool treenode_t::is_string_compat() const
 }
 
 //-----------------------------------------------------------------------------
-int count_args(const treenode_t *args) // TODO: count_seq()/seq_len()
+int calc_seq_len(const treenode_t *root)
 {
   int ret = 0;
-  for ( tree_iterator_t ti(args); *ti != NULL; ti++ )
+  for ( const_tree_iterator_t ti(root); *ti != NULL; ti++ )
     ret++;
   return ret;
 }

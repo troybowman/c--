@@ -586,12 +586,12 @@ static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
 
   const symvec_t &params = *f.params();
   size_t nparams = params.size();
-  size_t nargs   = count_args(args);
+  size_t nargs   = calc_seq_len(args);
 
   if ( nparams != nargs )
     return call_res_t(CALL_NUMARGS, nargs);
 
-  tree_iterator_t ti(args);
+  const_tree_iterator_t ti(args);
   for ( size_t i = 0; *ti != NULL && i < nparams; ti++, i++ )
   {
     if ( !check_arg(*params[i], **ti) )

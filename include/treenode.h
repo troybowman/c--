@@ -114,36 +114,38 @@ class treefuncs_t : public std::vector<treefunc_t> {};
 #define ERRNODE new treenode_t(TNT_ERROR)
 
 //-----------------------------------------------------------------------------
-int count_args(const treenode_t *args);
+int calc_seq_len(const treenode_t *root);
 
 //-----------------------------------------------------------------------------
-class tree_iterator_t
-{
-  const treenode_t *ptr;
+#define DEFINE_TREE_ITERATOR(name, constness)            \
+class name                                               \
+{                                                        \
+  constness treenode_t *ptr;                             \
+public:                                                  \
+  name(constness treenode_t *root) : ptr(root) {}        \
+  constness treenode_t *operator*() const                \
+  {                                                      \
+    return ptr != NULL ? ptr->children[SEQ_CUR] : NULL;  \
+  }                                                      \
+  name &operator++()                                     \
+  {                                                      \
+    if ( ptr != NULL )                                   \
+      ptr = ptr->children[SEQ_NEXT];                     \
+    return *this;                                        \
+  }                                                      \
+  name operator++(int)                                   \
+  {                                                      \
+    name tmp = *this;                                    \
+    ++(*this);                                           \
+    return tmp;                                          \
+  }                                                      \
+  constness treenode_t *next() const                     \
+  {                                                      \
+    return ptr != NULL ? ptr->children[SEQ_NEXT] : NULL; \
+  }                                                      \
+}
 
-public:
-  tree_iterator_t(const treenode_t *root) : ptr(root) {}
-
-  const treenode_t *operator*() const
-  {
-    return ptr != NULL ? ptr->children[SEQ_CUR] : NULL;
-  }
-  tree_iterator_t &operator++()
-  {
-    if ( ptr != NULL )
-      ptr = ptr->children[SEQ_NEXT];
-    return *this;
-  }
-  tree_iterator_t operator++(int)
-  {
-    tree_iterator_t tmp = *this;
-    ++(*this);
-    return tmp;
-  }
-  const treenode_t *next() const
-  {
-    return ptr != NULL ? ptr->children[SEQ_NEXT] : NULL;
-  }
-};
+DEFINE_TREE_ITERATOR(tree_iterator_t, );
+DEFINE_TREE_ITERATOR(const_tree_iterator_t, const);
 
 #endif // TREENODE_H

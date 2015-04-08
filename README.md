@@ -17,5 +17,3 @@ todo:
 2. char arguments passed in argument registers are not truncated
 
 3. short circuit evaluation still needs to be implemented
-
-4. must define something like const\_tree\_iterator\_t (same for codenode too)
