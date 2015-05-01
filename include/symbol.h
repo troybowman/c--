@@ -41,7 +41,7 @@ public:
     { _type = SLT_GLOBAL; }
   void set_reg(const char *reg)
     { _type = SLT_REG; _reg = reg; }
-  void set_stkoff(uint32_t off)
+  void set_stkoff(offset_t off)
     { _type = SLT_STKOFF; _off = off; }
 
   symloc_type_t type() const { return _type; }
