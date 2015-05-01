@@ -117,7 +117,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// used to stuff smart pointers into union members. because I said so.
+// used to stuff smart pointers into union members
 template <class T> inline void unionize(uint8_t const addr[], T &obj)
 {
   new ((T *)addr) T(obj);

@@ -43,7 +43,7 @@ static codenode_type_t tnt2cnt(treenode_type_t type)
 }
 
 //-----------------------------------------------------------------------------
-void codefunc_engine_t::check_dest(symref_t sym)
+void ir_engine_t::check_dest(symref_t sym)
 {
   if ( sym == NULL )
     return;
@@ -51,22 +51,22 @@ void codefunc_engine_t::check_dest(symref_t sym)
   switch ( sym->type() )
   {
     case ST_TEMPORARY:
-      cf.temps.use(sym);
+      f.temps.use(sym);
       break;
     case ST_SAVED_TEMPORARY:
-      cf.svregs.use(sym);
+      f.svregs.use(sym);
       break;
     case ST_REG_ARGUMENT:
-      cf.regargs.use(sym);
+      f.regargs.use(sym);
       break;
     case ST_STACK_ARGUMENT:
-      cf.stkargs.use(sym);
+      f.stkargs.use(sym);
       break;
     case ST_STACK_TEMPORARY:
-      cf.stktemps.use(sym);
+      f.stktemps.use(sym);
       break;
     case ST_RETVAL:
-      cf.retval.use(sym);
+      f.retval.use(sym);
       break;
     case ST_RETADDR:
       INTERR(1082);
@@ -76,7 +76,7 @@ void codefunc_engine_t::check_dest(symref_t sym)
 }
 
 //-----------------------------------------------------------------------------
-void codefunc_engine_t::check_src(symref_t sym)
+void ir_engine_t::check_src(symref_t sym)
 {
   if ( sym == NULL )
     return;
@@ -84,16 +84,16 @@ void codefunc_engine_t::check_src(symref_t sym)
   switch ( sym->type() )
   {
     case ST_TEMPORARY:
-      cf.temps.free(sym);
+      f.temps.free(sym);
       break;
     case ST_SAVED_TEMPORARY:
-      cf.svregs.free(sym);
+      f.svregs.free(sym);
       break;
     case ST_STACK_TEMPORARY:
-      cf.stktemps.free(sym);
+      f.stktemps.free(sym);
       break;
     case ST_RETVAL:
-      cf.retval.free(sym);
+      f.retval.free(sym);
       break;
     case ST_LABEL:
       sym->set_val(lblcnt++);
@@ -109,46 +109,46 @@ void codefunc_engine_t::check_src(symref_t sym)
 }
 
 //-----------------------------------------------------------------------------
-symref_t codefunc_engine_t::gen_temp(uint32_t flags)
+symref_t ir_engine_t::gen_temp(uint32_t flags)
 {
   symref_t temp;
 
   if ( (flags & TCTX_SAVE) == 0 )
   {
     // use a temporary
-    temp = cf.temps.gen_resource();
+    temp = f.temps.gen_resource();
     // use a saved reg if no temps left
     if ( temp == NULL )
-      temp = cf.svregs.gen_resource();
+      temp = f.svregs.gen_resource();
   }
   else
   {
     // this temp must persist across a function call
-    temp = cf.svregs.gen_resource();
+    temp = f.svregs.gen_resource();
   }
 
   // if all else fails, use the stack
   if ( temp == NULL )
-    temp = cf.stktemps.gen_resource();
+    temp = f.stktemps.gen_resource();
 
   ASSERT(0, temp != NULL);
   return temp;
 }
 
 //-----------------------------------------------------------------------------
-symref_t codefunc_engine_t::gen_argloc()
+symref_t ir_engine_t::gen_argloc()
 {
-  symref_t argloc = cf.regargs.gen_resource();
+  symref_t argloc = f.regargs.gen_resource();
 
   if ( argloc == NULL )
-    argloc = cf.stkargs.gen_resource();
+    argloc = f.stkargs.gen_resource();
 
   ASSERT(0, argloc != NULL);
   return argloc;
 }
 
 //-----------------------------------------------------------------------------
-void codefunc_engine_t::append(
+void ir_engine_t::append(
     codenode_type_t type,
     symref_t dest,
     symref_t src1,
@@ -167,7 +167,7 @@ void codefunc_engine_t::append(
 }
 
 //-----------------------------------------------------------------------------
-symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
+symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 {
   if ( tree == NULL )
     return NULLREF;
@@ -274,10 +274,10 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_CALL:
       {
-        if ( !cf.has_call )
+        if ( !f.has_call )
         {
-          cf.has_call = true;
-          cf.ra.use(cf.ra.gen_resource());
+          f.has_call = true;
+          f.ra.use(f.ra.gen_resource());
         }
 
         symvec_t argvals;
@@ -298,14 +298,14 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
           append(CNT_ARG, *loc, *val);
 
-        cf.regargs.reset();
-        cf.stkargs.reset();
+        f.regargs.reset();
+        f.stkargs.reset();
 
-        symref_t f = tree->sym();
-        if ( f->base() != PRIM_VOID )
+        symref_t sym = tree->sym();
+        if ( sym->base() != PRIM_VOID )
         {
-          symref_t retval = cf.retval.gen_resource();
-          append(CNT_CALL, retval, f);
+          symref_t retval = f.retval.gen_resource();
+          append(CNT_CALL, retval, sym);
 
           symref_t temp = gen_temp(ctx.flags);
           append(CNT_MOV, temp, retval);
@@ -313,14 +313,14 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           return temp;
         }
 
-        append(CNT_CALL, NULLREF, f);
+        append(CNT_CALL, NULLREF, sym);
         break;
       }
     case TNT_RET:
       {
         symref_t val = generate(tree->children[RET_EXPR]);
         if ( val != NULL )
-          append(CNT_RET, cf.retval.gen_resource(), val);
+          append(CNT_RET, f.retval.gen_resource(), val);
         else
           append(CNT_RET);
         break;
@@ -429,7 +429,7 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       {
         symref_t val = generate(tree->children[RHS]);
         symref_t neg = gen_temp(ctx.flags);
-        append(CNT_SUB, neg, cf.zero, val);
+        append(CNT_SUB, neg, f.zero, val);
         return neg;
       }
     case TNT_NOT:
@@ -443,19 +443,19 @@ symref_t codefunc_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       INTERR(1059);
   }
 
-  cf.temps.reset();
-  cf.svregs.reset();
-  cf.stktemps.reset();
-  cf.retval.reset();
+  f.temps.reset();
+  f.svregs.reset();
+  f.stktemps.reset();
+  f.retval.reset();
 
   return NULLREF;
 }
 
 //-----------------------------------------------------------------------------
-void codefunc_engine_t::start(const treenode_t *root)
+void ir_engine_t::start(const treenode_t *root)
 {
   generate(root);
-  cf.code = head;
+  f.code = head;
 }
 
 //-----------------------------------------------------------------------------
@@ -465,12 +465,12 @@ void generate_ir(ir_t &ir, const treefuncs_t &functions)
   for ( i = functions.begin(); i != functions.end(); i++ )
   {
     treefunc_t tf = *i;
-    codefunc_t *cf = new codefunc_t(tf.sym);
+    ir_func_t *f = new ir_func_t(tf.sym);
 
-    codefunc_engine_t e(*cf, ir);
+    ir_engine_t e(*f, ir);
     e.start(tf.tree);
 
-    ir.funcs.push_back(cf);
+    ir.funcs.push_back(f);
     delete tf.tree;
   }
 }

@@ -421,17 +421,17 @@ static void print_ir_code(const codenode_t *code)
 //-----------------------------------------------------------------------------
 void print_ir(const ir_t &ir)
 {
-  codefuncs_t::const_iterator i;
+  ir_funcs_t::const_iterator i;
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
-    codefunc_t *cf = *i;
-    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", cf->sym->c_str());
-    cmtout(0, "temps used:    %d\n", cf->temps.count());
-    cmtout(0, "svregs used:   %d\n", cf->svregs.count());
-    cmtout(0, "stktemps used: %d\n", cf->stktemps.count());
-    cmtout(0, "regargs used:  %d\n", cf->regargs.count());
-    cmtout(0, "stkargs used:  %d\n", cf->stkargs.count());
-    print_ir_code(cf->code);
+    ir_func_t *f = *i;
+    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->sym->c_str());
+    cmtout(0, "temps used:    %d\n", f->temps.count());
+    cmtout(0, "svregs used:   %d\n", f->svregs.count());
+    cmtout(0, "stktemps used: %d\n", f->stktemps.count());
+    cmtout(0, "regargs used:  %d\n", f->regargs.count());
+    cmtout(0, "stkargs used:  %d\n", f->stkargs.count());
+    print_ir_code(f->code);
   }
 }
 

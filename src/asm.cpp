@@ -149,9 +149,9 @@ void stack_frame_t::build_regargs_section()
 {
   frame_section_t &regargs = sections[FS_REGARGS];
 
-  regargs.init(cf.regargs);
+  regargs.init(f.regargs);
 
-  if ( cf.has_call )
+  if ( f.has_call )
     regargs.end = ARGREGQTY * WORDSIZE;
 
   struct regargs_builder_t : public frame_item_visitor_t
@@ -170,7 +170,7 @@ void stack_frame_t::build_stkargs_section()
 {
   frame_section_t &stkargs = sections[FS_STKARGS];
 
-  stkargs.init(cf.stkargs);
+  stkargs.init(f.stkargs);
   stkargs.start = stkargs.end = sections[FS_REGARGS].end;
 
   struct stkargs_builder_t : public frame_item_visitor_t
@@ -190,7 +190,7 @@ void stack_frame_t::build_svregs_section()
 {
   frame_section_t &svregs = sections[FS_SVREGS];
 
-  svregs.init(cf.svregs);
+  svregs.init(f.svregs);
   svregs.start = svregs.end = sections[FS_STKARGS].end;
 
   struct svregs_builder_t : public frame_item_visitor_t
@@ -210,7 +210,7 @@ void stack_frame_t::build_stktemps_section()
 {
   frame_section_t &stktemps = sections[FS_STKTEMPS];
 
-  stktemps.init(cf.stktemps);
+  stktemps.init(f.stktemps);
   stktemps.start = stktemps.end = sections[FS_SVREGS].end;
 
   struct stktemps_builder_t : public frame_item_visitor_t
@@ -230,7 +230,7 @@ void stack_frame_t::build_ra_section()
 {
   frame_section_t &ra = sections[FS_RA];
 
-  ra.init(cf.ra);
+  ra.init(f.ra);
   ra.start = ra.end = sections[FS_STKTEMPS].end;
 
   struct ra_builder_t : public frame_item_visitor_t
@@ -259,7 +259,7 @@ void stack_frame_t::build_lvars_section()
 {
   frame_section_t &lvars = sections[FS_LVARS];
 
-  lvars.init(*cf.sym->symbols());
+  lvars.init(*f.sym->symbols());
   lvars.start = lvars.end = sections[FS_PADDING1].end;
 
   struct lvars_builder_t : public frame_item_visitor_t
@@ -297,7 +297,7 @@ void stack_frame_t::build_params_section()
 {
   frame_section_t &params = sections[FS_PARAMS];
 
-  params.init(*cf.sym->params());
+  params.init(*f.sym->params());
   params.start = params.end = sections[FS_PADDING2].end;
 
   struct params_builder_t : public frame_item_visitor_t
@@ -322,10 +322,10 @@ void stack_frame_t::build_params_section()
 }
 
 //-----------------------------------------------------------------------------
-stack_frame_t::stack_frame_t(const codefunc_t &_cf)
-  : cf(_cf), epilogue_lbl(new symbol_t(ST_LABEL))
+stack_frame_t::stack_frame_t(const ir_func_t &_f)
+  : f(_f), epilogue_lbl(new symbol_t(ST_LABEL))
 {
-  prepare_named_symbol(epilogue_lbl, "%s%s", "__leave", cf.sym->c_str());
+  prepare_named_symbol(epilogue_lbl, "%s%s", "__leave", f.sym->c_str());
 
   build_regargs_section();
   build_stkargs_section();
@@ -758,11 +758,11 @@ static void gen_builtin_function(const char *name, int syscall)
 }
 
 //-----------------------------------------------------------------------------
-static void init_resources(codefunc_t &cf)
+static void init_resources(ir_func_t &f)
 {
   // temps
   symvec_t temps;
-  cf.temps.get_used_resources(temps);
+  f.temps.get_used_resources(temps);
 
   for ( symvec_t::iterator i = temps.begin(); i != temps.end(); i++ )
   {
@@ -771,32 +771,32 @@ static void init_resources(codefunc_t &cf)
   }
 
   // $v0
-  symref_t retval = cf.retval.gen_resource();
+  symref_t retval = f.retval.gen_resource();
   retval->loc.set_reg("$v0");
 
   // $zero
-  cf.zero->loc.set_reg("$zero");
+  f.zero->loc.set_reg("$zero");
 }
 
 //-----------------------------------------------------------------------------
-static void gen_text_section(codefuncs_t &funcs)
+static void gen_text_section(ir_funcs_t &funcs)
 {
   init_reserved_temps();
 
   fprintf(outfile, ".text\n");
 
-  for ( codefuncs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
+  for ( ir_funcs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
   {
-    codefunc_t &cf = **i;
-    init_resources(cf);
+    ir_func_t &f = **i;
+    init_resources(f);
 
-    fprintf(outfile, "\n%s:\n", cf.sym->c_str());
+    fprintf(outfile, "\n%s:\n", f.sym->c_str());
 
-    stack_frame_t frame(cf);
+    stack_frame_t frame(f);
     DBG_FRAME_SUMMARY(frame);
 
     frame.gen_prologue();
-    gen_func_body(cf.code, frame.epilogue_lbl);
+    gen_func_body(f.code, frame.epilogue_lbl);
     frame.gen_epilogue();
 
     delete *i;

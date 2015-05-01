@@ -178,13 +178,13 @@ public:
 
 //-----------------------------------------------------------------------------
 // intermediate representation of a function.
-struct codefunc_t
+struct ir_func_t
 {
   symref_t sym;
   codenode_t *code;
   bool has_call;
 
-  // codefunc objects own all the resources that they use
+  // ir_func_t objects own all the resources that they use
   symref_t zero;
   ra_manager_t ra;
 
@@ -196,7 +196,7 @@ struct codefunc_t
   reg_manager_t regargs;
   reg_manager_t retval;
 
-  codefunc_t(symref_t s)
+  ir_func_t(symref_t s)
     : sym(s), code(NULL), has_call(false), zero(new symbol_t(ST_ZERO)),
       stktemps(ST_STACK_TEMPORARY),
        stkargs(ST_STACK_ARGUMENT),
@@ -205,11 +205,11 @@ struct codefunc_t
        regargs(ST_REG_ARGUMENT,    ARGREGQTY),
         retval(ST_RETVAL,          1) {}
 
-  ~codefunc_t() { delete code; }
+  ~ir_func_t() { delete code; }
 };
 
 //-----------------------------------------------------------------------------
-typedef std::vector<codefunc_t *> codefuncs_t;
+typedef std::vector<ir_func_t *> ir_funcs_t;
 
 //-----------------------------------------------------------------------------
 struct ir_t
@@ -217,7 +217,7 @@ struct ir_t
   symtab_t gsyms;
   symtab_t strings;
   symvec_t labels;
-  codefuncs_t funcs;
+  ir_funcs_t funcs;
 
   ir_t(symtab_t &_gsyms) { gsyms.swap(_gsyms); }
 };
@@ -242,9 +242,9 @@ struct tree_ctx_t
 
 //-----------------------------------------------------------------------------
 // intermediate code generator
-class codefunc_engine_t
+class ir_engine_t
 {
-  codefunc_t &cf;
+  ir_func_t &f;
   ir_t &ir;
 
   codenode_t *head;
@@ -268,8 +268,8 @@ private:
   symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 
 public:
-  codefunc_engine_t(codefunc_t &_cf, ir_t &_ir)
-    : cf(_cf), ir(_ir), head(NULL), tail(NULL), lblcnt(0) {}
+  ir_engine_t(ir_func_t &_f, ir_t &_ir)
+    : f(_f), ir(_ir), head(NULL), tail(NULL), lblcnt(0) {}
 
   void start(const treenode_t *root);
 };

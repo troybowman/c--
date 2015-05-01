@@ -66,12 +66,12 @@ class stack_frame_t
 
   struct reg_saver_t;
 
-  const codefunc_t &cf;
+  const ir_func_t &f;
 
 public:
   symref_t epilogue_lbl;
 
-  stack_frame_t(const codefunc_t &_cf);
+  stack_frame_t(const ir_func_t &_f);
 
   offset_t size() const { return sections[FS_PADDING2].end; }
 
