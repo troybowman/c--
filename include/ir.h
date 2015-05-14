@@ -241,7 +241,7 @@ struct tree_ctx_t
 };
 
 //-----------------------------------------------------------------------------
-// intermediate code generator
+// generates intermediate code for a single function
 class ir_engine_t
 {
   ir_func_t &f;

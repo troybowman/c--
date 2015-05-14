@@ -63,8 +63,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-template <class T>
-class refcnt_t
+template <class T> class refcnt_t
 {
   T *ptr;
 

@@ -6,8 +6,6 @@
 
 #define MAXNAMELEN 32
 
-#define ALIGN(off, val) ((off + (val-1)) & ~(val-1))
-
 //-----------------------------------------------------------------------------
 static const char *tempreg_names[TEMPREGQTY] =
   { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6" };
