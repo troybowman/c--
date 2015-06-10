@@ -1,5 +1,5 @@
 #include <printf.h>
-#include <parse.h>
+#include <parser.h>
 #include <messages.h>
 
 static symref_t _print_string;

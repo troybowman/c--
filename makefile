@@ -26,7 +26,7 @@ OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o $(OBJ)symbol.o   \
 					 $(OBJ)main.o     $(OBJ)asm.o 		$(OBJ)printf.o
 
 HFILES   = $(I)common.h $(I)symbol.h   $(I)treenode.h \
-					 $(I)ir.h  		$(I)messages.h $(I)parse.h    \
+					 $(I)ir.h  		$(I)messages.h $(I)parser.h   \
 					 $(I)asm.h 		$(I)printf.h
 
 #------------------------------------------------------------------------------

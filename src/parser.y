@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <parse.h>
+#include <parser.h>
 #include <symbol.h>
 #include <treenode.h>
 #include <messages.h>
