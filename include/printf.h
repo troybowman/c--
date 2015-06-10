@@ -32,14 +32,5 @@ struct format_arg_t
   format_arg_t(symref_t _func, const treenode_t *_expr)
     : func(_func), expr(_expr) {}
 };
-typedef std::vector<format_arg_t> format_args_t;
 
-//-----------------------------------------------------------------------------
-enum printf_res_t
-{
-  PRINTF_OK,
-  PRINTF_NOARGS,
-  PRINTF_STRCON,
-  PRINTF_NUMARGS,
-  PRINTF_BADARG,
-};
+typedef std::vector<format_arg_t> format_args_t;

@@ -1,6 +1,5 @@
 #include <printf.h>
 #include <parse.h>
-#include <treenode.h>
 #include <messages.h>
 
 static symref_t _print_string;
@@ -98,25 +97,25 @@ static void prepare_substring_arg(
 }
 
 //-----------------------------------------------------------------------------
-static printf_res_t handle_empty_fmt(format_args_t &fmtargs, const treenode_t *argtree)
+static type_error_t handle_empty_fmt(format_args_t &fmtargs, const treenode_t *argtree)
 {
   if ( calc_seq_len(argtree) > 0 )
-    return PRINTF_NUMARGS;
+    return TERR_NUM_FMT;
 
   treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING));
   fmtargs.push_back(format_arg_t(_print_string, node));
 
-  return PRINTF_OK;
+  return TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
-static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_t *allargs)
+static type_error_t validate_printf_call(format_args_t &fmtargs, const treenode_t *allargs)
 {
   if ( allargs == NULL )
-    return PRINTF_NOARGS;
+    return TERR_NO_FMT;
 
   if ( allargs->children[SEQ_CUR]->type() != TNT_STRCON )
-    return PRINTF_STRCON;
+    return TERR_FMTSTR;
 
   const char *fmt = allargs->children[SEQ_CUR]->str();
   if ( strcmp(fmt, EMPTYSTRING) == 0 ) // special case
@@ -143,7 +142,7 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
 
         const treenode_t *arg = *ti++;
         if ( arg == NULL )
-          return PRINTF_NUMARGS;
+          return TERR_NUM_FMT;
 
         switch ( c )
         {
@@ -151,7 +150,7 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
           case FMTC:
             {
               if ( !arg->is_int_compat() )
-                return PRINTF_BADARG;
+                return TERR_BAD_FMT;
               symref_t func = c == FMTD ? _print_int : _print_char;
               fmtargs.push_back(format_arg_t(func, arg));
             }
@@ -159,7 +158,7 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
           case FMTS:
             {
               if ( !arg->is_string_compat() )
-                return PRINTF_BADARG;
+                return TERR_BAD_FMT;
               fmtargs.push_back(format_arg_t(_print_string, arg));
             }
             break;
@@ -171,9 +170,9 @@ static printf_res_t validate_printf_call(format_args_t &fmtargs, const treenode_
   prepare_substring_arg(fmtargs, cursub, ptr);
 
   if ( *ti != NULL ) // extra format arguments
-    return PRINTF_NUMARGS;
+    return TERR_NUM_FMT;
 
-  return PRINTF_OK;
+  return TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -196,22 +195,22 @@ treenode_t *process_printf_call(symref_t printf, treenode_t *allargs, int line)
 {
   format_args_t fmtargs;
 
-  printf_res_t res = validate_printf_call(fmtargs, allargs);
+  type_error_t res = validate_printf_call(fmtargs, allargs);
 
-  if ( res != PRINTF_OK )
+  if ( res != TERR_OK )
   {
     switch ( res )
     {
-      case PRINTF_NOARGS:
+      case TERR_NO_FMT:
         usererr("error: printf() expects at least one string constant argument, line %d\n", line);
         break;
-      case PRINTF_STRCON:
+      case TERR_FMTSTR:
         usererr("error: first argument to printf() must be a string constant, line %d\n", line);
         break;
-      case PRINTF_BADARG:
+      case TERR_BAD_FMT:
         usererr("error: incompatible argument for format specifier, line %d\n", line);
         break;
-      case PRINTF_NUMARGS:
+      case TERR_NUM_FMT:
         usererr("error: invalid number of format arguments, line %d\n", line);
         break;
       default:
