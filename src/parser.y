@@ -67,7 +67,7 @@ public:
 static       void  process_var_list(symvec_t *, primitive_t);
 static       void  process_func_list(symvec_t *, primitive_t, bool);
 static       bool  process_var_decl(symref_t, primitive_t);
-static   symref_t  process_var_id(const char *, int, array_sfx_t, uint32_t);
+static   symref_t  process_var_id(const char *, int, terr_info_t, uint32_t);
 static   symref_t  process_stmt_id(const char *, int);
 static treenode_t *process_stmt_var(symref_t, treenode_t *, int);
 static treenode_t *process_assg(treenode_t *, treenode_t *, int);
@@ -80,14 +80,16 @@ static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
 static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
 static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
 static   symvec_t *process_param_list(symref_t, symvec_t *, symref_t);
-static array_sfx_t process_array_sfx(int, int);
-static       void  process_fdecl_error(fdecl_res_t, symref_t);
+static terr_info_t process_array_sfx(int, int);
+static       void  process_fdecl_error(terr_info_t, symref_t);
 static   symvec_t *sym_list_append(symvec_t *, symref_t);
 static   symvec_t *sym_list_prepend(symref_t, symvec_t *);
 static       void  func_enter(symref_t, primitive_t);
 static       void  func_leave(treenode_t *);
-static       void  yyputref(uint8_t const [], symref_t);
-static   symref_t  yygetref(uint8_t const []);
+static       void  yyputsym(uint8_t const [], symref_t);
+static   symref_t  yygetsym(uint8_t const []);
+static       void  yyputerr(uint8_t const [], terr_info_t);
+static terr_info_t yygeterr(uint8_t const []);
 %}
 
 /*---------------------------------------------------------------------------*/
@@ -99,8 +101,8 @@ static   symref_t  yygetref(uint8_t const []);
   symvec_t *symvec;
   treenode_t *tree;
   symtab_t *symtab;
-  array_sfx_t asfx;
   seq_t seq;
+  uint8_t asfx[sizeof(terr_info_t)];
   uint8_t sym[sizeof(symref_t)];
 }
 
@@ -151,75 +153,75 @@ type : INT_TYPE  { $$ = PRIM_INT;  }
      ;
 
 /*---------------------------------------------------------------------------*/
-var_decls : var_decl var_decl_list { $$ = sym_list_prepend(yygetref($1), $2); }
+var_decls : var_decl var_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
           ;
 
 var_decl : ID decl_array_sfx
            {
-             symref_t ref = process_var_id($1, yylineno, $2, 0);
-             yyputref($$, ref);
+             symref_t ref = process_var_id($1, yylineno, yygeterr($2), 0);
+             yyputsym($$, ref);
              free($1);
            }
          ;
 
-decl_array_sfx : '[' INT ']' { $$ = process_array_sfx($2, yylineno); }
-               | /* empty */ { $$.code = ASFX_NONE; }
+decl_array_sfx : '[' INT ']' { yyputerr($$, process_array_sfx($2, yylineno)); }
+               | /* empty */ { yyputerr($$, terr_info_t(TERR_OK)); }
                ;
 
-var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, yygetref($3)); }
+var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, yygetsym($3)); }
               | /* empty */                { $$ = NULL; }
               ;
 
 /*---------------------------------------------------------------------------*/
-func_decls : func_decl func_decl_list { $$ = sym_list_prepend(yygetref($1), $2); }
+func_decls : func_decl func_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
            ;
 
 func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
               symref_t func(new symbol_t(0, $1, yylineno, $4));
-              yyputref($$, func);
+              yyputsym($$, func);
               free($1);
             }
           ;
 
-func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, yygetref($3)); }
+func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, yygetsym($3)); }
                | /* empty */                  { $$ = NULL; }
                ;
 
 /*---------------------------------------------------------------------------*/
 params : param_decl param_decl_list ellipsis
          {
-           $$ = process_param_list(yygetref($1), $2, yygetref($3));
+           $$ = process_param_list(yygetsym($1), $2, yygetsym($3));
          }
        | VOID { $$ = new symvec_t; }
        ;
 
-ellipsis : ',' ELLIPSIS { yyputref($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
-         | /* empty */  { yyputref($$, NULLREF); }
+ellipsis : ',' ELLIPSIS { yyputsym($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
+         | /* empty */  { yyputsym($$, NULLREF); }
          ;
 
 param_decl : type ID param_array_sfx
              {
-               symref_t sym = process_var_id($2, yylineno, $3, SF_PARAMETER);
+               symref_t sym = process_var_id($2, yylineno, yygeterr($3), SF_PARAMETER);
                if ( sym != NULL && !process_var_decl(sym, $1) )
                  sym = NULLREF;
-               yyputref($$, sym);
+               yyputsym($$, sym);
                free($2);
              }
            ;
 
-param_array_sfx : '[' ']'     { $$.code = ASFX_OK; $$.size = BADOFFSET; }
-                | /* empty */ { $$.code = ASFX_NONE; }
+param_array_sfx : '[' ']'     { yyputerr($$, terr_info_t(TERR_OK2, BADOFFSET)); }
+                | /* empty */ { yyputerr($$, terr_info_t(TERR_OK)); }
                 ;
 
-param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, yygetref($3)); }
+param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, yygetsym($3)); }
                 | /* empty */                    { $$ = NULL; }
                 ;
 
 /*---------------------------------------------------------------------------*/
 func : type func_decl
        '{'
-          { func_enter(yygetref($2), $1); }
+          { func_enter(yygetsym($2), $1); }
           func_body
           { func_leave($5); }
        '}'
@@ -335,14 +337,14 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
 %%
 
 //-----------------------------------------------------------------------------
-static symref_t process_var_id(const char *name, int line, array_sfx_t asfx, uint32_t flags)
+static symref_t process_var_id(const char *name, int line, terr_info_t asfx, uint32_t flags)
 {
-  if ( asfx.code == ASFX_ERROR )
-    return NULLREF;
-
-  return asfx.code == ASFX_NONE
-       ? symref_t(new symbol_t(flags, name, line))
-       : symref_t(new symbol_t(flags, name, line, asfx.size));
+  switch ( asfx.code )
+  {
+    case TERR_OK:  return symref_t(new symbol_t(flags, name, line));
+    case TERR_OK2: return symref_t(new symbol_t(flags, name, line, asfx.data));
+    default:       return NULLREF;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -365,16 +367,16 @@ static bool check_params(const symvec_t &p1, const symvec_t &p2)
 }
 
 //-----------------------------------------------------------------------------
-static col_res_t validate_collision(const symbol_t &prev, const symbol_t &sym)
+static type_error_t validate_collision(const symbol_t &prev, const symbol_t &sym)
 {
   ASSERT(1001, prev.name() == sym.name());
 
-  return !prev.is_func()                              ? COL_REDECL
-       :  prev.is_extern()                            ? COL_EXT
-       :  prev.is_defined()                           ? COL_REDEF
-       : !check_params(*prev.params(), *sym.params()) ? COL_PARAMS
-       :  prev.base() != sym.base()                   ? COL_RET
-       :                                                COL_OK;
+  return !prev.is_func()                              ? TERR_REDECLARED
+       :  prev.is_defined()                           ? TERR_REDEFINED
+       :  prev.is_extern()                            ? TERR_EXTERN
+       : !check_params(*prev.params(), *sym.params()) ? TERR_PARAMS
+       :  prev.base() != sym.base()                   ? TERR_RTN_TYPES
+       :                                                TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -389,31 +391,31 @@ static void init_lsyms(symbol_t &f)
 }
 
 //-----------------------------------------------------------------------------
-static void process_col_err(col_res_t res, const symbol_t &f, const symbol_t &prev)
+static void process_col_err(type_error_t err, const symbol_t &f, const symbol_t &prev)
 {
-  switch ( res )
+  switch ( err )
   {
-    case COL_REDEF:
+    case TERR_REDEFINED:
       usererr("error: function %s redefined at line %d "
               "(previous definition starts at line %d)\n",
               f.c_str(), f.line(), prev.line());
       break;
-    case COL_REDECL:
+    case TERR_REDECLARED:
       usererr("error: symbol %s redeclared as a function at line %d "
               "(previous declaration at line %d)\n",
               f.c_str(), f.line(), prev.line());
       break;
-    case COL_PARAMS:
+    case TERR_PARAMS:
       usererr("error: parameters in definition of function %s at line %d "
               "do not match the parameters in its declaration at line %d\n",
               f.c_str(), f.line(), prev.line());
       break;
-    case COL_RET:
+    case TERR_RTN_TYPES:
       usererr("error: return type for function %s at line %d "
               "does not match the return type in its declaration at line %d\n",
               f.c_str(), f.line(), prev.line());
       break;
-    case COL_EXT:
+    case TERR_EXTERN:
       usererr("error: function %s is defined at line %d "
               "but is declared extern at line %d\n",
               f.c_str(), f.line(), prev.line());
@@ -460,26 +462,23 @@ static void func_enter(symref_t f, primitive_t rt)
 
   if ( has_ellipsis(*f) )
   {
-    process_fdecl_error(FDECL_BAD_PRINTF, f);
+    process_fdecl_error(TERR_BAD_PRINTF, f);
     purge_and_exit(FATAL_FUNCDEF);
   }
 
   f->set_base(rt);
-
   symref_t prev = gsyms.get(f->name());
 
   if ( prev != NULL )
   {
-    col_res_t res = validate_collision(*prev, *f);
-
-    if ( res != COL_OK )
+    type_error_t err = validate_collision(*prev, *f);
+    if ( err != TERR_OK )
     {
-      process_col_err(res, *f, *prev);
+      process_col_err(err, *f, *prev);
       // these errors invalidate an entire function definition.
       // we do not try to recover from them
       purge_and_exit(FATAL_FUNCDEF);
     }
-
     // definition provides param names/line #s that are actually used
     set_decl_srcinfo(*prev, *f);
     f = prev;
@@ -509,34 +508,34 @@ static void func_leave(treenode_t *tree)
 }
 
 //-----------------------------------------------------------------------------
-static ret_res_t validate_ret_stmt(const treenode_t *expr)
+static type_error_t validate_ret_stmt(const treenode_t *expr)
 {
   if ( ctx.func()->base() == PRIM_VOID )
-    return expr != NULL ? RET_EXTRA : RET_OK;
+    return expr != NULL ? TERR_BAD_RET : TERR_OK;
   else
-    return expr == NULL           ? RET_MISSING
-         : !expr->is_int_compat() ? RET_INCOMPAT
-         :                          RET_OK_RESOLVED;
+    return expr == NULL           ? TERR_NO_RET
+         : !expr->is_int_compat() ? TERR_RET_EXPR
+         :                          TERR_OK2;
 }
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_ret_stmt(treenode_t *expr, int line)
 {
-  ret_res_t res = validate_ret_stmt(expr);
+  type_error_t err = validate_ret_stmt(expr);
 
-  if ( res < RET_OK )
+  if ( err > TERR_OK2 )
   {
-    switch ( res )
+    switch ( err )
     {
-      case RET_MISSING:
+      case TERR_NO_RET:
         usererr("error: line %d - return statements in a non-void function "
                 "must return a value\n", line);
         break;
-      case RET_EXTRA:
+      case TERR_BAD_RET:
         usererr("error: line %d - return statements in a void function "
                 "must not return a value\n", line);
         break;
-      case RET_INCOMPAT:
+      case TERR_RET_EXPR:
         usererr("error: line %d - return value is not compatible "
                 "with function's return type\n", line);
         break;
@@ -547,7 +546,7 @@ static treenode_t *process_ret_stmt(treenode_t *expr, int line)
     return ERRNODE;
   }
 
-  if ( res == RET_OK_RESOLVED )
+  if ( err == TERR_OK2 )
     ctx.func()->set_ret_resolved();
 
   return new treenode_t(TNT_RET, expr);
@@ -579,26 +578,26 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
 }
 
 //-----------------------------------------------------------------------------
-static call_res_t validate_call(const symbol_t &f, const treenode_t *args)
+static terr_info_t validate_call(const symbol_t &f, const treenode_t *args)
 {
   if ( !f.is_func() )
-    return CALL_NOFUNC;
+    return TERR_NOFUNC;
 
   const symvec_t &params = *f.params();
   size_t nparams = params.size();
   size_t nargs   = calc_seq_len(args);
 
   if ( nparams != nargs )
-    return call_res_t(CALL_NUMARGS, nargs);
+    return terr_info_t(TERR_NUMARGS, nargs);
 
   const_tree_iterator_t ti(args);
   for ( size_t i = 0; *ti != NULL && i < nparams; ti++, i++ )
   {
     if ( !check_arg(*params[i], **ti) )
-      return call_res_t(CALL_BADARG, i+1);
+      return terr_info_t(TERR_BADARG, i+1);
   }
 
-  return CALL_OK;
+  return TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -609,21 +608,21 @@ static treenode_t *process_call(symref_t f, treenode_t *args, int line)
   if ( f->is_builtin_printf() )
     return process_printf_call(f, args, line);
 
-  call_res_t res = validate_call(*f, args);
+  terr_info_t err = validate_call(*f, args);
 
-  if ( res.code != CALL_OK )
+  if ( err.code != TERR_OK )
   {
-    switch ( res.code )
+    switch ( err.code )
     {
-      case CALL_NUMARGS:
+      case TERR_NUMARGS:
         usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
-                f->params()->size(), f->c_str(), res.info, line);
+                f->params()->size(), f->c_str(), err.data, line);
         break;
-      case CALL_BADARG:
+      case TERR_BADARG:
         usererr("error: argument %d to function %s is of incompatible type, line %d\n",
-                res.info, f->c_str(), line);
+                err.data, f->c_str(), line);
         break;
-      case CALL_NOFUNC:
+      case TERR_NOFUNC:
         usererr("error: symbol %s used a function but is not of function type, line %d\n",
                 f->c_str(), line);
         break;
@@ -638,19 +637,19 @@ static treenode_t *process_call(symref_t f, treenode_t *args, int line)
 }
 
 //-----------------------------------------------------------------------------
-static cctx_res_t validate_call_ctx(const treenode_t &call, bool expr)
+static type_error_t validate_call_ctx(const treenode_t &call, bool expr)
 {
   if ( call.type() == TNT_ERROR )
-    return CCTX_OK;
+    return TERR_OK;
 
   ASSERT(1043, call.type() == TNT_CALL || call.type() == TNT_PRINTF);
 
   primitive_t rt = call.sym()->base();
 
   if ( expr )
-    return rt == PRIM_VOID ? CCTX_EXPR : CCTX_OK;
+    return rt == PRIM_VOID ? TERR_VOID_EXPR : TERR_OK;
   else
-    return rt != PRIM_VOID ? CCTX_STMT : CCTX_OK;
+    return rt != PRIM_VOID ? TERR_PROCEDURE : TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -658,18 +657,18 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
 {
   ASSERT(1044, call != NULL);
 
-  cctx_res_t res = validate_call_ctx(*call, expr);
+  type_error_t err = validate_call_ctx(*call, expr);
 
-  if ( res != CCTX_OK )
+  if ( err != TERR_OK )
   {
-    switch ( res )
+    switch ( err )
     {
-      case CCTX_EXPR:
+      case TERR_VOID_EXPR:
         usererr("error: line %d - function %s called as part of an expression "
                 "but does not return a value\n",
                 line, call->sym()->c_str());
         break;
-      case CCTX_STMT:
+      case TERR_PROCEDURE:
         usererr("error: line %d - function %s called as a standalone statement "
                 "but does not have return type void\n",
                 line, call->sym()->c_str());
@@ -685,19 +684,31 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
 }
 
 //-----------------------------------------------------------------------------
-static inline void yyputref(uint8_t const addr[], symref_t ref)
+static inline void yyputsym(uint8_t const addr[], symref_t ref)
 {
   putref(addr, ref);
 }
 
 //-----------------------------------------------------------------------------
 // deletes the reference after extracting
-static symref_t yygetref(uint8_t const addr[])
+static inline symref_t yygetsym(uint8_t const addr[])
 {
   symref_t &yyref = getref(addr);
   symref_t ret = yyref;
   yyref.~symref_t();
   return ret;
+}
+
+//-----------------------------------------------------------------------------
+static inline void yyputerr(uint8_t const addr[], terr_info_t err)
+{
+  unionize<terr_info_t>(addr, err);
+}
+
+//-----------------------------------------------------------------------------
+static inline terr_info_t yygeterr(uint8_t const addr[])
+{
+  return deunionize<terr_info_t>(addr);
 }
 
 //-----------------------------------------------------------------------------
@@ -715,11 +726,11 @@ static symref_t process_stmt_id(const char *id, int line)
 }
 
 //-----------------------------------------------------------------------------
-static lookup_res_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
+static type_error_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
 {
-  return !sym.is_array()      ? AL_ERR_BASE
-       : !idx.is_int_compat() ? AL_ERR_IDX
-       :                        AL_OK;
+  return !sym.is_array()      ? TERR_BASE
+       : !idx.is_int_compat() ? TERR_INDEX
+       :                        TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -730,17 +741,17 @@ static treenode_t *process_stmt_var(symref_t sym, treenode_t *idx, int line)
   if ( idx == NULL )
     return new treenode_t(sym, TNT_SYMBOL);
 
-  lookup_res_t res = validate_array_lookup(*sym, *idx);
+  type_error_t err = validate_array_lookup(*sym, *idx);
 
-  if ( res != AL_OK )
+  if ( err != TERR_OK )
   {
-    switch ( res )
+    switch ( err )
     {
-      case AL_ERR_BASE:
+      case TERR_BASE:
         usererr("error: symbol %s used as an array but is not of array type, line %d\n",
                 sym->c_str(), line);
         break;
-      case AL_ERR_IDX:
+      case TERR_INDEX:
         usererr("error: expression for array index is not of integer type, line %d\n", line);
         break;
       default:
@@ -782,18 +793,18 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 }
 
 //-----------------------------------------------------------------------------
-static vdecl_res_t validate_var_decl(const symbol_t &sym, primitive_t type)
+static terr_info_t validate_var_decl(const symbol_t &sym, primitive_t type)
 {
   ASSERT(0, type != PRIM_UNKNOWN);
 
   if ( type == PRIM_VOID )
-    return VDECL_BAD_VOID;
+    return TERR_BAD_VOID;
 
   symref_t prev = ctx.get(sym.name());
   if ( prev != NULL )
-    return vdecl_res_t(VDECL_REDECL, prev->line());
+    return terr_info_t(TERR_REDECLARED, prev->line());
 
-  return VDECL_OK;
+  return TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -801,17 +812,17 @@ static bool process_var_decl(symref_t sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
-  vdecl_res_t res = validate_var_decl(*sym, type);
+  terr_info_t err = validate_var_decl(*sym, type);
 
-  if ( res.code != VDECL_OK )
+  if ( err.code != TERR_OK )
   {
-    switch ( res.code )
+    switch ( err.code )
     {
-      case VDECL_REDECL:
+      case TERR_REDECLARED:
         usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
-                sym->c_str(), sym->line(), res.info);
+                sym->c_str(), sym->line(), err.data);
         break;
-      case VDECL_BAD_VOID:
+      case TERR_BAD_VOID:
         usererr("error: void type is only valid for parameter declarations, line %d\n", sym->line());
         break;
       default:
@@ -837,28 +848,28 @@ static void process_var_list(symvec_t *vec, primitive_t type)
 }
 
 //-----------------------------------------------------------------------------
-static fdecl_res_t validate_func_decl(const symbol_t &func, primitive_t rt, bool is_extern)
+static terr_info_t validate_func_decl(const symbol_t &func, primitive_t rt, bool is_extern)
 {
   symref_t prev = gsyms.get(func.name());
   if ( prev != NULL )
-    return fdecl_res_t(FDECL_REDECL, prev->line());
+    return terr_info_t(TERR_REDECLARED, prev->line());
 
   if ( has_ellipsis(func) )
-    return validate_printf_decl(func, rt, is_extern) ? FDECL_PRINTF_OK
-                                                     : FDECL_BAD_PRINTF;
-  return FDECL_OK;
+    return validate_printf_decl(func, rt, is_extern) ? TERR_OK2
+                                                     : TERR_BAD_PRINTF;
+  return TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
-static void process_fdecl_error(fdecl_res_t res, symref_t sym)
+static void process_fdecl_error(terr_info_t err, symref_t sym)
 {
-  switch ( res.code )
+  switch ( err.code )
   {
-    case FDECL_REDECL:
+    case TERR_REDECLARED:
       usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
-              sym->c_str(), sym->line(), res.info);
+              sym->c_str(), sym->line(), err.data);
       break;
-    case FDECL_BAD_PRINTF:
+    case TERR_BAD_PRINTF:
       usererr("error, line %d: ellipsis \"...\" notation is is only valid when declaring "
               "builtin function: extern void printf(char format[], ...);\n",
               sym->line());
@@ -879,15 +890,15 @@ static void process_func_list(symvec_t *vec, primitive_t rt, bool is_extern)
     ASSERT(1011, *i != NULL);
 
     symref_t sym = *i;
-    fdecl_res_t res = validate_func_decl(*sym, rt, is_extern);
+    terr_info_t err = validate_func_decl(*sym, rt, is_extern);
 
-    if ( res.code < FDECL_OK )
+    if ( err.code > TERR_OK2 )
     {
-      process_fdecl_error(res, sym);
+      process_fdecl_error(err, sym);
       continue;
     }
 
-    if ( res.code == FDECL_PRINTF_OK )
+    if ( err.code == TERR_OK2 )
       build_print_functions(sym, gsyms);
 
     sym->set_base(rt);
@@ -900,20 +911,14 @@ static void process_func_list(symvec_t *vec, primitive_t rt, bool is_extern)
 }
 
 //-----------------------------------------------------------------------------
-static array_sfx_t process_array_sfx(int size, int line)
+static terr_info_t process_array_sfx(int size, int line)
 {
-  array_sfx_t ret;
-  if ( size >= 0 )
-  {
-    ret.code = ASFX_OK;
-    ret.size = size;
-  }
-  else
-  {
+  terr_info_t asfx(size >= 0 ? TERR_OK2 : TERR_ASFX, size);
+
+  if ( asfx.code > TERR_OK2 )
     usererr("error: line %d: arrays must have non-negative size\n", line);
-    ret.code = ASFX_ERROR;
-  }
-  return ret;
+
+  return asfx;
 }
 
 //-----------------------------------------------------------------------------

@@ -1,9 +1,11 @@
 %{
   #include <stdlib.h>
 
-  // TODO: we shouldn't need these
+  // TODO: we have to include these headers for the YYSTYPE union in parser.hpp.
+  // there has to be a way to get around this.
   #include <parse.h>
   #include <symbol.h>
+  #include <treenode.h>
 
   #include "parser.hpp"
   #define YY_DECL extern "C" int yylex()

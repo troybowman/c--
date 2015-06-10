@@ -52,7 +52,7 @@ public:
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_PRIMITIVE,       // primitive (int/char)
+  ST_PRIMITIVE,       // primitive (int/char/void)
   ST_ARRAY,           // array (base type is a primitive)
   ST_FUNCTION,        // function (return type + local vars)
   ST_TEMPORARY,       // temporary value
