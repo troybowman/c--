@@ -2,21 +2,6 @@
 #define MESSAGES_H
 
 //-----------------------------------------------------------------------------
-// Error messages
-//-----------------------------------------------------------------------------
-
-// exit codes
-#define FATAL_NORMAL  0
-#define FATAL_USAGE   1
-#define FATAL_FUNCDEF 2
-#define FATAL_MAXERR  3
-#define FATAL_OUTFILE 4
-
-void checkerr();
-void purge_and_exit(int code);
-void usererr(const char *format, ...);
-
-//-----------------------------------------------------------------------------
 // Debug/Logging messages
 //-----------------------------------------------------------------------------
 

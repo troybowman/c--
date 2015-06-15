@@ -1,6 +1,5 @@
 #include <vector>
-#include <symbol.h>
-#include <treenode.h>
+#include <parser.h>
 
 //-----------------------------------------------------------------------------
 // builtin function names

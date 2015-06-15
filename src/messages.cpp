@@ -1,59 +1,9 @@
-#include <stdarg.h>
-#include <vector>
-#include <string>
-#include <common.h>
-#include <messages.h>
-
-//-----------------------------------------------------------------------------
-// Error messages
-//-----------------------------------------------------------------------------
-
-#define MAXERRS   50
-#define MAXERRLEN 1024
-
-typedef std::vector<std::string> errvec_t;
-
-//-----------------------------------------------------------------------------
-static errvec_t errmsgs;
-
-//-----------------------------------------------------------------------------
-void purge_and_exit(int code)
-{
-  errvec_t::const_iterator i;
-  for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
-    fprintf(stderr, i->c_str());
-  exit(code);
-}
-
-//-----------------------------------------------------------------------------
-void usererr(const char *format, ...)
-{
-  va_list va;
-  va_start(va, format);
-
-  char buf[MAXERRLEN];
-  vsnprintf(buf, MAXERRLEN, format, va);
-  errmsgs.push_back(buf);
-
-  va_end(va);
-
-  if ( errmsgs.size() >= MAXERRS )
-    purge_and_exit(FATAL_MAXERR);
-}
-
-//-----------------------------------------------------------------------------
-void checkerr()
-{
-  if ( errmsgs.size() > 0 )
-    purge_and_exit(FATAL_NORMAL);
-}
-
-//-----------------------------------------------------------------------------
-// Debug/Logging messages
-//-----------------------------------------------------------------------------
-
 #ifndef NDEBUG
 
+#include <stdarg.h>
+
+#include <common.h>
+#include <messages.h>
 #include <symbol.h>
 #include <treenode.h>
 #include <ir.h>

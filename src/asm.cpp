@@ -35,6 +35,7 @@ static bool prepare_named_symbol(symref_t sym, const char *fmt, ...)
   va_list va;
   va_start(va, fmt);
 
+  // TODO: must get rid of this limitation
   char buf[MAXNAMELEN];
   vsnprintf(buf, MAXNAMELEN, fmt, va);
 
@@ -75,11 +76,8 @@ static void init_gsyms(symtab_t &src_syms, symtab_t &strings, symvec_t &labels)
 {
   // 'main' must remain as is - i.e. no auto-generated name
   symref_t main = src_syms.get("main");
-  if ( main != NULL )
-  {
-    src_syms.erase(main);
-    gsyms.insert(main);
-  }
+  src_syms.erase(main);
+  gsyms.insert(main);
 
   gen_asm_names<symtab_t>(src_syms, "_");
   gen_asm_names<symtab_t>(strings,  "_str", true);
@@ -365,6 +363,7 @@ void stack_frame_t::gen_prologue()
   struct argreg_saver_t : public frame_item_visitor_t
   {
     frame_section_t &params;
+
     virtual void visit_item(frame_section_t &, symbol_t &reg, uint32_t idx)
     {
       if ( idx < params.nitems() )
@@ -373,7 +372,9 @@ void stack_frame_t::gen_prologue()
                 reg.loc.reg(), params.start + idx * WORDSIZE);
       }
     }
+
     argreg_saver_t(frame_section_t &_params) : params(_params) {}
+
   } as(sections[FS_PARAMS]);
 
   sections[FS_REGARGS].visit_items(as);

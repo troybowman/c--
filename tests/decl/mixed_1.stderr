@@ -9,3 +9,5 @@ error: function func6 redeclared at line 24 (previous declaration at line 13)
 error: variable func7 redeclared at line 26 (previous declaration at line 15)
 syntax error, line: 28
 syntax error, line: 39
+syntax error, line: 41
+syntax error, line: 67

@@ -1,14 +1,12 @@
 %{
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <parser.h>
-#include <symbol.h>
-#include <treenode.h>
 #include <messages.h>
 #include <printf.h>
 
+//---------------------------------------------------------------------------
 extern "C" FILE *yyin;
 extern "C" int yylex();
 extern "C" int yyparse();
@@ -17,8 +15,9 @@ int yyerror(const char *s);
 
 //---------------------------------------------------------------------------
 static symtab_t gsyms;        // global symbol table
-static treefuncs_t functions; // functions, (along with their syntax trees)
-                              // in order as they appear in the source file
+static treefuncs_t functions; // syntax trees for each function in src file
+static errvec_t errmsgs;      // error messages, limited to MAXERRS
+
 //---------------------------------------------------------------------------
 static class ctx_t
 {
@@ -39,11 +38,11 @@ public:
   ~ctx_t()                  { clear(); }
 
   void clear()              { if ( mode == CTX_LOCAL ) func().~symref_t(); }
+  void trash()              { delete syms; setglobal(); }
 
   void setglobal()          { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
   void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(reserve, f); }
   void settemp()            { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
-  void trash()              { delete syms; setglobal(); }
 
   symref_t &func()    const { return getref(reserve); }
 
@@ -81,11 +80,13 @@ static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, tr
 static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
 static   symvec_t *process_param_list(symref_t, symvec_t *, symref_t);
 static terr_info_t process_array_sfx(int, int);
-static       void  process_fdecl_error(terr_info_t, symref_t);
+static       void  process_fdecl_error(terr_info_t, const symbol_t &);
 static   symvec_t *sym_list_append(symvec_t *, symref_t);
 static   symvec_t *sym_list_prepend(symref_t, symvec_t *);
 static       void  func_enter(symref_t, primitive_t);
 static       void  func_leave(treenode_t *);
+
+//---------------------------------------------------------------------------
 static       void  yyputsym(uint8_t const [], symref_t);
 static   symref_t  yygetsym(uint8_t const []);
 static       void  yyputerr(uint8_t const [], terr_info_t);
@@ -225,8 +226,8 @@ func : type func_decl
           func_body
           { func_leave($5); }
        '}'
-     | error '{' { purge_and_exit(FATAL_FUNCDEF); } /* avoid processing an invaild function */
-     | error '}' { yyerrok; }  /* start over at '}' */
+     | error '{' { yyerrok; }
+     | error '}' { yyerrok; }
      ;
 
 func_body : local_decls stmts { $$ = $2.head; }
@@ -367,16 +368,30 @@ static bool check_params(const symvec_t &p1, const symvec_t &p2)
 }
 
 //-----------------------------------------------------------------------------
-static type_error_t validate_collision(const symbol_t &prev, const symbol_t &sym)
+static bool has_ellipsis(const symbol_t &f)
 {
-  ASSERT(1001, prev.name() == sym.name());
+  return f.is_func()
+      && f.params()->size() > 0
+      && f.params()->back()->type() == ST_ELLIPSIS;
+}
 
-  return !prev.is_func()                              ? TERR_REDECLARED
-       :  prev.is_defined()                           ? TERR_REDEFINED
-       :  prev.is_extern()                            ? TERR_EXTERN
-       : !check_params(*prev.params(), *sym.params()) ? TERR_PARAMS
-       :  prev.base() != sym.base()                   ? TERR_RTN_TYPES
-       :                                                TERR_OK;
+//-----------------------------------------------------------------------------
+static type_error_t validate_func_def(const symbol_t &def, symref_t prev)
+{
+  if ( has_ellipsis(def) )
+    return prev == NULL ? TERR_PRINTF_DEF1 : TERR_PRINTF_DEF2;
+
+  if ( prev == NULL )
+    return TERR_OK;
+
+  ASSERT(0, def.name() == prev->name());
+
+  return !prev->is_func()                              ? TERR_REDECLARED
+       :  prev->is_defined()                           ? TERR_REDEFINED
+       :  prev->is_extern()                            ? TERR_EXTERN
+       : !check_params(*prev->params(), *def.params()) ? TERR_PARAMS
+       :  prev->base() != def.base()                   ? TERR_RTN_TYPES
+       :                                                 TERR_OK2;
 }
 
 //-----------------------------------------------------------------------------
@@ -391,52 +406,10 @@ static void init_lsyms(symbol_t &f)
 }
 
 //-----------------------------------------------------------------------------
-static void process_col_err(type_error_t err, const symbol_t &f, const symbol_t &prev)
-{
-  switch ( err )
-  {
-    case TERR_REDEFINED:
-      usererr("error: function %s redefined at line %d "
-              "(previous definition starts at line %d)\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case TERR_REDECLARED:
-      usererr("error: symbol %s redeclared as a function at line %d "
-              "(previous declaration at line %d)\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case TERR_PARAMS:
-      usererr("error: parameters in definition of function %s at line %d "
-              "do not match the parameters in its declaration at line %d\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case TERR_RTN_TYPES:
-      usererr("error: return type for function %s at line %d "
-              "does not match the return type in its declaration at line %d\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    case TERR_EXTERN:
-      usererr("error: function %s is defined at line %d "
-              "but is declared extern at line %d\n",
-              f.c_str(), f.line(), prev.line());
-      break;
-    default:
-      INTERR(1012);
-  }
-}
-
-//-----------------------------------------------------------------------------
-static bool has_ellipsis(const symbol_t &f)
-{
-  return f.is_func()
-      && f.params()->size() > 0
-      && f.params()->back()->type() == ST_ELLIPSIS;
-}
-
-//-----------------------------------------------------------------------------
 static void set_decl_srcinfo(symbol_t &f1, const symbol_t &f2)
 {
   f1.set_line(f2.line());
+  f1.set_base(f2.base());
 
   symvec_t &params1 = *f1.params();
   const symvec_t &params2 = *f2.params();
@@ -457,35 +430,32 @@ static void set_decl_srcinfo(symbol_t &f1, const symbol_t &f2)
 //-----------------------------------------------------------------------------
 static void func_enter(symref_t f, primitive_t rt)
 {
-  ASSERT(1004, f != NULL);
-  ASSERT(1000, f->is_func());
-
-  if ( has_ellipsis(*f) )
-  {
-    process_fdecl_error(TERR_BAD_PRINTF, f);
-    purge_and_exit(FATAL_FUNCDEF);
-  }
+  ASSERT(1000, f != NULL);
+  ASSERT(1004, f->is_func());
 
   f->set_base(rt);
   symref_t prev = gsyms.get(f->name());
+  terr_info_t err(validate_func_def(*f, prev));
 
-  if ( prev != NULL )
+  switch ( err.code )
   {
-    type_error_t err = validate_collision(*prev, *f);
-    if ( err != TERR_OK )
-    {
-      process_col_err(err, *f, *prev);
-      // these errors invalidate an entire function definition.
-      // we do not try to recover from them
-      purge_and_exit(FATAL_FUNCDEF);
-    }
-    // definition provides param names/line #s that are actually used
-    set_decl_srcinfo(*prev, *f);
-    f = prev;
-  }
-  else
-  {
-    gsyms.insert(f);
+    case TERR_OK:
+      gsyms.insert(f);
+      break;
+    case TERR_PRINTF_DEF1:
+      process_fdecl_error(err, *f);
+      break;
+    default:
+      err.data = prev->line();
+      process_fdecl_error(err, *f);
+      // no break
+    case TERR_OK2:
+      if ( prev->is_func() )
+      {
+        set_decl_srcinfo(*prev, *f);
+        f = prev;
+      }
+      break;
   }
 
   init_lsyms(*f);
@@ -833,6 +803,7 @@ static bool process_var_decl(symref_t sym, primitive_t type)
 
   sym->set_base(type);
   ctx.insert(sym);
+
   return true;
 }
 
@@ -856,23 +827,45 @@ static terr_info_t validate_func_decl(const symbol_t &func, primitive_t rt, bool
 
   if ( has_ellipsis(func) )
     return validate_printf_decl(func, rt, is_extern) ? TERR_OK2
-                                                     : TERR_BAD_PRINTF;
+                                                     : TERR_PRINTF_DECL;
   return TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
-static void process_fdecl_error(terr_info_t err, symref_t sym)
+static void process_fdecl_error(terr_info_t err, const symbol_t &sym)
 {
   switch ( err.code )
   {
     case TERR_REDECLARED:
       usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
-              sym->c_str(), sym->line(), err.data);
+              sym.c_str(), sym.line(), err.data);
       break;
-    case TERR_BAD_PRINTF:
+    case TERR_REDEFINED:
+      usererr("error: function %s redefined at line %d "
+              "(previous definition starts at line %d)\n",
+              sym.c_str(), sym.line(), err.data);
+      break;
+    case TERR_PARAMS:
+      usererr("error: parameters in definition of function %s at line %d "
+              "do not match the parameters in its declaration at line %d\n",
+              sym.c_str(), sym.line(), err.data);
+      break;
+    case TERR_RTN_TYPES:
+      usererr("error: return type for function %s at line %d "
+              "does not match the return type in its declaration at line %d\n",
+              sym.c_str(), sym.line(), err.data);
+      break;
+    case TERR_EXTERN:
+      usererr("error: function %s is defined at line %d "
+              "but is declared extern at line %d\n",
+              sym.c_str(), sym.line(), err.data);
+      break;
+    case TERR_PRINTF_DECL:
+    case TERR_PRINTF_DEF1:
+    case TERR_PRINTF_DEF2:
       usererr("error, line %d: ellipsis \"...\" notation is is only valid when declaring "
               "builtin function: extern void printf(char format[], ...);\n",
-              sym->line());
+              sym.line());
       break;
     default:
       INTERR(0);
@@ -894,7 +887,7 @@ static void process_func_list(symvec_t *vec, primitive_t rt, bool is_extern)
 
     if ( err.code > TERR_OK2 )
     {
-      process_fdecl_error(err, sym);
+      process_fdecl_error(err, *sym);
       continue;
     }
 
@@ -1097,14 +1090,40 @@ int yyerror(const char *s)
   return 3;
 }
 
+//-----------------------------------------------------------------------------
+void usererr(const char *format, ...)
+{
+  // TODO: As of we now still have to completely finish parsing the input file,
+  // even if the error limit has already been reached. It would be better to terminate
+  // the parser algorithm when we hit this limit, but this logic would have to be fully
+  // implemented in the grammar.
+  if ( errmsgs.size() >= MAXERRS )
+    return;
+
+  va_list va;
+  va_start(va, format);
+
+  char buf[MAXERRLEN];
+  vsnprintf(buf, MAXERRLEN, format, va);
+  errmsgs.push_back(buf);
+
+  va_end(va);
+}
+
 //---------------------------------------------------------------------------
-void parse(symtab_t &_gsyms, treefuncs_t &_functions, FILE *infile)
+bool parse(symtab_t &_gsyms, treefuncs_t &_funcs, errvec_t &_errs, FILE *infile)
 {
   yyin = infile;
 
+  gsyms.swap(_gsyms);
+  functions.swap(_funcs);
+  errmsgs.swap(_errs);
+
   yyparse();
-  checkerr();
 
   _gsyms.swap(gsyms);
-  _functions.swap(functions);
+  _funcs.swap(functions);
+  _errs.swap(errmsgs);
+
+  return _errs.empty();
 }

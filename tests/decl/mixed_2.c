@@ -49,6 +49,4 @@ void func8(void)
   int x;
 }
 
-this doesn't matter
-we terminate after a function
-definition is invalidated
+junk

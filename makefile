@@ -64,10 +64,10 @@ $(OBJ)asm.o: $(SRC)asm.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
 
 $(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
-	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 #------------------------------------------------------------------------------
 .PHONY: clean

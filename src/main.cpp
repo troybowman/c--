@@ -11,6 +11,11 @@
 #include <asm.h>
 #include <messages.h>
 
+// exit codes
+#define EXIT_USAGE       1
+#define EXIT_OUTFILE     2
+#define EXIT_ERR_HANDLED 3
+
 #define OUTFILE_EXT "asm"
 
 #ifndef NDEBUG
@@ -114,7 +119,7 @@ static void process_args_error(args_t res, const char *prog)
       INTERR(1083);
   }
   fprintf(stderr, usagestr, prog);
-  exit(FATAL_USAGE);
+  exit(EXIT_USAGE);
 }
 
 //-----------------------------------------------------------------------------
@@ -170,14 +175,28 @@ static args_t parseargs(int argc, char **argv)
 FILE *init_outfile(char *outpath)
 {
   FILE *outfile = fopen(outpath, "w");
+
   if ( outfile == NULL )
   {
     fprintf(stderr, "error: could not open output file for writing: %s\n", strerror(errno));
-    exit(FATAL_OUTFILE);
+    exit(EXIT_OUTFILE);
   }
+
   SET_DBGFILE(outfile);
   free(outpath);
+
   return outfile;
+}
+
+//-----------------------------------------------------------------------------
+static int purge_and_exit(const errvec_t &errmsgs)
+{
+  errvec_t::const_iterator i;
+
+  for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
+    fprintf(stderr, i->c_str());
+
+  exit(EXIT_ERR_HANDLED);
 }
 
 //-----------------------------------------------------------------------------
@@ -187,27 +206,30 @@ int main(int argc, char **argv)
   if ( args.code != ARGS_OK )
     process_args_error(args, argv[0]);
 
-  // generate syntax tree -----------------------------------------------------
   symtab_t gsyms;
-  treefuncs_t functions;
-  parse(gsyms, functions, args.infile);
+  treefuncs_t funcs;
+  errvec_t errmsgs;
+
+  // generate syntax trees ----------------------------------------------------
+  if ( !parse(gsyms, funcs, errmsgs, args.infile) )
+    purge_and_exit(errmsgs);
   //---------------------------------------------------------------------------
 
   fclose(args.infile);
 
   DBG_INIT_OUTFILE(args.outpath);
-  DBG_PARSE_RESULTS(gsyms, functions);
+  DBG_PARSE_RESULTS(gsyms, funcs);
   DBG_CHECK_PHASE_FLAG(dbg_no_ir);
 
   // generate intermediate representation -------------------------------------
   ir_t ir(gsyms);
-  generate_ir(ir, functions);
+  generate_ir(ir, funcs);
   //---------------------------------------------------------------------------
 
   DBG_IR(ir);
   DBG_CHECK_PHASE_FLAG(dbg_no_code);
 
-  // backend ------------------------------------------------------------------
+  // mips backend -------------------------------------------------------------
   OPT_INIT_OUTFILE(args.outpath);
   generate_mips_asm(outfile, ir);
   //---------------------------------------------------------------------------

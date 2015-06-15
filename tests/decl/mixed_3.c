@@ -6,4 +6,4 @@ void symbol(char x)
   char y;
 }
 
-doesn't matter - exited because previous function is invalid
+extra stuff

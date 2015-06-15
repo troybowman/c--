@@ -64,6 +64,4 @@ int array(void)
 }
 */
 
-this doesn't matter
-we terminate after a function
-definition is invalidated
+extra stuff
