@@ -11,11 +11,6 @@
 #include <asm.h>
 #include <messages.h>
 
-// exit codes
-#define EXIT_USAGE       1
-#define EXIT_OUTFILE     2
-#define EXIT_ERR_HANDLED 3
-
 #define OUTFILE_EXT "asm"
 
 #ifndef NDEBUG
@@ -80,47 +75,40 @@ struct args_t
 #define ARGS_BADOPT  1
 #define ARGS_MISSING 2
 #define ARGS_INFILE  3
-#define ARGS_NOINPUT 4
+#define ARGS_OUTFILE 4
+#define ARGS_NOINPUT 5
 
   FILE *infile;
-
+  char *outpath;
   union
   {
     char c;
     const char *str;
-    char *outpath;
+    FILE *outfile;
   };
 
   args_t(int _code) : code(_code) {}
   args_t(int _code, char _c) : code(_code), c(_c) {}
   args_t(int _code, const char *_str) : code(_code), str(_str) {}
-  args_t(FILE *_infile, char *_outpath)
-    : code(ARGS_OK), infile(_infile), outpath(_outpath) {}
-};
+  args_t(char *_outpath, const char *_str) : code(ARGS_OUTFILE), outpath(_outpath), str(_str) {}
 
-//-----------------------------------------------------------------------------
-static void process_args_error(args_t res, const char *prog)
-{
-  switch ( res.code )
+  args_t(FILE *_infile, char *_outpath, FILE *_outfile)
+    : code(ARGS_OK), infile(_infile), outpath(_outpath), outfile(_outfile) {}
+
+  ~args_t()
   {
-    case ARGS_BADOPT:
-      fprintf(stderr, "error: unknown option '-%c'\n", res.c);
-      break;
-    case ARGS_MISSING:
-      fprintf(stderr, "error: option '-%c' requires an argument\n", res.c);
-      break;
-    case ARGS_INFILE:
-      fprintf(stderr, "error: could not open input file: %s\n", res.str);
-      break;
-    case ARGS_NOINPUT:
-      fprintf(stderr, "error: no input source file specified\n");
-      break;
-    default:
-      INTERR(1083);
+    switch ( code )
+    {
+      case ARGS_OK:
+        fclose(outfile);
+      case ARGS_OUTFILE:
+        fclose(infile);
+        free(outpath);
+      default:
+        break;
+    }
   }
-  fprintf(stderr, usagestr, prog);
-  exit(EXIT_USAGE);
-}
+};
 
 //-----------------------------------------------------------------------------
 static args_t parseargs(int argc, char **argv)
@@ -168,35 +156,50 @@ static args_t parseargs(int argc, char **argv)
   if ( outpath == NULL )
     outpath = gen_outpath(inpath);
 
-  return args_t(infile, outpath);
-}
-
-//-----------------------------------------------------------------------------
-FILE *init_outfile(char *outpath)
-{
   FILE *outfile = fopen(outpath, "w");
-
   if ( outfile == NULL )
-  {
-    fprintf(stderr, "error: could not open output file for writing: %s\n", strerror(errno));
-    exit(EXIT_OUTFILE);
-  }
+    return args_t(outpath, strerror(errno));
 
   SET_DBGFILE(outfile);
-  free(outpath);
 
-  return outfile;
+  return args_t(infile, outpath, outfile);
 }
 
 //-----------------------------------------------------------------------------
-static int purge_and_exit(const errvec_t &errmsgs)
+static int process_args_err(args_t args, const char *prog)
+{
+  switch ( args.code )
+  {
+    case ARGS_BADOPT:
+      fprintf(stderr, "error: unknown option '-%c'\n", args.c);
+      break;
+    case ARGS_MISSING:
+      fprintf(stderr, "error: option '-%c' requiargs an argument\n", args.c);
+      break;
+    case ARGS_INFILE:
+      fprintf(stderr, "error: could not open input file: %s\n", args.str);
+      break;
+    case ARGS_OUTFILE:
+      fprintf(stderr, "error: could not open output file for writing: %s\n", args.str);
+      break;
+    case ARGS_NOINPUT:
+      fprintf(stderr, "error: no input source file specified\n");
+      break;
+    default:
+      INTERR(1083);
+  }
+  fprintf(stderr, usagestr, prog);
+  return 1;
+}
+
+//-----------------------------------------------------------------------------
+static int process_parse_err(const errvec_t &errmsgs, char *outpath)
 {
   errvec_t::const_iterator i;
-
   for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
     fprintf(stderr, i->c_str());
-
-  exit(EXIT_ERR_HANDLED);
+  remove(outpath);
+  return 2;
 }
 
 //-----------------------------------------------------------------------------
@@ -204,20 +207,17 @@ int main(int argc, char **argv)
 {
   args_t args = parseargs(argc, argv);
   if ( args.code != ARGS_OK )
-    process_args_error(args, argv[0]);
+    return process_args_err(args, argv[0]);
 
   symtab_t gsyms;
   treefuncs_t funcs;
   errvec_t errmsgs;
 
-  // generate syntax trees ----------------------------------------------------
+  // collect syntax trees -----------------------------------------------------
   if ( !parse(gsyms, funcs, errmsgs, args.infile) )
-    purge_and_exit(errmsgs);
+    return process_parse_err(errmsgs, args.outpath);
   //---------------------------------------------------------------------------
 
-  fclose(args.infile);
-
-  DBG_INIT_OUTFILE(args.outpath);
   DBG_PARSE_RESULTS(gsyms, funcs);
   DBG_CHECK_PHASE_FLAG(dbg_no_ir);
 
@@ -230,10 +230,8 @@ int main(int argc, char **argv)
   DBG_CHECK_PHASE_FLAG(dbg_no_code);
 
   // mips backend -------------------------------------------------------------
-  OPT_INIT_OUTFILE(args.outpath);
-  generate_mips_asm(outfile, ir);
+  generate_mips_asm(args.outfile, ir);
   //---------------------------------------------------------------------------
 
-  fclose(outfile);
   return 0;
 }

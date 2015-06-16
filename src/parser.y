@@ -1093,10 +1093,10 @@ int yyerror(const char *s)
 //-----------------------------------------------------------------------------
 void usererr(const char *format, ...)
 {
-  // TODO: As of we now still have to completely finish parsing the input file,
-  // even if the error limit has already been reached. It would be better to terminate
-  // the parser algorithm when we hit this limit, but this logic would have to be fully
-  // implemented in the grammar.
+  // TODO: We still have to completely finish parsing the input file, even if
+  // the error limit has already been reached. It would be better to terminate
+  // the parser algorithm when we hit this limit, but this logic would have to
+  // be fully implemented in the grammar.
   if ( errmsgs.size() >= MAXERRS )
     return;
 
