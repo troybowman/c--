@@ -142,9 +142,9 @@ class MemoryMonitor:
             return self.def_argv
         else:
             return [ "valgrind",
-                     "--leak-check=full",   "--show-reachable=yes",
-                     "--malloc-fill=DD",    "--free-fill=BB",
-                     "--track-origins=yes", "--log-file=" + self.log, "-v",
+                     "--leak-check=full", "--show-reachable=yes", "--malloc-fill=DD",
+                     "--free-fill=BB", "--track-origins=yes", "--gen-suppressions=all",
+                     "--log-file=" + self.log, "-v",
                      ] + self.def_argv
 
     def __exit__(self, tp, v, tr):
