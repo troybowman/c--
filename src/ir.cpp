@@ -289,7 +289,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           argvals.push_back(argval);
         }
 
-        for ( int i = 0; i < argvals.size(); i++ )
+        for ( size_t i = 0; i < argvals.size(); i++ )
           arglocs.push_back(gen_argloc());
 
         symvec_t::reverse_iterator val = argvals.rbegin();
