@@ -166,7 +166,7 @@ static args_t parseargs(int argc, char **argv)
 }
 
 //-----------------------------------------------------------------------------
-static int process_args_err(args_t args, const char *prog)
+static void process_args_err(args_t args, const char *prog)
 {
   switch ( args.code )
   {
@@ -189,49 +189,48 @@ static int process_args_err(args_t args, const char *prog)
       INTERR(1083);
   }
   fprintf(stderr, usagestr, prog);
-  return 1;
 }
 
 //-----------------------------------------------------------------------------
-static int process_parse_err(const errvec_t &errmsgs, char *outpath)
+static void process_parse_err(const errvec_t &errmsgs, char *outpath)
 {
   errvec_t::const_iterator i;
   for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
     fprintf(stderr, i->c_str());
   remove(outpath);
-  return 2;
 }
 
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
   args_t args = parseargs(argc, argv);
+
   if ( args.code != ARGS_OK )
-    return process_args_err(args, argv[0]);
+  {
+    process_args_err(args, argv[0]);
+    return 1;
+  }
 
   symtab_t gsyms;
   treefuncs_t funcs;
   errvec_t errmsgs;
 
-  // collect syntax trees -----------------------------------------------------
   if ( !parse(gsyms, funcs, errmsgs, args.infile) )
-    return process_parse_err(errmsgs, args.outpath);
-  //---------------------------------------------------------------------------
+  {
+    process_parse_err(errmsgs, args.outpath);
+    return 2;
+  }
 
   DBG_PARSE_RESULTS(gsyms, funcs);
   DBG_CHECK_PHASE_FLAG(dbg_no_ir);
 
-  // generate intermediate representation -------------------------------------
   ir_t ir(gsyms);
   generate_ir(ir, funcs);
-  //---------------------------------------------------------------------------
 
   DBG_IR(ir);
   DBG_CHECK_PHASE_FLAG(dbg_no_code);
 
-  // mips backend -------------------------------------------------------------
   generate_mips_asm(args.outfile, ir);
-  //---------------------------------------------------------------------------
 
   return 0;
 }
