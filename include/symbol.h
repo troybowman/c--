@@ -27,7 +27,7 @@ class symloc_t
   union
   {
     const char *_reg;
-    offset_t _off;
+    offset_t _stkoff;
   };
 
 public:
@@ -41,12 +41,12 @@ public:
     { _type = SLT_GLOBAL; }
   void set_reg(const char *reg)
     { _type = SLT_REG; _reg = reg; }
-  void set_stkoff(offset_t off)
-    { _type = SLT_STKOFF; _off = off; }
+  void set_stkoff(offset_t stkoff)
+    { _type = SLT_STKOFF; _stkoff = stkoff; }
 
   symloc_type_t type() const { return _type; }
   const char *reg()    const { return _reg;  }
-  offset_t stkoff()    const { return _off;  }
+  offset_t stkoff()    const { return _stkoff; }
 };
 
 //-----------------------------------------------------------------------------
