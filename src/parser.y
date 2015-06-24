@@ -16,8 +16,8 @@ int yyerror(const char *s);
 
 //---------------------------------------------------------------------------
 static symtab_t gsyms;        // global symbol table
-static treefuncs_t functions; // syntax trees for each function in src file
-static errvec_t errmsgs;      // error messages, limited to MAXERRS
+static treefuncs_t functions; // syntax trees - one for each function
+static errvec_t errmsgs;      // error messages - size limited to MAXERRS
 
 //---------------------------------------------------------------------------
 static class ctx_t
