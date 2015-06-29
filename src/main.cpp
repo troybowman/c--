@@ -166,7 +166,7 @@ static args_t parseargs(int argc, char **argv)
 }
 
 //-----------------------------------------------------------------------------
-static void process_args_err(args_t args, const char *prog)
+static int process_args_err(args_t args, const char *prog)
 {
   switch ( args.code )
   {
@@ -189,15 +189,17 @@ static void process_args_err(args_t args, const char *prog)
       INTERR(1083);
   }
   fprintf(stderr, usagestr, prog);
+  return 1;
 }
 
 //-----------------------------------------------------------------------------
-static void process_parse_err(const errvec_t &errmsgs, char *outpath)
+static int process_parse_err(const errvec_t &errmsgs, char *outpath)
 {
   errvec_t::const_iterator i;
   for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
     fprintf(stderr, i->c_str());
   remove(outpath);
+  return 2;
 }
 
 //-----------------------------------------------------------------------------
@@ -206,20 +208,14 @@ int main(int argc, char **argv)
   args_t args = parseargs(argc, argv);
 
   if ( args.code != ARGS_OK )
-  {
-    process_args_err(args, argv[0]);
-    return 1;
-  }
+    return process_args_err(args, argv[0]);
 
   symtab_t gsyms;
   treefuncs_t funcs;
   errvec_t errmsgs;
 
   if ( !parse(gsyms, funcs, errmsgs, args.infile) )
-  {
-    process_parse_err(errmsgs, args.outpath);
-    return 2;
-  }
+    return process_parse_err(errmsgs, args.outpath);
 
   DBG_PARSE_RESULTS(gsyms, funcs);
   DBG_CHECK_PHASE_FLAG(dbg_no_ir);
