@@ -15,37 +15,46 @@ else
   OBJ = ./obj/release/
 endif
 
+# We require bison 3.0, but xcode is still stuck on bison 2.3.
+# So on mac we use the homebrew versions of flex and bison, which are up to date.
+# 'brew install flex' and 'brew install bison' should do the trick.
 ifdef __MAC__
-  LIBFLEX = -ll
+  FLEXDIR  = /usr/local/opt/flex/
+  BISONDIR = /usr/local/opt/bison/
+  IFLEX = -I$(FLEXDIR)include
+  LFLEX = -L$(FLEXDIR)lib
+  FLEX = $(FLEXDIR)bin/flex
+  BISON = $(BISONDIR)bin/bison
 else
-  LIBFLEX = -lfl
+  FLEX  = flex
+  BISON = bison
 endif
 
 OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o $(OBJ)symbol.o   \
 					 $(OBJ)treenode.o $(OBJ)ir.o 			$(OBJ)messages.o \
 					 $(OBJ)main.o     $(OBJ)asm.o 		$(OBJ)printf.o
 
-HFILES   = $(I)common.h $(I)symbol.h   $(I)treenode.h \
-					 $(I)ir.h  		$(I)messages.h $(I)parser.h   \
-					 $(I)asm.h 		$(I)printf.h
+HFILES = $(I)common.h $(I)symbol.h   $(I)treenode.h \
+				 $(I)ir.h  		$(I)messages.h $(I)parser.h   \
+				 $(I)asm.h 		$(I)printf.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJFILES)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBFLEX)
+	$(CC) $(CFLAGS) -o $@ $^ $(LFLEX) -lfl
 
 #------------------------------------------------------------------------------
 $(OBJ)parser.o: $(OBJ)parser.cpp
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(IFLEX) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)parser.cpp: $(SRC)parser.y $(HFILES)
-	bison -o $@ -d -v $<
+	$(BISON) -o $@ -d -v $<
 
 #------------------------------------------------------------------------------
 $(OBJ)scanner.o: $(OBJ)scanner.cpp
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(IFLEX) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
-	flex -o $@ $<
+	$(FLEX) -o $@ $<
 
 #------------------------------------------------------------------------------
 $(OBJ)symbol.o: $(SRC)symbol.cpp $(HFILES)
