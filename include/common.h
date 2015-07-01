@@ -35,8 +35,8 @@ do                         \
 #define APPCHAR(ptr, c, len) \
 do                           \
 {                            \
-  int l = len;               \
-  while ( l-- > 0)           \
+  int _l = len;              \
+  while ( _l-- > 0)          \
     { *ptr = c; ptr++; }     \
 } while ( false )
 
