@@ -63,7 +63,7 @@ class treenode_t
   {
     int _val;
     char *_str;
-    uint8_t reserve[sizeof(symref_t)];
+    usymref_t _sym;
   };
 
 public:
@@ -76,7 +76,7 @@ public:
   treenode_type_t type()  const { return _type; }
   int val()               const { return _val;  }
   char *str()             const { return _str;  }
-  symref_t &sym()         const { return getref(reserve); }
+  symref_t &sym()         const { return getref(_sym); }
 
   bool is_int_compat()    const;
   bool is_bool_compat()   const;

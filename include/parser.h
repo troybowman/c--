@@ -52,6 +52,8 @@ struct terr_info_t
     : code(_code), data(_data) {}
 };
 
+typedef uint8_t uterr_info_t[sizeof(terr_info_t)];
+
 //---------------------------------------------------------------------------
 #define MAXERRS   50
 #define MAXERRLEN 1024

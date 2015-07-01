@@ -31,7 +31,7 @@ static class ctx_t
     // pointer to currently active symbol table
     symtab_t *syms;
     // pointer to function we are currently parsing
-    uint8_t reserve[sizeof(symref_t)];
+    usymref_t sym;
   };
 
 public:
@@ -42,10 +42,10 @@ public:
   void trash()              { delete syms; setglobal(); }
 
   void setglobal()          { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
-  void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(reserve, f); }
+  void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(sym, f); }
   void settemp()            { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
 
-  symref_t &func()    const { return getref(reserve); }
+  symref_t &func()    const { return getref(sym); }
 
   void insert(symref_t sym)
   {
@@ -88,10 +88,10 @@ static       void  func_enter(symref_t, primitive_t);
 static       void  func_leave(treenode_t *);
 
 //---------------------------------------------------------------------------
-static       void  yyputsym(uint8_t const [], symref_t);
-static   symref_t  yygetsym(uint8_t const []);
-static       void  yyputerr(uint8_t const [], terr_info_t);
-static terr_info_t yygeterr(uint8_t const []);
+static    symref_t yygetsym(const usymref_t &);
+static terr_info_t yygeterr(const uterr_info_t &);
+static        void yyputsym(usymref_t, symref_t);
+static        void yyputerr(uterr_info_t, terr_info_t);
 %}
 
 /*---------------------------------------------------------------------------*/
@@ -104,8 +104,8 @@ static terr_info_t yygeterr(uint8_t const []);
   treenode_t *tree;
   symtab_t *symtab;
   seq_t seq;
-  uint8_t asfx[sizeof(terr_info_t)];
-  uint8_t sym[sizeof(symref_t)];
+  uterr_info_t asfx;
+  usymref_t sym;
 }
 
 %token<i>   INT
@@ -655,31 +655,31 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
 }
 
 //-----------------------------------------------------------------------------
-static inline void yyputsym(uint8_t const addr[], symref_t ref)
+static inline void yyputsym(usymref_t usym, symref_t sym)
 {
-  putref(addr, ref);
+  putref(usym, sym);
 }
 
 //-----------------------------------------------------------------------------
 // deletes the reference after extracting
-static inline symref_t yygetsym(uint8_t const addr[])
+static inline symref_t yygetsym(const usymref_t &usym)
 {
-  symref_t &yyref = getref(addr);
+  symref_t &yyref = getref(usym);
   symref_t ret = yyref;
   yyref.~symref_t();
   return ret;
 }
 
 //-----------------------------------------------------------------------------
-static inline void yyputerr(uint8_t const addr[], terr_info_t err)
+static inline void yyputerr(uterr_info_t uerr, terr_info_t err)
 {
-  unionize<terr_info_t>(addr, err);
+  unionize<terr_info_t>(uerr, err);
 }
 
 //-----------------------------------------------------------------------------
-static inline terr_info_t yygeterr(uint8_t const addr[])
+static inline terr_info_t yygeterr(const uterr_info_t &uerr)
 {
-  return deunionize<terr_info_t>(addr);
+  return deunionize<terr_info_t>(uerr);
 }
 
 //-----------------------------------------------------------------------------
