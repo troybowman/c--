@@ -459,18 +459,18 @@ void ir_engine_t::start(const treenode_t *root)
 }
 
 //-----------------------------------------------------------------------------
-void generate_ir(ir_t &ir, const treefuncs_t &functions)
+void generate_ir(ir_t &ir, const stx_trees_t &trees)
 {
-  treefuncs_t::const_iterator i;
-  for ( i = functions.begin(); i != functions.end(); i++ )
+  stx_trees_t::const_iterator i;
+  for ( i = trees.begin(); i != trees.end(); i++ )
   {
-    treefunc_t tf = *i;
-    ir_func_t *f = new ir_func_t(tf.sym);
+    stx_tree_t st = *i;
+    ir_func_t *f = new ir_func_t(st.sym);
 
     ir_engine_t e(*f, ir);
-    e.start(tf.tree);
+    e.start(st.root);
 
     ir.funcs.push_back(f);
-    delete tf.tree;
+    delete st.root;
   }
 }

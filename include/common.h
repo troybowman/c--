@@ -154,4 +154,9 @@ struct area_t
   offsize_t size() const { return end - start; }
 };
 
+// names of the built-in print functions
+#define BI_PRINT_STRING "_print_string"
+#define BI_PRINT_INT    "_print_int"
+#define BI_PRINT_CHAR   "_print_char"
+
 #endif // COMMON_H

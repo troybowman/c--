@@ -5,12 +5,31 @@
 #include <symbol.h>
 #include <treenode.h>
 
+struct parse_results_t;
+
+//-----------------------------------------------------------------------------
+void parse(parse_results_t &res, const char *path);
+
+//-----------------------------------------------------------------------------
+enum parse_error_t
+{
+  PERR_OK,
+  PERR_INFILE,
+  PERR_BISON,
+  PERR_USER,
+};
+
 //-----------------------------------------------------------------------------
 typedef std::vector<std::string> errvec_t;
 
 //-----------------------------------------------------------------------------
-// this function initiates the bison parser - it is called from main
-bool parse(symtab_t &_gsyms, treefuncs_t &_funcs, errvec_t &errs, FILE *infile);
+struct parse_results_t
+{
+  parse_error_t code;
+  symtab_t gsyms;
+  stx_trees_t trees;
+  errvec_t errmsgs;
+};
 
 //-----------------------------------------------------------------------------
 enum type_error_t
@@ -52,11 +71,7 @@ struct terr_info_t
     : code(_code), data(_data) {}
 };
 
-typedef uint8_t uterr_info_t[sizeof(terr_info_t)];
-
 //---------------------------------------------------------------------------
-#define MAXERRS   50
-#define MAXERRLEN 1024
-void usererr(const char *format, ...);
+typedef uint8_t uterr_info_t[sizeof(terr_info_t)];
 
 #endif // !PARSER_H

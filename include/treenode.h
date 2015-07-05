@@ -6,12 +6,13 @@
 //-----------------------------------------------------------------------------
 enum treenode_type_t
 {
+  // leaf nodes
   TNT_ERROR,
   TNT_INTCON,
   TNT_CHARCON,
   TNT_STRCON,
   TNT_SYMBOL,
-  // non-leaf nodes:
+  // non-leaf nodes
   TNT_ASSG,
   TNT_PLUS,
   TNT_MINUS,
@@ -100,15 +101,17 @@ bool is_seq_type(treenode_type_t type);
 #endif
 
 //-----------------------------------------------------------------------------
-struct treefunc_t
+struct stx_tree_t // syntax tree
 {
   symref_t sym;
-  treenode_t *tree;
+  treenode_t *root;
 
-  treefunc_t(symref_t _sym, treenode_t *_tree)
-    : sym(_sym), tree(_tree) {}
+  stx_tree_t(symref_t _sym, treenode_t *_root)
+    : sym(_sym), root(_root) {}
 };
-class treefuncs_t : public std::vector<treefunc_t> {};
+
+// defined as an empty class so we can forward declare it
+class stx_trees_t : public std::vector<stx_tree_t> {};
 
 //-----------------------------------------------------------------------------
 #define ERRNODE new treenode_t(TNT_ERROR)

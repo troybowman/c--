@@ -1,26 +1,45 @@
-%{
+%code top {
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+class parser_ctx_t;
+#include "parser.hpp"
+#include "scanner.hpp"
+}
 
+%code requires {
 #include <parser.h>
-#include <messages.h>
-#include <printf.h>
+#include <symbol.h>
+#include <treenode.h>
+}
+
+%{
+//---------------------------------------------------------------------------
+struct scanner_t
+{
+  FILE *in;
+  void *yyscan;
+
+  scanner_t(const char *path)
+  {
+    yylex_init(&yyscan);
+
+    in = fopen(path, "r");
+    if ( in )
+      yyset_in(in, yyscan);
+  }
+
+  ~scanner_t()
+  {
+    yylex_destroy(yyscan);
+
+    if ( in )
+      fclose(in);
+  }
+};
 
 //---------------------------------------------------------------------------
-extern "C" FILE *yyin;
-extern "C" int yylex();
-extern "C" int yyparse();
-extern "C" int yylineno;
-int yyerror(const char *s);
-
-//---------------------------------------------------------------------------
-static symtab_t gsyms;        // global symbol table
-static treefuncs_t functions; // syntax trees - one for each function
-static errvec_t errmsgs;      // error messages - size limited to MAXERRS
-
-//---------------------------------------------------------------------------
-static class ctx_t
+class parser_ctx_t : public parse_results_t
 {
   int mode;
 #define CTX_GLOBAL 0
@@ -35,8 +54,8 @@ static class ctx_t
   };
 
 public:
-  ctx_t()                   { setglobal(); }
-  ~ctx_t()                  { clear(); }
+  parser_ctx_t() : mode(CTX_GLOBAL), syms(&gsyms) {}
+  ~parser_ctx_t() { clear(); }
 
   void clear()              { if ( mode == CTX_LOCAL ) func().~symref_t(); }
   void trash()              { delete syms; setglobal(); }
@@ -61,38 +80,77 @@ public:
          ? syms->get(key)
          : func()->symbols()->get(key);
   }
-} ctx;
+
+  // built-in print functions
+  symref_t print_string;
+  symref_t print_int;
+  symref_t print_char;
+};
 
 //---------------------------------------------------------------------------
-static       void  process_var_list(symvec_t *, primitive_t);
-static       void  process_func_list(symvec_t *, primitive_t, bool);
-static       bool  process_var_decl(symref_t, primitive_t);
+static       void  process_var_list   (parser_ctx_t &, symvec_t *, primitive_t);
+static       void  process_func_list  (parser_ctx_t &, symvec_t *, primitive_t, bool);
+static       bool  process_var_decl   (parser_ctx_t &, symref_t, primitive_t);
+static   symref_t  process_stmt_id    (parser_ctx_t &, const char *, int);
+static treenode_t *process_stmt_var   (parser_ctx_t &, symref_t, treenode_t *, int);
+static treenode_t *process_call       (parser_ctx_t &, symref_t, treenode_t *, int);
+static treenode_t *process_assg       (parser_ctx_t &, treenode_t *, treenode_t *, int);
+static treenode_t *process_call_ctx   (parser_ctx_t &, treenode_t *, int, bool);
+static treenode_t *process_ret_stmt   (parser_ctx_t &, treenode_t *expr, int line);
+static treenode_t *process_bool_expr  (parser_ctx_t &, treenode_t *, treenode_type_t, treenode_t *, int);
+static treenode_t *process_if_stmt    (parser_ctx_t &, treenode_t *, treenode_t *, treenode_t *, int);
+static treenode_t *process_while_stmt (parser_ctx_t &, treenode_t *, treenode_t *, int);
+static treenode_t *process_for_stmt   (parser_ctx_t &, treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
+static treenode_t *process_math_expr  (parser_ctx_t &, treenode_t *, treenode_type_t, treenode_t *, int);
+static terr_info_t process_array_sfx  (parser_ctx_t &, int, int);
+static       void  process_fdecl_error(parser_ctx_t &, terr_info_t, const symbol_t &);
 static   symref_t  process_var_id(const char *, int, terr_info_t, uint32_t);
-static   symref_t  process_stmt_id(const char *, int);
-static treenode_t *process_stmt_var(symref_t, treenode_t *, int);
-static treenode_t *process_assg(treenode_t *, treenode_t *, int);
-static treenode_t *process_call(symref_t, treenode_t *, int);
-static treenode_t *process_call_ctx(treenode_t *, int, bool);
-static treenode_t *process_ret_stmt(treenode_t *, int line);
-static treenode_t *process_bool_expr(treenode_t *, treenode_type_t, treenode_t *, int);
-static treenode_t *process_if_stmt(treenode_t *, treenode_t *, treenode_t *, int);
-static treenode_t *process_while_stmt(treenode_t *, treenode_t *, int);
-static treenode_t *process_for_stmt(treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
-static treenode_t *process_math_expr(treenode_t *, treenode_type_t, treenode_t *, int);
-static   symvec_t *process_param_list(symref_t, symvec_t *, symref_t);
-static terr_info_t process_array_sfx(int, int);
-static       void  process_fdecl_error(terr_info_t, const symbol_t &);
-static   symvec_t *sym_list_append(symvec_t *, symref_t);
-static   symvec_t *sym_list_prepend(symref_t, symvec_t *);
-static       void  func_enter(symref_t, primitive_t);
-static       void  func_leave(treenode_t *);
+
+//---------------------------------------------------------------------------
+static void func_enter(parser_ctx_t &ctx, symref_t f, primitive_t rt);
+static void func_leave(parser_ctx_t &ctx, treenode_t *);
+
+//---------------------------------------------------------------------------
+static symvec_t *sym_list_append(symvec_t *, symref_t);
+static symvec_t *sym_list_prepend(symref_t, symvec_t *);
+static symvec_t *process_param_list(symref_t, symvec_t *, symref_t);
 
 //---------------------------------------------------------------------------
 static    symref_t yygetsym(const usymref_t &);
 static terr_info_t yygeterr(const uterr_info_t &);
 static        void yyputsym(usymref_t, symref_t);
 static        void yyputerr(uterr_info_t, terr_info_t);
+
+//---------------------------------------------------------------------------
+#define EMPTYSTRING "\"\""
+
+#define FMTS 's' // %s for strings
+#define FMTD 'd' // %d for ints
+#define FMTC 'c' // %c for chars
+struct format_arg_t
+{
+  symref_t func;
+  const treenode_t *expr;
+
+  format_arg_t(symref_t _func, const treenode_t *_expr)
+    : func(_func), expr(_expr) {}
+};
+typedef std::vector<format_arg_t> format_args_t;
+
+//---------------------------------------------------------------------------
+#define MAXERRLEN 1024
+static void usererr(parser_ctx_t &ctx, const char *format, ...);
+int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
+
+//---------------------------------------------------------------------------
+#define lineno yyget_lineno(scanner)
 %}
+
+/*---------------------------------------------------------------------------*/
+%define api.pure full
+%lex-param   { void *scanner }
+%parse-param { void *scanner }
+%parse-param { parser_ctx_t &ctx }
 
 /*---------------------------------------------------------------------------*/
 %union
@@ -144,9 +202,9 @@ prog : prog decl  ';'
      ;
 
 /*---------------------------------------------------------------------------*/
-decl :        type var_decls  { process_var_list ($2, $1);        delete $2; }
-     |        type func_decls { process_func_list($2, $1, false); delete $2; }
-     | EXTERN type func_decls { process_func_list($3, $2, true);  delete $3; }
+decl :        type var_decls  { process_var_list (ctx, $2, $1);        delete $2; }
+     |        type func_decls { process_func_list(ctx, $2, $1, false); delete $2; }
+     | EXTERN type func_decls { process_func_list(ctx, $3, $2, true);  delete $3; }
      ;
 
 type : INT_TYPE  { $$ = PRIM_INT;  }
@@ -160,13 +218,13 @@ var_decls : var_decl var_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
 
 var_decl : ID decl_array_sfx
            {
-             symref_t ref = process_var_id($1, yylineno, yygeterr($2), 0);
+             symref_t ref = process_var_id($1, lineno, yygeterr($2), 0);
              yyputsym($$, ref);
              free($1);
            }
          ;
 
-decl_array_sfx : '[' INT ']' { yyputerr($$, process_array_sfx($2, yylineno)); }
+decl_array_sfx : '[' INT ']' { yyputerr($$, process_array_sfx(ctx, $2, lineno)); }
                | /* empty */ { yyputerr($$, terr_info_t(TERR_OK)); }
                ;
 
@@ -180,7 +238,7 @@ func_decls : func_decl func_decl_list { $$ = sym_list_prepend(yygetsym($1), $2);
 
 func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
-              symref_t func(new symbol_t(0, $1, yylineno, $4));
+              symref_t func(new symbol_t(0, $1, lineno, $4));
               yyputsym($$, func);
               free($1);
             }
@@ -204,8 +262,8 @@ ellipsis : ',' ELLIPSIS { yyputsym($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
 
 param_decl : type ID param_array_sfx
              {
-               symref_t sym = process_var_id($2, yylineno, yygeterr($3), SF_PARAMETER);
-               if ( sym != NULL && !process_var_decl(sym, $1) )
+               symref_t sym = process_var_id($2, lineno, yygeterr($3), SF_PARAMETER);
+               if ( sym != NULL && !process_var_decl(ctx, sym, $1) )
                  sym = NULLREF;
                yyputsym($$, sym);
                free($2);
@@ -223,9 +281,9 @@ param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, yyge
 /*---------------------------------------------------------------------------*/
 func : type func_decl
        '{'
-          { func_enter(yygetsym($2), $1); }
+          { func_enter(ctx, yygetsym($2), $1); }
           func_body
-          { func_leave($5); }
+          { func_leave(ctx, $5); }
        '}'
      | error '{' { yyerrok; }
      | error '}' { yyerrok; }
@@ -234,7 +292,7 @@ func : type func_decl
 func_body : local_decls stmts { $$ = $2.head; }
           ;
 
-local_decls : local_decls type var_decls ';' { process_var_list($3, $2); delete $3; }
+local_decls : local_decls type var_decls ';' { process_var_list(ctx, $3, $2); delete $3; }
             | local_decls error          ';' { yyerrok; } /* TODO: this handles errors in statements as well */
             | /* empty */
             ;
@@ -245,12 +303,12 @@ stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
 
 /*---------------------------------------------------------------------------*/
 stmt : assg ';'                  { $$ = $1; }
-     | call ';'                  { $$ = process_call_ctx($1, yylineno, false); }
-     | RETURN op_expr ';'        { $$ = process_ret_stmt($2, yylineno); }
-     | IF '(' expr ')' stmt else { $$ = process_if_stmt($3, $5, $6, yylineno); }
-     | WHILE '(' expr ')' stmt   { $$ = process_while_stmt($3, $5, yylineno); }
+     | call ';'                  { $$ = process_call_ctx(ctx, $1, lineno, false); }
+     | RETURN op_expr ';'        { $$ = process_ret_stmt(ctx, $2, lineno); }
+     | IF '(' expr ')' stmt else { $$ = process_if_stmt(ctx, $3, $5, $6, lineno); }
+     | WHILE '(' expr ')' stmt   { $$ = process_while_stmt(ctx, $3, $5, lineno); }
      | FOR '(' op_assg ';' op_expr ';' op_assg ')' stmt
-                                 { $$ = process_for_stmt($3, $5, $7, $9, yylineno); }
+                                 { $$ = process_for_stmt(ctx, $3, $5, $7, $9, lineno); }
      | '{' stmts '}'             { $$ = $2.head; }
      | ';'                       { $$ = NULL; }
      ;
@@ -269,15 +327,15 @@ op_expr : expr        { $$ = $1; }
         ;
 
 /*---------------------------------------------------------------------------*/
-assg : stmt_var '=' expr { $$ = process_assg($1, $3, yylineno); }
+assg : stmt_var '=' expr { $$ = process_assg(ctx, $1, $3, lineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
 call : ID '(' args ')'
        {
-         symref_t sym = process_stmt_id($1, yylineno);
+         symref_t sym = process_stmt_id(ctx, $1, lineno);
          $$ = sym != NULL
-            ? process_call(sym, $3, yylineno)
+            ? process_call(ctx, sym, $3, lineno)
             : ERRNODE;
          free($1);
        }
@@ -301,9 +359,9 @@ arg_list : arg_list ',' expr { $$ = seq_append($1, $3, TNT_ARG); }
 /*---------------------------------------------------------------------------*/
 stmt_var : ID stmt_array_sfx
            {
-             symref_t sym = process_stmt_id($1, yylineno);
+             symref_t sym = process_stmt_id(ctx, $1, lineno);
              $$ = sym != NULL
-                ? process_stmt_var(sym, $2, yylineno)
+                ? process_stmt_var(ctx, sym, $2, lineno)
                 : ERRNODE;
              free($1);
            }
@@ -317,22 +375,22 @@ stmt_array_sfx : '[' expr ']' { $$ = $2; }
 expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
      | CHAR                 { $$ = new treenode_t(TNT_CHARCON, $1); }
      | STRING               { $$ = new treenode_t(TNT_STRCON, $1); }
-     | call                 { $$ = process_call_ctx($1, yylineno, true); }
+     | call                 { $$ = process_call_ctx(ctx, $1, lineno, true); }
      | stmt_var             { $$ = $1; }
-     | expr EQ  expr        { $$ = process_bool_expr($1,   TNT_EQ,    $3, yylineno); }
-     | expr NEQ expr        { $$ = process_bool_expr($1,   TNT_NEQ,   $3, yylineno); }
-     | expr '<' expr        { $$ = process_bool_expr($1,   TNT_LT,    $3, yylineno); }
-     | expr LEQ expr        { $$ = process_bool_expr($1,   TNT_LEQ,   $3, yylineno); }
-     | expr '>' expr        { $$ = process_bool_expr($1,   TNT_GT,    $3, yylineno); }
-     | expr GEQ expr        { $$ = process_bool_expr($1,   TNT_GEQ,   $3, yylineno); }
-     | expr AND expr        { $$ = process_bool_expr($1,   TNT_AND,   $3, yylineno); }
-     | expr OR  expr        { $$ = process_bool_expr($1,   TNT_OR,    $3, yylineno); }
-     | expr '+' expr        { $$ = process_math_expr($1,   TNT_PLUS,  $3, yylineno); }
-     | expr '-' expr        { $$ = process_math_expr($1,   TNT_MINUS, $3, yylineno); }
-     | expr '*' expr        { $$ = process_math_expr($1,   TNT_MULT,  $3, yylineno); }
-     | expr '/' expr        { $$ = process_math_expr($1,   TNT_DIV,   $3, yylineno); }
-     | '!' expr %prec UNARY { $$ = process_bool_expr(NULL, TNT_NOT,   $2, yylineno); }
-     | '-' expr %prec UNARY { $$ = process_math_expr(NULL, TNT_NEG,   $2, yylineno); }
+     | expr EQ  expr        { $$ = process_bool_expr(ctx, $1,   TNT_EQ,    $3, lineno); }
+     | expr NEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_NEQ,   $3, lineno); }
+     | expr '<' expr        { $$ = process_bool_expr(ctx, $1,   TNT_LT,    $3, lineno); }
+     | expr LEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_LEQ,   $3, lineno); }
+     | expr '>' expr        { $$ = process_bool_expr(ctx, $1,   TNT_GT,    $3, lineno); }
+     | expr GEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_GEQ,   $3, lineno); }
+     | expr AND expr        { $$ = process_bool_expr(ctx, $1,   TNT_AND,   $3, lineno); }
+     | expr OR  expr        { $$ = process_bool_expr(ctx, $1,   TNT_OR,    $3, lineno); }
+     | expr '+' expr        { $$ = process_math_expr(ctx, $1,   TNT_PLUS,  $3, lineno); }
+     | expr '-' expr        { $$ = process_math_expr(ctx, $1,   TNT_MINUS, $3, lineno); }
+     | expr '*' expr        { $$ = process_math_expr(ctx, $1,   TNT_MULT,  $3, lineno); }
+     | expr '/' expr        { $$ = process_math_expr(ctx, $1,   TNT_DIV,   $3, lineno); }
+     | '!' expr %prec UNARY { $$ = process_bool_expr(ctx, NULL, TNT_NOT,   $2, lineno); }
+     | '-' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_NEG,   $2, lineno); }
      | '(' expr ')'         { $$ = $2; }
      ;
 
@@ -429,26 +487,26 @@ static void set_decl_srcinfo(symbol_t &f1, const symbol_t &f2)
 }
 
 //-----------------------------------------------------------------------------
-static void func_enter(symref_t f, primitive_t rt)
+static void func_enter(parser_ctx_t &ctx, symref_t f, primitive_t rt)
 {
   ASSERT(1000, f != NULL);
   ASSERT(1004, f->is_func());
 
   f->set_base(rt);
-  symref_t prev = gsyms.get(f->name());
+  symref_t prev = ctx.gsyms.get(f->name());
   terr_info_t err(validate_func_def(*f, prev));
 
   switch ( err.code )
   {
     case TERR_OK:
-      gsyms.insert(f);
+      ctx.gsyms.insert(f);
       break;
     case TERR_PRINTF_DEF1:
-      process_fdecl_error(err, *f);
+      process_fdecl_error(ctx, err, *f);
       break;
     default:
       err.data = prev->line();
-      process_fdecl_error(err, *f);
+      process_fdecl_error(ctx, err, *f);
       // no break
     case TERR_OK2:
       if ( prev->is_func() )
@@ -464,22 +522,22 @@ static void func_enter(symref_t f, primitive_t rt)
 }
 
 //-----------------------------------------------------------------------------
-static void func_leave(treenode_t *tree)
+static void func_leave(parser_ctx_t &ctx, treenode_t *root)
 {
   symref_t f = ctx.func();
 
   f->set_defined();
 
   if ( f->base() != PRIM_VOID && !f->is_ret_resolved() )
-    usererr("error: non-void funcion %s must return a value\n", f->c_str());
+    usererr(ctx, "error: non-void funcion %s must return a value\n", f->c_str());
 
-  functions.push_back(treefunc_t(f, tree));
+  ctx.trees.push_back(stx_tree_t(f, root));
 
   ctx.setglobal();
 }
 
 //-----------------------------------------------------------------------------
-static type_error_t validate_ret_stmt(const treenode_t *expr)
+static type_error_t validate_ret_stmt(const parser_ctx_t &ctx, const treenode_t *expr)
 {
   if ( ctx.func()->base() == PRIM_VOID )
     return expr != NULL ? TERR_BAD_RET : TERR_OK;
@@ -490,24 +548,24 @@ static type_error_t validate_ret_stmt(const treenode_t *expr)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_ret_stmt(treenode_t *expr, int line)
+static treenode_t *process_ret_stmt(parser_ctx_t &ctx, treenode_t *expr, int line)
 {
-  type_error_t err = validate_ret_stmt(expr);
+  type_error_t err = validate_ret_stmt(ctx, expr);
 
   if ( err > TERR_OK2 )
   {
     switch ( err )
     {
       case TERR_NO_RET:
-        usererr("error: line %d - return statements in a non-void function "
+        usererr(ctx, "error: line %d - return statements in a non-void function "
                 "must return a value\n", line);
         break;
       case TERR_BAD_RET:
-        usererr("error: line %d - return statements in a void function "
+        usererr(ctx, "error: line %d - return statements in a void function "
                 "must not return a value\n", line);
         break;
       case TERR_RET_EXPR:
-        usererr("error: line %d - return value is not compatible "
+        usererr(ctx, "error: line %d - return value is not compatible "
                 "with function's return type\n", line);
         break;
       default:
@@ -572,12 +630,218 @@ static terr_info_t validate_call(const symbol_t &f, const treenode_t *args)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_call(symref_t f, treenode_t *args, int line)
+static void cleanup_fmtarg_list(treenode_t *root)
+{
+  treenode_t *fmt = root->children[SEQ_CUR];
+  free(fmt->str()); // original fmt string has been split up; it's no longer needed
+  delete fmt;
+
+  // trash the original linked list that contained the fmt args.
+  // the args are now maintained by the TNT_PRINTF tree
+  for ( treenode_t *ptr = root; ptr != NULL; ptr = ptr->children[SEQ_NEXT] )
+    ptr->children[SEQ_CUR] = NULL;
+
+  delete root;
+}
+
+//-----------------------------------------------------------------------------
+static void prepare_substring_arg(
+      const parser_ctx_t &ctx,
+      format_args_t &fmtargs,
+      const char *const start,
+      const char *const end)
+{
+  int len = end - start;
+  if ( len <= 0 )
+    return;
+
+  char *str = (char *)malloc(len+3);
+  char *ptr = str;
+  APPCHAR(ptr, '"', 1);
+  APPSTR (ptr, start, len);
+  APPCHAR(ptr, '"', 1);
+  *ptr = '\0';
+
+  treenode_t *node = new treenode_t(TNT_STRCON, str);
+  fmtargs.push_back(format_arg_t(ctx.print_string, node));
+}
+
+//-----------------------------------------------------------------------------
+static type_error_t handle_empty_fmt(
+    const parser_ctx_t &ctx,
+    format_args_t &fmtargs,
+    const treenode_t *argtree)
+{
+  if ( calc_seq_len(argtree) > 0 )
+    return TERR_NUM_FMT;
+
+  treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING));
+  fmtargs.push_back(format_arg_t(ctx.print_string, node));
+
+  return TERR_OK;
+}
+
+//-----------------------------------------------------------------------------
+static type_error_t validate_printf_call(
+    const parser_ctx_t &ctx,
+    format_args_t &fmtargs,
+    const treenode_t *allargs)
+{
+  if ( allargs == NULL )
+    return TERR_NO_FMT;
+
+  if ( allargs->children[SEQ_CUR]->type() != TNT_STRCON )
+    return TERR_FMTSTR;
+
+  const char *fmt = allargs->children[SEQ_CUR]->str();
+  if ( strcmp(fmt, EMPTYSTRING) == 0 ) // special case
+    return handle_empty_fmt(ctx, fmtargs, allargs->children[SEQ_NEXT]);
+
+  // ignore leading, trailing "
+  fmt += 1;
+  const char *ptr = fmt;
+  const char *const end = fmt + strlen(fmt) - 1;
+  const char *cursub = ptr;
+
+  tree_iterator_t ti(allargs->children[SEQ_NEXT]);
+
+  for ( ; ptr != end; ptr++ )
+  {
+    if ( *ptr == '%' && ptr+1 < end )
+    {
+      char c = *(ptr+1);
+
+      if ( c == FMTS || c == FMTD || c == FMTC )
+      {
+        prepare_substring_arg(ctx, fmtargs, cursub, ptr);
+        cursub = ptr+2;
+
+        const treenode_t *arg = *ti++;
+        if ( arg == NULL )
+          return TERR_NUM_FMT;
+
+        switch ( c )
+        {
+          case FMTD:
+          case FMTC:
+            {
+              if ( !arg->is_int_compat() )
+                return TERR_BAD_FMT;
+              symref_t func = c == FMTD ? ctx.print_int : ctx.print_char;
+              fmtargs.push_back(format_arg_t(func, arg));
+            }
+            break;
+          case FMTS:
+            {
+              if ( !arg->is_string_compat() )
+                return TERR_BAD_FMT;
+              fmtargs.push_back(format_arg_t(ctx.print_string, arg));
+            }
+            break;
+        }
+      }
+    }
+  }
+
+  prepare_substring_arg(ctx, fmtargs, cursub, ptr);
+
+  if ( *ti != NULL ) // extra format arguments
+    return TERR_NUM_FMT;
+
+  return TERR_OK;
+}
+
+//-----------------------------------------------------------------------------
+static symref_t build_print_function(
+    const char *name,
+    const char *pname,
+    symbol_type_t ptype,
+    primitive_t pbase,
+    symtab_t &gsyms)
+{
+  symvec_t *params = new symvec_t;
+  symref_t  param  = ptype == ST_PRIMITIVE
+                   ? symref_t(new symbol_t(SF_PARAMETER, pname, -1))
+                   : symref_t(new symbol_t(SF_PARAMETER, pname, -1, BADOFFSET));
+
+  param->set_base(pbase);
+  params->push_back(param);
+
+  symref_t bfunc(new symbol_t(SF_EXTERN, name, -1, params));
+  bfunc->set_base(PRIM_VOID);
+
+  ASSERT(0, gsyms.get(bfunc->name()) == NULL);
+  gsyms.insert(bfunc);
+
+  return bfunc;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *build_printf_tree(symref_t printf, const format_args_t &fmtargs)
+{
+  seq_t seq = { NULL, NULL };
+
+  // build sequence of calls to print_(string|int|char)
+  for ( size_t i = 0; i < fmtargs.size(); i++ )
+  {
+    const format_arg_t &fmtarg = fmtargs[i];
+
+    treenode_t *argtree =
+        new treenode_t(TNT_ARG, fmtarg.expr, NULL);
+
+    treenode_t *call = new treenode_t(fmtarg.func, TNT_CALL, argtree);
+    seq_append(seq, call, TNT_STMT);
+  }
+
+  return seq.head == NULL ? ERRNODE : new treenode_t(printf, TNT_PRINTF, seq.head);
+}
+
+//-----------------------------------------------------------------------------
+treenode_t *process_printf_call(
+    parser_ctx_t &ctx,
+    symref_t printf,
+    treenode_t *allargs,
+    int line)
+{
+  format_args_t fmtargs;
+
+  type_error_t res = validate_printf_call(ctx, fmtargs, allargs);
+
+  if ( res != TERR_OK )
+  {
+    switch ( res )
+    {
+      case TERR_NO_FMT:
+        usererr(ctx, "error: printf() expects at least one string constant argument, line %d\n", line);
+        break;
+      case TERR_FMTSTR:
+        usererr(ctx, "error: first argument to printf() must be a string constant, line %d\n", line);
+        break;
+      case TERR_BAD_FMT:
+        usererr(ctx, "error: incompatible argument for format specifier, line %d\n", line);
+        break;
+      case TERR_NUM_FMT:
+        usererr(ctx, "error: invalid number of format arguments, line %d\n", line);
+        break;
+      default:
+        INTERR(0);
+    }
+    delete allargs;
+    return ERRNODE;
+  }
+
+  cleanup_fmtarg_list(allargs); // original TNT_ARG sequence longer needed
+
+  return build_printf_tree(printf, fmtargs);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_call(parser_ctx_t &ctx, symref_t f, treenode_t *args, int line)
 {
   ASSERT(1042, f != NULL);
 
   if ( f->is_builtin_printf() )
-    return process_printf_call(f, args, line);
+    return process_printf_call(ctx, f, args, line);
 
   terr_info_t err = validate_call(*f, args);
 
@@ -586,15 +850,15 @@ static treenode_t *process_call(symref_t f, treenode_t *args, int line)
     switch ( err.code )
     {
       case TERR_NUMARGS:
-        usererr("error: expected %d arguments for function %s, %d were provided. line %d\n",
+        usererr(ctx, "error: expected %d arguments for function %s, %d were provided. line %d\n",
                 f->params()->size(), f->c_str(), err.data, line);
         break;
       case TERR_BADARG:
-        usererr("error: argument %d to function %s is of incompatible type, line %d\n",
+        usererr(ctx, "error: argument %d to function %s is of incompatible type, line %d\n",
                 err.data, f->c_str(), line);
         break;
       case TERR_NOFUNC:
-        usererr("error: symbol %s used a function but is not of function type, line %d\n",
+        usererr(ctx, "error: symbol %s used a function but is not of function type, line %d\n",
                 f->c_str(), line);
         break;
       default:
@@ -624,7 +888,7 @@ static type_error_t validate_call_ctx(const treenode_t &call, bool expr)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
+static treenode_t *process_call_ctx(parser_ctx_t &ctx, treenode_t *call, int line, bool expr)
 {
   ASSERT(1044, call != NULL);
 
@@ -635,12 +899,12 @@ static treenode_t *process_call_ctx(treenode_t *call, int line, bool expr)
     switch ( err )
     {
       case TERR_VOID_EXPR:
-        usererr("error: line %d - function %s called as part of an expression "
+        usererr(ctx, "error: line %d - function %s called as part of an expression "
                 "but does not return a value\n",
                 line, call->sym()->c_str());
         break;
       case TERR_PROCEDURE:
-        usererr("error: line %d - function %s called as a standalone statement "
+        usererr(ctx, "error: line %d - function %s called as a standalone statement "
                 "but does not have return type void\n",
                 line, call->sym()->c_str());
         break;
@@ -683,15 +947,15 @@ static inline terr_info_t yygeterr(const uterr_info_t &uerr)
 }
 
 //-----------------------------------------------------------------------------
-static symref_t process_stmt_id(const char *id, int line)
+static symref_t process_stmt_id(parser_ctx_t &ctx, const char *id, int line)
 {
   std::string key(id);
   symref_t sym = ctx.get(key); // first check local symbols
   if ( sym == NULL )
   {
-    sym = gsyms.get(key); // now global symbols
+    sym = ctx.gsyms.get(key); // now global symbols
     if ( sym == NULL )
-      usererr("error: use of undeclared identifier %s at line %d\n", key.c_str(), line);
+      usererr(ctx, "error: use of undeclared identifier %s at line %d\n", key.c_str(), line);
   }
   return sym;
 }
@@ -705,7 +969,7 @@ static type_error_t validate_array_lookup(const symbol_t &sym, const treenode_t 
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_stmt_var(symref_t sym, treenode_t *idx, int line)
+static treenode_t *process_stmt_var(parser_ctx_t &ctx, symref_t sym, treenode_t *idx, int line)
 {
   ASSERT(1045, sym != NULL);
 
@@ -719,11 +983,11 @@ static treenode_t *process_stmt_var(symref_t sym, treenode_t *idx, int line)
     switch ( err )
     {
       case TERR_BASE:
-        usererr("error: symbol %s used as an array but is not of array type, line %d\n",
+        usererr(ctx, "error: symbol %s used as an array but is not of array type, line %d\n",
                 sym->c_str(), line);
         break;
       case TERR_INDEX:
-        usererr("error: expression for array index is not of integer type, line %d\n", line);
+        usererr(ctx, "error: expression for array index is not of integer type, line %d\n", line);
         break;
       default:
         INTERR(1034);
@@ -748,14 +1012,14 @@ static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
+static treenode_t *process_assg(parser_ctx_t &ctx, treenode_t *lhs, treenode_t *rhs, int line)
 {
   ASSERT(1046, lhs != NULL);
   ASSERT(1047, rhs != NULL);
 
   if ( !validate_assg(*lhs, *rhs) )
   {
-    usererr("error: invalid operand types for assignment, line %d\n", line);
+    usererr(ctx, "error: invalid operand types for assignment, line %d\n", line);
     delete lhs; delete rhs;
     return ERRNODE;
   }
@@ -764,7 +1028,10 @@ static treenode_t *process_assg(treenode_t *lhs, treenode_t *rhs, int line)
 }
 
 //-----------------------------------------------------------------------------
-static terr_info_t validate_var_decl(const symbol_t &sym, primitive_t type)
+static terr_info_t validate_var_decl(
+    const parser_ctx_t &ctx,
+    const symbol_t &sym,
+    primitive_t type)
 {
   ASSERT(0, type != PRIM_UNKNOWN);
 
@@ -779,22 +1046,22 @@ static terr_info_t validate_var_decl(const symbol_t &sym, primitive_t type)
 }
 
 //-----------------------------------------------------------------------------
-static bool process_var_decl(symref_t sym, primitive_t type)
+static bool process_var_decl(parser_ctx_t &ctx, symref_t sym, primitive_t type)
 {
   ASSERT(0, sym != NULL);
 
-  terr_info_t err = validate_var_decl(*sym, type);
+  terr_info_t err = validate_var_decl(ctx, *sym, type);
 
   if ( err.code != TERR_OK )
   {
     switch ( err.code )
     {
       case TERR_REDECLARED:
-        usererr("error: variable %s redeclared at line %d (previous declaration at line %d)\n",
+        usererr(ctx, "error: variable %s redeclared at line %d (previous declaration at line %d)\n",
                 sym->c_str(), sym->line(), err.data);
         break;
       case TERR_BAD_VOID:
-        usererr("error: void type is only valid for parameter declarations, line %d\n", sym->line());
+        usererr(ctx, "error: void type is only valid for parameter declarations, line %d\n", sym->line());
         break;
       default:
         INTERR(0);
@@ -809,20 +1076,38 @@ static bool process_var_decl(symref_t sym, primitive_t type)
 }
 
 //-----------------------------------------------------------------------------
-static void process_var_list(symvec_t *vec, primitive_t type)
+static void process_var_list(parser_ctx_t &ctx, symvec_t *vec, primitive_t type)
 {
   ASSERT(0, vec != NULL);
   for ( symvec_t::iterator i = vec->begin(); i != vec->end(); i++ )
   {
     ASSERT(0, *i != NULL);
-    process_var_decl(*i, type);
+    process_var_decl(ctx, *i, type);
   }
 }
 
 //-----------------------------------------------------------------------------
-static terr_info_t validate_func_decl(const symbol_t &func, primitive_t rt, bool is_extern)
+static bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_extern)
 {
-  symref_t prev = gsyms.get(func.name());
+  const symvec_t &params = *func.params();
+
+  return func.name() == "printf"
+      && rt == PRIM_VOID
+      && is_extern
+      && params.size() == 2
+      && params.front()->is_array()
+      && params.front()->base() == PRIM_CHAR
+      && params.back()->type() == ST_ELLIPSIS;
+}
+
+//-----------------------------------------------------------------------------
+static terr_info_t validate_func_decl(
+    const parser_ctx_t &ctx,
+    const symbol_t &func,
+    primitive_t rt,
+    bool is_extern)
+{
+  symref_t prev = ctx.gsyms.get(func.name());
   if ( prev != NULL )
     return terr_info_t(TERR_REDECLARED, prev->line());
 
@@ -833,38 +1118,38 @@ static terr_info_t validate_func_decl(const symbol_t &func, primitive_t rt, bool
 }
 
 //-----------------------------------------------------------------------------
-static void process_fdecl_error(terr_info_t err, const symbol_t &sym)
+static void process_fdecl_error(parser_ctx_t &ctx, terr_info_t err, const symbol_t &sym)
 {
   switch ( err.code )
   {
     case TERR_REDECLARED:
-      usererr("error: function %s redeclared at line %d (previous declaration at line %d)\n",
+      usererr(ctx, "error: function %s redeclared at line %d (previous declaration at line %d)\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_REDEFINED:
-      usererr("error: function %s redefined at line %d "
+      usererr(ctx, "error: function %s redefined at line %d "
               "(previous definition starts at line %d)\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_PARAMS:
-      usererr("error: parameters in definition of function %s at line %d "
+      usererr(ctx, "error: parameters in definition of function %s at line %d "
               "do not match the parameters in its declaration at line %d\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_RTN_TYPES:
-      usererr("error: return type for function %s at line %d "
+      usererr(ctx, "error: return type for function %s at line %d "
               "does not match the return type in its declaration at line %d\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_EXTERN:
-      usererr("error: function %s is defined at line %d "
+      usererr(ctx, "error: function %s is defined at line %d "
               "but is declared extern at line %d\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_PRINTF_DECL:
     case TERR_PRINTF_DEF1:
     case TERR_PRINTF_DEF2:
-      usererr("error, line %d: ellipsis \"...\" notation is is only valid when declaring "
+      usererr(ctx, "error, line %d: ellipsis \"...\" notation is is only valid when declaring "
               "builtin function: extern void printf(char format[], ...);\n",
               sym.line());
       break;
@@ -874,7 +1159,18 @@ static void process_fdecl_error(terr_info_t err, const symbol_t &sym)
 }
 
 //-----------------------------------------------------------------------------
-static void process_func_list(symvec_t *vec, primitive_t rt, bool is_extern)
+static void build_print_functions(parser_ctx_t &ctx, symref_t printf, symtab_t &gsyms)
+{
+  ASSERT(0, printf != NULL);
+  printf->set_builtin_printf();
+
+  ctx.print_int    = build_print_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT,  gsyms);
+  ctx.print_string = build_print_function(BI_PRINT_STRING, "str",  ST_ARRAY,     PRIM_CHAR, gsyms);
+  ctx.print_char   = build_print_function(BI_PRINT_CHAR,   "c",    ST_PRIMITIVE, PRIM_CHAR, gsyms);
+}
+
+//-----------------------------------------------------------------------------
+static void process_func_list(parser_ctx_t &ctx, symvec_t *vec, primitive_t rt, bool is_extern)
 {
   ASSERT(1010, vec != NULL);
   ASSERT(1025, rt != PRIM_UNKNOWN);
@@ -884,33 +1180,33 @@ static void process_func_list(symvec_t *vec, primitive_t rt, bool is_extern)
     ASSERT(1011, *i != NULL);
 
     symref_t sym = *i;
-    terr_info_t err = validate_func_decl(*sym, rt, is_extern);
+    terr_info_t err = validate_func_decl(ctx, *sym, rt, is_extern);
 
     if ( err.code > TERR_OK2 )
     {
-      process_fdecl_error(err, *sym);
+      process_fdecl_error(ctx, err, *sym);
       continue;
     }
 
     if ( err.code == TERR_OK2 )
-      build_print_functions(sym, gsyms);
+      build_print_functions(ctx, sym, ctx.gsyms);
 
     sym->set_base(rt);
 
     if ( is_extern )
       sym->set_extern();
 
-    gsyms.insert(sym);
+    ctx.gsyms.insert(sym);
   }
 }
 
 //-----------------------------------------------------------------------------
-static terr_info_t process_array_sfx(int size, int line)
+static terr_info_t process_array_sfx(parser_ctx_t &ctx, int size, int line)
 {
   terr_info_t asfx(size >= 0 ? TERR_OK2 : TERR_ASFX, size);
 
   if ( asfx.code > TERR_OK2 )
-    usererr("error: line %d: arrays must have non-negative size\n", line);
+    usererr(ctx, "error: line %d: arrays must have non-negative size\n", line);
 
   return asfx;
 }
@@ -972,6 +1268,7 @@ static bool validate_math_expr(
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_math_expr(
+    parser_ctx_t &ctx,
     treenode_t *lhs,
     treenode_type_t type,
     treenode_t *rhs,
@@ -979,7 +1276,7 @@ static treenode_t *process_math_expr(
 {
   if ( !validate_math_expr(lhs, type, rhs) )
   {
-    usererr("error: incompatible arithmetic operand, line %d\n", line);
+    usererr(ctx, "error: incompatible arithmetic operand, line %d\n", line);
     delete lhs; delete rhs;
     return ERRNODE;
   }
@@ -989,6 +1286,7 @@ static treenode_t *process_math_expr(
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_for_stmt(
+    parser_ctx_t &ctx,
     treenode_t *init,
     treenode_t *cond,
     treenode_t *inc,
@@ -997,7 +1295,7 @@ static treenode_t *process_for_stmt(
 {
   if ( cond != NULL && !cond->is_bool_compat() )
   {
-    usererr("error: expression in for condition is not of type bool, line %d\n", line);
+    usererr(ctx, "error: expression in for condition is not of type bool, line %d\n", line);
     delete init; delete cond; delete inc; delete body;
     return ERRNODE;
   }
@@ -1005,13 +1303,17 @@ static treenode_t *process_for_stmt(
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int line)
+static treenode_t *process_while_stmt(
+    parser_ctx_t &ctx,
+    treenode_t *cond,
+    treenode_t *body,
+    int line)
 {
   ASSERT(1072, cond != NULL);
 
   if ( !cond->is_bool_compat() )
   {
-    usererr("error: expression in while condition is not of type bool, line %d\n", line);
+    usererr(ctx, "error: expression in while condition is not of type bool, line %d\n", line);
     delete cond; delete body;
     return ERRNODE;
   }
@@ -1020,6 +1322,7 @@ static treenode_t *process_while_stmt(treenode_t *cond, treenode_t *body, int li
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_if_stmt(
+    parser_ctx_t &ctx,
     treenode_t *cond,
     treenode_t *body,
     treenode_t *el,
@@ -1029,7 +1332,7 @@ static treenode_t *process_if_stmt(
 
   if ( !cond->is_bool_compat() )
   {
-    usererr("error: expression in if condition is not of type bool, line %d\n", line);
+    usererr(ctx, "error: expression in if condition is not of type bool, line %d\n", line);
     delete cond; delete body; delete el;
     return ERRNODE;
   }
@@ -1070,6 +1373,7 @@ static bool validate_bool_expr(
 
 //-----------------------------------------------------------------------------
 static treenode_t *process_bool_expr(
+    parser_ctx_t &ctx,
     treenode_t *lhs,
     treenode_type_t type,
     treenode_t *rhs,
@@ -1077,7 +1381,7 @@ static treenode_t *process_bool_expr(
 {
   if ( !validate_bool_expr(lhs, type, rhs) )
   {
-    usererr("error: incompatible boolean operands, line %d\n", line);
+    usererr(ctx, "error: incompatible boolean operands, line %d\n", line);
     delete lhs; delete rhs;
     return ERRNODE;
   }
@@ -1085,46 +1389,37 @@ static treenode_t *process_bool_expr(
 }
 
 //-----------------------------------------------------------------------------
-int yyerror(const char *s)
+int yyerror(void *scanner, parser_ctx_t &ctx, const char *s)
 {
-  usererr("%s, line: %d\n", s, yylineno);
+  usererr(ctx, "%s, line: %d\n", s, lineno);
   return 3;
 }
 
 //-----------------------------------------------------------------------------
-void usererr(const char *format, ...)
+void usererr(parser_ctx_t &ctx, const char *format, ...)
 {
-  // TODO: We still have to completely finish parsing the input file, even if
-  // the error limit has already been reached. It would be better to terminate
-  // the parser algorithm when we hit this limit, but this logic would have to
-  // be fully implemented in the grammar.
-  if ( errmsgs.size() >= MAXERRS )
-    return;
-
   va_list va;
   va_start(va, format);
 
   char buf[MAXERRLEN];
   vsnprintf(buf, MAXERRLEN, format, va);
-  errmsgs.push_back(buf);
+  ctx.errmsgs.push_back(buf);
 
   va_end(va);
 }
 
 //---------------------------------------------------------------------------
-bool parse(symtab_t &_gsyms, treefuncs_t &_funcs, errvec_t &_errs, FILE *infile)
+void parse(parse_results_t &res, const char *path)
 {
-  yyin = infile;
+  parser_ctx_t ctx;
+  scanner_t scanner(path);
 
-  gsyms.swap(_gsyms);
-  functions.swap(_funcs);
-  errmsgs.swap(_errs);
+  res.code = scanner.in == NULL                ? PERR_INFILE
+           : yyparse(scanner.yyscan, ctx) != 0 ? PERR_BISON
+           : !ctx.errmsgs.empty()              ? PERR_USER
+           :                                     PERR_OK;
 
-  yyparse();
-
-  _gsyms.swap(gsyms);
-  _funcs.swap(functions);
-  _errs.swap(errmsgs);
-
-  return _errs.empty();
+  res.gsyms.swap(ctx.gsyms);
+  res.trees.swap(ctx.trees);
+  res.errmsgs.swap(ctx.errmsgs);
 }

@@ -152,9 +152,10 @@ class MemoryMonitor:
             with open(self.log, "r+b") as log:
                 pattern  = re.compile(r"""
                     LEAK\s+SUMMARY.*
-                    definitely\s+lost:\s+0\s+bytes.*
-                    indirectly\s+lost:\s+0\s+bytes.*
-                    possibly\s+  lost:\s+0\s+bytes.*
+                    definitely\s+ lost:\s+0\s+bytes.*
+                    indirectly\s+ lost:\s+0\s+bytes.*
+                    possibly\s+   lost:\s+0\s+bytes.*
+                    still\s+ reachable:\s+0\s+bytes.*
                     ERROR\s+SUMMARY:\s+0\s+errors.*
                     ERROR\s+SUMMARY:\s+0\s+errors.*
                     """, re.VERBOSE | re.DOTALL)

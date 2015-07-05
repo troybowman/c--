@@ -3,13 +3,13 @@
 
 #include <symbol.h>
 
-class treefuncs_t;
+class stx_trees_t;
 class treenode_t;
 struct codenode_t;
 struct ir_t;
 
 //-----------------------------------------------------------------------------
-void generate_ir(ir_t &ir, const treefuncs_t &functions);
+void generate_ir(ir_t &ir, const stx_trees_t &functions);
 
 //-----------------------------------------------------------------------------
 // THREE ADDRESS CODE NODE

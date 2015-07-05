@@ -386,14 +386,14 @@ void print_ir(const ir_t &ir)
 }
 
 //-----------------------------------------------------------------------------
-void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags)
+void walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
 {
-  treefuncs_t::const_iterator i;
-  for ( i = functions.begin(); i != functions.end(); i++ )
+  stx_trees_t::const_iterator i;
+  for ( i = trees.begin(); i != trees.end(); i++ )
   {
-    treefunc_t tf     = *i;
-    const symbol_t &f = *tf.sym;
-    treenode_t *tree  = tf.tree;
+    stx_tree_t st     = *i;
+    const symbol_t &f = *st.sym;
+    treenode_t *tree  = st.root;
 
     ASSERT(1080, f.is_func());
 

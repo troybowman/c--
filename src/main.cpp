@@ -74,11 +74,10 @@ struct args_t
 #define ARGS_OK      0
 #define ARGS_BADOPT  1
 #define ARGS_MISSING 2
-#define ARGS_INFILE  3
 #define ARGS_OUTFILE 4
 #define ARGS_NOINPUT 5
 
-  FILE *infile;
+  const char *inpath;
   char *outpath;
   union
   {
@@ -92,8 +91,8 @@ struct args_t
   args_t(int _code, const char *_str) : code(_code), str(_str) {}
   args_t(char *_outpath, const char *_str) : code(ARGS_OUTFILE), outpath(_outpath), str(_str) {}
 
-  args_t(FILE *_infile, char *_outpath, FILE *_outfile)
-    : code(ARGS_OK), infile(_infile), outpath(_outpath), outfile(_outfile) {}
+  args_t(const char *_inpath, char *_outpath, FILE *_outfile)
+    : code(ARGS_OK), inpath(_inpath), outpath(_outpath), outfile(_outfile) {}
 
   ~args_t()
   {
@@ -102,7 +101,6 @@ struct args_t
       case ARGS_OK:
         fclose(outfile);
       case ARGS_OUTFILE:
-        fclose(infile);
         free(outpath);
       default:
         break;
@@ -149,10 +147,6 @@ static args_t parseargs(int argc, char **argv)
 
   const char *inpath = argv[optind];
 
-  FILE *infile = fopen(inpath, "r");
-  if ( infile == NULL )
-    return args_t(ARGS_INFILE, strerror(errno));
-
   if ( outpath == NULL )
     outpath = gen_outpath(inpath);
 
@@ -162,7 +156,7 @@ static args_t parseargs(int argc, char **argv)
 
   SET_DBGFILE(outfile);
 
-  return args_t(infile, outpath, outfile);
+  return args_t(inpath, outpath, outfile);
 }
 
 //-----------------------------------------------------------------------------
@@ -175,9 +169,6 @@ static int process_args_err(args_t args, const char *prog)
       break;
     case ARGS_MISSING:
       fprintf(stderr, "error: option '-%c' requiargs an argument\n", args.c);
-      break;
-    case ARGS_INFILE:
-      fprintf(stderr, "error: could not open input file: %s\n", args.str);
       break;
     case ARGS_OUTFILE:
       fprintf(stderr, "error: could not open output file for writing: %s\n", args.str);
@@ -193,12 +184,35 @@ static int process_args_err(args_t args, const char *prog)
 }
 
 //-----------------------------------------------------------------------------
-static int process_parse_err(const errvec_t &errmsgs, char *outpath)
+static int process_parse_err(const parse_results_t &res, const args_t &args)
 {
-  errvec_t::const_iterator i;
-  for ( i = errmsgs.begin(); i != errmsgs.end(); i++ )
-    fprintf(stderr, i->c_str());
-  remove(outpath);
+  switch( res.code )
+  {
+    case PERR_INFILE:
+      {
+        fprintf(stderr, "error: could not open input file %s\n", args.inpath);
+        break;
+      }
+    case PERR_BISON:
+    case PERR_USER:
+      {
+        int count = 0;
+        errvec_t::const_iterator i;
+        for ( i = res.errmsgs.begin(); i != res.errmsgs.end(); i++, count++ )
+        {
+          fprintf(stderr, i->c_str());
+          if ( count >= 25 )
+          {
+            fprintf(stderr, "warning: too many errors - results truncated.\n");
+            break;
+          }
+        }
+        break;
+      }
+    default:
+      INTERR(1102);
+  }
+  remove(args.outpath);
   return 2;
 }
 
@@ -206,22 +220,20 @@ static int process_parse_err(const errvec_t &errmsgs, char *outpath)
 int main(int argc, char **argv)
 {
   args_t args = parseargs(argc, argv);
-
   if ( args.code != ARGS_OK )
     return process_args_err(args, argv[0]);
 
-  symtab_t gsyms;
-  treefuncs_t funcs;
-  errvec_t errmsgs;
+  parse_results_t res;
+  parse(res, args.inpath);
 
-  if ( !parse(gsyms, funcs, errmsgs, args.infile) )
-    return process_parse_err(errmsgs, args.outpath);
+  if ( res.code != PERR_OK )
+    return process_parse_err(res, args);
 
-  DBG_PARSE_RESULTS(gsyms, funcs);
+  DBG_PARSE_RESULTS(res);
   DBG_CHECK_PHASE_FLAG(dbg_no_ir);
 
-  ir_t ir(gsyms);
-  generate_ir(ir, funcs);
+  ir_t ir(res.gsyms);
+  generate_ir(ir, res.trees);
 
   DBG_IR(ir);
   DBG_CHECK_PHASE_FLAG(dbg_no_code);

@@ -41,28 +41,28 @@ do                                 \
 struct codenode_t;
 class symtab_t;
 struct ir_t;
-struct treefunc_t;
-class treefuncs_t;
+struct stx_tree_t;
+class stx_trees_t;
 
 void print_syms(const symtab_t &syms, const char *title, const char *extra);
-void walk_funcs(const treefuncs_t &functions, dbg_flags_t flags);
+void walk_funcs(const stx_trees_t &trees, dbg_flags_t flags);
 void print_ir(const ir_t &ir);
 void set_dbgfile(FILE *dbgfile);
 
 //-----------------------------------------------------------------------------
-#define SET_DBGFILE(dbgfile)      do { set_dbgfile(dbgfile); } while ( false );
+#define SET_DBGFILE(dbgfile) do { set_dbgfile(dbgfile); } while ( false )
 
 //-----------------------------------------------------------------------------
-#define DBG_PARSE_RESULTS(gsyms, functions)       \
-do                                                \
-{                                                 \
-  if ( (dbg_flags & dbg_dump_gsyms) != 0 )        \
-    print_syms(gsyms, "GLOBAL SYMBOL TABLE", ""); \
-  if ( (dbg_flags & dbg_dump_lsyms) != 0          \
-    || (dbg_flags & dbg_dump_tree)  != 0 )        \
-  {                                               \
-    walk_funcs(functions, dbg_flags & 0xC);       \
-  }                                               \
+#define DBG_PARSE_RESULTS(results)                        \
+do                                                        \
+{                                                         \
+  if ( (dbg_flags & dbg_dump_gsyms) != 0 )                \
+    print_syms(results.gsyms, "GLOBAL SYMBOL TABLE", ""); \
+  if ( (dbg_flags & dbg_dump_lsyms) != 0                  \
+    || (dbg_flags & dbg_dump_tree)  != 0 )                \
+  {                                                       \
+    walk_funcs(results.trees, dbg_flags & 0xC);           \
+  }                                                       \
 } while ( false );
 
 //-----------------------------------------------------------------------------
@@ -87,12 +87,12 @@ do                                      \
 #else
 
 //-----------------------------------------------------------------------------
-#define DBG(flag, ...)                      // nothing
-#define DBG_PARSE_RESULTS(gsyms, functions) // nothing
-#define DBG_IR(code)                        // nothing
-#define DBG_CHECK_PHASE_FLAG(flags)         // nothing
-#define SET_DBGFILE(outfile)                // nothing
-#define DBG_FRAME_SUMMARY(frame)            // nothing
+#define DBG(flag, ...)              // nothing
+#define DBG_PARSE_RESULTS(results)  // nothing
+#define DBG_IR(code)                // nothing
+#define DBG_CHECK_PHASE_FLAG(flags) // nothing
+#define SET_DBGFILE(outfile)        // nothing
+#define DBG_FRAME_SUMMARY(frame)    // nothing
 
 #endif // DEBUG
 

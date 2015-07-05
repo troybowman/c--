@@ -32,39 +32,34 @@ endif
 
 OBJFILES = $(OBJ)parser.o   $(OBJ)scanner.o $(OBJ)symbol.o   \
 					 $(OBJ)treenode.o $(OBJ)ir.o 			$(OBJ)messages.o \
-					 $(OBJ)main.o     $(OBJ)asm.o 		$(OBJ)printf.o
+					 $(OBJ)main.o     $(OBJ)asm.o
 
-HFILES = $(I)common.h $(I)symbol.h   $(I)treenode.h \
-				 $(I)ir.h  		$(I)messages.h $(I)parser.h   \
-				 $(I)asm.h 		$(I)printf.h
+HFILES = $(I)common.h   $(I)symbol.h   $(I)treenode.h $(I)ir.h \
+				 $(I)messages.h $(I)parser.h   $(I)asm.h
 
 #------------------------------------------------------------------------------
-$(BIN)c--: $(OBJFILES)
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLEX) -lfl
+$(BIN)c--: $(OBJ)parser.cpp $(OBJ)scanner.cpp $(OBJFILES)
+	$(CC) $(CFLAGS) -o $@ $(OBJFILES) $(LFLEX) -lfl
+
+#------------------------------------------------------------------------------
+$(OBJ)parser.cpp: $(SRC)parser.y $(HFILES)
+	$(BISON) -o $@ -d -v $<
+
+$(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
+	$(FLEX) --header-file=$(OBJ)scanner.hpp -o $@ $<
 
 #------------------------------------------------------------------------------
 $(OBJ)parser.o: $(OBJ)parser.cpp
 	$(CC) $(IFLEX) $(CFLAGS) -c -o $@ $<
 
-$(OBJ)parser.cpp: $(SRC)parser.y $(HFILES)
-	$(BISON) -o $@ -d -v $<
-
-#------------------------------------------------------------------------------
 $(OBJ)scanner.o: $(OBJ)scanner.cpp
 	$(CC) $(IFLEX) $(CFLAGS) -c -o $@ $<
 
-$(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
-	$(FLEX) -o $@ $<
-
-#------------------------------------------------------------------------------
 $(OBJ)symbol.o: $(SRC)symbol.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
 
 $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
-
-$(OBJ)printf.o: $(SRC)printf.cpp $(HFILES)
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)ir.o: $(SRC)ir.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
