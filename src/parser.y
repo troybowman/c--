@@ -18,6 +18,9 @@ class parser_ctx_t;
 struct scanner_t
 {
   FILE *in;
+  // should be 'yyscan_t' instead of 'void *', but this would case a circular
+  // dependency between scanner.hpp and parser.hpp. This workaround should do
+  // fine, because anyways yyscan_t is an opaque c type.
   void *yyscan;
 
   scanner_t(const char *path)

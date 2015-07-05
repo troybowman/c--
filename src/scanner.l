@@ -5,11 +5,13 @@ class parser_ctx_t;
 #include "parser.hpp"
 %}
 
-%option noinput
-%option nounput
 %option yylineno
 %option reentrant
 %option bison-bridge
+
+/* avoid unused warnings */
+%option noinput
+%option nounput
 
 %x COMMENT
 
