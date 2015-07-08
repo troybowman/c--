@@ -3,16 +3,11 @@
 #include <stdarg.h>
 
 #include <common.h>
-#include <messages.h>
+#include <logger.h>
 #include <symbol.h>
 #include <treenode.h>
 #include <ir.h>
 #include <asm.h>
-
-//-----------------------------------------------------------------------------
-static FILE *dbgfile;
-
-void set_dbgfile(FILE *_dbgfile) { dbgfile = _dbgfile; }
 
 //-----------------------------------------------------------------------------
 static const char *header =
@@ -21,14 +16,14 @@ static const char *header =
 "#-----------------------------------------------------------------------------\n";
 
 //-----------------------------------------------------------------------------
-static void cmtout(int indent, const char *fmt, ...)
+void logger_t::cmtout(int indent, const char *fmt, ...)
 {
   std::string line("# ");
   while ( --indent >= 0 ) line.append("  ");
   line += fmt;
   va_list va;
   va_start(va, fmt);
-  vfprintf(dbgfile, line.c_str(), va);
+  vfprintf(logfile, line.c_str(), va);
   va_end(va);
 }
 
@@ -133,7 +128,7 @@ static const char *child2str(treenode_type_t type, int child)
       ASSERT(1067, child == WHILE_COND || child == WHILE_BODY);
       return child == WHILE_COND ? "WHILE_COND" : "WHILE_BODY";
     case TNT_PRINTF:
-      ASSERT(0, child == PRINTF_TREE);
+      ASSERT(1112, child == PRINTF_TREE);
       return "PRINTF_TREE";
     default:
       INTERR(1035);
@@ -237,9 +232,9 @@ static const char *addr2str(char *buf, size_t bufsize, const symbol_t &addr)
 }
 
 //-----------------------------------------------------------------------------
-void print_syms(const symtab_t &syms, const char *title, const char *extra)
+void logger_t::print_syms(const symtab_t &syms, const char *title, const char *extra)
 {
-  fprintf(dbgfile, header, title, extra);
+  fprintf(logfile, header, title, extra);
   cmtout(0, "size: %d\n", syms.size());
 
   symtab_t::const_iterator i;
@@ -254,16 +249,16 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
     switch ( s.type() )
     {
       case ST_PRIMITIVE:
-        fprintf(dbgfile,  "ST_PRIMITIVE\n");
+        fprintf(logfile,  "ST_PRIMITIVE\n");
         cmtout(++indent, "base: %s\n", prim2str(s.base()));
         break;
       case ST_ARRAY:
-        fprintf(dbgfile,  "ST_ARRAY\n");
+        fprintf(logfile,  "ST_ARRAY\n");
         cmtout(++indent, "base: %s\n", prim2str(s.base()));
         cmtout(indent,   "size: 0x%x\n", s.size());
         break;
       case ST_FUNCTION:
-        fprintf(dbgfile,  "ST_FUNCTION\n");
+        fprintf(logfile,  "ST_FUNCTION\n");
         cmtout(++indent, "rt_type: %s\n", prim2str(s.base()));
         cmtout(indent,   "params:\n");
         if ( s.params()->size() < 1 )
@@ -285,11 +280,11 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
             switch ( p.type() )
             {
               case ST_PRIMITIVE:
-                fprintf(dbgfile, "ST_PRIMITIVE\n");
+                fprintf(logfile, "ST_PRIMITIVE\n");
                 cmtout(++pindent, "base: %s\n", prim2str(p.base()));
                 break;
               case ST_ARRAY:
-                fprintf(dbgfile, "ST_ARRAY\n");
+                fprintf(logfile, "ST_ARRAY\n");
                 cmtout(++pindent, "base: %s\n", prim2str(p.base()));
                 break;
               default:
@@ -306,7 +301,7 @@ void print_syms(const symtab_t &syms, const char *title, const char *extra)
 }
 
 //-----------------------------------------------------------------------------
-void print_tree(const treenode_t *node, int *cnt)
+void logger_t::print_tree(const treenode_t *node, int *cnt)
 {
   if ( node == NULL )
     return;
@@ -317,21 +312,21 @@ void print_tree(const treenode_t *node, int *cnt)
   switch ( node->type() )
   {
     case TNT_INTCON:
-      fprintf(dbgfile, " val: %d", node->val());
+      fprintf(logfile, " val: %d", node->val());
       break;
     case TNT_CHARCON:
     case TNT_STRCON:
-      fprintf(dbgfile, " str: %s", node->str());
+      fprintf(logfile, " str: %s", node->str());
       break;
     case TNT_SYMBOL:
     case TNT_ARRAY_LOOKUP:
     case TNT_CALL:
-      fprintf(dbgfile, " sym: %s", node->sym()->c_str());
+      fprintf(logfile, " sym: %s", node->sym()->c_str());
       break;
     default:
       break;
   }
-  fprintf(dbgfile, "\n");
+  fprintf(logfile, "\n");
   for ( int i = 0; i < 4; i++ )
   {
     treenode_t *child = node->children[i];
@@ -344,7 +339,7 @@ void print_tree(const treenode_t *node, int *cnt)
 }
 
 //-----------------------------------------------------------------------------
-static void print_ir_code(const codenode_t *code)
+void logger_t::print_ir_code(const codenode_t *code)
 {
   const codenode_t *ptr = code;
   while ( ptr != NULL )
@@ -369,13 +364,13 @@ static void print_ir_code(const codenode_t *code)
 }
 
 //-----------------------------------------------------------------------------
-void print_ir(const ir_t &ir)
+void logger_t::print_ir(const ir_t &ir)
 {
   ir_funcs_t::const_iterator i;
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
     ir_func_t *f = *i;
-    fprintf(dbgfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->sym->c_str());
+    fprintf(logfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->sym->c_str());
     cmtout(0, "temps used:    %d\n", f->temps.count());
     cmtout(0, "svregs used:   %d\n", f->svregs.count());
     cmtout(0, "stktemps used: %d\n", f->stktemps.count());
@@ -386,7 +381,7 @@ void print_ir(const ir_t &ir)
 }
 
 //-----------------------------------------------------------------------------
-void walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
+void logger_t::walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
 {
   stx_trees_t::const_iterator i;
   for ( i = trees.begin(); i != trees.end(); i++ )
@@ -403,7 +398,7 @@ void walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
     if ( (flags & dbg_dump_tree) != 0 )
     {
       int cnt = 0;
-      fprintf(dbgfile, header, "SYNTAX TREE FOR FUNCTION: ", f.c_str());
+      fprintf(logfile, header, "SYNTAX TREE FOR FUNCTION: ", f.c_str());
       print_tree(tree, &cnt);
     }
   }
@@ -417,10 +412,8 @@ void walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
 static const char *sep =
 "|--------------------------------|";
 
-static offset_t dbg_stksize = BADOFFSET;
-
 //-----------------------------------------------------------------------------
-static void print_frame_item(uint32_t off, const char *fmt, ...)
+static void print_frame_item(stack_frame_t &frame, offset_t off, const char *fmt, ...)
 {
   char namestr[FMTLEN];
 
@@ -444,105 +437,112 @@ static void print_frame_item(uint32_t off, const char *fmt, ...)
   APPCHAR(ptr, '|', 1);
   *ptr = '\0';
 
-  fprintf(dbgfile, "%s\n", item);
+  frame.ctx.out("%s\n", item);
 
   char offstr[OFFLEN];
-  snprintf(offstr, OFFLEN, "sp+%d%s", off,
-           off == dbg_stksize ? "  <-- start of caller's stack" : "");
+  snprintf(offstr, OFFLEN,
+           "sp+%d%s",
+           off, off == frame.size() ? "  <-- start of caller's stack" : "");
 
-  fprintf(dbgfile, TAB1"# %s %s\n", sep, offstr);
+  frame.ctx.out(TAB1"# %s %s\n", sep, offstr);
 }
 
 //-----------------------------------------------------------------------------
 void stack_frame_t::dump()
 {
-  dbg_stksize = size();
-
-  fprintf(dbgfile, "\n"TAB1"# %s\n", sep);
+  ctx.out("\n"TAB1"# %s\n", sep);
 
   // PARAMS -------------------------------------------------------------------
   struct param_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &param, uint32_t idx) // TODO: const?
+    virtual void visit_item(item_info_t &info) // TODO: const?
     {
+      symbol_t &param = info.sym;
       if ( param.loc.is_stkoff() )
-        print_frame_item(param.loc.stkoff(), param.c_str());
+        print_frame_item(info.frame, param.loc.stkoff(), param.c_str());
       else
-        print_frame_item(sec.top() - idx * WORDSIZE,
+        print_frame_item(info.frame, info.sec.start + info.idx * WORDSIZE,
                          "<%s is in %s>",
                          param.c_str(), param.loc.reg());
     }
   } pp;
 
-  sections[FS_PARAMS].visit_items(pp, FIV_REVERSE);
+  sections[FS_PARAMS].visit_items(*this, pp, FIV_REVERSE);
 
   // PADDING2 -----------------------------------------------------------------
   if ( sections[FS_PADDING2].is_valid() )
-    print_frame_item(sections[FS_PADDING2].start, "<padding>");
+    print_frame_item(*this, sections[FS_PADDING2].start, "<padding>");
 
   // LVARS --------------------------------------------------------------------
   struct lvar_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &, symbol_t &lvar, uint32_t)
+    virtual void visit_item(item_info_t &info)
     {
+      symbol_t &lvar = info.sym;
       if ( !lvar.is_param() )
-        print_frame_item(lvar.loc.stkoff(), lvar.c_str());
+        print_frame_item(info.frame, lvar.loc.stkoff(), lvar.c_str());
     }
   } lvp;
 
-  sections[FS_LVARS].visit_items(lvp, FIV_REVERSE);
+  sections[FS_LVARS].visit_items(*this, lvp, FIV_REVERSE);
 
   // PADDING1 -----------------------------------------------------------------
   if ( sections[FS_PADDING1].is_valid() )
-    print_frame_item(sections[FS_PADDING1].start, "<padding>");
+    print_frame_item(*this, sections[FS_PADDING1].start, "<padding>");
 
   // RA -----------------------------------------------------------------------
   struct ra_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &ra, uint32_t)
+    virtual void visit_item(item_info_t &info)
     {
-      print_frame_item(sec.start, ra.loc.reg());
+      print_frame_item(info.frame, info.sec.start, info.sym.loc.reg());
     }
   } rap;
 
-  sections[FS_RA].visit_items(rap, FIV_REVERSE);
+  sections[FS_RA].visit_items(*this, rap, FIV_REVERSE);
 
   // STKTEMPS -----------------------------------------------------------------
   struct stktemp_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &, symbol_t &stktemp, uint32_t)
+    virtual void visit_item(item_info_t &info)
     {
-      print_frame_item(stktemp.loc.stkoff(), "<stktemp %d>", stktemp.val());
+      print_frame_item(info.frame,
+                       info.sym.loc.stkoff(),
+                       "<stktemp %d>", info.sym.val());
     }
   } stp;
 
-  sections[FS_STKTEMPS].visit_items(stp, FIV_REVERSE);
+  sections[FS_STKTEMPS].visit_items(*this, stp, FIV_REVERSE);
 
   // SVREGS -------------------------------------------------------------------
   struct svregs_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &sec, symbol_t &svreg, uint32_t idx)
+    virtual void visit_item(item_info_t &info)
     {
-      print_frame_item(sec.top() - idx * WORDSIZE, svreg.loc.reg());
+      print_frame_item(info.frame,
+                       info.sec.start + info.idx * WORDSIZE,
+                       info.sym.loc.reg());
     }
   } srp;
 
-  sections[FS_SVREGS].visit_items(srp, FIV_REVERSE);
+  sections[FS_SVREGS].visit_items(*this, srp, FIV_REVERSE);
 
   // STKARGS ------------------------------------------------------------------
   struct stkargs_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_section_t &, symbol_t &stkarg, uint32_t)
+    virtual void visit_item(item_info_t &info)
     {
-      print_frame_item(stkarg.loc.stkoff(), "<stkarg %d>", stkarg.val());
+      print_frame_item(info.frame,
+                       info.sym.loc.stkoff(),
+                       "<stkarg %d>", info.sym.val());
     }
   } sag;
 
-  sections[FS_STKARGS].visit_items(sag, FIV_REVERSE);
+  sections[FS_STKARGS].visit_items(*this, sag, FIV_REVERSE);
 
   // REGARGS ------------------------------------------------------------------
   if ( sections[FS_REGARGS].is_valid() )
-    print_frame_item(sections[FS_REGARGS].start, "<minimum 4 arg slots>");
+    print_frame_item(*this, sections[FS_REGARGS].start, "<minimum 4 arg slots>");
 }
 
 #endif // NDEBUG

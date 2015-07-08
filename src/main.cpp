@@ -9,7 +9,7 @@
 #include <treenode.h>
 #include <ir.h>
 #include <asm.h>
-#include <messages.h>
+#include <logger.h>
 
 #define OUTFILE_EXT "asm"
 
@@ -74,10 +74,11 @@ struct args_t
 #define ARGS_OK      0
 #define ARGS_BADOPT  1
 #define ARGS_MISSING 2
+#define ARGS_INFILE  3
 #define ARGS_OUTFILE 4
 #define ARGS_NOINPUT 5
 
-  const char *inpath;
+  FILE *infile;
   char *outpath;
   union
   {
@@ -89,10 +90,11 @@ struct args_t
   args_t(int _code) : code(_code) {}
   args_t(int _code, char _c) : code(_code), c(_c) {}
   args_t(int _code, const char *_str) : code(_code), str(_str) {}
-  args_t(char *_outpath, const char *_str) : code(ARGS_OUTFILE), outpath(_outpath), str(_str) {}
+  args_t(char *_outpath, const char *_str)
+    : code(ARGS_OUTFILE), outpath(_outpath), str(_str) {}
 
-  args_t(const char *_inpath, char *_outpath, FILE *_outfile)
-    : code(ARGS_OK), inpath(_inpath), outpath(_outpath), outfile(_outfile) {}
+  args_t(FILE *_infile, char *_outpath, FILE *_outfile)
+    : code(ARGS_OK), infile(_infile), outpath(_outpath), outfile(_outfile) {}
 
   ~args_t()
   {
@@ -101,6 +103,7 @@ struct args_t
       case ARGS_OK:
         fclose(outfile);
       case ARGS_OUTFILE:
+        fclose(infile);
         free(outpath);
       default:
         break;
@@ -147,6 +150,10 @@ static args_t parseargs(int argc, char **argv)
 
   const char *inpath = argv[optind];
 
+  FILE *infile = fopen(inpath, "r");
+  if ( infile == NULL )
+    return args_t(ARGS_INFILE, strerror(errno));
+
   if ( outpath == NULL )
     outpath = gen_outpath(inpath);
 
@@ -154,66 +161,51 @@ static args_t parseargs(int argc, char **argv)
   if ( outfile == NULL )
     return args_t(outpath, strerror(errno));
 
-  SET_DBGFILE(outfile);
-
-  return args_t(inpath, outpath, outfile);
+  return args_t(infile, outpath, outfile);
 }
 
 //-----------------------------------------------------------------------------
 static int process_args_err(args_t args, const char *prog)
 {
+  fprintf(stderr, usagestr, prog);
   switch ( args.code )
   {
     case ARGS_BADOPT:
       fprintf(stderr, "error: unknown option '-%c'\n", args.c);
-      break;
+      return 3;
     case ARGS_MISSING:
       fprintf(stderr, "error: option '-%c' requiargs an argument\n", args.c);
-      break;
+      return 4;
+    case ARGS_INFILE:
+      fprintf(stderr, "error: could not open input file: %s\n", args.str);
+      return 5;
     case ARGS_OUTFILE:
       fprintf(stderr, "error: could not open output file for writing: %s\n", args.str);
-      break;
+      return 6;
     case ARGS_NOINPUT:
       fprintf(stderr, "error: no input source file specified\n");
-      break;
+      return 7;
     default:
       INTERR(1083);
   }
-  fprintf(stderr, usagestr, prog);
-  return 1;
 }
 
 //-----------------------------------------------------------------------------
 static int process_parse_err(const parse_results_t &res, const args_t &args)
 {
-  switch( res.code )
+  int count = 0;
+  errvec_t::const_iterator i;
+  for ( i = res.errmsgs.begin(); i != res.errmsgs.end(); i++, count++ )
   {
-    case PERR_INFILE:
-      {
-        fprintf(stderr, "error: could not open input file %s\n", args.inpath);
-        break;
-      }
-    case PERR_BISON:
-    case PERR_USER:
-      {
-        int count = 0;
-        errvec_t::const_iterator i;
-        for ( i = res.errmsgs.begin(); i != res.errmsgs.end(); i++, count++ )
-        {
-          fprintf(stderr, i->c_str());
-          if ( count >= 25 )
-          {
-            fprintf(stderr, "warning: too many errors - results truncated.\n");
-            break;
-          }
-        }
-        break;
-      }
-    default:
-      INTERR(1102);
+    fprintf(stderr, i->c_str());
+    if ( count >= 25 )
+    {
+      fprintf(stderr, "warning: too many errors - results truncated.\n");
+      break;
+    }
   }
   remove(args.outpath);
-  return 2;
+  return 8;
 }
 
 //-----------------------------------------------------------------------------
@@ -223,22 +215,25 @@ int main(int argc, char **argv)
   if ( args.code != ARGS_OK )
     return process_args_err(args, argv[0]);
 
+  // parse input source -------------------------------------------------------
   parse_results_t res;
-  parse(res, args.inpath);
-
-  if ( res.code != PERR_OK )
+  if ( !parse(res, args.infile) )
     return process_parse_err(res, args);
 
-  DBG_PARSE_RESULTS(res);
-  DBG_CHECK_PHASE_FLAG(dbg_no_ir);
+  LOG_INIT(args.outfile);
+  LOG_PARSE_RESULTS(res);
+  LOG_CHECK_PHASE_FLAG(dbg_no_ir);
 
+  // intermediate representation ----------------------------------------------
   ir_t ir(res.gsyms);
   generate_ir(ir, res.trees);
 
-  DBG_IR(ir);
-  DBG_CHECK_PHASE_FLAG(dbg_no_code);
+  LOG_IR(ir);
+  LOG_CHECK_PHASE_FLAG(dbg_no_code);
 
-  generate_mips_asm(args.outfile, ir);
+  // backend ------------------------------------------------------------------
+  asm_ctx_t ctx(args.outfile);
+  generate_mips_asm(ctx, ir);
 
   return 0;
 }

@@ -1,6 +1,6 @@
 #include <ir.h>
 #include <treenode.h>
-#include <messages.h>
+#include <logger.h>
 
 #define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
 #define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
@@ -131,7 +131,7 @@ symref_t ir_engine_t::gen_temp(uint32_t flags)
   if ( temp == NULL )
     temp = f.stktemps.gen_resource();
 
-  ASSERT(0, temp != NULL);
+  ASSERT(1110, temp != NULL);
   return temp;
 }
 
@@ -143,7 +143,7 @@ symref_t ir_engine_t::gen_argloc()
   if ( argloc == NULL )
     argloc = f.stkargs.gen_resource();
 
-  ASSERT(0, argloc != NULL);
+  ASSERT(1111, argloc != NULL);
   return argloc;
 }
 

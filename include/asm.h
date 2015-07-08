@@ -1,19 +1,31 @@
 #ifndef MIPS_ASM_H
 #define MIPS_ASM_H
 
-#include <stdio.h>
 #include <ir.h>
-#include <messages.h>
+#include <logger.h>
 
+struct asm_ctx_t;
 class frame_section_t;
+class stack_frame_t;
 
 //-----------------------------------------------------------------------------
-void generate_mips_asm(FILE *outfile, ir_t &ir);
+void generate_mips_asm(asm_ctx_t &ctx, ir_t &ir);
+
+//-----------------------------------------------------------------------------
+struct item_info_t
+{
+  stack_frame_t &frame;
+  frame_section_t &sec;
+  symbol_t &sym;
+  uint32_t idx;
+
+  item_info_t(stack_frame_t &, frame_section_t &, symbol_t &, uint32_t);
+};
 
 //-----------------------------------------------------------------------------
 struct frame_item_visitor_t
 {
-  virtual void visit_item(frame_section_t &sec, symbol_t &sym, uint32_t idx) = 0;
+  virtual void visit_item(item_info_t &info) = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -32,7 +44,7 @@ public:
     { rm.get_used_resources(items); }
 
 #define FIV_REVERSE 0x1
-  void visit_items(frame_item_visitor_t &fiv, uint32_t flags = 0);
+  void visit_items(stack_frame_t &, frame_item_visitor_t &, uint32_t flags = 0);
 
   size_t nitems() const { return items.size(); }
   bool is_valid() const { return size() >= WORDSIZE; }
@@ -69,9 +81,10 @@ class stack_frame_t
   const ir_func_t &f;
 
 public:
+  asm_ctx_t &ctx;
   symref_t epilogue_lbl;
 
-  stack_frame_t(const ir_func_t &_f);
+  stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx);
 
   offset_t size() const { return sections[FS_PADDING2].end; }
 
@@ -86,5 +99,24 @@ public:
 #define TAB1   "  "
 #define TAB2   "    "
 #define TABLEN 2
+
+//-----------------------------------------------------------------------------
+struct asm_ctx_t
+{
+  FILE *outfile;
+
+  // all named symbols (labels, strings, src symbols)
+  symtab_t gsyms;
+
+  // reserved temps. used for storing temporaries in memory when we
+  // run out of temp registers
+  symref_t t7;
+  symref_t t8;
+  symref_t t9;
+
+  asm_ctx_t(FILE *_outfile);
+
+  void out(const char *fmt, ...);
+};
 
 #endif // MIPS_ASM_H

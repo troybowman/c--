@@ -8,16 +8,7 @@
 struct parse_results_t;
 
 //-----------------------------------------------------------------------------
-void parse(parse_results_t &res, const char *path);
-
-//-----------------------------------------------------------------------------
-enum parse_error_t
-{
-  PERR_OK,
-  PERR_INFILE,
-  PERR_BISON,
-  PERR_USER,
-};
+bool parse(parse_results_t &res, FILE *infile);
 
 //-----------------------------------------------------------------------------
 typedef std::vector<std::string> errvec_t;
@@ -25,7 +16,6 @@ typedef std::vector<std::string> errvec_t;
 //-----------------------------------------------------------------------------
 struct parse_results_t
 {
-  parse_error_t code;
   symtab_t gsyms;
   stx_trees_t trees;
   errvec_t errmsgs;

@@ -31,10 +31,10 @@ else
 endif
 
 OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbol.o $(OBJ)treenode.o\
- $(OBJ)ir.o $(OBJ)messages.o $(OBJ)main.o $(OBJ)asm.o
+ $(OBJ)ir.o $(OBJ)logger.o $(OBJ)main.o $(OBJ)asm.o
 
 HFILES = $(I)common.h $(I)symbol.h $(I)treenode.h $(I)ir.h\
- $(I)messages.h $(I)parser.h $(I)asm.h
+ $(I)logger.h $(I)parser.h $(I)asm.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJ)parser.cpp $(OBJ)scanner.cpp $(OBJFILES)
@@ -69,7 +69,7 @@ $(OBJ)asm.o: $(SRC)asm.cpp $(HFILES)
 $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
 
-$(OBJ)messages.o: $(SRC)messages.cpp $(HFILES)
+$(OBJ)logger.o: $(SRC)logger.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 #------------------------------------------------------------------------------

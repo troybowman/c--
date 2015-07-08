@@ -17,27 +17,20 @@ class parser_ctx_t;
 //---------------------------------------------------------------------------
 struct scanner_t
 {
-  FILE *in;
   // should be 'yyscan_t' instead of 'void *', but this would case a circular
   // dependency between scanner.hpp and parser.hpp. This workaround should do
   // fine, because anyways yyscan_t is an opaque c type.
   void *yyscan;
 
-  scanner_t(const char *path)
+  scanner_t(FILE *in)
   {
     yylex_init(&yyscan);
-
-    in = fopen(path, "r");
-    if ( in )
-      yyset_in(in, yyscan);
+    yyset_in(in, yyscan);
   }
 
   ~scanner_t()
   {
     yylex_destroy(yyscan);
-
-    if ( in )
-      fclose(in);
   }
 };
 
@@ -446,7 +439,7 @@ static type_error_t validate_func_def(const symbol_t &def, symref_t prev)
   if ( prev == NULL )
     return TERR_OK;
 
-  ASSERT(0, def.name() == prev->name());
+  ASSERT(1102, def.name() == prev->name());
 
   return !prev->is_func()                              ? TERR_REDECLARED
        :  prev->is_defined()                           ? TERR_REDEFINED
@@ -773,7 +766,7 @@ static symref_t build_print_function(
   symref_t bfunc(new symbol_t(SF_EXTERN, name, -1, params));
   bfunc->set_base(PRIM_VOID);
 
-  ASSERT(0, gsyms.get(bfunc->name()) == NULL);
+  ASSERT(1103, gsyms.get(bfunc->name()) == NULL);
   gsyms.insert(bfunc);
 
   return bfunc;
@@ -1036,7 +1029,7 @@ static terr_info_t validate_var_decl(
     const symbol_t &sym,
     primitive_t type)
 {
-  ASSERT(0, type != PRIM_UNKNOWN);
+  ASSERT(1104, type != PRIM_UNKNOWN);
 
   if ( type == PRIM_VOID )
     return TERR_BAD_VOID;
@@ -1051,7 +1044,7 @@ static terr_info_t validate_var_decl(
 //-----------------------------------------------------------------------------
 static bool process_var_decl(parser_ctx_t &ctx, symref_t sym, primitive_t type)
 {
-  ASSERT(0, sym != NULL);
+  ASSERT(1105, sym != NULL);
 
   terr_info_t err = validate_var_decl(ctx, *sym, type);
 
@@ -1081,10 +1074,10 @@ static bool process_var_decl(parser_ctx_t &ctx, symref_t sym, primitive_t type)
 //-----------------------------------------------------------------------------
 static void process_var_list(parser_ctx_t &ctx, symvec_t *vec, primitive_t type)
 {
-  ASSERT(0, vec != NULL);
+  ASSERT(1106, vec != NULL);
   for ( symvec_t::iterator i = vec->begin(); i != vec->end(); i++ )
   {
-    ASSERT(0, *i != NULL);
+    ASSERT(1107, *i != NULL);
     process_var_decl(ctx, *i, type);
   }
 }
@@ -1164,7 +1157,7 @@ static void process_fdecl_error(parser_ctx_t &ctx, terr_info_t err, const symbol
 //-----------------------------------------------------------------------------
 static void build_print_functions(parser_ctx_t &ctx, symref_t printf, symtab_t &gsyms)
 {
-  ASSERT(0, printf != NULL);
+  ASSERT(1108, printf != NULL);
   printf->set_builtin_printf();
 
   ctx.print_int    = build_print_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT,  gsyms);
@@ -1412,17 +1405,18 @@ void usererr(parser_ctx_t &ctx, const char *format, ...)
 }
 
 //---------------------------------------------------------------------------
-void parse(parse_results_t &res, const char *path)
+bool parse(parse_results_t &res, FILE *infile)
 {
-  parser_ctx_t ctx;
-  scanner_t scanner(path);
+  ASSERT(1101, infile);
 
-  res.code = scanner.in == NULL                ? PERR_INFILE
-           : yyparse(scanner.yyscan, ctx) != 0 ? PERR_BISON
-           : !ctx.errmsgs.empty()              ? PERR_USER
-           :                                     PERR_OK;
+  parser_ctx_t ctx;
+  scanner_t scanner(infile);
+
+  yyparse(scanner.yyscan, ctx);
 
   res.gsyms.swap(ctx.gsyms);
   res.trees.swap(ctx.trees);
   res.errmsgs.swap(ctx.errmsgs);
+
+  return res.errmsgs.empty();
 }

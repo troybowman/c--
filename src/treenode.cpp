@@ -88,7 +88,7 @@ treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
   children[3] = NULL;
 
   putref(_sym, ref);
-  ASSERT(0, sym() != NULL);
+  ASSERT(1113, sym() != NULL);
 
   va_list va;
   va_start(va, type);
