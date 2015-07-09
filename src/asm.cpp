@@ -385,14 +385,11 @@ struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
 
   virtual void visit_item(item_info_t &info)
   {
-    symbol_t &reg = info.sym;
-    frame_section_t &sec = info.sec;
-    asm_ctx_t &ctx = info.frame.ctx;
-
-    ctx.out(TAB1"%s %s, %d($sp)\n",
-            cmd,
-            reg.loc.reg(),
-            sec.start + info.idx * WORDSIZE);
+    info.frame.ctx.out(
+        TAB1"%s %s, %d($sp)\n",
+        cmd,
+        info.sym.loc.reg(),
+        info.sec.start + info.idx * WORDSIZE);
   }
 
   reg_saver_t(const char *_cmd) : frame_item_visitor_t(), cmd(_cmd) {}
@@ -404,32 +401,28 @@ void stack_frame_t::gen_prologue()
   ctx.out(TAB1"la $sp, -%u($sp)\n", size());
 
   reg_saver_t ras("sw");
-  sections[FS_RA].visit_items(*this, ras);
+  visit_items(FS_RA, ras);
 
   struct argreg_saver_t : public frame_item_visitor_t
   {
     frame_section_t &params;
-
     virtual void visit_item(item_info_t &info)
     {
-      symbol_t &reg = info.sym;
-      asm_ctx_t &ctx = info.frame.ctx;
-
       if ( info.idx < params.nitems() )
       {
-        ctx.out(TAB1"sw %s, %d($sp)\n",
-                reg.loc.reg(), params.start + info.idx * WORDSIZE);
+        info.frame.ctx.out(
+            TAB1"sw %s, %d($sp)\n",
+            info.sym.loc.reg(),
+            params.start + info.idx * WORDSIZE);
       }
     }
-
     argreg_saver_t(frame_section_t &_params) : params(_params) {}
-
   } as(sections[FS_PARAMS]);
 
-  sections[FS_REGARGS].visit_items(*this, as);
+  visit_items(FS_REGARGS, as);
 
   reg_saver_t srs("sw");
-  sections[FS_SVREGS].visit_items(*this, srs);
+  visit_items(FS_SVREGS, srs);
 
   ctx.out("\n");
 }
@@ -440,10 +433,10 @@ void stack_frame_t::gen_epilogue()
   ctx.out("\n%s:\n", epilogue_lbl->c_str());
 
   reg_saver_t sv_r("lw");
-  sections[FS_SVREGS].visit_items(*this, sv_r, FIV_REVERSE);
+  visit_items(FS_SVREGS, sv_r, FIV_REVERSE);
 
   reg_saver_t ra_r("lw");
-  sections[FS_RA].visit_items(*this, ra_r, FIV_REVERSE);
+  visit_items(FS_RA, ra_r, FIV_REVERSE);
 
   ctx.out(TAB1"la $sp, %u($sp)\n", size());
   ctx.out(TAB1"jr $ra\n");
