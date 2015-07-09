@@ -226,13 +226,6 @@ seq_t &seq_append(seq_t &seq, const treenode_t *cur, treenode_type_t type)
 //-----------------------------------------------------------------------------
 bool is_seq_type(treenode_type_t type)
 {
-  switch ( type )
-  {
-    case TNT_STMT:
-    case TNT_ARG:
-      return true;
-    default:
-      return false;
-  }
+  return type == TNT_STMT || type == TNT_ARG;
 }
 #endif

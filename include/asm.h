@@ -86,10 +86,12 @@ public:
 
   stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx);
 
-  offset_t size() const { return sections[FS_PADDING2].end; }
+  void visit_items(int, frame_item_visitor_t &, uint32_t flags = 0);
 
   void gen_prologue();
   void gen_epilogue();
+
+  offset_t size() const { return sections[FS_PADDING2].end; }
 
 #ifndef NDEBUG
   void dump();

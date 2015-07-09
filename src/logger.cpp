@@ -458,6 +458,7 @@ void stack_frame_t::dump()
     virtual void visit_item(item_info_t &info) // TODO: const?
     {
       symbol_t &param = info.sym;
+
       if ( param.loc.is_stkoff() )
         print_frame_item(info.frame, param.loc.stkoff(), param.c_str());
       else
@@ -467,7 +468,7 @@ void stack_frame_t::dump()
     }
   } pp;
 
-  sections[FS_PARAMS].visit_items(*this, pp, FIV_REVERSE);
+  visit_items(FS_PARAMS, pp, FIV_REVERSE);
 
   // PADDING2 -----------------------------------------------------------------
   if ( sections[FS_PADDING2].is_valid() )
@@ -479,12 +480,13 @@ void stack_frame_t::dump()
     virtual void visit_item(item_info_t &info)
     {
       symbol_t &lvar = info.sym;
+
       if ( !lvar.is_param() )
         print_frame_item(info.frame, lvar.loc.stkoff(), lvar.c_str());
     }
   } lvp;
 
-  sections[FS_LVARS].visit_items(*this, lvp, FIV_REVERSE);
+  visit_items(FS_LVARS, lvp, FIV_REVERSE);
 
   // PADDING1 -----------------------------------------------------------------
   if ( sections[FS_PADDING1].is_valid() )
@@ -499,7 +501,7 @@ void stack_frame_t::dump()
     }
   } rap;
 
-  sections[FS_RA].visit_items(*this, rap, FIV_REVERSE);
+  visit_items(FS_RA, rap, FIV_REVERSE);
 
   // STKTEMPS -----------------------------------------------------------------
   struct stktemp_printer_t : public frame_item_visitor_t
@@ -512,7 +514,7 @@ void stack_frame_t::dump()
     }
   } stp;
 
-  sections[FS_STKTEMPS].visit_items(*this, stp, FIV_REVERSE);
+  visit_items(FS_STKTEMPS, stp, FIV_REVERSE);
 
   // SVREGS -------------------------------------------------------------------
   struct svregs_printer_t : public frame_item_visitor_t
@@ -525,7 +527,7 @@ void stack_frame_t::dump()
     }
   } srp;
 
-  sections[FS_SVREGS].visit_items(*this, srp, FIV_REVERSE);
+  visit_items(FS_SVREGS, srp, FIV_REVERSE);
 
   // STKARGS ------------------------------------------------------------------
   struct stkargs_printer_t : public frame_item_visitor_t
@@ -538,7 +540,7 @@ void stack_frame_t::dump()
     }
   } sag;
 
-  sections[FS_STKARGS].visit_items(*this, sag, FIV_REVERSE);
+  visit_items(FS_STKARGS, sag, FIV_REVERSE);
 
   // REGARGS ------------------------------------------------------------------
   if ( sections[FS_REGARGS].is_valid() )

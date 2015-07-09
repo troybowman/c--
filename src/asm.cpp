@@ -171,6 +171,15 @@ void frame_section_t::visit_items(
 }
 
 //-----------------------------------------------------------------------------
+inline void stack_frame_t::visit_items(
+    int sectionidx,
+    frame_item_visitor_t &fiv,
+    uint32_t flags)
+{
+  sections[sectionidx].visit_items(*this, fiv, flags);
+}
+
+//-----------------------------------------------------------------------------
 void stack_frame_t::build_regargs_section()
 {
   frame_section_t &regargs = sections[FS_REGARGS];
@@ -189,7 +198,7 @@ void stack_frame_t::build_regargs_section()
     }
   } b;
 
-  regargs.visit_items(*this, b);
+  visit_items(FS_REGARGS, b);
 }
 
 //-----------------------------------------------------------------------------
@@ -209,7 +218,7 @@ void stack_frame_t::build_stkargs_section()
     }
   } b;
 
-  stkargs.visit_items(*this, b);
+  visit_items(FS_STKARGS, b);
 }
 
 //-----------------------------------------------------------------------------
@@ -230,7 +239,7 @@ void stack_frame_t::build_svregs_section()
     }
   } b;
 
-  svregs.visit_items(*this, b);
+  visit_items(FS_SVREGS, b);
 }
 
 //-----------------------------------------------------------------------------
@@ -250,7 +259,7 @@ void stack_frame_t::build_stktemps_section()
     }
   } b;
 
-  stktemps.visit_items(*this, b);
+  visit_items(FS_STKTEMPS, b);
 };
 
 //-----------------------------------------------------------------------------
@@ -270,7 +279,7 @@ void stack_frame_t::build_ra_section()
     }
   } b;
 
-  ra.visit_items(*this, b);
+  visit_items(FS_RA, b);
 }
 
 //-----------------------------------------------------------------------------
@@ -320,7 +329,7 @@ void stack_frame_t::build_lvars_section()
     }
   } b;
 
-  lvars.visit_items(*this, b);
+  visit_items(FS_LVARS, b);
 }
 
 //-----------------------------------------------------------------------------
@@ -349,7 +358,7 @@ void stack_frame_t::build_params_section()
 
   } b(sections[FS_REGARGS].nitems());
 
-  params.visit_items(*this, b);
+  visit_items(FS_PARAMS, b);
 }
 
 //-----------------------------------------------------------------------------
