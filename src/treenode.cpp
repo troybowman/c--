@@ -1,13 +1,16 @@
 #include <treenode.h>
 #include <stdarg.h>
 
+#define INIT_CHILDREN \
+  children[0] = NULL; \
+  children[1] = NULL; \
+  children[2] = NULL; \
+  children[3] = NULL; \
+
 //-----------------------------------------------------------------------------
 treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
 {
-  children[0] = NULL;
-  children[1] = NULL;
-  children[2] = NULL;
-  children[3] = NULL;
+  INIT_CHILDREN
 
   va_list va;
   va_start(va, type);
@@ -82,10 +85,7 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
 //-----------------------------------------------------------------------------
 treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
 {
-  children[0] = NULL;
-  children[1] = NULL;
-  children[2] = NULL;
-  children[3] = NULL;
+  INIT_CHILDREN
 
   putref(_sym, ref);
   ASSERT(1113, sym() != NULL);
