@@ -1,6 +1,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
+#include <common.h>
 #include <symbol.h>
 
 //-----------------------------------------------------------------------------

@@ -1,5 +1,4 @@
 #include <treenode.h>
-#include <stdarg.h>
 
 #define INIT_CHILDREN \
   children[0] = NULL; \
@@ -52,23 +51,23 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
       ASSERT(1054, children[RHS] != NULL);
       break;
     case TNT_FOR:
-      children[FOR_INIT]  = va_arg(va, treenode_t *);
-      children[FOR_COND]  = va_arg(va, treenode_t *);
-      children[FOR_INC]   = va_arg(va, treenode_t *);
-      children[FOR_BODY]  = va_arg(va, treenode_t *);
+      children[FOR_INIT] = va_arg(va, treenode_t *);
+      children[FOR_COND] = va_arg(va, treenode_t *);
+      children[FOR_INC]  = va_arg(va, treenode_t *);
+      children[FOR_BODY] = va_arg(va, treenode_t *);
       break;
     case TNT_STMT:
     case TNT_ARG:
-      children[SEQ_CUR]   = va_arg(va, treenode_t *);
-      children[SEQ_NEXT]  = va_arg(va, treenode_t *);
+      children[SEQ_CUR]  = va_arg(va, treenode_t *);
+      children[SEQ_NEXT] = va_arg(va, treenode_t *);
       break;
     case TNT_RET:
       children[RET_EXPR]  = va_arg(va, treenode_t *);
       break;
     case TNT_IF:
-      children[IF_COND]   = va_arg(va, treenode_t *);
-      children[IF_BODY]   = va_arg(va, treenode_t *);
-      children[IF_ELSE]   = va_arg(va, treenode_t *);
+      children[IF_COND] = va_arg(va, treenode_t *);
+      children[IF_BODY] = va_arg(va, treenode_t *);
+      children[IF_ELSE] = va_arg(va, treenode_t *);
       ASSERT(1051, children[IF_COND] != NULL);
       break;
     case TNT_WHILE:

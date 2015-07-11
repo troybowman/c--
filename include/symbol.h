@@ -1,10 +1,6 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <vector>
-#include <string>
-#include <map>
-
 #include <common.h>
 
 class symtab_t;

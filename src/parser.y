@@ -1,7 +1,4 @@
 %code top {
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
 class parser_ctx_t;
 #include "parser.hpp"
 #include "scanner.hpp"
@@ -9,15 +6,13 @@ class parser_ctx_t;
 
 %code requires {
 #include <parser.h>
-#include <symbol.h>
-#include <treenode.h>
 }
 
 %{
 //---------------------------------------------------------------------------
 struct scanner_t
 {
-  // should be 'yyscan_t' instead of 'void *', but this would case a circular
+  // should be 'yyscan_t' instead of 'void *', but this would cause a circular
   // dependency between scanner.hpp and parser.hpp. This workaround should do
   // fine, because anyways yyscan_t is an opaque c type.
   void *yyscan;

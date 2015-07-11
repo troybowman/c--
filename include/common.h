@@ -4,7 +4,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
+#include <vector>
+#include <string>
+#include <map>
 
 //-----------------------------------------------------------------------------
 #define INTERR(code)                            \

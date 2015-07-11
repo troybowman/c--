@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
-#include <stdlib.h>
 
+#include <common.h>
 #include <parser.h>
 #include <symbol.h>
 #include <treenode.h>

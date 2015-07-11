@@ -8,9 +8,7 @@
 //-----------------------------------------------------------------------------
 #ifndef NDEBUG
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <common.h>
 
 typedef uint32_t dbg_flags_t;
 

@@ -1,8 +1,5 @@
 #ifndef NDEBUG
 
-#include <stdarg.h>
-
-#include <common.h>
 #include <logger.h>
 #include <symbol.h>
 #include <treenode.h>
