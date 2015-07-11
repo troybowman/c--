@@ -220,14 +220,14 @@ int main(int argc, char **argv)
 
   LOG_INIT(args.outfile);
   LOG_PARSE_RESULTS(res);
-  LOG_CHECK_IR_PHASE();
+  LOG_CHECK_PHASE_FLAG(dbg_no_ir);
 
   // intermediate representation ----------------------------------------------
   ir_t ir(res.gsyms);
   generate_ir(ir, res.trees);
 
   LOG_IR(ir);
-  LOG_CHECK_CODE_PHASE();
+  LOG_CHECK_PHASE_FLAG(dbg_no_code);
 
   // backend ------------------------------------------------------------------
   asm_ctx_t ctx(args.outfile);

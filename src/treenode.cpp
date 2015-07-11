@@ -1,15 +1,11 @@
 #include <treenode.h>
 
-#define INIT_CHILDREN \
-  children[0] = NULL; \
-  children[1] = NULL; \
-  children[2] = NULL; \
-  children[3] = NULL; \
+#define INIT_CHILDREN() memset(children, 0, sizeof(children))
 
 //-----------------------------------------------------------------------------
 treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
 {
-  INIT_CHILDREN
+  INIT_CHILDREN();
 
   va_list va;
   va_start(va, type);
@@ -84,14 +80,14 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
 //-----------------------------------------------------------------------------
 treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
 {
-  INIT_CHILDREN
+  INIT_CHILDREN();
 
   putref(_sym, ref);
   ASSERT(1113, sym() != NULL);
 
   va_list va;
   va_start(va, type);
-  switch ( type )
+  switch ( _type )
   {
     case TNT_SYMBOL:
       break;

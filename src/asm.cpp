@@ -821,8 +821,6 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
     frame.gen_prologue();
     gen_func_body(ctx, f.code, frame.epilogue_lbl);
     frame.gen_epilogue();
-
-    delete *i;
   }
 
   gen_builtin_function(ctx, "_"BI_PRINT_STRING, 4);

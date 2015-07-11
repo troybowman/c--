@@ -94,7 +94,8 @@ public:
   offset_t size() const { return sections[FS_PADDING2].end; }
 
 #ifndef NDEBUG
-  void dump();
+  void print();
+  void print_pseudo_section(int, const char *);
 #endif
 };
 

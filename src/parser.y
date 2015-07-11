@@ -114,7 +114,6 @@ static        void yyputerr(uterr_info_t, terr_info_t);
 
 //---------------------------------------------------------------------------
 #define EMPTYSTRING "\"\""
-
 #define FMTS 's' // %s for strings
 #define FMTD 'd' // %d for ints
 #define FMTC 'c' // %c for chars
@@ -522,7 +521,7 @@ static void func_leave(parser_ctx_t &ctx, treenode_t *root)
   if ( f->base() != PRIM_VOID && !f->is_ret_resolved() )
     usererr(ctx, "error: non-void funcion %s must return a value\n", f->c_str());
 
-  ctx.trees.push_back(stx_tree_t(f, root));
+  ctx.trees.push_back(new stx_tree_t(f, root));
 
   ctx.setglobal();
 }

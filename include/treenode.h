@@ -1,7 +1,6 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
-#include <common.h>
 #include <symbol.h>
 
 //-----------------------------------------------------------------------------
@@ -109,10 +108,20 @@ struct stx_tree_t // syntax tree
 
   stx_tree_t(symref_t _sym, treenode_t *_root)
     : sym(_sym), root(_root) {}
+
+  ~stx_tree_t() { delete root; }
 };
 
-// defined as an empty class so we can forward declare it
-class stx_trees_t : public std::vector<stx_tree_t> {};
+//-----------------------------------------------------------------------------
+class stx_trees_t : public std::vector<stx_tree_t *>
+{
+public:
+  ~stx_trees_t()
+  {
+    for ( iterator i = begin(); i != end(); i++ )
+      delete *i;
+  }
+};
 
 //-----------------------------------------------------------------------------
 #define ERRNODE new treenode_t(TNT_ERROR)

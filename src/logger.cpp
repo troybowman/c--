@@ -383,9 +383,9 @@ void logger_t::walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
   stx_trees_t::const_iterator i;
   for ( i = trees.begin(); i != trees.end(); i++ )
   {
-    stx_tree_t st     = *i;
+    const stx_tree_t &st = **i;
     const symbol_t &f = *st.sym;
-    treenode_t *tree  = st.root;
+    const treenode_t *tree = st.root;
 
     ASSERT(1080, f.is_func());
 
@@ -445,7 +445,15 @@ static void print_frame_item(stack_frame_t &frame, offset_t off, const char *fmt
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::dump()
+void stack_frame_t::print_pseudo_section(int sectionid, const char *label)
+{
+  if ( sections[sectionid].is_valid() )
+    print_frame_item(*this, sections[sectionid].start, label);
+
+}
+
+//-----------------------------------------------------------------------------
+void stack_frame_t::print()
 {
   ctx.out("\n"TAB1"# %s\n", sep);
 
@@ -468,8 +476,7 @@ void stack_frame_t::dump()
   visit_items(FS_PARAMS, pp, FIV_REVERSE);
 
   // PADDING2 -----------------------------------------------------------------
-  if ( sections[FS_PADDING2].is_valid() )
-    print_frame_item(*this, sections[FS_PADDING2].start, "<padding>");
+  print_pseudo_section(FS_PADDING2, "<padding>");
 
   // LVARS --------------------------------------------------------------------
   struct lvar_printer_t : public frame_item_visitor_t
@@ -486,8 +493,7 @@ void stack_frame_t::dump()
   visit_items(FS_LVARS, lvp, FIV_REVERSE);
 
   // PADDING1 -----------------------------------------------------------------
-  if ( sections[FS_PADDING1].is_valid() )
-    print_frame_item(*this, sections[FS_PADDING1].start, "<padding>");
+  print_pseudo_section(FS_PADDING1, "<padding>");
 
   // RA -----------------------------------------------------------------------
   struct ra_printer_t : public frame_item_visitor_t
@@ -540,8 +546,7 @@ void stack_frame_t::dump()
   visit_items(FS_STKARGS, sag, FIV_REVERSE);
 
   // REGARGS ------------------------------------------------------------------
-  if ( sections[FS_REGARGS].is_valid() )
-    print_frame_item(*this, sections[FS_REGARGS].start, "<minimum 4 arg slots>");
+  print_pseudo_section(FS_REGARGS, "<minimum 4 arg slots>");
 }
 
 #endif // NDEBUG

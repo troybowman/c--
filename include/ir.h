@@ -209,7 +209,15 @@ struct ir_func_t
 };
 
 //-----------------------------------------------------------------------------
-typedef std::vector<ir_func_t *> ir_funcs_t;
+class ir_funcs_t : public std::vector<ir_func_t *>
+{
+public:
+  ~ir_funcs_t()
+  {
+    for ( iterator i = begin(); i != end(); i++ )
+      delete *i;
+  }
+};
 
 //-----------------------------------------------------------------------------
 struct ir_t

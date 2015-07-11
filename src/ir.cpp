@@ -464,13 +464,12 @@ void generate_ir(ir_t &ir, const stx_trees_t &trees)
   stx_trees_t::const_iterator i;
   for ( i = trees.begin(); i != trees.end(); i++ )
   {
-    stx_tree_t st = *i;
+    const stx_tree_t &st = **i;
     ir_func_t *f = new ir_func_t(st.sym);
 
     ir_engine_t e(*f, ir);
     e.start(st.root);
 
     ir.funcs.push_back(f);
-    delete st.root;
   }
 }

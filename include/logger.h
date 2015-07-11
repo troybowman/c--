@@ -79,29 +79,11 @@ do                                                               \
 } while ( false );
 
 //-----------------------------------------------------------------------------
-#define LOG_CHECK_IR_PHASE(flag)                             \
-do                                                           \
-{                                                            \
-  if ( (dbg_flags & dbg_no_ir) != 0 )                        \
-  {                                                          \
-    stx_trees_t::iterator i;                                 \
-    for ( i = res.trees.begin(); i != res.trees.end(); i++ ) \
-      delete i->root;                                        \
-    return 0;                                                \
-  }                                                          \
-} while ( false );
-
-//-----------------------------------------------------------------------------
-#define LOG_CHECK_CODE_PHASE(flag)                         \
-do                                                         \
-{                                                          \
-  if ( (dbg_flags & dbg_no_code) != 0 )                    \
-  {                                                        \
-    ir_funcs_t::iterator i;                                \
-    for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ ) \
-      delete *i;                                           \
-    return 0;                                              \
-  }                                                        \
+#define LOG_CHECK_PHASE_FLAG(flag)  \
+do                                  \
+{                                   \
+  if ( (dbg_flags & flag) != 0 )    \
+    return 0;                       \
 } while ( false );
 
 //-----------------------------------------------------------------------------
@@ -113,7 +95,7 @@ do                                      \
 } while ( false );
 
 //-----------------------------------------------------------------------------
-#define LOG_FRAME_SUMMARY(frame) frame.dump()
+#define LOG_FRAME_SUMMARY(frame) frame.print()
 
 #else
 
