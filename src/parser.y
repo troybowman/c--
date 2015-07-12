@@ -2,6 +2,7 @@
 class parser_ctx_t;
 #include "parser.hpp"
 #include "scanner.hpp"
+#include <logger.h>
 }
 
 %code requires {
@@ -179,6 +180,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %destructor { delete $$; ctx.trash(); } params
 %destructor { delete $$; } var_decls func_decls var_decl_list func_decl_list param_decl_list
 %destructor { yygetsym($$); } var_decl func_decl ellipsis param_decl
+%destructor { delete $$; } stmt_var
 
 /*---------------------------------------------------------------------------*/
 /* precedence increases as we go down the list */
@@ -636,7 +638,8 @@ static terr_info_t validate_call(const symbol_t &f, const treenode_t *args)
 static void cleanup_fmtarg_list(treenode_t *root)
 {
   treenode_t *fmt = root->children[SEQ_CUR];
-  free(fmt->str()); // original fmt string has been split up; it's no longer needed
+  // original fmt string has been split up; it's no longer needed
+  PRINTF_STRING_DTOR(fmt->str());
   delete fmt;
 
   // trash the original linked list that contained the fmt args.

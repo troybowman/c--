@@ -1,4 +1,5 @@
 #include <treenode.h>
+#include <logger.h>
 
 #define INIT_CHILDREN() memset(children, 0, sizeof(children))
 
@@ -124,6 +125,8 @@ treenode_t::~treenode_t()
     default:
       break;
   }
+
+  TREENODE_STRING_DTOR(_type, _str);
 
   for ( int i = 0; i < 4; i++ )
     delete children[i];

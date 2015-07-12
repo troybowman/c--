@@ -97,6 +97,30 @@ do                                      \
 //-----------------------------------------------------------------------------
 #define LOG_FRAME_SUMMARY(frame) frame.print()
 
+//-----------------------------------------------------------------------------
+// string/char constants need to stay alive through code generation, which
+// is where they are normally freed. But if we're not testing code generation
+// at all, we have to free them in ~treenode_t to avoid valgrind errors.
+#define TREENODE_STRING_DTOR(type, str)            \
+do                                                 \
+{                                                  \
+  if ( (type == TNT_STRCON || type == TNT_CHARCON) \
+    && (dbg_flags & dbg_no_ir) != 0 )              \
+  {                                                \
+    free(str);                                     \
+  }                                                \
+} while ( false )
+
+// normally the original printf format string is freed in cleanup_fmtarg_list,
+// but when only testing tree generation, this string is treed in the above macro,
+// so we must avoid doing it here
+#define PRINTF_STRING_DTOR(str)       \
+do                                    \
+{                                     \
+  if ( (dbg_flags & dbg_no_ir) == 0 ) \
+    free(str);                        \
+} while ( false )
+
 #else
 
 //-----------------------------------------------------------------------------
@@ -106,6 +130,8 @@ do                                      \
 #define LOG_IR(code)                // nothing
 #define LOG_CHECK_PHASE_FLAG(flags) // nothing
 #define LOG_FRAME_SUMMARY(frame)    // nothing
+#define TREEONDE_STRING_DTOR(str)   // nothing
+#define PRINTF_STRING_DTOR(str)     // nothing
 
 #endif // DEBUG
 
