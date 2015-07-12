@@ -48,15 +48,21 @@ public:
   parser_ctx_t() : mode(CTX_GLOBAL), syms(&gsyms) {}
   ~parser_ctx_t() { clear(); }
 
-  void clear()              { if ( mode == CTX_LOCAL ) func().~symref_t(); }
-  void trash()              { delete syms; setglobal(); }
-
+  void clear()
+  {
+    if ( mode == CTX_LOCAL )
+      func().~symref_t();
+  }
+  void trash()
+  {
+    if ( mode == CTX_TEMP )
+      delete syms;
+    setglobal();
+  }
   void setglobal()          { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
   void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(sym, f); }
   void settemp()            { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
-
   symref_t &func()    const { return getref(sym); }
-
   void insert(symref_t sym)
   {
     if ( mode == CTX_GLOBAL || mode == CTX_TEMP )
@@ -64,7 +70,6 @@ public:
     else
       func()->symbols()->insert(sym);
   }
-
   symref_t get(const std::string &key) const
   {
     return mode == CTX_GLOBAL || mode == CTX_TEMP
@@ -170,6 +175,11 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %type<asfx>   decl_array_sfx param_array_sfx
 %type<seq>    stmts arg_list
 
+%destructor { free($$); } ID
+%destructor { delete $$; ctx.trash(); } params
+%destructor { delete $$; } var_decls func_decls var_decl_list func_decl_list param_decl_list
+%destructor { yygetsym($$); } var_decl func_decl ellipsis param_decl
+
 /*---------------------------------------------------------------------------*/
 /* precedence increases as we go down the list */
 %left OR
@@ -232,6 +242,9 @@ func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
               yyputsym($$, func);
               free($1);
             }
+            /* TODO: functions with no parameter spec (i.e. 'int func();') will leak memory,
+               unless we explicity handle it here. Try to put this logic in a destructor. */
+          | ID '(' error { free($1); ctx.trash(); yyputsym($$, NULLREF); }
           ;
 
 func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, yygetsym($3)); }
