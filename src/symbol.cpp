@@ -30,7 +30,11 @@ symbol_t::symbol_t(symbol_type_t type, int val)
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(symbol_type_t type, char *str)
-  : _type(type), _flags(0), _str(str) {}
+  : _type(type), _flags(0)
+{
+  ASSERT(0, str != NULL);
+  _str = strdup(str);
+}
 
 //-----------------------------------------------------------------------------
 symbol_t::symbol_t(symbol_type_t type)

@@ -19,6 +19,7 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
       break;
     case TNT_STRCON:
     case TNT_CHARCON:
+      // we own this pointer now. it will be freed in the destructor
       _str = va_arg(va, char *);
       ASSERT(1037, _str != NULL);
       break;
@@ -122,11 +123,13 @@ treenode_t::~treenode_t()
     case TNT_PRINTF:
       sym().~symref_t();
       break;
+    case TNT_STRCON:
+    case TNT_CHARCON:
+      free(_str);
+      break;
     default:
       break;
   }
-
-  TREENODE_STRING_DTOR(_type, _str);
 
   for ( int i = 0; i < 4; i++ )
     delete children[i];

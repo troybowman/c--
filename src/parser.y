@@ -638,8 +638,6 @@ static terr_info_t validate_call(const symbol_t &f, const treenode_t *args)
 static void cleanup_fmtarg_list(treenode_t *root)
 {
   treenode_t *fmt = root->children[SEQ_CUR];
-  // original fmt string has been split up; it's no longer needed
-  PRINTF_STRING_DTOR(fmt->str());
   delete fmt;
 
   // trash the original linked list that contained the fmt args.

@@ -199,10 +199,6 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           str = symref_t(new symbol_t(ST_STRCON, tree->str()));
           ir.strings.insert(key, str);
         }
-        else
-        {
-          free(tree->str());
-        }
         symref_t dest = gen_temp(ctx.flags);
         append(CNT_LEA, dest, str);
         return dest;
