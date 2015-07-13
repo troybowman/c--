@@ -10,7 +10,7 @@ ifndef NDEBUG
   BIN = ./bin/debug/
   OBJ = ./obj/debug/
 else
-  CFLAGS += -O2 -DNDEBUG
+  CFLAGS += -O3 -DNDEBUG
   BIN = ./bin/release/
   OBJ = ./obj/release/
 endif
