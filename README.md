@@ -9,11 +9,14 @@ See spec/ for language specification and calling convention.
 
 todo:
 
-1. compiler does not exit gracefully after finding an error,
-   and we leak memory at exit time.
+1. char arguments passed in argument registers are not truncated
 
-   purge\_and\_exit() should do some cleanup.
+2. short circuit evaluation
 
-2. char arguments passed in argument registers are not truncated
+3. don't let real/release phase get out of sync
 
-3. short circuit evaluation still needs to be implemented
+4. more precise reporting for test failures
+
+5. assg test in temp/
+
+6. fuzz
