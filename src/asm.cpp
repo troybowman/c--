@@ -487,18 +487,21 @@ static const char *cnt2instr(codenode_type_t type)
 {
   switch ( type )
   {
-    case CNT_ADD: return "add";
-    case CNT_SUB: return "sub";
-    case CNT_DIV: return "div";
-    case CNT_MUL: return "mul";
-    case CNT_AND: return "and";
-    case CNT_OR:  return "or";
-    case CNT_SLT: return "slt";
-    case CNT_SGT: return "sgt";
-    case CNT_SLE: return "sle";
-    case CNT_SEQ: return "seq";
-    case CNT_SNE: return "sne";
-    case CNT_SGE: return "sge";
+    case CNT_ADD:  return "add";
+    case CNT_SUB:  return "sub";
+    case CNT_DIV:  return "div";
+    case CNT_MUL:  return "mul";
+    case CNT_AND:  return "and";
+    case CNT_OR:   return "or";
+    case CNT_SLT:  return "slt";
+    case CNT_SGT:  return "sgt";
+    case CNT_SLE:  return "sle";
+    case CNT_SEQ:  return "seq";
+    case CNT_SNE:  return "sne";
+    case CNT_SGE:  return "sge";
+    case CNT_XOR:  return "xor";
+    case CNT_SLLV: return "sllv";
+    case CNT_SRLV: return "srlv";
     default:
       INTERR(1089);
   }
@@ -726,6 +729,8 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
       case CNT_SEQ:
       case CNT_SNE:
       case CNT_SGE:
+      case CNT_SLLV:
+      case CNT_SRLV:
         {
           ensure_compatible_operands(ctx, node,
               REQUIRE_REG_DEST | REQUIRE_REG_SRC1 | REQUIRE_REG_SRC2);
@@ -747,10 +752,32 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
           symref_t src1 = node->src1;
           symref_t src2 = node->src2;
 
-          ASSERT(1109, src2->type() == ST_INTCON);
+          const char *instr = node->type == CNT_SLL ? "sll" : "xor";
 
-          ctx.out(TAB1"%s %s, %s, %d\n", node->type == CNT_SLL ? "sll" : "xor",
-                                   dest->loc.reg(), src1->loc.reg(), src2->val());
+          switch ( src2->type() )
+          {
+            case ST_INTCON:
+              ctx.out(TAB1"%s %s, %s, %d\n",
+                      instr, dest->loc.reg(), src1->loc.reg(), src2->val());
+              break;
+            case ST_TEMPORARY:
+              ASSERT(0, node->type != CNT_SLL);
+              ctx.out(TAB1"%s %s, %s, %s\n",
+                      instr, dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
+              break;
+            default:
+              INTERR(0);
+          }
+        }
+        break;
+      case CNT_NOT:
+        {
+          ensure_compatible_operands(ctx, node, REQUIRE_REG_DEST | REQUIRE_REG_SRC1);
+
+          symref_t dest = node->dest;
+          symref_t src1 = node->src1;
+
+          ctx.out(TAB1"not %s, %s\n", dest->loc.reg(), src1->loc.reg());
         }
         break;
       case CNT_CALL:

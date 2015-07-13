@@ -1,4 +1,5 @@
 %code top {
+#define YYDEBUG 1
 class parser_ctx_t;
 #include "parser.hpp"
 #include "scanner.hpp"
@@ -168,6 +169,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %token INT_TYPE CHAR_TYPE VOID
 %token WHILE RETURN EXTERN IF ELSE FOR
 %token EQ NEQ LEQ GEQ AND OR ELLIPSIS
+%token SHL SHR
 
 %type<prim>   type
 %type<sym>    var_decl func_decl param_decl ellipsis
@@ -188,6 +190,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %left AND
 %left NEQ EQ
 %left GEQ '>' LEQ '<'
+%left SHL SHR
 %left '-' '+'
 %left '/' '*'
 %right UNARY
@@ -377,26 +380,32 @@ stmt_array_sfx : '[' expr ']' { $$ = $2; }
                ;
 
 /*---------------------------------------------------------------------------*/
-expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
-     | CHAR                 { $$ = new treenode_t(TNT_CHARCON, $1); }
-     | STRING               { $$ = new treenode_t(TNT_STRCON, $1); }
-     | call                 { $$ = process_call_ctx(ctx, $1, lineno, true); }
-     | stmt_var             { $$ = $1; }
-     | expr EQ  expr        { $$ = process_bool_expr(ctx, $1,   TNT_EQ,    $3, lineno); }
-     | expr NEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_NEQ,   $3, lineno); }
-     | expr '<' expr        { $$ = process_bool_expr(ctx, $1,   TNT_LT,    $3, lineno); }
-     | expr LEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_LEQ,   $3, lineno); }
-     | expr '>' expr        { $$ = process_bool_expr(ctx, $1,   TNT_GT,    $3, lineno); }
-     | expr GEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_GEQ,   $3, lineno); }
-     | expr AND expr        { $$ = process_bool_expr(ctx, $1,   TNT_AND,   $3, lineno); }
-     | expr OR  expr        { $$ = process_bool_expr(ctx, $1,   TNT_OR,    $3, lineno); }
-     | expr '+' expr        { $$ = process_math_expr(ctx, $1,   TNT_PLUS,  $3, lineno); }
-     | expr '-' expr        { $$ = process_math_expr(ctx, $1,   TNT_MINUS, $3, lineno); }
-     | expr '*' expr        { $$ = process_math_expr(ctx, $1,   TNT_MULT,  $3, lineno); }
-     | expr '/' expr        { $$ = process_math_expr(ctx, $1,   TNT_DIV,   $3, lineno); }
-     | '!' expr %prec UNARY { $$ = process_bool_expr(ctx, NULL, TNT_NOT,   $2, lineno); }
-     | '-' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_NEG,   $2, lineno); }
-     | '(' expr ')'         { $$ = $2; }
+expr : INT                   { $$ = new treenode_t(TNT_INTCON, $1); }
+     | CHAR                  { $$ = new treenode_t(TNT_CHARCON, $1); }
+     | STRING                { $$ = new treenode_t(TNT_STRCON, $1); }
+     | call                  { $$ = process_call_ctx(ctx, $1, lineno, true); }
+     | stmt_var              { $$ = $1; }
+     | expr EQ  expr         { $$ = process_bool_expr(ctx, $1,   TNT_EQ,    $3, lineno); }
+     | expr NEQ expr         { $$ = process_bool_expr(ctx, $1,   TNT_NEQ,   $3, lineno); }
+     | expr '<' expr         { $$ = process_bool_expr(ctx, $1,   TNT_LT,    $3, lineno); }
+     | expr LEQ expr         { $$ = process_bool_expr(ctx, $1,   TNT_LEQ,   $3, lineno); }
+     | expr '>' expr         { $$ = process_bool_expr(ctx, $1,   TNT_GT,    $3, lineno); }
+     | expr GEQ expr         { $$ = process_bool_expr(ctx, $1,   TNT_GEQ,   $3, lineno); }
+     | expr AND expr         { $$ = process_bool_expr(ctx, $1,   TNT_AND,   $3, lineno); }
+     | expr OR  expr         { $$ = process_bool_expr(ctx, $1,   TNT_OR,    $3, lineno); }
+     | expr '+' expr         { $$ = process_math_expr(ctx, $1,   TNT_PLUS,  $3, lineno); }
+     | expr '-' expr         { $$ = process_math_expr(ctx, $1,   TNT_MINUS, $3, lineno); }
+     | expr '*' expr         { $$ = process_math_expr(ctx, $1,   TNT_MULT,  $3, lineno); }
+     | expr '/' expr         { $$ = process_math_expr(ctx, $1,   TNT_DIV,   $3, lineno); }
+     | expr SHL expr         { $$ = process_math_expr(ctx, $1,   TNT_SHL,   $3, lineno); }
+     | expr SHR expr         { $$ = process_math_expr(ctx, $1,   TNT_SHR,   $3, lineno); }
+     | '(' expr '^' expr ')' { $$ = process_math_expr(ctx, $2,   TNT_XOR,   $4, lineno); }
+     | '(' expr '&' expr ')' { $$ = process_math_expr(ctx, $2,   TNT_BAND,  $4, lineno); }
+     | '(' expr '|' expr ')' { $$ = process_math_expr(ctx, $2,   TNT_BOR,   $4, lineno); }
+     | '!' expr %prec UNARY  { $$ = process_bool_expr(ctx, NULL, TNT_NOT,   $2, lineno); }
+     | '-' expr %prec UNARY  { $$ = process_math_expr(ctx, NULL, TNT_NEG,   $2, lineno); }
+     | '~' expr %prec UNARY  { $$ = process_math_expr(ctx, NULL, TNT_BNOT,  $2, lineno); }
+     | '(' expr ')'          { $$ = $2; }
      ;
 
 %%
@@ -1256,12 +1265,18 @@ static bool validate_math_expr(
   switch ( type )
   {
     case TNT_NEG:
+    case TNT_BNOT:
       ASSERT(1070, lhs == NULL);
       return rhs->is_int_compat();
     case TNT_PLUS:
     case TNT_MINUS:
     case TNT_MULT:
     case TNT_DIV:
+    case TNT_SHL:
+    case TNT_SHR:
+    case TNT_BAND:
+    case TNT_BOR:
+    case TNT_XOR:
       ASSERT(1071, lhs != NULL);
       return lhs->is_int_compat()
           && rhs->is_int_compat();
@@ -1416,6 +1431,7 @@ void usererr(parser_ctx_t &ctx, const char *format, ...)
 bool parse(parse_results_t &res, FILE *infile)
 {
   ASSERT(1101, infile);
+  // yydebug = 1;
 
   parser_ctx_t ctx;
   scanner_t scanner(infile);

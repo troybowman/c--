@@ -33,6 +33,8 @@ class parser_ctx_t;
 "&&"		 { return AND;       }
 "||"		 { return OR;        }
 "..."    { return ELLIPSIS;  }
+"<<"     { return SHL;       }
+">>"     { return SHR;       }
 
 "[" |
 "]" |
@@ -49,7 +51,11 @@ class parser_ctx_t;
 "/" |
 "=" |
 "<" |
-">"	{ return yytext[0]; }
+">" |
+"&" |
+"|" |
+"^" |
+"~" { return yytext[0]; }
 
 
 [0-9]+ {

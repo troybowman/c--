@@ -37,6 +37,12 @@ static codenode_type_t tnt2cnt(treenode_type_t type)
     case TNT_LEQ:   return CNT_SLE;
     case TNT_EQ:    return CNT_SEQ;
     case TNT_NEQ:   return CNT_SNE;
+    case TNT_SHL:   return CNT_SLLV;
+    case TNT_SHR:   return CNT_SRLV;
+    case TNT_XOR:   return CNT_XOR;
+    case TNT_BAND:  return CNT_AND;
+    case TNT_BOR:   return CNT_OR;
+    case TNT_BNOT:  return CNT_NOT;
     default:
       INTERR(1081);
   }
@@ -333,6 +339,11 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
     case TNT_LEQ:
     case TNT_EQ:
     case TNT_NEQ:
+    case TNT_SHL:
+    case TNT_SHR:
+    case TNT_BAND:
+    case TNT_BOR:
+    case TNT_XOR:
       {
         treenode_t *lhs = tree->children[LHS];
         treenode_t *rhs = tree->children[RHS];
@@ -429,10 +440,14 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         return neg;
       }
     case TNT_NOT:
+    case TNT_BNOT:
       {
         symref_t val = generate(tree->children[RHS]);
         symref_t no  = gen_temp(ctx.flags);
-        append(CNT_XOR, no, val, symref_t(new symbol_t(ST_INTCON, 1)));
+        if ( tree->type () == TNT_NOT )
+          append(CNT_XOR, no, val, symref_t(new symbol_t(ST_INTCON, 1)));
+        else
+          append(CNT_NOT, no, val);
         return no;
       }
     default:

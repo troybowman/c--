@@ -36,6 +36,11 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
     case TNT_NEQ:
     case TNT_AND:
     case TNT_OR:
+    case TNT_SHL:
+    case TNT_SHR:
+    case TNT_BAND:
+    case TNT_XOR:
+    case TNT_BOR:
       children[LHS] = va_arg(va, treenode_t *);
       children[RHS] = va_arg(va, treenode_t *);
       ASSERT(1015, children[LHS] != NULL);
@@ -43,6 +48,7 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
       break;
     case TNT_NOT:
     case TNT_NEG:
+    case TNT_BNOT:
       children[LHS] = va_arg(va, treenode_t *);
       children[RHS] = va_arg(va, treenode_t *);
       ASSERT(1053, children[LHS] == NULL);
@@ -146,6 +152,12 @@ bool treenode_t::is_int_compat() const
     case TNT_MULT:
     case TNT_DIV:
     case TNT_NEG:
+    case TNT_SHL:
+    case TNT_SHR:
+    case TNT_BAND:
+    case TNT_BOR:
+    case TNT_XOR:
+    case TNT_BNOT:
     // we can only have arrays of ints or chars, so array lookups are always good
     case TNT_ARRAY_LOOKUP:
     // report error nodes as compatible to avoid cascading error messages

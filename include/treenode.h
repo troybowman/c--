@@ -28,6 +28,12 @@ enum treenode_type_t
   TNT_OR,
   TNT_NOT,
   TNT_NEG,
+  TNT_SHL,
+  TNT_SHR,
+  TNT_BAND,
+  TNT_BOR,
+  TNT_BNOT,
+  TNT_XOR,
 #define LHS         0
 #define RHS         1
   TNT_ARRAY_LOOKUP,

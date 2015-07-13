@@ -59,6 +59,12 @@ static const char *tnt2str(treenode_type_t tnt)
     case TNT_EQ:           return "TNT_EQ";
     case TNT_NEQ:          return "TNT_NEQ";
     case TNT_AND:          return "TNT_AND";
+    case TNT_SHL:          return "TNT_SHL";
+    case TNT_SHR:          return "TNT_SHR";
+    case TNT_BAND:         return "TNT_BAND";
+    case TNT_BOR:          return "TNT_BOR";
+    case TNT_BNOT:         return "TNT_BNOT";
+    case TNT_XOR:          return "TNT_XOR";
     case TNT_OR:           return "TNT_OR";
     case TNT_ARRAY_LOOKUP: return "TNT_ARRAY_LOOKUP";
     case TNT_FOR:          return "TNT_FOR";
@@ -96,6 +102,12 @@ static const char *child2str(treenode_type_t type, int child)
     case TNT_OR:
     case TNT_NOT:
     case TNT_NEG:
+    case TNT_SHL:
+    case TNT_SHR:
+    case TNT_BAND:
+    case TNT_BOR:
+    case TNT_BNOT:
+    case TNT_XOR:
       ASSERT(1031, child == LHS || child == RHS);
       return child == LHS ? "LHS" : "RHS";
     case TNT_ARRAY_LOOKUP:
@@ -164,6 +176,9 @@ static const char *cnt2str(codenode_type_t type)
     case CNT_LI:      return "CNT_LI\n# ------";
     case CNT_SLL:     return "CNT_SLL\n# ------";
     case CNT_XOR:     return "CNT_XOR\n# ------";
+    case CNT_SLLV:    return "CNT_SLLV\n# -------";
+    case CNT_SRLV:    return "CNT_SRLV\n# -------";
+    case CNT_NOT:     return "CNT_NOT\n# ------";
     default:
       INTERR(1060);
   }
