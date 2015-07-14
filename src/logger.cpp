@@ -464,7 +464,6 @@ void stack_frame_t::print_pseudo_section(int sectionid, const char *label)
 {
   if ( sections[sectionid].is_valid() )
     print_frame_item(*this, sections[sectionid].start, label);
-
 }
 
 //-----------------------------------------------------------------------------

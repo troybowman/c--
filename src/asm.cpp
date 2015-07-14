@@ -2,6 +2,7 @@
 #include <asm.h>
 
 #define MAXNAMELEN 32
+#define EXIT "__exit"
 
 //-----------------------------------------------------------------------------
 static const char *tempreg_names[TEMPREGQTY] =
@@ -436,7 +437,12 @@ void stack_frame_t::gen_epilogue()
   visit_items(FS_RA, ra_r, FIV_REVERSE);
 
   ctx.out(TAB1"la $sp, %u($sp)\n", size());
-  ctx.out(TAB1"jr $ra\n");
+
+  // MARS, for some utterly moronic reason, does not call main. we must manually exit
+  if ( f.sym->name() == "main" )
+    ctx.out(TAB1"jal %s\n", EXIT);
+  else
+    ctx.out(TAB1"jr $ra\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -796,17 +802,12 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
 }
 
 //-----------------------------------------------------------------------------
-static void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
+static inline void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
 {
-  symref_t func = ctx.gsyms.get(name);
-
-  if ( func != NULL && func->is_extern() )
-  {
-    ctx.out("\n%s:\n"
-            TAB1"li $v0, %d\n"
-            TAB1"syscall\n"
-            TAB1"jr $ra\n", name, syscall);
-  }
+  ctx.out("\n%s:\n"
+          TAB1"li $v0, %d\n"
+          TAB1"syscall\n"
+          TAB1"jr $ra\n", name, syscall);
 }
 
 //-----------------------------------------------------------------------------
@@ -854,6 +855,7 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
   gen_builtin_function(ctx, "_"BI_PRINT_INT, 1);
   gen_builtin_function(ctx, "_"BI_PRINT_CHAR, 11);
   gen_builtin_function(ctx, "_"BI_PRINT_HEX, 34);
+  gen_builtin_function(ctx, EXIT, 10);
 }
 
 //-----------------------------------------------------------------------------
