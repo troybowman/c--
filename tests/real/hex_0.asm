@@ -84,7 +84,7 @@
 # child CALL_ARGS for node 4
 # node 5: type: TNT_ARG
 # child SEQ_CUR for node 5
-# node 6: type: TNT_INTCON val: 16
+# node 6: type: TNT_INTCON val: 0
 # child SEQ_NEXT for node 3
 # node 7: type: TNT_STMT
 # child SEQ_CUR for node 7
@@ -100,11 +100,11 @@
 # child PRINTF_TREE for node 12
 # node 13: type: TNT_STMT
 # child SEQ_CUR for node 13
-# node 14: type: TNT_CALL sym: _print_hex
+# node 14: type: TNT_CALL sym: _print_int
 # child CALL_ARGS for node 14
 # node 15: type: TNT_ARG
 # child SEQ_CUR for node 15
-# node 16: type: TNT_INTCON val: 16
+# node 16: type: TNT_INTCON val: 10
 # child SEQ_NEXT for node 13
 # node 17: type: TNT_STMT
 # child SEQ_CUR for node 17
@@ -140,11 +140,11 @@
 # child PRINTF_TREE for node 32
 # node 33: type: TNT_STMT
 # child SEQ_CUR for node 33
-# node 34: type: TNT_CALL sym: _print_hex
+# node 34: type: TNT_CALL sym: _print_int
 # child CALL_ARGS for node 34
 # node 35: type: TNT_ARG
 # child SEQ_CUR for node 35
-# node 36: type: TNT_INTCON val: 22
+# node 36: type: TNT_INTCON val: 305419896
 # child SEQ_NEXT for node 33
 # node 37: type: TNT_STMT
 # child SEQ_CUR for node 37
@@ -164,7 +164,7 @@
 # child CALL_ARGS for node 44
 # node 45: type: TNT_ARG
 # child SEQ_CUR for node 45
-# node 46: type: TNT_INTCON val: 0
+# node 46: type: TNT_INTCON val: 43981
 # child SEQ_NEXT for node 43
 # node 47: type: TNT_STMT
 # child SEQ_CUR for node 47
@@ -172,7 +172,7 @@
 # child CALL_ARGS for node 48
 # node 49: type: TNT_ARG
 # child SEQ_CUR for node 49
-# node 50: type: TNT_STRCON str: " "
+# node 50: type: TNT_STRCON str: "\n"
 # child SEQ_NEXT for node 41
 # node 51: type: TNT_STMT
 # child SEQ_CUR for node 51
@@ -180,203 +180,143 @@
 # child PRINTF_TREE for node 52
 # node 53: type: TNT_STMT
 # child SEQ_CUR for node 53
-# node 54: type: TNT_CALL sym: _print_hex
+# node 54: type: TNT_CALL sym: _print_int
 # child CALL_ARGS for node 54
 # node 55: type: TNT_ARG
 # child SEQ_CUR for node 55
-# node 56: type: TNT_INTCON val: 0
+# node 56: type: TNT_PLUS
+# child LHS for node 56
+# node 57: type: TNT_INTCON val: 4660
+# child RHS for node 56
+# node 58: type: TNT_INTCON val: 22136
 # child SEQ_NEXT for node 53
-# node 57: type: TNT_STMT
-# child SEQ_CUR for node 57
-# node 58: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 58
-# node 59: type: TNT_ARG
+# node 59: type: TNT_STMT
 # child SEQ_CUR for node 59
-# node 60: type: TNT_STRCON str: " "
-# child SEQ_NEXT for node 51
-# node 61: type: TNT_STMT
+# node 60: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 60
+# node 61: type: TNT_ARG
 # child SEQ_CUR for node 61
-# node 62: type: TNT_PRINTF
-# child PRINTF_TREE for node 62
+# node 62: type: TNT_STRCON str: "\n"
+# child SEQ_NEXT for node 51
 # node 63: type: TNT_STMT
 # child SEQ_CUR for node 63
-# node 64: type: TNT_CALL sym: _print_int
-# child CALL_ARGS for node 64
-# node 65: type: TNT_ARG
+# node 64: type: TNT_PRINTF
+# child PRINTF_TREE for node 64
+# node 65: type: TNT_STMT
 # child SEQ_CUR for node 65
-# node 66: type: TNT_INTCON val: 305419896
-# child SEQ_NEXT for node 63
-# node 67: type: TNT_STMT
+# node 66: type: TNT_CALL sym: _print_int
+# child CALL_ARGS for node 66
+# node 67: type: TNT_ARG
 # child SEQ_CUR for node 67
-# node 68: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 68
-# node 69: type: TNT_ARG
-# child SEQ_CUR for node 69
-# node 70: type: TNT_STRCON str: " "
-# child SEQ_NEXT for node 61
+# node 68: type: TNT_PLUS
+# child LHS for node 68
+# node 69: type: TNT_INTCON val: 37121
+# child RHS for node 68
+# node 70: type: TNT_INTCON val: 4385
+# child SEQ_NEXT for node 65
 # node 71: type: TNT_STMT
 # child SEQ_CUR for node 71
-# node 72: type: TNT_PRINTF
-# child PRINTF_TREE for node 72
-# node 73: type: TNT_STMT
+# node 72: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 72
+# node 73: type: TNT_ARG
 # child SEQ_CUR for node 73
-# node 74: type: TNT_CALL sym: _print_hex
-# child CALL_ARGS for node 74
-# node 75: type: TNT_ARG
+# node 74: type: TNT_STRCON str: "\n"
+# child SEQ_NEXT for node 63
+# node 75: type: TNT_STMT
 # child SEQ_CUR for node 75
-# node 76: type: TNT_INTCON val: 305419896
-# child SEQ_NEXT for node 73
-# node 77: type: TNT_STMT
-# child SEQ_CUR for node 77
-# node 78: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 78
-# node 79: type: TNT_ARG
+# node 76: type: TNT_ASSG
+# child LHS for node 76
+# node 77: type: TNT_SYMBOL sym: a
+# child RHS for node 76
+# node 78: type: TNT_INTCON val: 4369
+# child SEQ_NEXT for node 75
+# node 79: type: TNT_STMT
 # child SEQ_CUR for node 79
-# node 80: type: TNT_STRCON str: "\n"
-# child SEQ_NEXT for node 71
-# node 81: type: TNT_STMT
-# child SEQ_CUR for node 81
-# node 82: type: TNT_PRINTF
-# child PRINTF_TREE for node 82
+# node 80: type: TNT_ASSG
+# child LHS for node 80
+# node 81: type: TNT_SYMBOL sym: b
+# child RHS for node 80
+# node 82: type: TNT_INTCON val: 8738
+# child SEQ_NEXT for node 79
 # node 83: type: TNT_STMT
 # child SEQ_CUR for node 83
-# node 84: type: TNT_CALL sym: _print_int
-# child CALL_ARGS for node 84
-# node 85: type: TNT_ARG
-# child SEQ_CUR for node 85
-# node 86: type: TNT_PLUS
-# child LHS for node 86
-# node 87: type: TNT_INTCON val: 4660
-# child RHS for node 86
-# node 88: type: TNT_INTCON val: 22136
+# node 84: type: TNT_ASSG
+# child LHS for node 84
+# node 85: type: TNT_SYMBOL sym: c
+# child RHS for node 84
+# node 86: type: TNT_INTCON val: 13107
 # child SEQ_NEXT for node 83
+# node 87: type: TNT_STMT
+# child SEQ_CUR for node 87
+# node 88: type: TNT_PRINTF
+# child PRINTF_TREE for node 88
 # node 89: type: TNT_STMT
 # child SEQ_CUR for node 89
-# node 90: type: TNT_CALL sym: _print_string
+# node 90: type: TNT_CALL sym: _print_int
 # child CALL_ARGS for node 90
 # node 91: type: TNT_ARG
 # child SEQ_CUR for node 91
-# node 92: type: TNT_STRCON str: "\n"
-# child SEQ_NEXT for node 81
-# node 93: type: TNT_STMT
-# child SEQ_CUR for node 93
-# node 94: type: TNT_PRINTF
-# child PRINTF_TREE for node 94
-# node 95: type: TNT_STMT
-# child SEQ_CUR for node 95
-# node 96: type: TNT_CALL sym: _print_hex
-# child CALL_ARGS for node 96
-# node 97: type: TNT_ARG
+# node 92: type: TNT_MINUS
+# child LHS for node 92
+# node 93: type: TNT_MULT
+# child LHS for node 93
+# node 94: type: TNT_SYMBOL sym: a
+# child RHS for node 93
+# node 95: type: TNT_SYMBOL sym: b
+# child RHS for node 92
+# node 96: type: TNT_SYMBOL sym: c
+# child SEQ_NEXT for node 89
+# node 97: type: TNT_STMT
 # child SEQ_CUR for node 97
-# node 98: type: TNT_PLUS
-# child LHS for node 98
-# node 99: type: TNT_INTCON val: 37121
-# child RHS for node 98
-# node 100: type: TNT_INTCON val: 4385
-# child SEQ_NEXT for node 95
+# node 98: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 98
+# node 99: type: TNT_ARG
+# child SEQ_CUR for node 99
+# node 100: type: TNT_STRCON str: "\n"
+# child SEQ_NEXT for node 87
 # node 101: type: TNT_STMT
 # child SEQ_CUR for node 101
-# node 102: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 102
-# node 103: type: TNT_ARG
+# node 102: type: TNT_PRINTF
+# child PRINTF_TREE for node 102
+# node 103: type: TNT_STMT
 # child SEQ_CUR for node 103
-# node 104: type: TNT_STRCON str: "\n"
-# child SEQ_NEXT for node 93
-# node 105: type: TNT_STMT
+# node 104: type: TNT_CALL sym: _print_int
+# child CALL_ARGS for node 104
+# node 105: type: TNT_ARG
 # child SEQ_CUR for node 105
-# node 106: type: TNT_ASSG
-# child LHS for node 106
-# node 107: type: TNT_SYMBOL sym: a
+# node 106: type: TNT_NEG
 # child RHS for node 106
-# node 108: type: TNT_INTCON val: 4369
-# child SEQ_NEXT for node 105
-# node 109: type: TNT_STMT
-# child SEQ_CUR for node 109
-# node 110: type: TNT_ASSG
-# child LHS for node 110
-# node 111: type: TNT_SYMBOL sym: b
-# child RHS for node 110
-# node 112: type: TNT_INTCON val: 8738
-# child SEQ_NEXT for node 109
-# node 113: type: TNT_STMT
-# child SEQ_CUR for node 113
-# node 114: type: TNT_ASSG
-# child LHS for node 114
-# node 115: type: TNT_SYMBOL sym: c
-# child RHS for node 114
-# node 116: type: TNT_INTCON val: 13107
-# child SEQ_NEXT for node 113
-# node 117: type: TNT_STMT
-# child SEQ_CUR for node 117
-# node 118: type: TNT_PRINTF
-# child PRINTF_TREE for node 118
+# node 107: type: TNT_SYMBOL sym: a
+# child SEQ_NEXT for node 103
+# node 108: type: TNT_STMT
+# child SEQ_CUR for node 108
+# node 109: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 109
+# node 110: type: TNT_ARG
+# child SEQ_CUR for node 110
+# node 111: type: TNT_STRCON str: "\n"
+# child SEQ_NEXT for node 101
+# node 112: type: TNT_STMT
+# child SEQ_CUR for node 112
+# node 113: type: TNT_PRINTF
+# child PRINTF_TREE for node 113
+# node 114: type: TNT_STMT
+# child SEQ_CUR for node 114
+# node 115: type: TNT_CALL sym: _print_int
+# child CALL_ARGS for node 115
+# node 116: type: TNT_ARG
+# child SEQ_CUR for node 116
+# node 117: type: TNT_NEG
+# child RHS for node 117
+# node 118: type: TNT_SYMBOL sym: b
+# child SEQ_NEXT for node 114
 # node 119: type: TNT_STMT
 # child SEQ_CUR for node 119
-# node 120: type: TNT_CALL sym: _print_hex
+# node 120: type: TNT_CALL sym: _print_string
 # child CALL_ARGS for node 120
 # node 121: type: TNT_ARG
 # child SEQ_CUR for node 121
-# node 122: type: TNT_MINUS
-# child LHS for node 122
-# node 123: type: TNT_MULT
-# child LHS for node 123
-# node 124: type: TNT_SYMBOL sym: a
-# child RHS for node 123
-# node 125: type: TNT_SYMBOL sym: b
-# child RHS for node 122
-# node 126: type: TNT_SYMBOL sym: c
-# child SEQ_NEXT for node 119
-# node 127: type: TNT_STMT
-# child SEQ_CUR for node 127
-# node 128: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 128
-# node 129: type: TNT_ARG
-# child SEQ_CUR for node 129
-# node 130: type: TNT_STRCON str: "\n"
-# child SEQ_NEXT for node 117
-# node 131: type: TNT_STMT
-# child SEQ_CUR for node 131
-# node 132: type: TNT_PRINTF
-# child PRINTF_TREE for node 132
-# node 133: type: TNT_STMT
-# child SEQ_CUR for node 133
-# node 134: type: TNT_CALL sym: _print_int
-# child CALL_ARGS for node 134
-# node 135: type: TNT_ARG
-# child SEQ_CUR for node 135
-# node 136: type: TNT_NEG
-# child RHS for node 136
-# node 137: type: TNT_SYMBOL sym: a
-# child SEQ_NEXT for node 133
-# node 138: type: TNT_STMT
-# child SEQ_CUR for node 138
-# node 139: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 139
-# node 140: type: TNT_ARG
-# child SEQ_CUR for node 140
-# node 141: type: TNT_STRCON str: "\n"
-# child SEQ_NEXT for node 131
-# node 142: type: TNT_STMT
-# child SEQ_CUR for node 142
-# node 143: type: TNT_PRINTF
-# child PRINTF_TREE for node 143
-# node 144: type: TNT_STMT
-# child SEQ_CUR for node 144
-# node 145: type: TNT_CALL sym: _print_hex
-# child CALL_ARGS for node 145
-# node 146: type: TNT_ARG
-# child SEQ_CUR for node 146
-# node 147: type: TNT_NEG
-# child RHS for node 147
-# node 148: type: TNT_SYMBOL sym: b
-# child SEQ_NEXT for node 144
-# node 149: type: TNT_STMT
-# child SEQ_CUR for node 149
-# node 150: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 150
-# node 151: type: TNT_ARG
-# child SEQ_CUR for node 151
-# node 152: type: TNT_STRCON str: "\n"
+# node 122: type: TNT_STRCON str: "\n"
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
@@ -388,7 +328,7 @@
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_INTCON (16)
+# src1 -> ST_INTCON (0)
 # |
 # >
 # CNT_ARG
@@ -422,7 +362,7 @@
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_INTCON (16)
+# src1 -> ST_INTCON (10)
 # |
 # >
 # CNT_ARG
@@ -433,7 +373,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_hex)
+# src1 -> ST_FUNCTION (_print_int)
 # |
 # >
 # CNT_LEA
@@ -490,108 +430,6 @@
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_INTCON (22)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_CALL
-# --------
-# src1 -> ST_FUNCTION (_print_hex)
-# |
-# >
-# CNT_LEA
-# -------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_STRCON (" ")
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_CALL
-# --------
-# src1 -> ST_FUNCTION (_print_string)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_INTCON (0)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_CALL
-# --------
-# src1 -> ST_FUNCTION (_print_int)
-# |
-# >
-# CNT_LEA
-# -------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_STRCON (" ")
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_CALL
-# --------
-# src1 -> ST_FUNCTION (_print_string)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_INTCON (0)
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_CALL
-# --------
-# src1 -> ST_FUNCTION (_print_hex)
-# |
-# >
-# CNT_LEA
-# -------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_STRCON (" ")
-# |
-# >
-# CNT_ARG
-# -------
-# dest -> ST_REG_ARGUMENT (0)
-# src1 -> ST_TEMPORARY (0)
-# |
-# >
-# CNT_CALL
-# --------
-# src1 -> ST_FUNCTION (_print_string)
-# |
-# >
-# CNT_LI
-# ------
-# dest -> ST_TEMPORARY (0)
 # src1 -> ST_INTCON (305419896)
 # |
 # >
@@ -626,7 +464,7 @@
 # CNT_LI
 # ------
 # dest -> ST_TEMPORARY (0)
-# src1 -> ST_INTCON (305419896)
+# src1 -> ST_INTCON (43981)
 # |
 # >
 # CNT_ARG
@@ -637,7 +475,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_hex)
+# src1 -> ST_FUNCTION (_print_int)
 # |
 # >
 # CNT_LEA
@@ -731,7 +569,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_hex)
+# src1 -> ST_FUNCTION (_print_int)
 # |
 # >
 # CNT_LEA
@@ -827,7 +665,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_hex)
+# src1 -> ST_FUNCTION (_print_int)
 # |
 # >
 # CNT_LEA
@@ -909,7 +747,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_hex)
+# src1 -> ST_FUNCTION (_print_int)
 # |
 # >
 # CNT_LEA
@@ -960,15 +798,15 @@ main:
   la $sp, -40($sp)
   sw $ra, 16($sp)
 
-  li $t0, 16
+  li $t0, 0
   move $a0, $t0
   jal __print_int
   la $t0, _str0
   move $a0, $t0
   jal __print_string
-  li $t0, 16
+  li $t0, 10
   move $a0, $t0
-  jal __print_hex
+  jal __print_int
   la $t0, _str0
   move $a0, $t0
   jal __print_string
@@ -978,33 +816,15 @@ main:
   la $t0, _str0
   move $a0, $t0
   jal __print_string
-  li $t0, 22
-  move $a0, $t0
-  jal __print_hex
-  la $t0, _str0
-  move $a0, $t0
-  jal __print_string
-  li $t0, 0
-  move $a0, $t0
-  jal __print_int
-  la $t0, _str0
-  move $a0, $t0
-  jal __print_string
-  li $t0, 0
-  move $a0, $t0
-  jal __print_hex
-  la $t0, _str0
-  move $a0, $t0
-  jal __print_string
   li $t0, 305419896
   move $a0, $t0
   jal __print_int
   la $t0, _str0
   move $a0, $t0
   jal __print_string
-  li $t0, 305419896
+  li $t0, 43981
   move $a0, $t0
-  jal __print_hex
+  jal __print_int
   la $t0, _str1
   move $a0, $t0
   jal __print_string
@@ -1020,7 +840,7 @@ main:
   li $t1, 4385
   add $t2, $t0, $t1
   move $a0, $t2
-  jal __print_hex
+  jal __print_int
   la $t0, _str1
   move $a0, $t0
   jal __print_string
@@ -1036,7 +856,7 @@ main:
   lw $t0, 32($sp)
   sub $t1, $t2, $t0
   move $a0, $t1
-  jal __print_hex
+  jal __print_int
   la $t0, _str1
   move $a0, $t0
   jal __print_string
@@ -1050,7 +870,7 @@ main:
   lw $t0, 28($sp)
   sub $t1, $zero, $t0
   move $a0, $t1
-  jal __print_hex
+  jal __print_int
   la $t0, _str1
   move $a0, $t0
   jal __print_string
