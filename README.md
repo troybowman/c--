@@ -9,14 +9,10 @@ See spec/ for language specification and calling convention.
 
 todo:
 
-1. char arguments passed in argument registers are not truncated
-
-2. short circuit evaluation
-
-3. don't let real/release phase get out of sync
-
-4. more precise reporting for test failures
-
-5. assg test in temp/
-
-6. fuzz
+- refactor resource managers
+- char arguments passed in argument registers are not truncated
+- short circuit evaluation
+- don't let real/release phase get out of sync
+- more precise reporting for test failures
+- assg test in temp/
+- fuzz
