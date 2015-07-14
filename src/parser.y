@@ -163,10 +163,11 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
   seq_t seq;
   uterr_info_t asfx;
   usymref_t sym;
+  name_info_t ni;
 }
 
 %token<i>   INT
-%token<str> CHAR STRING ID
+%token<str> CHAR STRING ID MAIN PRINTF
 
 %token INT_TYPE CHAR_TYPE VOID
 %token WHILE RETURN EXTERN IF ELSE FOR
@@ -179,6 +180,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %type<tree>   func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
 %type<asfx>   decl_array_sfx param_array_sfx
 %type<seq>    stmts arg_list
+%type<ni>     func_name
 
 %destructor { free($$); } ID
 %destructor { delete $$; ctx.trash(); } params
@@ -243,15 +245,20 @@ var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, yygetsym($
 func_decls : func_decl func_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
            ;
 
-func_decl : ID '(' { ctx.settemp(); } params { ctx.trash(); } ')'
+func_decl : func_name '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
-              symref_t func(new symbol_t(0, $1, lineno, $4));
+              symref_t func(new symbol_t($1.flags, $1.name, lineno, $4));
               yyputsym($$, func);
-              free($1);
+              free($1.name);
             }
             /* TODO: functions with no parameter spec (i.e. 'int func();') will leak memory,
                unless we explicity handle it here. Try to put this logic in a destructor. */
-          | ID '(' error { free($1); ctx.trash(); yyputsym($$, NULLREF); }
+          | func_name '(' error { free($1.name); ctx.trash(); yyputsym($$, NULLREF); }
+          ;
+
+func_name : MAIN   { $$.name = $1; $$.flags = SF_MAIN; }
+          | PRINTF { $$.name = $1; $$.flags = SF_PRINTF; }
+          | ID     { $$.name = $1; $$.flags = 0; }
           ;
 
 func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, yygetsym($3)); }
@@ -341,13 +348,13 @@ assg : stmt_var '=' expr { $$ = process_assg(ctx, $1, $3, lineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
-call : ID '(' args ')'
+call : func_name '(' args ')'
        {
-         symref_t sym = process_stmt_id(ctx, $1, lineno);
+         symref_t sym = process_stmt_id(ctx, $1.name, lineno);
          $$ = sym != NULL
             ? process_call(ctx, sym, $3, lineno)
             : ERRNODE;
-         free($1);
+         free($1.name);
        }
      ;
 
@@ -863,7 +870,7 @@ static treenode_t *process_call(parser_ctx_t &ctx, symref_t f, treenode_t *args,
 {
   ASSERT(1042, f != NULL);
 
-  if ( f->is_builtin_printf() )
+  if ( f->is_printf() )
     return process_printf_call(ctx, f, args, line);
 
   terr_info_t err = validate_call(*f, args);
@@ -1114,7 +1121,7 @@ static bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_e
 {
   const symvec_t &params = *func.params();
 
-  return func.name() == "printf"
+  return func.is_printf()
       && rt == PRIM_VOID
       && is_extern
       && params.size() == 2
@@ -1184,8 +1191,7 @@ static void process_fdecl_error(parser_ctx_t &ctx, terr_info_t err, const symbol
 //-----------------------------------------------------------------------------
 static void build_print_functions(parser_ctx_t &ctx, symref_t printf)
 {
-  ASSERT(1108, printf != NULL);
-  printf->set_builtin_printf();
+  ASSERT(1108, printf != NULL && printf->is_printf());
 
   ctx.print_int    = build_print_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);
   ctx.print_hex    = build_print_function(BI_PRINT_HEX,    "hex",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);

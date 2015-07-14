@@ -109,7 +109,7 @@ treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
       break;
     case TNT_PRINTF:
       children[PRINTF_TREE] = va_arg(va, treenode_t *);
-      ASSERT(1100, sym()->is_builtin_printf());
+      ASSERT(1100, sym()->is_printf());
       ASSERT(1099, children[PRINTF_TREE] != NULL);
       break;
     default:

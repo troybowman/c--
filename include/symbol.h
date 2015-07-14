@@ -86,8 +86,8 @@ class symbol_t : public refcnt_obj_t
 #define SF_EXTERN          0x02 // is extern?
 #define SF_DEFINED         0x04 // has been defined?
 #define SF_RET_RESOLVED    0x08 // have we seen a 'return expr' statement yet? (for non-void funcs)
-#define SF_BUILTIN_PRINTF  0x10 // identifies the builtin printf function
-#define SF_MAIN            0x20 // identifies the main function
+#define SF_PRINTF          0x10 // identifies the builtin printf function
+#define SF_MAIN            0x20 // identifies entry point function
 
   std::string _name;
 
@@ -152,7 +152,8 @@ public:
   bool is_extern()          const { return (_flags & SF_EXTERN) != 0; }
   bool is_defined()         const { return (_flags & SF_DEFINED) != 0; }
   bool is_ret_resolved()    const { return (_flags & SF_RET_RESOLVED) != 0; }
-  bool is_builtin_printf()  const { return (_flags & SF_BUILTIN_PRINTF) != 0; }
+  bool is_printf()          const { return (_flags & SF_PRINTF) != 0; }
+  bool is_main()            const { return (_flags & SF_MAIN) != 0; }
 
   void set_name(const char *name) { _name.assign(name); }
   void set_line(int line)         { _line = line; }
@@ -163,7 +164,6 @@ public:
   void set_extern()               { _flags |= SF_EXTERN; }
   void set_defined()              { _flags |= SF_DEFINED; }
   void set_ret_resolved()         { _flags |= SF_RET_RESOLVED; }
-  void set_builtin_printf()       { _flags |= SF_BUILTIN_PRINTF; }
 
   void set_val(int val)           { _val = val; }
 
@@ -191,21 +191,7 @@ class symvec_t : public std::vector<symref_t>
 {
   typedef std::vector<symref_t> inherited;
 
-  iterator find(symref_t sym)
-  {
-    iterator p;
-    const_iterator e;
-    for ( p = begin(), e = end(); p != e; ++p )
-      if ( sym == *p )
-        break;
-    return p;
-  }
-
 public:
-  iterator erase(symref_t sym)
-  {
-    return inherited::erase(find(sym));
-  }
   void assign(const symvec_t &vec)
   {
     inherited::assign(vec.begin(), vec.end());
@@ -240,12 +226,6 @@ public:
     if ( sym == NULL )
       return false;
     return insert(sym->name(), sym);
-  }
-  bool erase(symref_t sym)
-  {
-    return sym != NULL
-        && map.erase(sym->name()) != 0
-        && vec.erase(sym) != vec.end();
   }
 
 #define DEFINE_TABLE_ITERATOR(iterator, begin, end)      \

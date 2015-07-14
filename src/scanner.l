@@ -57,35 +57,23 @@ class parser_ctx_t;
 "^" |
 "~" { return yytext[0]; }
 
-0x[a-zA-Z0-9]+ {
-                 yylval->i = strtol(yytext, NULL, 16);
-                 return INT;
-               }
+0x[a-zA-Z0-9]+ { yylval->i = strtol(yytext, NULL, 16); return INT; }
 
-[0-9]+ {
-         yylval->i = strtol(yytext, NULL, 10);
-         return INT;
-       }
+[0-9]+ { yylval->i = strtol(yytext, NULL, 10); return INT; }
 
 '[[:print:]]{-}[\]{-}[']' |
 '\\n' |
-'\\0' {
-        yylval->str = strdup(yytext);
-        return CHAR;
-      }
+'\\0' { yylval->str = strdup(yytext); return CHAR; }
 
-[[:alpha:]]([[:alpha:]]{+}[_]{+}[0-9]+)? {
-                                           yylval->str = strdup(yytext);
-                                           return ID;
-                                         }
+"main"   { yylval->str = strdup(yytext); return MAIN; }
 
-"\""[[:print:]]{-}["]{-}[\n]*"\""	{
-                                    yylval->str = strdup(yytext);
-                                    return STRING;
-                                  }
+"printf" { yylval->str = strdup(yytext); return PRINTF; }
+
+[[:alpha:]]([[:alpha:]]{+}[_]{+}[0-9]+)? { yylval->str = strdup(yytext); return ID; }
+
+"\""[[:print:]]{-}["]{-}[\n]*"\""	{ yylval->str = strdup(yytext); return STRING; }
 
 [[:space:]]+ /* nom */
-
 
 "/*" { BEGIN(COMMENT); }
 
@@ -93,10 +81,7 @@ class parser_ctx_t;
 
 <COMMENT>([^*]|\n)+|. /* nom */
 
-<COMMENT><<EOF>> {
-                   fprintf(stderr, "Unterminated comment, line %d\n", yylineno);
-                   return 0;
-                 }
+<COMMENT><<EOF>> { fprintf(stderr, "Unterminated comment, line %d\n", yylineno); return 0; }
 
 .	{ return yytext[0]; }
 

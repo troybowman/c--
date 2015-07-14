@@ -63,4 +63,11 @@ struct terr_info_t
 //---------------------------------------------------------------------------
 typedef uint8_t uterr_info_t[sizeof(terr_info_t)];
 
+//---------------------------------------------------------------------------
+struct name_info_t
+{
+  char *name;
+  uint32_t flags;
+};
+
 #endif // !PARSER_H
