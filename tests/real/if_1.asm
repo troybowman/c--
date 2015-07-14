@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
-# size: 16
+# size: 17
 # sym: a
 #   line: 3
 #   type: ST_PRIMITIVE
@@ -55,14 +55,14 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_string
+# sym: _print_hex
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
-#       0: str
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
+#       0: hex
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
 #     is_extern: yes
 # sym: _print_char
 #   line: -1
@@ -71,6 +71,15 @@
 #     params:
 #       0: c
 #         type: ST_PRIMITIVE
+#           base: PRIM_CHAR
+#     is_extern: yes
+# sym: _print_string
+#   line: -1
+#   type: ST_FUNCTION
+#     rt_type: PRIM_VOID
+#     params:
+#       0: str
+#         type: ST_ARRAY
 #           base: PRIM_CHAR
 #     is_extern: yes
 # sym: printf
@@ -885,5 +894,10 @@ __print_int:
 
 __print_char:
   li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
   syscall
   jr $ra

@@ -83,6 +83,7 @@ public:
   symref_t print_string;
   symref_t print_int;
   symref_t print_char;
+  symref_t print_hex;
 };
 
 //---------------------------------------------------------------------------
@@ -122,8 +123,9 @@ static        void yyputerr(uterr_info_t, terr_info_t);
 //---------------------------------------------------------------------------
 #define EMPTYSTRING "\"\""
 #define FMTS 's' // %s for strings
-#define FMTD 'd' // %d for ints
+#define FMTD 'd' // %d for decimal ints
 #define FMTC 'c' // %c for chars
+#define FMTX 'x' // %x for hex ints
 struct format_arg_t
 {
   symref_t func;
@@ -724,7 +726,7 @@ static type_error_t validate_printf_call(
     {
       char c = *(ptr+1);
 
-      if ( c == FMTS || c == FMTD || c == FMTC )
+      if ( c == FMTS || c == FMTD || c == FMTC || c == FMTX )
       {
         prepare_substring_arg(ctx, fmtargs, cursub, ptr);
         cursub = ptr+2;
@@ -733,25 +735,33 @@ static type_error_t validate_printf_call(
         if ( arg == NULL )
           return TERR_NUM_FMT;
 
+        symref_t func;
+        bool ok = false;
+
         switch ( c )
         {
           case FMTD:
+            ok = arg->is_int_compat();
+            func = ctx.print_int;
+            break;
           case FMTC:
-            {
-              if ( !arg->is_int_compat() )
-                return TERR_BAD_FMT;
-              symref_t func = c == FMTD ? ctx.print_int : ctx.print_char;
-              fmtargs.push_back(format_arg_t(func, arg));
-            }
+            ok = arg->is_int_compat();
+            func = ctx.print_char;
+            break;
+          case FMTX:
+            ok = arg->is_int_compat();
+            func = ctx.print_hex;
             break;
           case FMTS:
-            {
-              if ( !arg->is_string_compat() )
-                return TERR_BAD_FMT;
-              fmtargs.push_back(format_arg_t(ctx.print_string, arg));
-            }
+            ok = arg->is_string_compat();
+            func = ctx.print_string;
             break;
         }
+
+        if ( !ok )
+          return TERR_BAD_FMT;
+
+        fmtargs.push_back(format_arg_t(func, arg));
       }
     }
   }
@@ -1172,14 +1182,15 @@ static void process_fdecl_error(parser_ctx_t &ctx, terr_info_t err, const symbol
 }
 
 //-----------------------------------------------------------------------------
-static void build_print_functions(parser_ctx_t &ctx, symref_t printf, symtab_t &gsyms)
+static void build_print_functions(parser_ctx_t &ctx, symref_t printf)
 {
   ASSERT(1108, printf != NULL);
   printf->set_builtin_printf();
 
-  ctx.print_int    = build_print_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT,  gsyms);
-  ctx.print_string = build_print_function(BI_PRINT_STRING, "str",  ST_ARRAY,     PRIM_CHAR, gsyms);
-  ctx.print_char   = build_print_function(BI_PRINT_CHAR,   "c",    ST_PRIMITIVE, PRIM_CHAR, gsyms);
+  ctx.print_int    = build_print_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);
+  ctx.print_hex    = build_print_function(BI_PRINT_HEX,    "hex",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);
+  ctx.print_char   = build_print_function(BI_PRINT_CHAR,   "c",    ST_PRIMITIVE, PRIM_CHAR, ctx.gsyms);
+  ctx.print_string = build_print_function(BI_PRINT_STRING, "str",  ST_ARRAY,     PRIM_CHAR, ctx.gsyms);
 }
 
 //-----------------------------------------------------------------------------
@@ -1202,7 +1213,7 @@ static void process_func_list(parser_ctx_t &ctx, symvec_t *vec, primitive_t rt, 
     }
 
     if ( err.code == TERR_OK2 )
-      build_print_functions(ctx, sym, ctx.gsyms);
+      build_print_functions(ctx, sym);
 
     sym->set_base(rt);
 

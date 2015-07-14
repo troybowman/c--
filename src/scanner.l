@@ -57,6 +57,10 @@ class parser_ctx_t;
 "^" |
 "~" { return yytext[0]; }
 
+0x[a-zA-Z0-9]+ {
+                 yylval->i = strtol(yytext, NULL, 16);
+                 return INT;
+               }
 
 [0-9]+ {
          yylval->i = strtol(yytext, NULL, 10);

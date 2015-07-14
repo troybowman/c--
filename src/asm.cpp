@@ -853,6 +853,7 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
   gen_builtin_function(ctx, "_"BI_PRINT_STRING, 4);
   gen_builtin_function(ctx, "_"BI_PRINT_INT, 1);
   gen_builtin_function(ctx, "_"BI_PRINT_CHAR, 11);
+  gen_builtin_function(ctx, "_"BI_PRINT_HEX, 34);
 }
 
 //-----------------------------------------------------------------------------

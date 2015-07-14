@@ -162,5 +162,6 @@ struct area_t
 #define BI_PRINT_STRING "_print_string"
 #define BI_PRINT_INT    "_print_int"
 #define BI_PRINT_CHAR   "_print_char"
+#define BI_PRINT_HEX    "_print_hex"
 
 #endif // COMMON_H
