@@ -66,7 +66,7 @@ typedef uint8_t uterr_info_t[sizeof(terr_info_t)];
 //---------------------------------------------------------------------------
 struct name_info_t
 {
-  char *name;
+  char *str;
   uint32_t flags;
 };
 

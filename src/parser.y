@@ -180,9 +180,10 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %type<tree>   func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
 %type<asfx>   decl_array_sfx param_array_sfx
 %type<seq>    stmts arg_list
-%type<ni>     func_name
+%type<ni>     name
 
-%destructor { free($$); } ID
+%destructor { free($$); } ID MAIN PRINTF
+%destructor { free($$.str); } name
 %destructor { delete $$; ctx.trash(); } params
 %destructor { delete $$; } var_decls func_decls var_decl_list func_decl_list param_decl_list
 %destructor { yygetsym($$); } var_decl func_decl ellipsis param_decl
@@ -225,11 +226,11 @@ type : INT_TYPE  { $$ = PRIM_INT;  }
 var_decls : var_decl var_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
           ;
 
-var_decl : ID decl_array_sfx
+var_decl : name decl_array_sfx
            {
-             symref_t ref = process_var_id($1, lineno, yygeterr($2), 0);
+             symref_t ref = process_var_id($1.str, lineno, yygeterr($2), 0);
              yyputsym($$, ref);
-             free($1);
+             free($1.str);
            }
          ;
 
@@ -245,21 +246,21 @@ var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, yygetsym($
 func_decls : func_decl func_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
            ;
 
-func_decl : func_name '(' { ctx.settemp(); } params { ctx.trash(); } ')'
+func_decl : name '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
-              symref_t func(new symbol_t($1.flags, $1.name, lineno, $4));
+              symref_t func(new symbol_t($1.flags, $1.str, lineno, $4));
               yyputsym($$, func);
-              free($1.name);
+              free($1.str);
             }
             /* TODO: functions with no parameter spec (i.e. 'int func();') will leak memory,
                unless we explicity handle it here. Try to put this logic in a destructor. */
-          | func_name '(' error { free($1.name); ctx.trash(); yyputsym($$, NULLREF); }
+          | name '(' error { free($1.str); ctx.trash(); yyputsym($$, NULLREF); }
           ;
 
-func_name : MAIN   { $$.name = $1; $$.flags = SF_MAIN; }
-          | PRINTF { $$.name = $1; $$.flags = SF_PRINTF; }
-          | ID     { $$.name = $1; $$.flags = 0; }
-          ;
+name : MAIN   { $$.str = $1; $$.flags = SF_MAIN; }
+     | PRINTF { $$.str = $1; $$.flags = SF_PRINTF; }
+     | ID     { $$.str = $1; $$.flags = 0; }
+     ;
 
 func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, yygetsym($3)); }
                | /* empty */                  { $$ = NULL; }
@@ -277,13 +278,13 @@ ellipsis : ',' ELLIPSIS { yyputsym($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
          | /* empty */  { yyputsym($$, NULLREF); }
          ;
 
-param_decl : type ID param_array_sfx
+param_decl : type name param_array_sfx
              {
-               symref_t sym = process_var_id($2, lineno, yygeterr($3), SF_PARAMETER);
+               symref_t sym = process_var_id($2.str, lineno, yygeterr($3), SF_PARAMETER);
                if ( sym != NULL && !process_var_decl(ctx, sym, $1) )
                  sym = NULLREF;
                yyputsym($$, sym);
-               free($2);
+               free($2.str);
              }
            ;
 
@@ -348,13 +349,13 @@ assg : stmt_var '=' expr { $$ = process_assg(ctx, $1, $3, lineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
-call : func_name '(' args ')'
+call : name '(' args ')'
        {
-         symref_t sym = process_stmt_id(ctx, $1.name, lineno);
+         symref_t sym = process_stmt_id(ctx, $1.str, lineno);
          $$ = sym != NULL
             ? process_call(ctx, sym, $3, lineno)
             : ERRNODE;
-         free($1.name);
+         free($1.str);
        }
      ;
 
@@ -374,13 +375,13 @@ arg_list : arg_list ',' expr { $$ = seq_append($1, $3, TNT_ARG); }
          ;
 
 /*---------------------------------------------------------------------------*/
-stmt_var : ID stmt_array_sfx
+stmt_var : name stmt_array_sfx
            {
-             symref_t sym = process_stmt_id(ctx, $1, lineno);
+             symref_t sym = process_stmt_id(ctx, $1.str, lineno);
              $$ = sym != NULL
                 ? process_stmt_var(ctx, sym, $2, lineno)
                 : ERRNODE;
-             free($1);
+             free($1.str);
            }
          ;
 

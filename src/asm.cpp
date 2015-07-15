@@ -801,7 +801,7 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
 }
 
 //-----------------------------------------------------------------------------
-static inline void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
+static void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
 {
   ctx.out("\n%s:\n"
           TAB1"li $v0, %d\n"
