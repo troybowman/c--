@@ -358,45 +358,43 @@
 # child RHS for node 137
 # node 139: type: TNT_INTCON val: 4
 # child FOR_BODY for node 112
-# node 140: type: TNT_STMT
-# child SEQ_CUR for node 140
-# node 141: type: TNT_PRINTF
-# child PRINTF_TREE for node 141
-# node 142: type: TNT_STMT
-# child SEQ_CUR for node 142
-# node 143: type: TNT_CALL sym: _print_char
-# child CALL_ARGS for node 143
-# node 144: type: TNT_ARG
-# child SEQ_CUR for node 144
-# node 145: type: TNT_ARRAY_LOOKUP sym: a1
-# child AL_OFFSET for node 145
-# node 146: type: TNT_SYMBOL sym: i
-# child SEQ_NEXT for node 142
-# node 147: type: TNT_STMT
-# child SEQ_CUR for node 147
-# node 148: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 148
-# node 149: type: TNT_ARG
-# child SEQ_CUR for node 149
-# node 150: type: TNT_STRCON str: " "
-# child SEQ_NEXT for node 147
-# node 151: type: TNT_STMT
-# child SEQ_CUR for node 151
-# node 152: type: TNT_CALL sym: _print_char
-# child CALL_ARGS for node 152
-# node 153: type: TNT_ARG
-# child SEQ_CUR for node 153
-# node 154: type: TNT_ARRAY_LOOKUP sym: a2
-# child AL_OFFSET for node 154
-# node 155: type: TNT_SYMBOL sym: j
-# child SEQ_NEXT for node 151
-# node 156: type: TNT_STMT
-# child SEQ_CUR for node 156
-# node 157: type: TNT_CALL sym: _print_string
-# child CALL_ARGS for node 157
-# node 158: type: TNT_ARG
-# child SEQ_CUR for node 158
-# node 159: type: TNT_STRCON str: "\n"
+# node 140: type: TNT_PRINTF
+# child PRINTF_TREE for node 140
+# node 141: type: TNT_STMT
+# child SEQ_CUR for node 141
+# node 142: type: TNT_CALL sym: _print_char
+# child CALL_ARGS for node 142
+# node 143: type: TNT_ARG
+# child SEQ_CUR for node 143
+# node 144: type: TNT_ARRAY_LOOKUP sym: a1
+# child AL_OFFSET for node 144
+# node 145: type: TNT_SYMBOL sym: i
+# child SEQ_NEXT for node 141
+# node 146: type: TNT_STMT
+# child SEQ_CUR for node 146
+# node 147: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 147
+# node 148: type: TNT_ARG
+# child SEQ_CUR for node 148
+# node 149: type: TNT_STRCON str: " "
+# child SEQ_NEXT for node 146
+# node 150: type: TNT_STMT
+# child SEQ_CUR for node 150
+# node 151: type: TNT_CALL sym: _print_char
+# child CALL_ARGS for node 151
+# node 152: type: TNT_ARG
+# child SEQ_CUR for node 152
+# node 153: type: TNT_ARRAY_LOOKUP sym: a2
+# child AL_OFFSET for node 153
+# node 154: type: TNT_SYMBOL sym: j
+# child SEQ_NEXT for node 150
+# node 155: type: TNT_STMT
+# child SEQ_CUR for node 155
+# node 156: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 156
+# node 157: type: TNT_ARG
+# child SEQ_CUR for node 157
+# node 158: type: TNT_STRCON str: "\n"
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
