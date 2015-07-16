@@ -179,7 +179,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %type<symvec> var_decls var_decl_list func_decls func_decl_list params param_decl_list
 %type<tree>   func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
 %type<asfx>   decl_array_sfx param_array_sfx
-%type<seq>    stmts arg_list
+%type<seq>    stmts arg_list assg_list
 %type<ni>     name
 
 %destructor { free($$); } ID MAIN PRINTF
@@ -316,7 +316,7 @@ local_decls : local_decls type var_decls ';' { process_var_list(ctx, $3, $2); de
             ;
 
 stmts : stmts stmt  { $$ = seq_append($1, $2, TNT_STMT); }
-      | /* empty */ { $$.head = NULL; $$.tail = NULL; }
+      | /* empty */ { $$.head = $$.tail = NULL; }
       ;
 
 /*---------------------------------------------------------------------------*/
@@ -332,9 +332,16 @@ stmt : assg ';'                  { $$ = $1; }
      ;
 
 /*---------------------------------------------------------------------------*/
-op_assg : assg        { $$ = $1; }
+op_assg : assg assg_list
+          {
+            $$ = $2.head == NULL ? $1 : new treenode_t(TNT_STMT, $1, $2.head);
+          }
         | /* empty */ { $$ = NULL; }
         ;
+
+assg_list : assg_list ',' assg { $$ = seq_append($1, $3, TNT_STMT); }
+          | /* empty */        { $$.head = $$.tail = NULL; }
+          ;
 
 else : ELSE stmt      { $$ = $2; }
      | /* empty */    { $$ = NULL; }
@@ -371,7 +378,7 @@ args : expr arg_list
      ;
 
 arg_list : arg_list ',' expr { $$ = seq_append($1, $3, TNT_ARG); }
-         | /* empty */       { $$.head = NULL; $$.tail = NULL; }
+         | /* empty */       { $$.head = $$.tail = NULL; }
          ;
 
 /*---------------------------------------------------------------------------*/
