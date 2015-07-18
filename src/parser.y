@@ -193,6 +193,9 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 /* precedence increases as we go down the list */
 %left OR
 %left AND
+%left '|'
+%left '^'
+%left '&'
 %left NEQ EQ
 %left GEQ '>' LEQ '<'
 %left SHL SHR
@@ -397,32 +400,32 @@ stmt_array_sfx : '[' expr ']' { $$ = $2; }
                ;
 
 /*---------------------------------------------------------------------------*/
-expr : INT                   { $$ = new treenode_t(TNT_INTCON, $1); }
-     | CHAR                  { $$ = new treenode_t(TNT_CHARCON, $1); }
-     | STRING                { $$ = new treenode_t(TNT_STRCON, $1); }
-     | call                  { $$ = process_call_ctx(ctx, $1, lineno, true); }
-     | stmt_var              { $$ = $1; }
-     | expr EQ  expr         { $$ = process_bool_expr(ctx, $1,   TNT_EQ,    $3, lineno); }
-     | expr NEQ expr         { $$ = process_bool_expr(ctx, $1,   TNT_NEQ,   $3, lineno); }
-     | expr '<' expr         { $$ = process_bool_expr(ctx, $1,   TNT_LT,    $3, lineno); }
-     | expr LEQ expr         { $$ = process_bool_expr(ctx, $1,   TNT_LEQ,   $3, lineno); }
-     | expr '>' expr         { $$ = process_bool_expr(ctx, $1,   TNT_GT,    $3, lineno); }
-     | expr GEQ expr         { $$ = process_bool_expr(ctx, $1,   TNT_GEQ,   $3, lineno); }
-     | expr AND expr         { $$ = process_bool_expr(ctx, $1,   TNT_AND,   $3, lineno); }
-     | expr OR  expr         { $$ = process_bool_expr(ctx, $1,   TNT_OR,    $3, lineno); }
-     | expr '+' expr         { $$ = process_math_expr(ctx, $1,   TNT_PLUS,  $3, lineno); }
-     | expr '-' expr         { $$ = process_math_expr(ctx, $1,   TNT_MINUS, $3, lineno); }
-     | expr '*' expr         { $$ = process_math_expr(ctx, $1,   TNT_MULT,  $3, lineno); }
-     | expr '/' expr         { $$ = process_math_expr(ctx, $1,   TNT_DIV,   $3, lineno); }
-     | expr SHL expr         { $$ = process_math_expr(ctx, $1,   TNT_SHL,   $3, lineno); }
-     | expr SHR expr         { $$ = process_math_expr(ctx, $1,   TNT_SHR,   $3, lineno); }
-     | '(' expr '^' expr ')' { $$ = process_math_expr(ctx, $2,   TNT_XOR,   $4, lineno); }
-     | '(' expr '&' expr ')' { $$ = process_math_expr(ctx, $2,   TNT_BAND,  $4, lineno); }
-     | '(' expr '|' expr ')' { $$ = process_math_expr(ctx, $2,   TNT_BOR,   $4, lineno); }
-     | '!' expr %prec UNARY  { $$ = process_bool_expr(ctx, NULL, TNT_NOT,   $2, lineno); }
-     | '-' expr %prec UNARY  { $$ = process_math_expr(ctx, NULL, TNT_NEG,   $2, lineno); }
-     | '~' expr %prec UNARY  { $$ = process_math_expr(ctx, NULL, TNT_BNOT,  $2, lineno); }
-     | '(' expr ')'          { $$ = $2; }
+expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
+     | CHAR                 { $$ = new treenode_t(TNT_CHARCON, $1); }
+     | STRING               { $$ = new treenode_t(TNT_STRCON, $1); }
+     | call                 { $$ = process_call_ctx(ctx, $1, lineno, true); }
+     | stmt_var             { $$ = $1; }
+     | expr EQ  expr        { $$ = process_bool_expr(ctx, $1,   TNT_EQ,    $3, lineno); }
+     | expr NEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_NEQ,   $3, lineno); }
+     | expr '<' expr        { $$ = process_bool_expr(ctx, $1,   TNT_LT,    $3, lineno); }
+     | expr LEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_LEQ,   $3, lineno); }
+     | expr '>' expr        { $$ = process_bool_expr(ctx, $1,   TNT_GT,    $3, lineno); }
+     | expr GEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_GEQ,   $3, lineno); }
+     | expr AND expr        { $$ = process_bool_expr(ctx, $1,   TNT_AND,   $3, lineno); }
+     | expr OR  expr        { $$ = process_bool_expr(ctx, $1,   TNT_OR,    $3, lineno); }
+     | expr '+' expr        { $$ = process_math_expr(ctx, $1,   TNT_PLUS,  $3, lineno); }
+     | expr '-' expr        { $$ = process_math_expr(ctx, $1,   TNT_MINUS, $3, lineno); }
+     | expr '*' expr        { $$ = process_math_expr(ctx, $1,   TNT_MULT,  $3, lineno); }
+     | expr '/' expr        { $$ = process_math_expr(ctx, $1,   TNT_DIV,   $3, lineno); }
+     | expr SHL expr        { $$ = process_math_expr(ctx, $1,   TNT_SHL,   $3, lineno); }
+     | expr SHR expr        { $$ = process_math_expr(ctx, $1,   TNT_SHR,   $3, lineno); }
+     | expr '^' expr        { $$ = process_math_expr(ctx, $1,   TNT_XOR,   $3, lineno); }
+     | expr '&' expr        { $$ = process_math_expr(ctx, $1,   TNT_BAND,  $3, lineno); }
+     | expr '|' expr        { $$ = process_math_expr(ctx, $1,   TNT_BOR,   $3, lineno); }
+     | '!' expr %prec UNARY { $$ = process_bool_expr(ctx, NULL, TNT_NOT,   $2, lineno); }
+     | '-' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_NEG,   $2, lineno); }
+     | '~' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_BNOT,  $2, lineno); }
+     | '(' expr ')'         { $$ = $2; }
      ;
 
 %%
