@@ -32,9 +32,9 @@ asm_ctx_t::asm_ctx_t(FILE *_outfile) : outfile(_outfile)
 {
   ASSERT(0, outfile);
 
-  t7 = symref_t(new symbol_t(ST_TEMPORARY));
-  t8 = symref_t(new symbol_t(ST_TEMPORARY));
-  t9 = symref_t(new symbol_t(ST_TEMPORARY));
+  t7 = symref_t(new symbol_t(ST_TEMP));
+  t8 = symref_t(new symbol_t(ST_TEMP));
+  t9 = symref_t(new symbol_t(ST_TEMP));
 
   t7->loc.set_reg(RESERVED_TEMP1);
   t8->loc.set_reg(RESERVED_TEMP2);
@@ -765,7 +765,7 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
               ctx.out(TAB1"%s %s, %s, %d\n",
                       instr, dest->loc.reg(), src1->loc.reg(), src2->val());
               break;
-            case ST_TEMPORARY:
+            case ST_TEMP:
               ASSERT(0, node->type != CNT_SLL);
               ctx.out(TAB1"%s %s, %s, %s\n",
                       instr, dest->loc.reg(), src1->loc.reg(), src2->loc.reg());

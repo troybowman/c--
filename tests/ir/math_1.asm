@@ -177,331 +177,331 @@
 # stkargs used:  0
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (2)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (3)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (1)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (0)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (0)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (x1)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (2)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (3)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (3)
+# dest -> ST_TEMP (0)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (3)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (x2)
-# src1 -> ST_TEMPORARY (0)
+# src1 -> ST_TEMP (0)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (2)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMP (2)
 # src1 -> ST_INTCON (3)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (3)
+# dest -> ST_TEMP (3)
 # src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (4)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (3)
+# dest -> ST_TEMP (4)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (3)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (4)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (4)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (2)
+# dest -> ST_TEMP (1)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (2)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (x3)
-# src1 -> ST_TEMPORARY (1)
+# src1 -> ST_TEMP (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (2)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (3)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (1)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (0)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (0)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (x4)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (2)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (2)
+# dest -> ST_TEMP (2)
 # src1 -> ST_INTCON (3)
 # |
 # >
 # CNT_DIV
 # -------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (2)
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (2)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_MUL
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (3)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (3)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (1)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (2)
+# dest -> ST_TEMP (1)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (2)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (5)
 # |
 # >
 # CNT_SUB
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (1)
-# src2 -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (0)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (x5)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (2)
 # |
 # >
 # CNT_ADD
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (3)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (4)
 # |
 # >
 # CNT_MUL
 # -------
-# dest -> ST_TEMPORARY (3)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_DIV
 # -------
-# dest -> ST_TEMPORARY (0)
-# src1 -> ST_TEMPORARY (2)
-# src2 -> ST_TEMPORARY (3)
+# dest -> ST_TEMP (0)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (3)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (5)
 # |
 # >
 # CNT_SUB
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_SW
 # ------
 # dest -> ST_PRIMITIVE (x6)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)

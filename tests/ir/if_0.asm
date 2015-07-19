@@ -305,27 +305,27 @@
 # stkargs used:  0
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (111)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (222)
 # |
 # >
 # CNT_SLT
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_CNDJMP
 # ----------
 # dest -> ST_LABEL (0)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_CALL
@@ -340,27 +340,27 @@
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (333)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (444)
 # |
 # >
 # CNT_SEQ
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_CNDJMP
 # ----------
 # dest -> ST_LABEL (1)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_CALL
@@ -390,27 +390,27 @@
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (555)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (666)
 # |
 # >
 # CNT_SNE
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_CNDJMP
 # ----------
 # dest -> ST_LABEL (3)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_CALL
@@ -430,27 +430,27 @@
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (777)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (888)
 # |
 # >
 # CNT_SGE
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_CNDJMP
 # ----------
 # dest -> ST_LABEL (4)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_CALL
@@ -470,27 +470,27 @@
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (999)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (1000)
 # |
 # >
 # CNT_SLE
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_CNDJMP
 # ----------
 # dest -> ST_LABEL (5)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_CALL
@@ -520,27 +520,27 @@
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1001)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (1002)
 # |
 # >
 # CNT_SEQ
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_CNDJMP
 # ----------
 # dest -> ST_LABEL (7)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_CALL
@@ -560,27 +560,27 @@
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (0)
+# dest -> ST_TEMP (0)
 # src1 -> ST_INTCON (1003)
 # |
 # >
 # CNT_LI
 # ------
-# dest -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (1)
 # src1 -> ST_INTCON (1004)
 # |
 # >
 # CNT_SNE
 # -------
-# dest -> ST_TEMPORARY (2)
-# src1 -> ST_TEMPORARY (0)
-# src2 -> ST_TEMPORARY (1)
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
 # |
 # >
 # CNT_CNDJMP
 # ----------
 # dest -> ST_LABEL (8)
-# src1 -> ST_TEMPORARY (2)
+# src1 -> ST_TEMP (2)
 # |
 # >
 # CNT_CALL

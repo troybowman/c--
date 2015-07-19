@@ -198,12 +198,12 @@ struct ir_func_t
 
   ir_func_t(symref_t s)
     : sym(s), code(NULL), has_call(false), zero(new symbol_t(ST_ZERO)),
-      stktemps(ST_STACK_TEMPORARY),
-       stkargs(ST_STACK_ARGUMENT),
-         temps(ST_TEMPORARY,       TEMPREGQTY),
-        svregs(ST_SAVED_TEMPORARY, SVREGQTY),
-       regargs(ST_REG_ARGUMENT,    ARGREGQTY),
-        retval(ST_RETVAL,          1) {}
+      stktemps(ST_STKTEMP),
+       stkargs(ST_STKARG),
+         temps(ST_TEMP,   TEMPREGQTY),
+        svregs(ST_SVTEMP, SVREGQTY),
+       regargs(ST_REGARG, ARGREGQTY),
+        retval(ST_RETVAL, 1) {}
 
   ~ir_func_t() { delete code; }
 };

@@ -189,20 +189,20 @@ static const char *st2str(symbol_type_t type)
 {
   switch( type )
   {
-    case ST_PRIMITIVE:       return "ST_PRIMITIVE";
-    case ST_ARRAY:           return "ST_ARRAY";
-    case ST_FUNCTION:        return "ST_FUNCTION";
-    case ST_TEMPORARY:       return "ST_TEMPORARY";
-    case ST_SAVED_TEMPORARY: return "ST_SAVED_TEMPORARY";
-    case ST_STACK_TEMPORARY: return "ST_STACK_TEMPORARY";
-    case ST_INTCON:          return "ST_INTCON";
-    case ST_CHARCON:         return "ST_CHARCON";
-    case ST_STRCON:          return "ST_STRCON";
-    case ST_LABEL:           return "ST_LABEL";
-    case ST_REG_ARGUMENT:    return "ST_REG_ARGUMENT";
-    case ST_STACK_ARGUMENT:  return "ST_STACK_ARGUMENT";
-    case ST_RETVAL:          return "ST_RETVAL";
-    case ST_ZERO:            return "ST_ZERO";
+    case ST_PRIMITIVE: return "ST_PRIMITIVE";
+    case ST_ARRAY:     return "ST_ARRAY";
+    case ST_FUNCTION:  return "ST_FUNCTION";
+    case ST_TEMP:      return "ST_TEMP";
+    case ST_SVTEMP:    return "ST_SVTEMP";
+    case ST_STKTEMP:   return "ST_STKTEMP";
+    case ST_INTCON:    return "ST_INTCON";
+    case ST_CHARCON:   return "ST_CHARCON";
+    case ST_STRCON:    return "ST_STRCON";
+    case ST_LABEL:     return "ST_LABEL";
+    case ST_REGARG:    return "ST_REGARG";
+    case ST_STKARG:    return "ST_STKARG";
+    case ST_RETVAL:    return "ST_RETVAL";
+    case ST_ZERO:      return "ST_ZERO";
     default:
       INTERR(1061);
   }
@@ -220,11 +220,11 @@ static const char *addr2str(char *buf, size_t bufsize, const symbol_t &addr)
     case ST_FUNCTION:
       snprintf(buf, bufsize, "%s (%s)", type, addr.c_str());
       break;
-    case ST_TEMPORARY:
-    case ST_SAVED_TEMPORARY:
-    case ST_STACK_TEMPORARY:
-    case ST_REG_ARGUMENT:
-    case ST_STACK_ARGUMENT:
+    case ST_TEMP:
+    case ST_SVTEMP:
+    case ST_STKTEMP:
+    case ST_REGARG:
+    case ST_STKARG:
     case ST_INTCON:
     case ST_LABEL:
       snprintf(buf, bufsize, "%s (%d)", type, addr.val());

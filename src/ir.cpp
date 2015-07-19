@@ -56,19 +56,19 @@ void ir_engine_t::check_dest(symref_t sym)
 
   switch ( sym->type() )
   {
-    case ST_TEMPORARY:
+    case ST_TEMP:
       f.temps.use(sym);
       break;
-    case ST_SAVED_TEMPORARY:
+    case ST_SVTEMP:
       f.svregs.use(sym);
       break;
-    case ST_REG_ARGUMENT:
+    case ST_REGARG:
       f.regargs.use(sym);
       break;
-    case ST_STACK_ARGUMENT:
+    case ST_STKARG:
       f.stkargs.use(sym);
       break;
-    case ST_STACK_TEMPORARY:
+    case ST_STKTEMP:
       f.stktemps.use(sym);
       break;
     case ST_RETVAL:
@@ -89,13 +89,13 @@ void ir_engine_t::check_src(symref_t sym)
 
   switch ( sym->type() )
   {
-    case ST_TEMPORARY:
+    case ST_TEMP:
       f.temps.free(sym);
       break;
-    case ST_SAVED_TEMPORARY:
+    case ST_SVTEMP:
       f.svregs.free(sym);
       break;
-    case ST_STACK_TEMPORARY:
+    case ST_STKTEMP:
       f.stktemps.free(sym);
       break;
     case ST_RETVAL:
@@ -105,8 +105,8 @@ void ir_engine_t::check_src(symref_t sym)
       sym->set_val(lblcnt++);
       ir.labels.push_back(sym);
       break;
-    case ST_REG_ARGUMENT:
-    case ST_STACK_ARGUMENT:
+    case ST_REGARG:
+    case ST_STKARG:
     case ST_RETADDR:
       INTERR(1079);
     default:

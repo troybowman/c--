@@ -48,22 +48,22 @@ public:
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_PRIMITIVE,       // primitive (int/char/void)
-  ST_ARRAY,           // array (base type is a primitive)
-  ST_FUNCTION,        // function (return type + local vars)
-  ST_TEMPORARY,       // temporary value
-  ST_SAVED_TEMPORARY, // temporary that must persist across a function call
-  ST_STACK_TEMPORARY, // temporary that must be stored on the stack
-  ST_INTCON,          // integer constant
-  ST_CHARCON,         // character constant
-  ST_STRCON,          // string constant
-  ST_LABEL,           // asm label
-  ST_RETVAL,          // return value location
-  ST_RETADDR,         // return address location
-  ST_REG_ARGUMENT,    // function register argument
-  ST_STACK_ARGUMENT,  // function stack argument
-  ST_ELLIPSIS,        // identifies "..." parameter declaration
-  ST_ZERO             // zero register
+  ST_PRIMITIVE, // primitive (int/char/void)
+  ST_ARRAY,     // array (base type is a primitive)
+  ST_FUNCTION,  // function (return type + local vars)
+  ST_TEMP,      // temporary value
+  ST_SVTEMP,    // saved temporary value
+  ST_STKTEMP,   // temporary that must be stored on the stack
+  ST_INTCON,    // integer constant
+  ST_CHARCON,   // character constant
+  ST_STRCON,    // string constant
+  ST_LABEL,     // asm label
+  ST_RETVAL,    // return value location
+  ST_RETADDR,   // return address location
+  ST_REGARG,    // function register argument
+  ST_STKARG,    // function stack argument
+  ST_ELLIPSIS,  // identifies "..." parameter declaration
+  ST_ZERO       // zero register
 };
 
 //-----------------------------------------------------------------------------
@@ -112,9 +112,7 @@ class symbol_t : public refcnt_obj_t
         };
       };
     };
-    // ST_INTCON, ST_TEMPORARY, ST_SAVED_TEMPORARY, ST_LABEL
-    // ST_STACK_TEMPORARY, ST_STACK_ARGUMENT, ST_REG_ARGUMENT
-    int _val;
+    int _val;   // ST_INTCON, ST_TEMP, ST_SVTEMP, ST_LABEL, ST_STKTEMP, ST_STKARG, ST_REGARG
     char *_str; // ST_STRCON, ST_CHARCON
   };
 
