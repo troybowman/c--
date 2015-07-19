@@ -187,7 +187,8 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %destructor { delete $$; ctx.trash(); } params
 %destructor { delete $$; } var_decls func_decls var_decl_list func_decl_list param_decl_list
 %destructor { yygetsym($$); } var_decl func_decl ellipsis param_decl
-%destructor { delete $$; } stmt_var
+%destructor { delete $$; } stmt_var stmt_array_sfx assg
+%destructor { delete $$.head; } stmts arg_list assg_list
 
 /*---------------------------------------------------------------------------*/
 /* precedence increases as we go down the list */
