@@ -30,6 +30,24 @@ class Tester(ArgumentParser):
 
     def __init__(self):
         self.__find_cmm__() # fail if we're not in the c-- directory tree
+        self.__init_args__()
+
+    def __find_cmm__(self):
+        cur = os.getcwd()
+        while not os.path.basename(cur).lower() == "c--":
+            parent = os.path.dirname(cur)
+            if parent == cur:
+                raise Exception("Error: could not find c-- root directory!")
+            cur = parent
+        self.home = cur
+        self.dbg = os.path.join(self.home, "bin", "debug", "c--")
+        if not os.path.exists(self.dbg):
+            self.dbg = None
+        self.opt = os.path.join(self.home, "bin", "release", "c--")
+        if not os.path.exists(self.opt):
+            self.opt = None
+
+    def __init_args__(self):
         ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
         self.add_argument(
             "-p", "--phase_spec",
@@ -54,21 +72,7 @@ class Tester(ArgumentParser):
             help="enable valgrind memory checks",
             action="store_true",
             default=False)
-
-    def __find_cmm__(self):
-        cur = os.getcwd()
-        while not os.path.basename(cur).lower() == "c--":
-            parent = os.path.dirname(cur)
-            if parent == cur:
-                raise Exception("Error: could not find c-- root directory!")
-            cur = parent
-        self.home = cur
-        self.dbg = os.path.join(self.home, "bin", "debug", "c--")
-        if not os.path.exists(self.dbg):
-            self.dbg = None
-        self.opt = os.path.join(self.home, "bin", "release", "c--")
-        if not os.path.exists(self.opt):
-            self.opt = None
+        self.parse_args()
 
     def parse_args(self):
         self.args = super(Tester, self).parse_args()
@@ -284,7 +288,6 @@ if __name__ == "__main__":
         RELEASE : ReleasePhase(tests),
         }
 
-    t.parse_args()
     for step in t.args.phase_spec:
         with phases[step] as p:
             p.execute(t)
