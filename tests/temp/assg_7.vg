@@ -1,0 +1,333 @@
+==1023== Memcheck, a memory error detector
+==1023== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==1023== Using Valgrind-3.10.0 and LibVEX; rerun with -h for copyright info
+==1023== Command: /Users/troy/c--/bin/debug/c-- -v 0x1e assg_7.c
+==1023== Parent PID: 983
+==1023== 
+--1023-- 
+--1023-- Valgrind options:
+--1023--    --leak-check=full
+--1023--    --show-reachable=yes
+--1023--    --malloc-fill=DD
+--1023--    --free-fill=BB
+--1023--    --track-origins=yes
+--1023--    --gen-suppressions=all
+--1023--    --log-file=assg_7.vg
+--1023--    -v
+--1023-- Contents of /proc/version:
+--1023--   can't open /proc/version
+--1023-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2-bmi
+--1023-- Page sizes: currently 4096, max supported 4096
+--1023-- Valgrind library directory: /usr/local/Cellar/valgrind/3.10.0/lib/valgrind
+--1023-- /Users/troy/c--/bin/debug/c-- (rx at 0x100000000, rw at 0x100045000)
+--1023--    reading syms   from primary file (121 3123)
+--1023--    dSYM directory is missing; consider using --dsymutil=yes
+--1023-- /usr/lib/dyld (rx at 0x7fff5fc00000, rw at 0x7fff5fc34000)
+--1023--    reading syms   from primary file (6 1183)
+--1023-- Scheduler: using generic scheduler lock implementation.
+--1023-- Reading suppressions file: /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp
+==1023== embedded gdbserver: reading from /var/folders/6g/vp7n6y896db8n5j1fygh8l880000gn/T//vgdb-pipe-from-vgdb-to-1023-by-troy-on-???
+==1023== embedded gdbserver: writing to   /var/folders/6g/vp7n6y896db8n5j1fygh8l880000gn/T//vgdb-pipe-to-vgdb-from-1023-by-troy-on-???
+==1023== embedded gdbserver: shared mem   /var/folders/6g/vp7n6y896db8n5j1fygh8l880000gn/T//vgdb-pipe-shared-mem-vgdb-1023-by-troy-on-???
+==1023== 
+==1023== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==1023== don't want to do, unless you know exactly what you're doing,
+==1023== or are doing some strange experiment):
+==1023==   /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/../../bin/vgdb --pid=1023 ...command...
+==1023== 
+==1023== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==1023==   /path/to/gdb /Users/troy/c--/bin/debug/c--
+==1023== and then give GDB the following command
+==1023==   target remote | /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/../../bin/vgdb --pid=1023
+==1023== --pid is optional if only one valgrind process is running
+==1023== 
+--1023-- REDIR: 0x7fff5fc1b798 (dyld:arc4random) redirected to 0x23805adb4 (???)
+--1023-- REDIR: 0x7fff5fc21560 (dyld:strcmp) redirected to 0x23805ad16 (???)
+--1023-- REDIR: 0x7fff5fc207d0 (dyld:strchr) redirected to 0x23805adbf (???)
+--1023-- REDIR: 0x7fff5fc1b560 (dyld:strlen) redirected to 0x23805ace5 (???)
+--1023-- REDIR: 0x7fff5fc1b4c0 (dyld:strcpy) redirected to 0x23805ad32 (???)
+--1023-- REDIR: 0x7fff5fc1ec4f (dyld:strcat) redirected to 0x23805acf6 (???)
+--1023-- /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_core-amd64-darwin.so (rx at 0x1000, rw at 0x3000)
+--1023--    reading syms   from primary file (3 10)
+--1023--    dSYM= /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_core-amd64-darwin.so.dSYM/Contents/Resources/DWARF/vgpreload_core-amd64-darwin.so
+--1023-- /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so (rx at 0x5000, rw at 0xa000)
+--1023--    reading syms   from primary file (70 18)
+--1023--    dSYM= /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so.dSYM/Contents/Resources/DWARF/vgpreload_memcheck-amd64-darwin.so
+--1023-- /usr/lib/libc++.1.dylib (rx at 0xd000, rw at 0x60000)
+--1023--    reading syms   from primary file (2070 1507)
+--1023-- /usr/lib/libSystem.B.dylib (rx at 0xbb000, rw at 0xbd000)
+--1023--    reading syms   from primary file (31 4)
+--1023-- /usr/lib/libc++abi.dylib (rx at 0xc3000, rw at 0xed000)
+--1023--    reading syms   from primary file (331 182)
+--1023-- /usr/lib/system/libcache.dylib (rx at 0xfa000, rw at 0xff000)
+--1023--    reading syms   from primary file (29 24)
+--1023-- /usr/lib/system/libcommonCrypto.dylib (rx at 0x103000, rw at 0x10e000)
+--1023--    reading syms   from primary file (203 183)
+--1023-- /usr/lib/system/libcompiler_rt.dylib (rx at 0x11b000, rw at 0x123000)
+--1023--    reading syms   from primary file (454 8)
+--1023-- /usr/lib/system/libcopyfile.dylib (rx at 0x12e000, rw at 0x136000)
+--1023--    reading syms   from primary file (11 27)
+--1023-- /usr/lib/system/libcorecrypto.dylib (rx at 0x13c000, rw at 0x18b000)
+--1023--    reading syms   from primary file (341 430)
+--1023-- /usr/lib/system/libdispatch.dylib (rx at 0x19b000, rw at 0x1b6000)
+--1023--    reading syms   from primary file (176 737)
+--1023-- /usr/lib/system/libdyld.dylib (rx at 0x1cf000, rw at 0x1d3000)
+--1023--    reading syms   from primary file (78 96)
+--1023-- /usr/lib/system/libkeymgr.dylib (rx at 0x1d9000, rw at 0x1da000)
+--1023--    reading syms   from primary file (12 4)
+--1023-- /usr/lib/system/liblaunch.dylib (rx at 0x1de000, rw at 0x1e6000)
+--1023--    reading syms   from primary file (112 1)
+--1023-- /usr/lib/system/libmacho.dylib (rx at 0x1ed000, rw at 0x1f3000)
+--1023--    reading syms   from primary file (86 1)
+--1023-- /usr/lib/system/libquarantine.dylib (rx at 0x1f8000, rw at 0x1fb000)
+--1023--    reading syms   from primary file (66 32)
+--1023-- /usr/lib/system/libremovefile.dylib (rx at 0x200000, rw at 0x202000)
+--1023--    reading syms   from primary file (15 4)
+--1023-- /usr/lib/system/libsystem_asl.dylib (rx at 0x207000, rw at 0x219000)
+--1023--    reading syms   from primary file (127 106)
+--1023-- /usr/lib/system/libsystem_blocks.dylib (rx at 0x222000, rw at 0x224000)
+--1023--    reading syms   from primary file (25 23)
+--1023-- /usr/lib/system/libsystem_c.dylib (rx at 0x228000, rw at 0x2b2000)
+--1023--    reading syms   from primary file (1288 784)
+--1023-- /usr/lib/system/libsystem_configuration.dylib (rx at 0x2dd000, rw at 0x2e0000)
+--1023--    reading syms   from primary file (27 58)
+--1023-- /usr/lib/system/libsystem_dnssd.dylib (rx at 0x2e5000, rw at 0x2ee000)
+--1023--    reading syms   from primary file (68 34)
+--1023-- /usr/lib/system/libsystem_info.dylib (rx at 0x2f4000, rw at 0x31c000)
+--1023--    reading syms   from primary file (526 526)
+--1023-- /usr/lib/system/libsystem_kernel.dylib (rx at 0x331000, rw at 0x34e000)
+--1023--    reading syms   from primary file (931 2486)
+--1023-- /usr/lib/system/libsystem_m.dylib (rx at 0x371000, rw at 0x3a1000)
+--1023--    reading syms   from primary file (573 1)
+--1023-- /usr/lib/system/libsystem_malloc.dylib (rx at 0x3ab000, rw at 0x3c7000)
+--1023--    reading syms   from primary file (102 199)
+--1023-- /usr/lib/system/libsystem_network.dylib (rx at 0x3d0000, rw at 0x3f8000)
+--1023--    reading syms   from primary file (168 1053)
+--1023-- /usr/lib/system/libsystem_notify.dylib (rx at 0x413000, rw at 0x41d000)
+--1023--    reading syms   from primary file (137 48)
+--1023-- /usr/lib/system/libsystem_platform.dylib (rx at 0x425000, rw at 0x42c000)
+--1023--    reading syms   from primary file (114 1463)
+--1023-- /usr/lib/system/libsystem_pthread.dylib (rx at 0x43e000, rw at 0x446000)
+--1023--    reading syms   from primary file (137 54)
+--1023-- /usr/lib/system/libsystem_sandbox.dylib (rx at 0x451000, rw at 0x453000)
+--1023--    reading syms   from primary file (61 8)
+--1023-- /usr/lib/system/libsystem_stats.dylib (rx at 0x457000, rw at 0x45c000)
+--1023--    reading syms   from primary file (20 44)
+--1023-- /usr/lib/system/libunc.dylib (rx at 0x462000, rw at 0x464000)
+--1023--    reading syms   from primary file (31 4)
+--1023-- /usr/lib/system/libunwind.dylib (rx at 0x469000, rw at 0x46f000)
+--1023--    reading syms   from primary file (102 52)
+--1023-- /usr/lib/system/libxpc.dylib (rx at 0x475000, rw at 0x49a000)
+--1023--    reading syms   from primary file (349 818)
+--1023-- /usr/lib/libobjc.A.dylib (rx at 0x4b6000, rw at 0x664000)
+--1023--    reading syms   from primary file (342 735)
+--1023-- /usr/lib/libauto.dylib (rx at 0x684000, rw at 0x6c7000)
+--1023--    reading syms   from primary file (68 742)
+--1023-- /usr/lib/libDiagnosticMessagesClient.dylib (rx at 0x6de000, rw at 0x6e0000)
+--1023--    reading syms   from primary file (21 14)
+--1023-- REDIR: 0x429c10 (libsystem_platform.dylib:_platform_memchr) redirected to 0x838a (_platform_memchr)
+--1023-- REDIR: 0x42a100 (libsystem_platform.dylib:_platform_memcmp) redirected to 0x88d3 (_platform_memcmp)
+--1023-- REDIR: 0x428e40 (libsystem_platform.dylib:_platform_strncmp) redirected to 0x82a9 (_platform_strncmp)
+--1023-- REDIR: 0x3bc252 (libsystem_malloc.dylib:malloc) redirected to 0x664a (malloc)
+--1023-- REDIR: 0x3bac2f (libsystem_malloc.dylib:malloc_default_zone) redirected to 0x7aa4 (malloc_default_zone)
+--1023-- REDIR: 0x3bb821 (libsystem_malloc.dylib:malloc_zone_malloc) redirected to 0x68fe (malloc_zone_malloc)
+--1023-- REDIR: 0x3bbee4 (libsystem_malloc.dylib:free) redirected to 0x6a8a (free)
+--1023-- REDIR: 0x3bbb12 (libsystem_malloc.dylib:malloc_zone_calloc) redirected to 0x6f04 (malloc_zone_calloc)
+--1023-- REDIR: 0x229720 (libsystem_c.dylib:strlen) redirected to 0x7e86 (strlen)
+--1023-- REDIR: 0x3bbcee (libsystem_malloc.dylib:malloc_zone_from_ptr) redirected to 0x7ae5 (malloc_zone_from_ptr)
+--1023-- REDIR: 0x429d00 (libsystem_platform.dylib:_platform_strcmp) redirected to 0x8329 (_platform_strcmp)
+--1023-- REDIR: 0x3bc299 (libsystem_malloc.dylib:calloc) redirected to 0x6d02 (calloc)
+--1023-- REDIR: 0x229680 (libsystem_c.dylib:strcpy) redirected to 0x7f45 (strcpy)
+--1023-- REDIR: 0x428a20 (libsystem_platform.dylib:_platform_strchr) redirected to 0x7d31 (_platform_strchr)
+--1023-- REDIR: 0x229780 (libsystem_c.dylib:strncpy) redirected to 0x80b7 (strncpy)
+==1023== 
+==1023== HEAP SUMMARY:
+==1023==     in use at exit: 26,653 bytes in 399 blocks
+==1023==   total heap usage: 613 allocs, 214 frees, 57,662 bytes allocated
+==1023== 
+==1023== Searching for pointers to 399 not-freed blocks
+==1023== Checked 8,993,648 bytes
+==1023== 
+==1023== 4 bytes in 1 blocks are indirectly lost in loss record 1 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x282EAA: strdup (in /usr/lib/system/libsystem_c.dylib)
+==1023==    by 0x10001AC4A: yylex(YYSTYPE*, void*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x1000019B6: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:_Z5yylexP7YYSTYPEPv
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 48 bytes in 1 blocks are indirectly lost in loss record 36 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x10000391F: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:_Znwm
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 48 bytes in 1 blocks are definitely lost in loss record 37 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x100007595: process_assg(parser_ctx_t&, treenode_t*, treenode_t*, int) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000324A: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_Znwm
+   fun:_ZL12process_assgR12parser_ctx_tP10treenode_tS2_i
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 96 bytes in 1 blocks are indirectly lost in loss record 47 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x100005A37: process_var_id(char const*, int, terr_info_t, unsigned int) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x1000028C2: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:_Znwm
+   fun:_ZL14process_var_idPKci11terr_info_tj
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 144 bytes in 3 blocks are indirectly lost in loss record 51 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x100007622: process_assg(parser_ctx_t&, treenode_t*, treenode_t*, int) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000324A: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:_Znwm
+   fun:_ZL12process_assgR12parser_ctx_tP10treenode_tS2_i
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 144 bytes in 3 blocks are definitely lost in loss record 52 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x1000038A9: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_Znwm
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 240 bytes in 5 blocks are indirectly lost in loss record 58 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x1000038A9: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:_Znwm
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 240 bytes in 5 blocks are indirectly lost in loss record 59 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x10000815B: process_stmt_var(parser_ctx_t&, refcnt_t<symbol_t>, treenode_t*, int) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x1000036FE: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:_Znwm
+   fun:_ZL16process_stmt_varR12parser_ctx_t8refcnt_tI8symbol_tEP10treenode_ti
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== 916 (144 direct, 772 indirect) bytes in 3 blocks are definitely lost in loss record 72 of 83
+==1023==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1023==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1023==    by 0x100020922: seq_append(seq_t&, treenode_t const*, treenode_type_t) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100002DC4: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1023==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1023== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_Znwm
+   fun:_Z10seq_appendR5seq_tPK10treenode_t15treenode_type_t
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1023== LEAK SUMMARY:
+==1023==    definitely lost: 336 bytes in 7 blocks
+==1023==    indirectly lost: 772 bytes in 16 blocks
+==1023==      possibly lost: 0 bytes in 0 blocks
+==1023==    still reachable: 0 bytes in 0 blocks
+==1023==         suppressed: 25,545 bytes in 376 blocks
+==1023== 
+==1023== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 14 from 14)
+--1023-- 
+--1023-- used_suppression:     34 OSX109:6-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:797 suppressed: 13,656 bytes in 252 blocks
+--1023-- used_suppression:      1 OSX109:1-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:747 suppressed: 2,064 bytes in 1 blocks
+--1023-- used_suppression:     12 OSX109:7-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:808 suppressed: 7,205 bytes in 73 blocks
+--1023-- used_suppression:     11 OSX109:10-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:839 suppressed: 1,851 bytes in 29 blocks
+--1023-- used_suppression:     10 OSX109:9-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:829 suppressed: 609 bytes in 15 blocks
+--1023-- used_suppression:      5 OSX109:5-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:787 suppressed: 144 bytes in 5 blocks
+--1023-- used_suppression:      1 OSX109:3-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:765 suppressed: 16 bytes in 1 blocks
+==1023== 
+==1023== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 14 from 14)

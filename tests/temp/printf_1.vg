@@ -1,0 +1,216 @@
+==1045== Memcheck, a memory error detector
+==1045== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==1045== Using Valgrind-3.10.0 and LibVEX; rerun with -h for copyright info
+==1045== Command: /Users/troy/c--/bin/debug/c-- -v 0x1e printf_1.c
+==1045== Parent PID: 983
+==1045== 
+--1045-- 
+--1045-- Valgrind options:
+--1045--    --leak-check=full
+--1045--    --show-reachable=yes
+--1045--    --malloc-fill=DD
+--1045--    --free-fill=BB
+--1045--    --track-origins=yes
+--1045--    --gen-suppressions=all
+--1045--    --log-file=printf_1.vg
+--1045--    -v
+--1045-- Contents of /proc/version:
+--1045--   can't open /proc/version
+--1045-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2-bmi
+--1045-- Page sizes: currently 4096, max supported 4096
+--1045-- Valgrind library directory: /usr/local/Cellar/valgrind/3.10.0/lib/valgrind
+--1045-- /Users/troy/c--/bin/debug/c-- (rx at 0x100000000, rw at 0x100045000)
+--1045--    reading syms   from primary file (121 3123)
+--1045--    dSYM directory is missing; consider using --dsymutil=yes
+--1045-- /usr/lib/dyld (rx at 0x7fff5fc00000, rw at 0x7fff5fc34000)
+--1045--    reading syms   from primary file (6 1183)
+--1045-- Scheduler: using generic scheduler lock implementation.
+--1045-- Reading suppressions file: /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp
+==1045== embedded gdbserver: reading from /var/folders/6g/vp7n6y896db8n5j1fygh8l880000gn/T//vgdb-pipe-from-vgdb-to-1045-by-troy-on-???
+==1045== embedded gdbserver: writing to   /var/folders/6g/vp7n6y896db8n5j1fygh8l880000gn/T//vgdb-pipe-to-vgdb-from-1045-by-troy-on-???
+==1045== embedded gdbserver: shared mem   /var/folders/6g/vp7n6y896db8n5j1fygh8l880000gn/T//vgdb-pipe-shared-mem-vgdb-1045-by-troy-on-???
+==1045== 
+==1045== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==1045== don't want to do, unless you know exactly what you're doing,
+==1045== or are doing some strange experiment):
+==1045==   /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/../../bin/vgdb --pid=1045 ...command...
+==1045== 
+==1045== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==1045==   /path/to/gdb /Users/troy/c--/bin/debug/c--
+==1045== and then give GDB the following command
+==1045==   target remote | /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/../../bin/vgdb --pid=1045
+==1045== --pid is optional if only one valgrind process is running
+==1045== 
+--1045-- REDIR: 0x7fff5fc1b798 (dyld:arc4random) redirected to 0x23805adb4 (???)
+--1045-- REDIR: 0x7fff5fc21560 (dyld:strcmp) redirected to 0x23805ad16 (???)
+--1045-- REDIR: 0x7fff5fc207d0 (dyld:strchr) redirected to 0x23805adbf (???)
+--1045-- REDIR: 0x7fff5fc1b560 (dyld:strlen) redirected to 0x23805ace5 (???)
+--1045-- REDIR: 0x7fff5fc1b4c0 (dyld:strcpy) redirected to 0x23805ad32 (???)
+--1045-- REDIR: 0x7fff5fc1ec4f (dyld:strcat) redirected to 0x23805acf6 (???)
+--1045-- /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_core-amd64-darwin.so (rx at 0x1000, rw at 0x3000)
+--1045--    reading syms   from primary file (3 10)
+--1045--    dSYM= /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_core-amd64-darwin.so.dSYM/Contents/Resources/DWARF/vgpreload_core-amd64-darwin.so
+--1045-- /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so (rx at 0x5000, rw at 0xa000)
+--1045--    reading syms   from primary file (70 18)
+--1045--    dSYM= /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so.dSYM/Contents/Resources/DWARF/vgpreload_memcheck-amd64-darwin.so
+--1045-- /usr/lib/libc++.1.dylib (rx at 0xd000, rw at 0x60000)
+--1045--    reading syms   from primary file (2070 1507)
+--1045-- /usr/lib/libSystem.B.dylib (rx at 0xbb000, rw at 0xbd000)
+--1045--    reading syms   from primary file (31 4)
+--1045-- /usr/lib/libc++abi.dylib (rx at 0xc3000, rw at 0xed000)
+--1045--    reading syms   from primary file (331 182)
+--1045-- /usr/lib/system/libcache.dylib (rx at 0xfa000, rw at 0xff000)
+--1045--    reading syms   from primary file (29 24)
+--1045-- /usr/lib/system/libcommonCrypto.dylib (rx at 0x103000, rw at 0x10e000)
+--1045--    reading syms   from primary file (203 183)
+--1045-- /usr/lib/system/libcompiler_rt.dylib (rx at 0x11b000, rw at 0x123000)
+--1045--    reading syms   from primary file (454 8)
+--1045-- /usr/lib/system/libcopyfile.dylib (rx at 0x12e000, rw at 0x136000)
+--1045--    reading syms   from primary file (11 27)
+--1045-- /usr/lib/system/libcorecrypto.dylib (rx at 0x13c000, rw at 0x18b000)
+--1045--    reading syms   from primary file (341 430)
+--1045-- /usr/lib/system/libdispatch.dylib (rx at 0x19b000, rw at 0x1b6000)
+--1045--    reading syms   from primary file (176 737)
+--1045-- /usr/lib/system/libdyld.dylib (rx at 0x1cf000, rw at 0x1d3000)
+--1045--    reading syms   from primary file (78 96)
+--1045-- /usr/lib/system/libkeymgr.dylib (rx at 0x1d9000, rw at 0x1da000)
+--1045--    reading syms   from primary file (12 4)
+--1045-- /usr/lib/system/liblaunch.dylib (rx at 0x1de000, rw at 0x1e6000)
+--1045--    reading syms   from primary file (112 1)
+--1045-- /usr/lib/system/libmacho.dylib (rx at 0x1ed000, rw at 0x1f3000)
+--1045--    reading syms   from primary file (86 1)
+--1045-- /usr/lib/system/libquarantine.dylib (rx at 0x1f8000, rw at 0x1fb000)
+--1045--    reading syms   from primary file (66 32)
+--1045-- /usr/lib/system/libremovefile.dylib (rx at 0x200000, rw at 0x202000)
+--1045--    reading syms   from primary file (15 4)
+--1045-- /usr/lib/system/libsystem_asl.dylib (rx at 0x207000, rw at 0x219000)
+--1045--    reading syms   from primary file (127 106)
+--1045-- /usr/lib/system/libsystem_blocks.dylib (rx at 0x222000, rw at 0x224000)
+--1045--    reading syms   from primary file (25 23)
+--1045-- /usr/lib/system/libsystem_c.dylib (rx at 0x228000, rw at 0x2b2000)
+--1045--    reading syms   from primary file (1288 784)
+--1045-- /usr/lib/system/libsystem_configuration.dylib (rx at 0x2dd000, rw at 0x2e0000)
+--1045--    reading syms   from primary file (27 58)
+--1045-- /usr/lib/system/libsystem_dnssd.dylib (rx at 0x2e5000, rw at 0x2ee000)
+--1045--    reading syms   from primary file (68 34)
+--1045-- /usr/lib/system/libsystem_info.dylib (rx at 0x2f4000, rw at 0x31c000)
+--1045--    reading syms   from primary file (526 526)
+--1045-- /usr/lib/system/libsystem_kernel.dylib (rx at 0x331000, rw at 0x34e000)
+--1045--    reading syms   from primary file (931 2486)
+--1045-- /usr/lib/system/libsystem_m.dylib (rx at 0x371000, rw at 0x3a1000)
+--1045--    reading syms   from primary file (573 1)
+--1045-- /usr/lib/system/libsystem_malloc.dylib (rx at 0x3ab000, rw at 0x3c7000)
+--1045--    reading syms   from primary file (102 199)
+--1045-- /usr/lib/system/libsystem_network.dylib (rx at 0x3d0000, rw at 0x3f8000)
+--1045--    reading syms   from primary file (168 1053)
+--1045-- /usr/lib/system/libsystem_notify.dylib (rx at 0x413000, rw at 0x41d000)
+--1045--    reading syms   from primary file (137 48)
+--1045-- /usr/lib/system/libsystem_platform.dylib (rx at 0x425000, rw at 0x42c000)
+--1045--    reading syms   from primary file (114 1463)
+--1045-- /usr/lib/system/libsystem_pthread.dylib (rx at 0x43e000, rw at 0x446000)
+--1045--    reading syms   from primary file (137 54)
+--1045-- /usr/lib/system/libsystem_sandbox.dylib (rx at 0x451000, rw at 0x453000)
+--1045--    reading syms   from primary file (61 8)
+--1045-- /usr/lib/system/libsystem_stats.dylib (rx at 0x457000, rw at 0x45c000)
+--1045--    reading syms   from primary file (20 44)
+--1045-- /usr/lib/system/libunc.dylib (rx at 0x462000, rw at 0x464000)
+--1045--    reading syms   from primary file (31 4)
+--1045-- /usr/lib/system/libunwind.dylib (rx at 0x469000, rw at 0x46f000)
+--1045--    reading syms   from primary file (102 52)
+--1045-- /usr/lib/system/libxpc.dylib (rx at 0x475000, rw at 0x49a000)
+--1045--    reading syms   from primary file (349 818)
+--1045-- /usr/lib/libobjc.A.dylib (rx at 0x4b6000, rw at 0x664000)
+--1045--    reading syms   from primary file (342 735)
+--1045-- /usr/lib/libauto.dylib (rx at 0x684000, rw at 0x6c7000)
+--1045--    reading syms   from primary file (68 742)
+--1045-- /usr/lib/libDiagnosticMessagesClient.dylib (rx at 0x6de000, rw at 0x6e0000)
+--1045--    reading syms   from primary file (21 14)
+--1045-- REDIR: 0x429c10 (libsystem_platform.dylib:_platform_memchr) redirected to 0x838a (_platform_memchr)
+--1045-- REDIR: 0x42a100 (libsystem_platform.dylib:_platform_memcmp) redirected to 0x88d3 (_platform_memcmp)
+--1045-- REDIR: 0x428e40 (libsystem_platform.dylib:_platform_strncmp) redirected to 0x82a9 (_platform_strncmp)
+--1045-- REDIR: 0x3bc252 (libsystem_malloc.dylib:malloc) redirected to 0x664a (malloc)
+--1045-- REDIR: 0x3bac2f (libsystem_malloc.dylib:malloc_default_zone) redirected to 0x7aa4 (malloc_default_zone)
+--1045-- REDIR: 0x3bb821 (libsystem_malloc.dylib:malloc_zone_malloc) redirected to 0x68fe (malloc_zone_malloc)
+--1045-- REDIR: 0x3bbee4 (libsystem_malloc.dylib:free) redirected to 0x6a8a (free)
+--1045-- REDIR: 0x3bbb12 (libsystem_malloc.dylib:malloc_zone_calloc) redirected to 0x6f04 (malloc_zone_calloc)
+--1045-- REDIR: 0x229720 (libsystem_c.dylib:strlen) redirected to 0x7e86 (strlen)
+--1045-- REDIR: 0x3bbcee (libsystem_malloc.dylib:malloc_zone_from_ptr) redirected to 0x7ae5 (malloc_zone_from_ptr)
+--1045-- REDIR: 0x429d00 (libsystem_platform.dylib:_platform_strcmp) redirected to 0x8329 (_platform_strcmp)
+--1045-- REDIR: 0x3bc299 (libsystem_malloc.dylib:calloc) redirected to 0x6d02 (calloc)
+--1045-- REDIR: 0x229680 (libsystem_c.dylib:strcpy) redirected to 0x7f45 (strcpy)
+--1045-- REDIR: 0x428a20 (libsystem_platform.dylib:_platform_strchr) redirected to 0x7d31 (_platform_strchr)
+--1045-- REDIR: 0x229780 (libsystem_c.dylib:strncpy) redirected to 0x80b7 (strncpy)
+==1045== 
+==1045== HEAP SUMMARY:
+==1045==     in use at exit: 25,616 bytes in 378 blocks
+==1045==   total heap usage: 721 allocs, 343 frees, 64,287 bytes allocated
+==1045== 
+==1045== Searching for pointers to 378 not-freed blocks
+==1045== Checked 8,993,648 bytes
+==1045== 
+==1045== 23 bytes in 1 blocks are indirectly lost in loss record 10 of 76
+==1045==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1045==    by 0x10000BF45: prepare_substring_arg(parser_ctx_t const&, std::__1::vector<format_arg_t, std::__1::allocator<format_arg_t> >&, char const*, char const*) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100009763: validate_printf_call(parser_ctx_t const&, std::__1::vector<format_arg_t, std::__1::allocator<format_arg_t> >&, treenode_t const*) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100008D75: process_printf_call(parser_ctx_t&, refcnt_t<symbol_t>, treenode_t*, int) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100007AE0: process_call(parser_ctx_t&, refcnt_t<symbol_t>, treenode_t*, int) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x10000335D: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1045== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:_ZL21prepare_substring_argRK12parser_ctx_tRNSt3__16vectorI12format_arg_tNS2_9allocatorIS4_EEEEPKcSA_
+   fun:_ZL20validate_printf_callRK12parser_ctx_tRNSt3__16vectorI12format_arg_tNS2_9allocatorIS4_EEEEPK10treenode_t
+   fun:_Z19process_printf_callR12parser_ctx_t8refcnt_tI8symbol_tEP10treenode_ti
+   fun:_ZL12process_callR12parser_ctx_t8refcnt_tI8symbol_tEP10treenode_ti
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1045== 71 (48 direct, 23 indirect) bytes in 1 blocks are definitely lost in loss record 43 of 76
+==1045==    at 0x66CB: malloc (in /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==1045==    by 0x4828D: operator new(unsigned long) (in /usr/lib/libc++.1.dylib)
+==1045==    by 0x10000C054: prepare_substring_arg(parser_ctx_t const&, std::__1::vector<format_arg_t, std::__1::allocator<format_arg_t> >&, char const*, char const*) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100009763: validate_printf_call(parser_ctx_t const&, std::__1::vector<format_arg_t, std::__1::allocator<format_arg_t> >&, treenode_t const*) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100008D75: process_printf_call(parser_ctx_t&, refcnt_t<symbol_t>, treenode_t*, int) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100007AE0: process_call(parser_ctx_t&, refcnt_t<symbol_t>, treenode_t*, int) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x10000335D: yyparse(void*, parser_ctx_t&) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x10000A15B: parse(parse_results_t&, __sFILE*) (in /Users/troy/c--/bin/debug/c--)
+==1045==    by 0x100031341: main (in /Users/troy/c--/bin/debug/c--)
+==1045== 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_Znwm
+   fun:_ZL21prepare_substring_argRK12parser_ctx_tRNSt3__16vectorI12format_arg_tNS2_9allocatorIS4_EEEEPKcSA_
+   fun:_ZL20validate_printf_callRK12parser_ctx_tRNSt3__16vectorI12format_arg_tNS2_9allocatorIS4_EEEEPK10treenode_t
+   fun:_Z19process_printf_callR12parser_ctx_t8refcnt_tI8symbol_tEP10treenode_ti
+   fun:_ZL12process_callR12parser_ctx_t8refcnt_tI8symbol_tEP10treenode_ti
+   fun:_Z7yyparsePvR12parser_ctx_t
+   fun:_Z5parseR15parse_results_tP7__sFILE
+   fun:main
+}
+==1045== LEAK SUMMARY:
+==1045==    definitely lost: 48 bytes in 1 blocks
+==1045==    indirectly lost: 23 bytes in 1 blocks
+==1045==      possibly lost: 0 bytes in 0 blocks
+==1045==    still reachable: 0 bytes in 0 blocks
+==1045==         suppressed: 25,545 bytes in 376 blocks
+==1045== 
+==1045== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 14 from 14)
+--1045-- 
+--1045-- used_suppression:     34 OSX109:6-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:797 suppressed: 13,656 bytes in 252 blocks
+--1045-- used_suppression:      1 OSX109:1-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:747 suppressed: 2,064 bytes in 1 blocks
+--1045-- used_suppression:     12 OSX109:7-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:808 suppressed: 7,205 bytes in 73 blocks
+--1045-- used_suppression:     11 OSX109:10-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:839 suppressed: 1,851 bytes in 29 blocks
+--1045-- used_suppression:     10 OSX109:9-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:829 suppressed: 609 bytes in 15 blocks
+--1045-- used_suppression:      5 OSX109:5-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:787 suppressed: 144 bytes in 5 blocks
+--1045-- used_suppression:      1 OSX109:3-Leak /usr/local/Cellar/valgrind/3.10.0/lib/valgrind/default.supp:765 suppressed: 16 bytes in 1 blocks
+==1045== 
+==1045== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 14 from 14)
