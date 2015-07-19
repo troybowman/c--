@@ -17,24 +17,26 @@ class parser_ctx_t;
 
 %%
 
-"int"		 { return INT_TYPE;  }
-"char"	 { return CHAR_TYPE; }
-"void"	 { return VOID;      }
-"while"	 { return WHILE;     }
+"int"    { return INT_TYPE;  }
+"char"   { return CHAR_TYPE; }
+"void"   { return VOID;      }
+"while"  { return WHILE;     }
 "return" { return RETURN;    }
 "extern" { return EXTERN;    }
-"if"		 { return IF;        }
-"else"	 { return ELSE;      }
-"for"		 { return FOR;       }
-"=="		 { return EQ;        }
-"!="		 { return NEQ;       }
-"<="		 { return LEQ;       }
-">="		 { return GEQ;       }
-"&&"		 { return AND;       }
-"||"		 { return OR;        }
+"if"     { return IF;        }
+"else"   { return ELSE;      }
+"for"    { return FOR;       }
+"=="     { return EQ;        }
+"!="     { return NEQ;       }
+"<="     { return LEQ;       }
+">="     { return GEQ;       }
+"&&"     { return AND;       }
+"||"     { return OR;        }
 "..."    { return ELLIPSIS;  }
 "<<"     { return SHL;       }
 ">>"     { return SHR;       }
+"main"   { yylval->str = strdup(yytext); return MAIN; }
+"printf" { yylval->str = strdup(yytext); return PRINTF; }
 
 "[" |
 "]" |
@@ -65,13 +67,9 @@ class parser_ctx_t;
 '\\n' |
 '\\0' { yylval->str = strdup(yytext); return CHAR; }
 
-"main"   { yylval->str = strdup(yytext); return MAIN; }
-
-"printf" { yylval->str = strdup(yytext); return PRINTF; }
-
 [[:alpha:]]([[:alpha:]]{+}[_]{+}[0-9]+)? { yylval->str = strdup(yytext); return ID; }
 
-"\""[[:print:]]{-}["]{-}[\n]*"\""	{ yylval->str = strdup(yytext); return STRING; }
+"\""[[:print:]]{-}["]{-}[\n]*"\"" { yylval->str = strdup(yytext); return STRING; }
 
 [[:space:]]+ /* nom */
 
@@ -83,6 +81,6 @@ class parser_ctx_t;
 
 <COMMENT><<EOF>> { fprintf(stderr, "Unterminated comment, line %d\n", yylineno); return 0; }
 
-.	{ return yytext[0]; }
+. { return yytext[0]; }
 
 %%
