@@ -72,9 +72,6 @@ class Tester(ArgumentParser):
             help="enable valgrind memory checks",
             action="store_true",
             default=False)
-        self.parse_args()
-
-    def parse_args(self):
         self.args = super(Tester, self).parse_args()
 
     def debug(self):
