@@ -418,7 +418,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         append(CNT_LABEL, NULLREF, loop);
 
         symref_t cond = generate(tree->children[WHILE_COND]);
-        symref_t end(symref_t(new symbol_t(ST_LABEL)));
+        symref_t end(new symbol_t(ST_LABEL));
         append(CNT_CNDJMP, end, cond);
 
         generate(tree->children[WHILE_BODY]);
