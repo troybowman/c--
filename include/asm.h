@@ -19,7 +19,8 @@ struct item_info_t
   symbol_t &sym;
   uint32_t idx;
 
-  item_info_t(stack_frame_t &, frame_section_t &, symbol_t &, uint32_t);
+  item_info_t(stack_frame_t &f, frame_section_t &sn, symbol_t &s, uint32_t i)
+    : frame(f), sec(sn), sym(s), idx(i) {}
 };
 
 //-----------------------------------------------------------------------------

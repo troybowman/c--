@@ -19,15 +19,6 @@ static const char *argreg_names[ARGREGQTY] =
 #define RESERVED_TEMP3 "$t9"
 
 //-----------------------------------------------------------------------------
-item_info_t::item_info_t(
-    stack_frame_t &_frame,
-    frame_section_t &_sec,
-    symbol_t &_sym,
-    uint32_t _idx) : frame(_frame), sec(_sec), sym(_sym), idx(_idx)
-{
-}
-
-//-----------------------------------------------------------------------------
 asm_ctx_t::asm_ctx_t(FILE *_outfile) : outfile(_outfile)
 {
   ASSERT(0, outfile);
