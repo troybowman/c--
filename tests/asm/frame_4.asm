@@ -1542,11 +1542,11 @@ _f1:
   li $t3, 4
   li $t4, 5
   li $t5, 6
-  add $t6, $t4, $t5
-  add $t4, $t3, $t6
-  add $t3, $t2, $t4
-  add $t2, $t1, $t3
-  add $t1, $t0, $t2
+  addu $t6, $t4, $t5
+  addu $t4, $t3, $t6
+  addu $t3, $t2, $t4
+  addu $t2, $t1, $t3
+  addu $t1, $t0, $t2
   sw $t1, 0($sp)
 
 __leave_f1:
@@ -1582,14 +1582,14 @@ _f2:
   li $t6, 7
   li $s0, 8
   li $s1, 9
-  add $s2, $s0, $s1
-  add $s0, $t6, $s2
-  add $t6, $t5, $s0
-  add $t5, $t4, $t6
-  add $t4, $t3, $t5
-  add $t3, $t2, $t4
-  add $t2, $t1, $t3
-  add $t1, $t0, $t2
+  addu $s2, $s0, $s1
+  addu $s0, $t6, $s2
+  addu $t6, $t5, $s0
+  addu $t5, $t4, $t6
+  addu $t4, $t3, $t5
+  addu $t3, $t2, $t4
+  addu $t2, $t1, $t3
+  addu $t1, $t0, $t2
   sw $t1, 16($sp)
 
 __leave_f2:
@@ -1657,14 +1657,14 @@ _f3:
   move $s7, $v0
   jal _f0
   move $t0, $v0
-  add $t1, $s7, $t0
-  add $t0, $s6, $t1
-  add $t1, $s5, $t0
-  add $t0, $s4, $t1
-  add $t1, $s3, $t0
-  add $t0, $s2, $t1
-  add $t1, $s1, $t0
-  add $t0, $s0, $t1
+  addu $t1, $s7, $t0
+  addu $t0, $s6, $t1
+  addu $t1, $s5, $t0
+  addu $t0, $s4, $t1
+  addu $t1, $s3, $t0
+  addu $t0, $s2, $t1
+  addu $t1, $s1, $t0
+  addu $t0, $s0, $t1
   sw $t0, 56($sp)
 
 __leave_f3:
@@ -1741,15 +1741,15 @@ _f4:
   jal _f0
   move $t0, $v0
   lw $t7, 48($sp)
-  add $t1, $t7, $t0
-  add $t0, $s7, $t1
-  add $t1, $s6, $t0
-  add $t0, $s5, $t1
-  add $t1, $s4, $t0
-  add $t0, $s3, $t1
-  add $t1, $s2, $t0
-  add $t0, $s1, $t1
-  add $t1, $s0, $t0
+  addu $t1, $t7, $t0
+  addu $t0, $s7, $t1
+  addu $t1, $s6, $t0
+  addu $t0, $s5, $t1
+  addu $t1, $s4, $t0
+  addu $t0, $s3, $t1
+  addu $t1, $s2, $t0
+  addu $t0, $s1, $t1
+  addu $t1, $s0, $t0
   sw $t1, 56($sp)
 
 __leave_f4:
@@ -1850,27 +1850,27 @@ _f5:
   jal _f0
   move $t0, $v0
   lw $t7, 72($sp)
-  add $t1, $t7, $t0
+  addu $t1, $t7, $t0
   lw $t7, 68($sp)
-  add $t0, $t7, $t1
+  addu $t0, $t7, $t1
   lw $t7, 64($sp)
-  add $t1, $t7, $t0
+  addu $t1, $t7, $t0
   lw $t7, 60($sp)
-  add $t0, $t7, $t1
+  addu $t0, $t7, $t1
   lw $t7, 56($sp)
-  add $t1, $t7, $t0
+  addu $t1, $t7, $t0
   lw $t7, 52($sp)
-  add $t0, $t7, $t1
+  addu $t0, $t7, $t1
   lw $t7, 48($sp)
-  add $t1, $t7, $t0
-  add $t0, $s7, $t1
-  add $t1, $s6, $t0
-  add $t0, $s5, $t1
-  add $t1, $s4, $t0
-  add $t0, $s3, $t1
-  add $t1, $s2, $t0
-  add $t0, $s1, $t1
-  add $t1, $s0, $t0
+  addu $t1, $t7, $t0
+  addu $t0, $s7, $t1
+  addu $t1, $s6, $t0
+  addu $t0, $s5, $t1
+  addu $t1, $s4, $t0
+  addu $t0, $s3, $t1
+  addu $t1, $s2, $t0
+  addu $t0, $s1, $t1
+  addu $t1, $s0, $t0
   sw $t1, 80($sp)
   li $t0, 1
   li $t1, 2
@@ -1887,22 +1887,22 @@ _f5:
   li $s5, 13
   li $s6, 14
   li $s7, 15
-  add $t9, $s6, $s7
+  addu $t9, $s6, $s7
   sw $t9, 48($sp)
   lw $t8, 48($sp)
-  add $s6, $s5, $t8
-  add $s5, $s4, $s6
-  add $s4, $s3, $s5
-  add $s3, $s2, $s4
-  add $s2, $s1, $s3
-  add $s1, $s0, $s2
-  add $s0, $t6, $s1
-  add $t6, $t5, $s0
-  add $t5, $t4, $t6
-  add $t4, $t3, $t5
-  add $t3, $t2, $t4
-  add $t2, $t1, $t3
-  add $t1, $t0, $t2
+  addu $s6, $s5, $t8
+  addu $s5, $s4, $s6
+  addu $s4, $s3, $s5
+  addu $s3, $s2, $s4
+  addu $s2, $s1, $s3
+  addu $s1, $s0, $s2
+  addu $s0, $t6, $s1
+  addu $t6, $t5, $s0
+  addu $t5, $t4, $t6
+  addu $t4, $t3, $t5
+  addu $t3, $t2, $t4
+  addu $t2, $t1, $t3
+  addu $t1, $t0, $t2
   sw $t1, 80($sp)
 
 __leave_f5:

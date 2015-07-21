@@ -538,7 +538,7 @@ _add:
 
   move $t0, $a0
   lw $t1, _y
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _y
   j __leave_add
 

@@ -793,7 +793,7 @@ _L1:
   beq $t2, $zero, _L7
   lw $t0, 24($sp)
   lw $t1, 28($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   li $t0, 2
   div $t1, $t2, $t0
   sw $t1, 32($sp)
@@ -810,7 +810,7 @@ _L2:
   beq $t2, $zero, _L5
   lw $t0, 36($sp)
   lw $t1, 32($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   li $t0, 2
   div $t1, $t2, $t0
   sw $t1, 40($sp)
@@ -820,31 +820,31 @@ _L2:
   beq $t2, $zero, _L3
   lw $t0, 44($sp)
   lw $t1, 40($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 44($sp)
   j _L4
 _L3:
   lw $t0, 44($sp)
   lw $t1, 32($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 44($sp)
 _L4:
   lw $t0, 36($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 36($sp)
   j _L2
 _L5:
 _L6:
   lw $t0, 28($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 28($sp)
   j _L1
 _L7:
   lw $t0, 24($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 24($sp)
   j _L0
 _L8:

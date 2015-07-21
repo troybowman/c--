@@ -830,7 +830,7 @@ main:
   jal __print_string
   li $t0, 4660
   li $t1, 22136
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   move $a0, $t2
   jal __print_int
   la $t0, _str1
@@ -838,7 +838,7 @@ main:
   jal __print_string
   li $t0, 37121
   li $t1, 4385
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   move $a0, $t2
   jal __print_int
   la $t0, _str1

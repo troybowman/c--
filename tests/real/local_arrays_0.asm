@@ -1515,42 +1515,42 @@ main:
   li $t1, 4
   sll $t2, $t1, 2
   la $t1, 24($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 2222
   li $t1, 5
   sll $t2, $t1, 2
   la $t1, 24($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 3333
   li $t1, 6
   sll $t2, $t1, 2
   la $t1, 24($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 4444
   li $t1, 7
   sll $t2, $t1, 2
   la $t1, 64($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 5555
   li $t1, 8
   sll $t2, $t1, 2
   la $t1, 64($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 6666
   li $t1, 9
   sll $t2, $t1, 2
   la $t1, 64($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 4
   sll $t1, $t0, 2
   la $t0, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sw $t0, 104($sp)
   lw $t0, 104($sp)
@@ -1562,7 +1562,7 @@ main:
   li $t0, 5
   sll $t1, $t0, 2
   la $t0, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sw $t0, 104($sp)
   lw $t0, 104($sp)
@@ -1574,7 +1574,7 @@ main:
   li $t0, 6
   sll $t1, $t0, 2
   la $t0, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sw $t0, 104($sp)
   lw $t0, 104($sp)
@@ -1586,7 +1586,7 @@ main:
   li $t0, 7
   sll $t1, $t0, 2
   la $t0, 64($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sw $t0, 104($sp)
   lw $t0, 104($sp)
@@ -1598,7 +1598,7 @@ main:
   li $t0, 8
   sll $t1, $t0, 2
   la $t0, 64($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sw $t0, 104($sp)
   lw $t0, 104($sp)
@@ -1610,7 +1610,7 @@ main:
   li $t0, 9
   sll $t1, $t0, 2
   la $t0, 64($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sw $t0, 104($sp)
   lw $t0, 104($sp)
@@ -1625,7 +1625,7 @@ main:
   li $t0, 4
   sll $t1, $t0, 2
   la $t0, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
   jal __print_int
@@ -1635,7 +1635,7 @@ main:
   li $t0, 5
   sll $t1, $t0, 2
   la $t0, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
   jal __print_int
@@ -1645,7 +1645,7 @@ main:
   li $t0, 6
   sll $t1, $t0, 2
   la $t0, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
   jal __print_int
@@ -1655,7 +1655,7 @@ main:
   li $t0, 7
   sll $t1, $t0, 2
   la $t0, 64($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
   jal __print_int
@@ -1665,7 +1665,7 @@ main:
   li $t0, 8
   sll $t1, $t0, 2
   la $t0, 64($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
   jal __print_int
@@ -1675,7 +1675,7 @@ main:
   li $t0, 9
   sll $t1, $t0, 2
   la $t0, 64($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   move $a0, $t0
   jal __print_int

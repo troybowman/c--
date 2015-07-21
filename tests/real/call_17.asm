@@ -428,7 +428,7 @@ _f:
 
   lw $t0, 28($sp)
   lw $t1, 24($sp)
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 0
   seq $t2, $t0, $t1
@@ -439,14 +439,14 @@ _L0:
   lw $t0, _u
   lw $t1, 28($sp)
   lw $t2, 24($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   lb $t1, ($t3)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _u
   lw $t0, 24($sp)
   lw $t1, 28($sp)
   li $t2, 1
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   move $a1, $t3
   move $a0, $t0
   jal _f

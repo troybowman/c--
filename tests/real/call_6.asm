@@ -506,9 +506,9 @@ _f:
   move $t3, $a3
   lw $t4, 16($sp)
   mul $t5, $t3, $t4
-  add $t3, $t2, $t5
+  addu $t3, $t2, $t5
   mul $t2, $t1, $t3
-  add $t1, $t0, $t2
+  addu $t1, $t0, $t2
   move $v0, $t1
   j __leave_f
 

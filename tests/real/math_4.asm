@@ -10716,11 +10716,11 @@ _L0:
   move $t0, $a1
   lw $t1, 0($sp)
   move $t2, $a0
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   lw $t0, 0($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   j _L0
 _L1:
@@ -10745,14 +10745,14 @@ _strlen:
 _L2:
   lw $t0, 0($sp)
   move $t1, $a0
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 0
   sne $t2, $t0, $t1
   beq $t2, $zero, _L3
   lw $t0, 0($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   j _L2
 _L3:
@@ -10782,82 +10782,82 @@ _get_hex_str:
   li $t0, '0'
   li $t1, 0
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '1'
   li $t1, 1
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '2'
   li $t1, 2
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '3'
   li $t1, 3
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '4'
   li $t1, 4
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '5'
   li $t1, 5
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '6'
   li $t1, 6
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '7'
   li $t1, 7
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '8'
   li $t1, 8
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, '9'
   li $t1, 9
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'a'
   li $t1, 10
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'b'
   li $t1, 11
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'c'
   li $t1, 12
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'd'
   li $t1, 13
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'e'
   li $t1, 14
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'f'
   li $t1, 15
   la $t2, 4($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 0
   sw $t0, 0($sp)
@@ -10868,48 +10868,48 @@ _L4:
   beq $t2, $zero, _L5
   lw $t0, 0($sp)
   move $t1, $a1
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 240
   and $t2, $t0, $t1
   li $t0, 4
   srlv $t1, $t2, $t0
   la $t0, 4($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lb $t0, ($t2)
   li $t1, 2
   lw $t2, 0($sp)
   mul $t3, $t1, $t2
   move $t1, $a0
-  add $t2, $t1, $t3
+  addu $t2, $t1, $t3
   sb $t0, ($t2)
   lw $t0, 0($sp)
   move $t1, $a1
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 15
   and $t2, $t0, $t1
   la $t0, 4($sp)
-  add $t1, $t0, $t2
+  addu $t1, $t0, $t2
   lb $t0, ($t1)
   li $t1, 2
   lw $t2, 0($sp)
   mul $t3, $t1, $t2
   li $t1, 1
-  add $t2, $t3, $t1
+  addu $t2, $t3, $t1
   move $t1, $a0
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sb $t0, ($t3)
   lw $t0, 0($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   j _L4
 _L5:
   li $t0, 0
   li $t1, 65
   move $t2, $a0
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
 
 __leave_get_hex_str:
@@ -11670,162 +11670,162 @@ main:
   li $t0, 66
   li $t1, 0
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 64
   li $t1, 1
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 252
   li $t1, 2
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 152
   li $t1, 3
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 201
   li $t1, 4
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 149
   li $t1, 5
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 46
   li $t1, 6
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 47
   li $t1, 7
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 194
   li $t1, 8
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 224
   li $t1, 9
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 231
   li $t1, 10
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 99
   li $t1, 11
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 195
   li $t1, 12
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 94
   li $t1, 13
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 57
   li $t1, 14
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 145
   li $t1, 15
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 92
   li $t1, 16
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 61
   li $t1, 17
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 196
   li $t1, 18
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 64
   li $t1, 19
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 74
   li $t1, 20
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 225
   li $t1, 21
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 7
   li $t1, 22
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 53
   li $t1, 23
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 237
   li $t1, 24
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 211
   li $t1, 25
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 230
   li $t1, 26
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 23
   li $t1, 27
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 247
   li $t1, 28
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 65
   li $t1, 29
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 18
   li $t1, 30
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 162
   li $t1, 31
   la $t2, 44($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   la $t0, 76($sp)
   la $t1, 44($sp)

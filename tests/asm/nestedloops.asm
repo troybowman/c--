@@ -1579,9 +1579,9 @@ _sum:
 
   move $t0, $a0
   move $t1, $a1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   move $t0, $a2
-  add $t1, $t2, $t0
+  addu $t1, $t2, $t0
   move $v0, $t1
   j __leave_sum
 
@@ -1614,13 +1614,13 @@ _L0:
   lw $t0, 4($sp)
   lw $t1, 0($sp)
   move $t2, $a0
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   lb $t1, ($t3)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 4($sp)
   lw $t0, 0($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   j _L0
 _L1:
@@ -1677,11 +1677,11 @@ _L5:
   lb $t0, 72($sp)
   sll $t1, $t0, 2
   la $t0, 32($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $s0, ($t2)
   lb $t0, 72($sp)
   li $t1, 111
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   move $a0, $t2
   jal _dub
   move $t0, $v0
@@ -1710,7 +1710,7 @@ _L6:
   move $a0, $t0
   jal _dub
   move $t0, $v0
-  add $s1, $s0, $t0
+  addu $s1, $s0, $t0
   la $t0, _str1
   li $t1, 777
   move $a1, $t1
@@ -1723,21 +1723,21 @@ _L6:
   move $a0, $t0
   jal _dub
   move $t0, $v0
-  add $t1, $s1, $t0
+  addu $t1, $s1, $t0
   li $t0, 444
   sll $t2, $t0, 2
   la $t0, 32($sp)
-  add $t3, $t0, $t2
+  addu $t3, $t0, $t2
   sw $t1, ($t3)
 _L7:
   li $t0, 888
   sll $t1, $t0, 2
   la $t0, 32($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sll $t1, $t0, 2
   la $t0, 32($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $s0, ($t2)
   lb $t0, 72($sp)
   lb $t1, 72($sp)
@@ -1758,7 +1758,7 @@ _L7:
   lb $t1, 72($sp)
   sll $t2, $t1, 2
   la $t1, 32($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   lw $t1, ($t3)
   slt $t2, $t0, $t1
   and $t0, $s1, $t2
@@ -1767,10 +1767,10 @@ _L7:
   li $t3, 999
   sll $t4, $t3, 2
   la $t3, 32($sp)
-  add $t5, $t3, $t4
+  addu $t5, $t3, $t4
   lw $t3, ($t5)
   mul $t4, $t2, $t3
-  add $t2, $t1, $t4
+  addu $t2, $t1, $t4
   li $t1, 1000
   sne $t3, $t2, $t1
   or $t1, $t0, $t3
@@ -1779,7 +1779,7 @@ _L8:
   li $t0, 0
   sll $t1, $t0, 2
   la $t0, 32($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   li $t1, 1001
   seq $t2, $t0, $t1

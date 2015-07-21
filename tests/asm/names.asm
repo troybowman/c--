@@ -688,7 +688,7 @@ _char_at:
 
   move $t0, $a1
   move $t1, $a0
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   move $v0, $t0
   j __leave_char_at

@@ -446,7 +446,7 @@ _sum:
 
   lw $t0, 28($sp)
   lw $t1, 24($sp)
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 0
   seq $t2, $t0, $t1
@@ -458,17 +458,17 @@ _sum:
 _L0:
   lw $t0, 28($sp)
   lw $t1, 24($sp)
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $s0, ($t2)
   lw $t0, 24($sp)
   lw $t1, 28($sp)
   li $t2, 1
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   move $a1, $t3
   move $a0, $t0
   jal _sum
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   move $v0, $t1
   j __leave_sum
 _L1:

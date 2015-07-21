@@ -767,11 +767,11 @@ _L0:
   lw $t1, 0($sp)
   sll $t2, $t1, 2
   move $t1, $a0
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   lw $t0, 0($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   j _L0
 _L1:
@@ -811,9 +811,9 @@ _L2:
   move $t1, $a1
   sll $t2, $t1, 2
   move $t1, $a0
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   lw $t1, ($t3)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   move $t0, $a1
   li $t1, 1
@@ -860,7 +860,7 @@ main:
   move $a0, $t0
   jal _count
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   sw $t1, 24($sp)
   lw $t0, 24($sp)
   move $a0, $t0

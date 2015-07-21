@@ -533,7 +533,7 @@ main:
   sw $t0, 24($sp)
   lw $t0, 24($sp)
   lw $t1, _x
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _x
   lw $t0, _x
   move $a0, $t0

@@ -288,9 +288,9 @@ _L0:
   jal __print_string
   lw $t0, _i
   lw $t1, _i
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   li $t0, 1
-  add $t1, $t2, $t0
+  addu $t1, $t2, $t0
   sw $t1, _i
   j _L0
 _L1:

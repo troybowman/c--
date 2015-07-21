@@ -1367,112 +1367,112 @@ main:
   li $t0, 'h'
   li $t1, 0
   la $t2, 32($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'e'
   li $t1, 1
   la $t2, 32($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'l'
   li $t1, 2
   la $t2, 32($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'l'
   li $t1, 3
   la $t2, 32($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'o'
   li $t1, 4
   la $t2, 32($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'w'
   li $t1, 0
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 1
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 2
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 3
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'o'
   li $t1, 4
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 5
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 6
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 7
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'r'
   li $t1, 8
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 9
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 10
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 11
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'l'
   li $t1, 12
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 13
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 14
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'X'
   li $t1, 15
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 'd'
   li $t1, 16
   la $t2, 40($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   li $t0, 0
   sw $t0, 24($sp)
@@ -1489,7 +1489,7 @@ _L0:
   beq $t0, $zero, _L1
   lw $t0, 24($sp)
   la $t1, 32($sp)
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   move $a0, $t0
   jal __print_char
@@ -1498,7 +1498,7 @@ _L0:
   jal __print_string
   lw $t0, 28($sp)
   la $t1, 40($sp)
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   move $a0, $t0
   jal __print_char
@@ -1507,11 +1507,11 @@ _L0:
   jal __print_string
   lw $t0, 24($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 24($sp)
   lw $t0, 28($sp)
   li $t1, 4
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 28($sp)
   j _L0
 _L1:

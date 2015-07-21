@@ -313,7 +313,7 @@ _add:
 
   move $t0, $a0
   move $t1, $a1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   move $v0, $t2
   j __leave_add
 

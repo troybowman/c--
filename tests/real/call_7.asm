@@ -1138,7 +1138,7 @@ _L3:
   beq $t2, $zero, _L4
   lw $t0, 24($sp)
   li $t1, 2
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 24($sp)
   la $t0, _str0
   move $a0, $t0
@@ -1154,7 +1154,7 @@ _L3:
   jal _id
   move $t0, $v0
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 28($sp)
   j _L3
 _L4:

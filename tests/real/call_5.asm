@@ -593,7 +593,7 @@ _L0:
   move $a0, $t2
   jal _f
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   move $v0, $t1
   j __leave_f
 _L1:
@@ -641,7 +641,7 @@ _L2:
   move $a0, $t2
   jal _g
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   move $v0, $t1
   j __leave_g
 _L3:

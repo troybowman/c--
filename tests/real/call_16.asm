@@ -526,7 +526,7 @@ _incr:
 
   move $t0, $a0
   lw $t1, _u
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _u
 
 __leave_incr:
@@ -558,7 +558,7 @@ main:
   sw $t0, 24($sp)
   lw $t0, _u
   lw $t1, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 24($sp)
   lw $t0, 24($sp)
   move $a0, $t0

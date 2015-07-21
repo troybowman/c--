@@ -556,7 +556,7 @@ main:
   sb $t1, _y
   lw $t0, _x
   lb $t1, _y
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _x
   lw $t0, _x
   lb $t1, _y
