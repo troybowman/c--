@@ -24,7 +24,7 @@ void memset(char buf[], char val, int buflen)
 int strlen(char string[])
 {
   int i;
-  for ( i = 0; string[i] != '\0'; i = i + 1 );
+  for ( i = 0; string[i] != 0; i = i + 1 );
   return i;
 }
 
@@ -45,7 +45,7 @@ void get_hex_str(char out[], char hash[])
     out[2*i+1] = map[(hash[i] & 0x0f)];
   }
 
-  out[65] = '\0';
+  out[65] = 0;
 }
 
 /*---------------------------------------------------------------------------*/

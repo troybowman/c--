@@ -608,7 +608,7 @@
 # child AL_OFFSET for node 7
 # node 8: type: TNT_SYMBOL sym: i
 # child RHS for node 6
-# node 9: type: TNT_CHARCON str: '\0'
+# node 9: type: TNT_INTCON val: 0
 # child FOR_INC for node 2
 # node 10: type: TNT_ASSG
 # child LHS for node 10
@@ -897,7 +897,7 @@
 # child AL_OFFSET for node 122
 # node 123: type: TNT_INTCON val: 65
 # child RHS for node 121
-# node 124: type: TNT_CHARCON str: '\0'
+# node 124: type: TNT_INTCON val: 0
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------
@@ -4023,7 +4023,7 @@
 # CNT_LI
 # ------
 # dest -> ST_TEMP (1)
-# src1 -> ST_CHARCON ('\0')
+# src1 -> ST_INTCON (0)
 # |
 # >
 # CNT_SNE
@@ -4884,7 +4884,7 @@
 # CNT_LI
 # ------
 # dest -> ST_TEMP (0)
-# src1 -> ST_CHARCON ('\0')
+# src1 -> ST_INTCON (0)
 # |
 # >
 # CNT_LI
@@ -10747,7 +10747,7 @@ _L2:
   move $t1, $a0
   add $t2, $t1, $t0
   lb $t0, ($t2)
-  li $t1, '\0'
+  li $t1, 0
   sne $t2, $t0, $t1
   beq $t2, $zero, _L3
   lw $t0, 0($sp)
@@ -10906,7 +10906,7 @@ _L4:
   sw $t2, 0($sp)
   j _L4
 _L5:
-  li $t0, '\0'
+  li $t0, 0
   li $t1, 65
   move $t2, $a0
   add $t3, $t2, $t1
