@@ -483,7 +483,7 @@ static const char *cnt2instr(codenode_type_t type)
 {
   switch ( type )
   {
-    case CNT_ADD:  return "add";
+    case CNT_ADD:  return "addu";
     case CNT_SUB:  return "sub";
     case CNT_DIV:  return "div";
     case CNT_MUL:  return "mul";

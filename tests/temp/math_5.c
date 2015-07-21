@@ -1,7 +1,6 @@
-#include <stdint.h>
-#include <stdio.h>
+extern void printf(char format[], ...);
 
-uint32_t k[64];
+int k[64];
 
 /*---------------------------------------------------------------------------*/
 void init_k(void)
@@ -25,36 +24,36 @@ void init_k(void)
 }
 
 /*---------------------------------------------------------------------------*/
-uint32_t rotl(uint32_t a, uint32_t b) { return ((a << b) | (a >> (32-b))); }
-uint32_t rotr(uint32_t a, uint32_t b) { return ((a >> b) | (a << (32-b))); }
-uint32_t ch(uint32_t x, uint32_t y, uint32_t z)  { return (x & y) ^ (~x & z); }
-uint32_t maj(uint32_t x, uint32_t y, uint32_t z) { return (x & y) ^ (x & z) ^ (y & z); }
-uint32_t ep0(uint32_t x)  { return rotr(x, 2)  ^ rotr(x, 13) ^ rotr(x, 22); }
-uint32_t ep1(uint32_t x)  { return rotr(x, 6)  ^ rotr(x, 11) ^ rotr(x, 25); }
-uint32_t sig0(uint32_t x) { return rotr(x, 7)  ^ rotr(x, 18) ^ (x >> 3); }
-uint32_t sig1(uint32_t x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10); }
+int rotl(int a, int b) { return ((a << b) | (a >> (32-b))); }
+int rotr(int a, int b) { return ((a >> b) | (a << (32-b))); }
+int ch(int x, int y, int z)  { return (x & y) ^ (~x & z); }
+int maj(int x, int y, int z) { return (x & y) ^ (x & z) ^ (y & z); }
+int ep0(int x)  { return rotr(x, 2)  ^ rotr(x, 13) ^ rotr(x, 22); }
+int ep1(int x)  { return rotr(x, 6)  ^ rotr(x, 11) ^ rotr(x, 25); }
+int sig0(int x) { return rotr(x, 7)  ^ rotr(x, 18) ^ (x >> 3); }
+int sig1(int x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10); }
 
 /*---------------------------------------------------------------------------*/
-void memset(uint8_t buf[], uint8_t val, uint32_t buflen)
+void memset(char buf[], char val, int buflen)
 {
-  uint32_t i;
+  int i;
   for ( i=0; i<buflen; i=i+1 )
     buf[i] = val;
 }
 
 /*---------------------------------------------------------------------------*/
-int strlen(char string[])
-{
-  int i;
-  for ( i = 0; string[i] != '\0'; i = i + 1 );
-  return i;
-}
+/*int strlen(char string[])*/
+/*{*/
+  /*int i;*/
+  /*for ( i = 0; string[i] != '\0'; i = i + 1 );*/
+  /*return i;*/
+/*}*/
 
 /*---------------------------------------------------------------------------*/
-void get_hex_str(uint8_t out[], uint8_t hash[])
+void get_hex_str(char out[], char hash[])
 {
-  uint32_t i;
-  uint8_t map[16];
+  int i;
+  char map[16];
 
   map[0]  = '0'; map[1]  = '1'; map[2]  = '2'; map[3]  = '3';
   map[4]  = '4'; map[5]  = '5'; map[6]  = '6'; map[7]  = '7';
@@ -67,14 +66,14 @@ void get_hex_str(uint8_t out[], uint8_t hash[])
     out[2*i+1] = map[(hash[i] & 0x0f)];
   }
 
-  out[64] = '\0';
+  out[64] = 0;
 }
 
 /*---------------------------------------------------------------------------*/
-void sha256_transform(uint32_t state[], uint8_t block[])
+void sha256_transform(int state[], char block[])
 {
-  uint32_t a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
-  uint32_t one, two, three, four;
+  int a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
+  int one, two, three, four;
 
   for ( i = 0, j = 0; i < 16; i = i + 1, j = j + 4 )
     m[i] = (block[j] << 24) | (block[j+1] << 16) | (block[j+2] << 8) | (block[j+3]);
@@ -116,7 +115,7 @@ void sha256_transform(uint32_t state[], uint8_t block[])
 }
 
 /*---------------------------------------------------------------------------*/
-void sha256_init(uint32_t state[], uint32_t count[])
+void sha256_init(int state[], int count[])
 {
   count[0] = 0; /* block index */
   count[1] = 0; /* bit count (low part) */
@@ -133,9 +132,9 @@ void sha256_init(uint32_t state[], uint32_t count[])
 }
 
 /*---------------------------------------------------------------------------*/
-void sha256_update(uint32_t state[], uint8_t block[], uint32_t count[], uint8_t data[], uint32_t datalen)
+void sha256_update(int state[], char block[], int count[], char data[], int datalen)
 {
-  uint32_t i;
+  int i;
 
   for ( i = 0; i < datalen; i=i+1 )
   {
@@ -154,9 +153,9 @@ void sha256_update(uint32_t state[], uint8_t block[], uint32_t count[], uint8_t 
 }
 
 /*---------------------------------------------------------------------------*/
-void sha256_final(uint8_t hash[], uint32_t state[], uint8_t block[], uint32_t count[])
+void sha256_final(char hash[], int state[], char block[], int count[])
 {
-  uint32_t i, h, l;
+  int i, h, l;
 
   i = count[0];
 
@@ -207,13 +206,13 @@ void sha256_final(uint8_t hash[], uint32_t state[], uint8_t block[], uint32_t co
 }
 
 /*---------------------------------------------------------------------------*/
-void sha256_from_str(uint8_t string[])
+void sha256_from_str(char string[], int strlen)
 {
-  uint32_t state[8], count[3];
-  uint8_t block[64], output[65], hash[32];
+  int state[8], count[3];
+  char block[64], output[65], hash[32];
 
   sha256_init(state, count);
-  sha256_update(state, block, count, string, strlen(string));
+  sha256_update(state, block, count, string, strlen);
   sha256_final(hash, state, block, count);
 
   get_hex_str(output, hash);
@@ -225,16 +224,16 @@ void sha256_from_str(uint8_t string[])
 /*---------------------------------------------------------------------------*/
 void phase_simple_strings(void)
 {
-  sha256_from_str("");
-  sha256_from_str("abc");
-  sha256_from_str("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
-  sha256_from_str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-  sha256_from_str("this is a secret message");
-  sha256_from_str("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu");
+  sha256_from_str("", 0);
+  sha256_from_str("abc", 3);
+  sha256_from_str("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 56);
+  sha256_from_str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
+  sha256_from_str("this is a secret message", 24);
+  sha256_from_str("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", 112);
 }
 
 /*---------------------------------------------------------------------------*/
-void main()
+void main(void)
 {
   init_k();
   phase_simple_strings();
