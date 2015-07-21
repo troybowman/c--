@@ -413,8 +413,8 @@ void stack_frame_t::gen_epilogue()
 
   for ( int i = 2; i >= 0; i-- )
   {
-    reg_saver_t restore("lw", sections[pairs[i].base]);
-    visit_items(pairs[i].sec, restore, FIV_REVERSE);
+    reg_saver_t saver("lw", sections[pairs[i].base]);
+    visit_items(pairs[i].sec, saver, FIV_REVERSE);
   }
 
   ctx.out(TAB1"la $sp, %u($sp)\n", size());
