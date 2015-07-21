@@ -384,6 +384,26 @@ struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
 };
 
 //-----------------------------------------------------------------------------
+struct stack_frame_t::argreg_saver_t : public stack_frame_t::reg_saver_t
+{
+  typedef stack_frame_t::reg_saver_t inherited;
+
+  frame_section_t &params;
+
+  virtual void visit_item(item_info_t &info)
+  {
+    info.frame.ctx.out(
+        TAB1"%s %s, %d($sp)\n",
+        cmd,
+        info.sym.loc.reg(),
+        params.start + info.idx * WORDSIZE);
+  }
+
+  argreg_saver_t(const char *cmd, frame_section_t &_params)
+    : inherited(cmd), params(_params) {}
+};
+
+//-----------------------------------------------------------------------------
 void stack_frame_t::gen_prologue()
 {
   ctx.out(TAB1"la $sp, -%u($sp)\n", size());
@@ -391,22 +411,7 @@ void stack_frame_t::gen_prologue()
   reg_saver_t ras("sw");
   visit_items(FS_RA, ras);
 
-  struct argreg_saver_t : public frame_item_visitor_t
-  {
-    frame_section_t &params;
-    virtual void visit_item(item_info_t &info)
-    {
-      if ( info.idx < params.nitems() )
-      {
-        info.frame.ctx.out(
-            TAB1"sw %s, %d($sp)\n",
-            info.sym.loc.reg(),
-            params.start + info.idx * WORDSIZE);
-      }
-    }
-    argreg_saver_t(frame_section_t &_params) : params(_params) {}
-  } as(sections[FS_PARAMS]);
-
+  argreg_saver_t as("sw", sections[FS_PARAMS]);
   visit_items(FS_REGARGS, as);
 
   reg_saver_t srs("sw");
@@ -422,6 +427,9 @@ void stack_frame_t::gen_epilogue()
 
   reg_saver_t sv_r("lw");
   visit_items(FS_SVREGS, sv_r, FIV_REVERSE);
+
+  argreg_saver_t as_r("lw", sections[FS_PARAMS]);
+  visit_items(FS_REGARGS, as_r, FIV_REVERSE);
 
   reg_saver_t ra_r("lw");
   visit_items(FS_RA, ra_r, FIV_REVERSE);

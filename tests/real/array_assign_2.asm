@@ -335,6 +335,7 @@ main:
   # |--------------------------------| sp+0
   la $sp, -112($sp)
   sw $ra, 16($sp)
+  sw $a0, 112($sp)
 
   li $t0, 1234
   li $t1, 7
@@ -366,6 +367,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 112($sp)
   lw $ra, 16($sp)
   la $sp, 112($sp)
   jal __exit

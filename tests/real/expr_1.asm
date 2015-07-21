@@ -2504,6 +2504,7 @@ _sum:
   jal __print_string
 
 __leave_sum:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -2627,6 +2628,10 @@ main:
   # |--------------------------------| sp+0
   la $sp, -256($sp)
   sw $ra, 216($sp)
+  sw $a0, 256($sp)
+  sw $a1, 260($sp)
+  sw $a2, 264($sp)
+  sw $a3, 268($sp)
   sw $s0, 80($sp)
   sw $s1, 84($sp)
   sw $s2, 88($sp)
@@ -2917,6 +2922,10 @@ __leavemain:
   lw $s2, 88($sp)
   lw $s1, 84($sp)
   lw $s0, 80($sp)
+  lw $a3, 268($sp)
+  lw $a2, 264($sp)
+  lw $a1, 260($sp)
+  lw $a0, 256($sp)
   lw $ra, 216($sp)
   la $sp, 256($sp)
   jal __exit

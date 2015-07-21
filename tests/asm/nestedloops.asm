@@ -1659,6 +1659,7 @@ main:
   sw $ra, 24($sp)
   sw $a0, 80($sp)
   sw $a1, 84($sp)
+  sw $a2, 88($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
 
@@ -1806,6 +1807,9 @@ _L15:
 __leavemain:
   lw $s1, 20($sp)
   lw $s0, 16($sp)
+  lw $a2, 88($sp)
+  lw $a1, 84($sp)
+  lw $a0, 80($sp)
   lw $ra, 24($sp)
   la $sp, 80($sp)
   jal __exit

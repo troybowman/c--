@@ -453,6 +453,8 @@ _L0:
 _L1:
 
 __leave_f:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -468,6 +470,8 @@ main:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
+  sw $a1, 28($sp)
 
   la $t0, _str0
   li $t1, 0
@@ -482,6 +486,8 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

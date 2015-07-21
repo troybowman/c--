@@ -844,6 +844,8 @@ main:
   # |--------------------------------| sp+0
   la $sp, -32($sp)
   sw $ra, 20($sp)
+  sw $a0, 32($sp)
+  sw $a1, 36($sp)
   sw $s0, 16($sp)
 
   la $t0, _x
@@ -871,6 +873,8 @@ main:
 
 __leavemain:
   lw $s0, 16($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 20($sp)
   la $sp, 32($sp)
   jal __exit

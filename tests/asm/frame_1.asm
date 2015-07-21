@@ -1039,12 +1039,14 @@ _f1:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   li $t0, 1
   move $a0, $t0
   jal _f0
 
 __leave_f1:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -1074,6 +1076,8 @@ _f3:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
+  sw $a1, 28($sp)
 
   li $t0, 1
   li $t1, 2
@@ -1082,6 +1086,8 @@ _f3:
   jal _f2
 
 __leave_f3:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -1113,6 +1119,9 @@ _f5:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
+  sw $a1, 28($sp)
+  sw $a2, 32($sp)
 
   li $t0, 1
   li $t1, 2
@@ -1123,6 +1132,9 @@ _f5:
   jal _f4
 
 __leave_f5:
+  lw $a2, 32($sp)
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -1156,6 +1168,10 @@ _f7:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
+  sw $a1, 28($sp)
+  sw $a2, 32($sp)
+  sw $a3, 36($sp)
 
   li $t0, 1
   li $t1, 2
@@ -1168,6 +1184,10 @@ _f7:
   jal _f6
 
 __leave_f7:
+  lw $a3, 36($sp)
+  lw $a2, 32($sp)
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -1203,6 +1223,10 @@ _f9:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 20($sp)
+  sw $a0, 24($sp)
+  sw $a1, 28($sp)
+  sw $a2, 32($sp)
+  sw $a3, 36($sp)
 
   li $t0, 1
   li $t1, 2
@@ -1217,6 +1241,10 @@ _f9:
   jal _f8
 
 __leave_f9:
+  lw $a3, 36($sp)
+  lw $a2, 32($sp)
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 20($sp)
   la $sp, 24($sp)
   jr $ra
@@ -1258,6 +1286,10 @@ _f11:
   # |--------------------------------| sp+0
   la $sp, -32($sp)
   sw $ra, 24($sp)
+  sw $a0, 32($sp)
+  sw $a1, 36($sp)
+  sw $a2, 40($sp)
+  sw $a3, 44($sp)
 
   li $t0, 1
   li $t1, 2
@@ -1274,6 +1306,10 @@ _f11:
   jal _f10
 
 __leave_f11:
+  lw $a3, 44($sp)
+  lw $a2, 40($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 24($sp)
   la $sp, 32($sp)
   jr $ra
@@ -1317,6 +1353,10 @@ _f13:
   # |--------------------------------| sp+0
   la $sp, -32($sp)
   sw $ra, 28($sp)
+  sw $a0, 32($sp)
+  sw $a1, 36($sp)
+  sw $a2, 40($sp)
+  sw $a3, 44($sp)
 
   li $t0, 1
   li $t1, 2
@@ -1335,6 +1375,10 @@ _f13:
   jal _f12
 
 __leave_f13:
+  lw $a3, 44($sp)
+  lw $a2, 40($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 28($sp)
   la $sp, 32($sp)
   jr $ra

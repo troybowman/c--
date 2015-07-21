@@ -568,6 +568,7 @@ main:
   # |--------------------------------| sp+0
   la $sp, -32($sp)
   sw $ra, 16($sp)
+  sw $a0, 32($sp)
 
   li $t0, 5
   sw $t0, 24($sp)
@@ -625,6 +626,7 @@ _L3:
   j __leavemain
 
 __leavemain:
+  lw $a0, 32($sp)
   lw $ra, 16($sp)
   la $sp, 32($sp)
   jal __exit

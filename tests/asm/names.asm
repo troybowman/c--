@@ -711,6 +711,7 @@ _L0:
   la $sp, -24($sp)
   sw $ra, 16($sp)
   sw $a0, 24($sp)
+  sw $a1, 28($sp)
 
   lw $t0, 24($sp)
   li $t1, 0
@@ -722,6 +723,8 @@ _L0:
   j __leave_L0
 
 __leave_L0:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -740,6 +743,7 @@ _L2:
   la $sp, -24($sp)
   sw $ra, 16($sp)
   sw $a0, 24($sp)
+  sw $a1, 28($sp)
 
   lw $t0, 24($sp)
   li $t1, 2
@@ -751,6 +755,8 @@ _L2:
   j __leave_L2
 
 __leave_L2:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -769,6 +775,7 @@ _L4:
   la $sp, -24($sp)
   sw $ra, 16($sp)
   sw $a0, 24($sp)
+  sw $a1, 28($sp)
 
   lw $t0, 24($sp)
   li $t1, 4
@@ -780,6 +787,8 @@ _L4:
   j __leave_L4
 
 __leave_L4:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -795,6 +804,7 @@ main:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   la $t0, _str0
   move $a0, $t0
@@ -835,6 +845,7 @@ _L3:
 _L5:
 
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

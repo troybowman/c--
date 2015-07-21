@@ -224,11 +224,11 @@ void sha256_from_str(char string[], int strlen)
 /*---------------------------------------------------------------------------*/
 void phase_simple_strings(void)
 {
-  sha256_from_str("", 0);
-  sha256_from_str("abc", 3);
-  sha256_from_str("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 56);
-  sha256_from_str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
-  sha256_from_str("this is a secret message", 24);
+  /*sha256_from_str("", 0);*/
+  /*sha256_from_str("abc", 3);*/
+  /*sha256_from_str("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 56);*/
+  /*sha256_from_str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);*/
+  /*sha256_from_str("this is a secret message", 24);*/
   sha256_from_str("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", 112);
 }
 

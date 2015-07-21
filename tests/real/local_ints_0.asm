@@ -473,6 +473,7 @@ main:
   # |--------------------------------| sp+0
   la $sp, -48($sp)
   sw $ra, 16($sp)
+  sw $a0, 48($sp)
 
   li $t0, 111
   sw $t0, 24($sp)
@@ -516,6 +517,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 48($sp)
   lw $ra, 16($sp)
   la $sp, 48($sp)
   jal __exit

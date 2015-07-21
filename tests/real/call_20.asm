@@ -664,6 +664,8 @@ _func2:
   la $sp, -72($sp)
   sw $ra, 24($sp)
   sw $a0, 72($sp)
+  sw $a1, 76($sp)
+  sw $a2, 80($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
 
@@ -694,6 +696,9 @@ _func2:
 __leave_func2:
   lw $s1, 20($sp)
   lw $s0, 16($sp)
+  lw $a2, 80($sp)
+  lw $a1, 76($sp)
+  lw $a0, 72($sp)
   lw $ra, 24($sp)
   la $sp, 72($sp)
   jr $ra
@@ -709,12 +714,14 @@ main:
   # |--------------------------------| sp+0
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   la $t0, _str2
   move $a0, $t0
   jal _func2
 
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

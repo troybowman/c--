@@ -346,6 +346,8 @@ _another:
   sw $ra, 16($sp)
   sw $a0, 48($sp)
   sw $a1, 52($sp)
+  sw $a2, 56($sp)
+  sw $a3, 60($sp)
 
   li $t0, 1
   li $t1, 2
@@ -358,6 +360,10 @@ _another:
   jal _simple
 
 __leave_another:
+  lw $a3, 60($sp)
+  lw $a2, 56($sp)
+  lw $a1, 52($sp)
+  lw $a0, 48($sp)
   lw $ra, 16($sp)
   la $sp, 48($sp)
   jr $ra

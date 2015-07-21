@@ -10523,6 +10523,7 @@ _ep0:
   la $sp, -32($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
+  sw $a1, 36($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
 
@@ -10552,6 +10553,8 @@ _ep0:
 __leave_ep0:
   lw $s1, 20($sp)
   lw $s0, 16($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 24($sp)
   la $sp, 32($sp)
   jr $ra
@@ -10574,6 +10577,7 @@ _ep1:
   la $sp, -32($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
+  sw $a1, 36($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
 
@@ -10603,6 +10607,8 @@ _ep1:
 __leave_ep1:
   lw $s1, 20($sp)
   lw $s0, 16($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 24($sp)
   la $sp, 32($sp)
   jr $ra
@@ -10621,6 +10627,7 @@ _sig0:
   la $sp, -24($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
+  sw $a1, 28($sp)
   sw $s0, 16($sp)
 
   lw $t0, 24($sp)
@@ -10645,6 +10652,8 @@ _sig0:
 
 __leave_sig0:
   lw $s0, 16($sp)
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 20($sp)
   la $sp, 24($sp)
   jr $ra
@@ -10663,6 +10672,7 @@ _sig1:
   la $sp, -24($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
+  sw $a1, 28($sp)
   sw $s0, 16($sp)
 
   lw $t0, 24($sp)
@@ -10687,6 +10697,8 @@ _sig1:
 
 __leave_sig1:
   lw $s0, 16($sp)
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 20($sp)
   la $sp, 24($sp)
   jr $ra
@@ -10941,6 +10953,9 @@ main:
   # |--------------------------------| sp+0
   la $sp, -144($sp)
   sw $ra, 16($sp)
+  sw $a0, 144($sp)
+  sw $a1, 148($sp)
+  sw $a2, 152($sp)
 
   li $t0, 0
   sw $t0, 24($sp)
@@ -11870,6 +11885,9 @@ main:
   j __leavemain
 
 __leavemain:
+  lw $a2, 152($sp)
+  lw $a1, 148($sp)
+  lw $a0, 144($sp)
   lw $ra, 16($sp)
   la $sp, 144($sp)
   jal __exit

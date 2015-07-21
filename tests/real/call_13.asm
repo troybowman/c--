@@ -475,6 +475,8 @@ _L1:
 
 __leave_sum:
   lw $s0, 16($sp)
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 20($sp)
   la $sp, 24($sp)
   jr $ra
@@ -494,6 +496,8 @@ main:
   # |--------------------------------| sp+0
   la $sp, -32($sp)
   sw $ra, 16($sp)
+  sw $a0, 32($sp)
+  sw $a1, 36($sp)
 
   la $t0, _str0
   li $t1, 0
@@ -510,6 +514,8 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 16($sp)
   la $sp, 32($sp)
   jal __exit
