@@ -1,5 +1,5 @@
 %code top {
-#define YYDEBUG 1
+#define YYDEBUG !NDEBUG
 class parser_ctx_t;
 #include "parser.hpp"
 #include "scanner.hpp"
@@ -878,7 +878,11 @@ treenode_t *process_printf_call(
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_call(parser_ctx_t &ctx, symref_t f, treenode_t *args, int line)
+static treenode_t *process_call(
+    parser_ctx_t &ctx,
+    symref_t f,
+    treenode_t *args,
+    int line)
 {
   ASSERT(1042, f != NULL);
 
@@ -930,7 +934,11 @@ static type_error_t validate_call_ctx(const treenode_t &call, bool expr)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_call_ctx(parser_ctx_t &ctx, treenode_t *call, int line, bool expr)
+static treenode_t *process_call_ctx(
+    parser_ctx_t &ctx,
+    treenode_t *call,
+    int line,
+    bool expr)
 {
   ASSERT(1044, call != NULL);
 
@@ -1003,7 +1011,9 @@ static symref_t process_stmt_id(parser_ctx_t &ctx, const char *id, int line)
 }
 
 //-----------------------------------------------------------------------------
-static type_error_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
+static type_error_t validate_array_lookup(
+    const symbol_t &sym,
+    const treenode_t &idx)
 {
   return !sym.is_array()      ? TERR_BASE
        : !idx.is_int_compat() ? TERR_INDEX
@@ -1011,7 +1021,11 @@ static type_error_t validate_array_lookup(const symbol_t &sym, const treenode_t 
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_stmt_var(parser_ctx_t &ctx, symref_t sym, treenode_t *idx, int line)
+static treenode_t *process_stmt_var(
+    parser_ctx_t &ctx,
+    symref_t sym,
+    treenode_t *idx,
+    int line)
 {
   ASSERT(1045, sym != NULL);
 
@@ -1054,7 +1068,11 @@ static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
 }
 
 //-----------------------------------------------------------------------------
-static treenode_t *process_assg(parser_ctx_t &ctx, treenode_t *lhs, treenode_t *rhs, int line)
+static treenode_t *process_assg(
+    parser_ctx_t &ctx,
+    treenode_t *lhs,
+    treenode_t *rhs,
+    int line)
 {
   ASSERT(1046, lhs != NULL);
   ASSERT(1047, rhs != NULL);
@@ -1212,7 +1230,11 @@ static void build_print_functions(parser_ctx_t &ctx, symref_t printf)
 }
 
 //-----------------------------------------------------------------------------
-static void process_func_list(parser_ctx_t &ctx, symvec_t *vec, primitive_t rt, bool is_extern)
+static void process_func_list(
+    parser_ctx_t &ctx,
+    symvec_t *vec,
+    primitive_t rt,
+    bool is_extern)
 {
   ASSERT(1010, vec != NULL);
   ASSERT(1025, rt != PRIM_UNKNOWN);
@@ -1460,7 +1482,7 @@ void usererr(parser_ctx_t &ctx, const char *format, ...)
 bool parse(parse_results_t &res, FILE *infile)
 {
   ASSERT(1101, infile);
-  // yydebug = 1;
+  /*yydebug = 1;*/
 
   parser_ctx_t ctx;
   scanner_t scanner(infile);

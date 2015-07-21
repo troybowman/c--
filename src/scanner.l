@@ -1,6 +1,4 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
 class parser_ctx_t;
 #include "parser.hpp"
 %}
@@ -19,22 +17,22 @@ class parser_ctx_t;
 
 "int"    { return INT_TYPE;  }
 "char"   { return CHAR_TYPE; }
-"void"   { return VOID;      }
-"while"  { return WHILE;     }
-"return" { return RETURN;    }
-"extern" { return EXTERN;    }
-"if"     { return IF;        }
-"else"   { return ELSE;      }
-"for"    { return FOR;       }
-"=="     { return EQ;        }
-"!="     { return NEQ;       }
-"<="     { return LEQ;       }
-">="     { return GEQ;       }
-"&&"     { return AND;       }
-"||"     { return OR;        }
-"..."    { return ELLIPSIS;  }
-"<<"     { return SHL;       }
-">>"     { return SHR;       }
+"void"   { return VOID; }
+"while"  { return WHILE; }
+"return" { return RETURN; }
+"extern" { return EXTERN; }
+"if"     { return IF; }
+"else"   { return ELSE; }
+"for"    { return FOR; }
+"=="     { return EQ; }
+"!="     { return NEQ; }
+"<="     { return LEQ; }
+">="     { return GEQ; }
+"&&"     { return AND; }
+"||"     { return OR; }
+"..."    { return ELLIPSIS; }
+"<<"     { return SHL; }
+">>"     { return SHR; }
 "main"   { yylval->str = strdup(yytext); return MAIN; }
 "printf" { yylval->str = strdup(yytext); return PRINTF; }
 
