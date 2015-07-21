@@ -184,12 +184,11 @@ class TesterPhase:
         with StderrMonitor(inpath) as errors:
             with MemoryMonitor(t.args.grind, self.argv(t), inpath) as argv:
                 try:
-                    subprocess.call(argv, stdout=errors, stderr=errors)
+                    subprocess.check_call(argv, stdout=errors, stderr=errors)
+                except subprocess.CalledProcessError:
+                    errors.write("c-- returned nonzero exit code")
                 except OSError as e:
                     errors.write("couldn't launch c--: %s\n" % e.strerror)
-                except:
-                    errors.write("idk wtf happened\n")
-                    raise
 
     def execute(self, t):
         t.info("running phase: %s\n" % os.path.basename(self.dir))
@@ -218,9 +217,6 @@ class TesterPhase:
                     outfile.write(output)
                 except OSError as e:
                     outfile.write("couldn't launch spim: %s\n" % e.strerror)
-                except:
-                    outfile.write("idk wtf happened\n")
-                    raise
 
     def validate(self, t):
         self.status(t)

@@ -15,4 +15,4 @@ todo:
 - don't let real/release phase get out of sync
 - more precise reporting for test failures
 - assg test in temp/
-- fuzz
+- tester: fuzz, valgrind, lint, profile

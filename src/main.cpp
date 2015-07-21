@@ -189,7 +189,7 @@ static int process_args_err(args_t args, const char *prog)
 }
 
 //-----------------------------------------------------------------------------
-static int process_parse_err(const parse_results_t &res, const args_t &args)
+static int process_parse_err(const parse_results_t &res, args_t &args)
 {
   int count = 0;
   errvec_t::const_iterator i;

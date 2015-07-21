@@ -10,3 +10,4 @@ error: function y redeclared at line 17 (previous declaration at line 4)
 error: variable cc redeclared at line 21 (previous declaration at line 19)
 error: function ii redeclared at line 26 (previous declaration at line 19)
 error: variable rr redeclared at line 29 (previous declaration at line 24)
+c-- returned nonzero exit code
