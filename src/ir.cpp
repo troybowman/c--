@@ -226,17 +226,9 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         if ( (ctx.flags & TCTX_LVAL) != 0 )
           return sym;
 
-        symref_t dest;
-        if ( sym->is_array() )
-        {
-          dest = gen_temp();
-          append(CNT_LEA, dest, sym);
-        }
-        else
-        {
-          dest = gen_temp(ctx.flags);
-          append(CNT_LOAD(sym), dest, sym);
-        }
+        symref_t dest = gen_temp(ctx.flags);
+        append(sym->is_array() ? CNT_LEA : CNT_LOAD(sym), dest, sym);
+
         return dest;
       }
     case TNT_ARRAY_LOOKUP:
