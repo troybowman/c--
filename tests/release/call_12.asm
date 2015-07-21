@@ -25,29 +25,29 @@ _copy:
 _L0:
   lw $t0, 0($sp)
   move $t1, $a0
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 0
   sgt $t2, $t0, $t1
   beq $t2, $zero, _L1
   lw $t0, 0($sp)
   move $t1, $a0
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   lw $t1, 0($sp)
   move $t2, $a1
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   lw $t0, 0($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   j _L0
 _L1:
   li $t0, 0
   lw $t1, 0($sp)
   move $t2, $a1
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   sb $t0, ($t3)
   lw $t0, 0($sp)
   move $v0, $t0
@@ -67,7 +67,7 @@ _sum:
 _L2:
   lw $t0, 0($sp)
   move $t1, $a0
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 0
   sgt $t2, $t0, $t1
@@ -75,13 +75,13 @@ _L2:
   lw $t0, 4($sp)
   lw $t1, 0($sp)
   move $t2, $a0
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   lb $t1, ($t3)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 4($sp)
   lw $t0, 0($sp)
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 0($sp)
   j _L2
 _L3:
@@ -96,6 +96,8 @@ __leave_sum:
 main:
   la $sp, -32($sp)
   sw $ra, 20($sp)
+  sw $a0, 32($sp)
+  sw $a1, 36($sp)
   sw $s0, 16($sp)
 
   la $t0, _str0
@@ -110,7 +112,7 @@ main:
   move $a0, $t0
   jal _sum
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   sw $t1, 24($sp)
   lw $t0, 24($sp)
   move $a0, $t0
@@ -121,6 +123,8 @@ main:
 
 __leavemain:
   lw $s0, 16($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 20($sp)
   la $sp, 32($sp)
   jal __exit

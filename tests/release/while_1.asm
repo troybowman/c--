@@ -19,6 +19,7 @@
 main:
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   li $t0, 0
   sw $t0, _i
@@ -31,11 +32,11 @@ _L0:
   lw $t1, _i
   sll $t2, $t1, 2
   la $t1, _x
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   lw $t0, _i
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _i
   j _L0
 _L1:
@@ -47,14 +48,14 @@ _L2:
   div $t2, $t0, $t1
   sll $t0, $t2, 2
   la $t1, _x
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lw $t0, ($t2)
   lw $t1, _i
   li $t2, 4
   div $t3, $t1, $t2
   sll $t1, $t3, 2
   la $t2, _x
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   lw $t1, ($t3)
   sle $t2, $t0, $t1
   lw $t0, _i
@@ -62,14 +63,14 @@ _L2:
   div $t3, $t0, $t1
   sll $t0, $t3, 2
   la $t1, _x
-  add $t3, $t1, $t0
+  addu $t3, $t1, $t0
   lw $t0, ($t3)
   lw $t1, _i
   li $t3, 3
   div $t4, $t1, $t3
   sll $t1, $t4, 2
   la $t3, _x
-  add $t4, $t3, $t1
+  addu $t4, $t3, $t1
   lw $t1, ($t4)
   sle $t3, $t0, $t1
   and $t0, $t2, $t3
@@ -78,14 +79,14 @@ _L2:
   div $t3, $t1, $t2
   sll $t1, $t3, 2
   la $t2, _x
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   lw $t1, ($t3)
   lw $t2, _i
   li $t3, 3
   div $t4, $t2, $t3
   sll $t2, $t4, 2
   la $t3, _x
-  add $t4, $t3, $t2
+  addu $t4, $t3, $t2
   lw $t2, ($t4)
   sgt $t3, $t1, $t2
   lw $t1, _i
@@ -93,14 +94,14 @@ _L2:
   div $t4, $t1, $t2
   sll $t1, $t4, 2
   la $t2, _x
-  add $t4, $t2, $t1
+  addu $t4, $t2, $t1
   lw $t1, ($t4)
   lw $t2, _i
   li $t4, 4
   div $t5, $t2, $t4
   sll $t2, $t5, 2
   la $t4, _x
-  add $t5, $t4, $t2
+  addu $t5, $t4, $t2
   lw $t2, ($t5)
   sgt $t4, $t1, $t2
   or $t1, $t3, $t4
@@ -109,14 +110,14 @@ _L2:
   div $t4, $t2, $t3
   sll $t2, $t4, 2
   la $t3, _x
-  add $t4, $t3, $t2
+  addu $t4, $t3, $t2
   lw $t2, ($t4)
   lw $t3, _i
   li $t4, 5
   div $t5, $t3, $t4
   sll $t3, $t5, 2
   la $t4, _x
-  add $t5, $t4, $t3
+  addu $t5, $t4, $t3
   lw $t3, ($t5)
   sgt $t4, $t2, $t3
   or $t2, $t1, $t4
@@ -144,6 +145,7 @@ _L3:
   jal __print_string
 
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

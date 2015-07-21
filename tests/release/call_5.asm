@@ -34,13 +34,14 @@ _L0:
   move $a0, $t2
   jal _f
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   move $v0, $t1
   j __leave_f
 _L1:
 
 __leave_f:
   lw $s0, 16($sp)
+  lw $a0, 24($sp)
   lw $ra, 20($sp)
   la $sp, 24($sp)
   jr $ra
@@ -72,13 +73,14 @@ _L2:
   move $a0, $t2
   jal _g
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   move $v0, $t1
   j __leave_g
 _L3:
 
 __leave_g:
   lw $s0, 16($sp)
+  lw $a0, 24($sp)
   lw $ra, 20($sp)
   la $sp, 24($sp)
   jr $ra
@@ -86,6 +88,7 @@ __leave_g:
 main:
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   li $t0, 5
   move $a0, $t0
@@ -98,6 +101,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

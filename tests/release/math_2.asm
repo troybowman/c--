@@ -19,6 +19,7 @@
 main:
   la $sp, -40($sp)
   sw $ra, 16($sp)
+  sw $a0, 40($sp)
 
   li $t0, 2
   sw $t0, _x
@@ -39,7 +40,7 @@ main:
   lb $t0, 24($sp)
   lw $t1, _x
   lw $t2, _y
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   mul $t1, $t0, $t3
   lw $t0, _z
   div $t2, $t1, $t0
@@ -53,7 +54,7 @@ main:
   lb $t0, 24($sp)
   lw $t1, _x
   lw $t2, _y
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   div $t1, $t0, $t3
   lw $t0, _z
   mul $t2, $t1, $t0
@@ -67,14 +68,14 @@ main:
   lb $t0, 24($sp)
   lw $t1, _x
   lw $t2, _y
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   div $t1, $t0, $t3
   lw $t0, _z
   mul $t2, $t1, $t0
   lb $t0, 24($sp)
   sub $t1, $t2, $t0
   lb $t0, 28($sp)
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   sb $t2, 32($sp)
   lb $t0, 32($sp)
   move $a0, $t0
@@ -84,6 +85,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 40($sp)
   lw $ra, 16($sp)
   la $sp, 40($sp)
   jal __exit

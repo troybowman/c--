@@ -78,7 +78,6 @@ class stack_frame_t
   void build_padding_section(int, int);
 
   struct reg_saver_t;
-  struct argreg_saver_t;
 
   const ir_func_t &f;
 

@@ -29,6 +29,7 @@ __leave_id:
 main:
   la $sp, -32($sp)
   sw $ra, 20($sp)
+  sw $a0, 32($sp)
   sw $s0, 16($sp)
 
   li $t0, 123
@@ -114,7 +115,7 @@ _L3:
   beq $t2, $zero, _L4
   lw $t0, 24($sp)
   li $t1, 2
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 24($sp)
   la $t0, _str0
   move $a0, $t0
@@ -130,7 +131,7 @@ _L3:
   jal _id
   move $t0, $v0
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, 28($sp)
   j _L3
 _L4:
@@ -143,6 +144,7 @@ _L4:
 
 __leavemain:
   lw $s0, 16($sp)
+  lw $a0, 32($sp)
   lw $ra, 20($sp)
   la $sp, 32($sp)
   jal __exit

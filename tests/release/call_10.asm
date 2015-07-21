@@ -45,6 +45,7 @@ __leave_f:
 main:
   la $sp, -32($sp)
   sw $ra, 16($sp)
+  sw $a0, 32($sp)
 
   li $t0, 1
   sw $t0, _x
@@ -55,7 +56,7 @@ main:
   sw $t0, 24($sp)
   lw $t0, 24($sp)
   lw $t1, _x
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _x
   lw $t0, _x
   move $a0, $t0
@@ -65,6 +66,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 32($sp)
   lw $ra, 16($sp)
   la $sp, 32($sp)
   jal __exit

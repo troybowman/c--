@@ -19,7 +19,7 @@ _f:
 
   move $t0, $a0
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   move $v0, $t2
   j __leave_f
 
@@ -30,6 +30,7 @@ __leave_f:
 main:
   la $sp, -24($sp)
   sw $ra, 20($sp)
+  sw $a0, 24($sp)
   sw $s0, 16($sp)
 
   li $t0, 1
@@ -44,14 +45,14 @@ main:
   move $a0, $t0
   jal _f
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   sb $t1, _y
   lb $s0, _y
   li $t0, 'Q'
   move $a0, $t0
   jal _f
   move $t0, $v0
-  add $t1, $s0, $t0
+  addu $t1, $s0, $t0
   sw $t1, _x
   lw $t0, _x
   move $a0, $t0
@@ -62,6 +63,7 @@ main:
 
 __leavemain:
   lw $s0, 16($sp)
+  lw $a0, 24($sp)
   lw $ra, 20($sp)
   la $sp, 24($sp)
   jal __exit

@@ -28,6 +28,7 @@
 main:
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   li $t0, 345
   sw $t0, _x
@@ -42,7 +43,7 @@ main:
   sb $t1, _y
   lw $t0, _x
   lb $t1, _y
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _x
   lw $t0, _x
   lb $t1, _y
@@ -78,6 +79,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

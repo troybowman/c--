@@ -13,27 +13,28 @@
 main:
   la $sp, -72($sp)
   sw $ra, 16($sp)
+  sw $a0, 72($sp)
 
   li $t0, 1234
   li $t1, 7
   sll $t2, $t1, 2
   la $t1, 24($sp)
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 7
   sll $t1, $t0, 2
   la $t0, 24($sp)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   li $t1, 0
   sll $t2, $t1, 2
   la $t1, _x
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   sw $t0, ($t3)
   li $t0, 0
   sll $t1, $t0, 2
   la $t0, _x
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   lw $t0, ($t2)
   sw $t0, 64($sp)
   lw $t0, 64($sp)
@@ -44,6 +45,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 72($sp)
   lw $ra, 16($sp)
   la $sp, 72($sp)
   jal __exit

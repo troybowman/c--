@@ -13,6 +13,7 @@
 main:
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   li $t0, 0
   sw $t0, _i
@@ -29,14 +30,15 @@ _L0:
   jal __print_string
   lw $t0, _i
   lw $t1, _i
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   li $t0, 1
-  add $t1, $t2, $t0
+  addu $t1, $t2, $t0
   sw $t1, _i
   j _L0
 _L1:
 
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

@@ -370,6 +370,7 @@ stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
 struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
 {
   const char *cmd;
+  frame_section_t &base;
 
   virtual void visit_item(item_info_t &info)
   {
@@ -377,30 +378,18 @@ struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
         TAB1"%s %s, %d($sp)\n",
         cmd,
         info.sym.loc.reg(),
-        info.sec.start + info.idx * WORDSIZE);
+        base.start + info.idx * WORDSIZE);
   }
 
-  reg_saver_t(const char *_cmd) : frame_item_visitor_t(), cmd(_cmd) {}
+  reg_saver_t(const char *_cmd, frame_section_t &_base) : cmd(_cmd), base(_base) {}
 };
 
 //-----------------------------------------------------------------------------
-struct stack_frame_t::argreg_saver_t : public stack_frame_t::reg_saver_t
+static const struct saver_pair_t { int sec; int base; } pairs[3] =
 {
-  typedef stack_frame_t::reg_saver_t inherited;
-
-  frame_section_t &params;
-
-  virtual void visit_item(item_info_t &info)
-  {
-    info.frame.ctx.out(
-        TAB1"%s %s, %d($sp)\n",
-        cmd,
-        info.sym.loc.reg(),
-        params.start + info.idx * WORDSIZE);
-  }
-
-  argreg_saver_t(const char *cmd, frame_section_t &_params)
-    : inherited(cmd), params(_params) {}
+ { FS_RA, FS_RA },
+ { FS_REGARGS, FS_PARAMS },
+ { FS_SVREGS, FS_SVREGS },
 };
 
 //-----------------------------------------------------------------------------
@@ -408,14 +397,11 @@ void stack_frame_t::gen_prologue()
 {
   ctx.out(TAB1"la $sp, -%u($sp)\n", size());
 
-  reg_saver_t ras("sw");
-  visit_items(FS_RA, ras);
-
-  argreg_saver_t as("sw", sections[FS_PARAMS]);
-  visit_items(FS_REGARGS, as);
-
-  reg_saver_t srs("sw");
-  visit_items(FS_SVREGS, srs);
+  for ( int i = 0; i < 3; i++ )
+  {
+    reg_saver_t saver("sw", sections[pairs[i].base]);
+    visit_items(pairs[i].sec, saver);
+  }
 
   ctx.out("\n");
 }
@@ -425,14 +411,11 @@ void stack_frame_t::gen_epilogue()
 {
   ctx.out("\n%s:\n", epilogue_lbl->c_str());
 
-  reg_saver_t sv_r("lw");
-  visit_items(FS_SVREGS, sv_r, FIV_REVERSE);
-
-  argreg_saver_t as_r("lw", sections[FS_PARAMS]);
-  visit_items(FS_REGARGS, as_r, FIV_REVERSE);
-
-  reg_saver_t ra_r("lw");
-  visit_items(FS_RA, ra_r, FIV_REVERSE);
+  for ( int i = 2; i >= 0; i-- )
+  {
+    reg_saver_t restore("lw", sections[pairs[i].base]);
+    visit_items(pairs[i].sec, restore, FIV_REVERSE);
+  }
 
   ctx.out(TAB1"la $sp, %u($sp)\n", size());
 

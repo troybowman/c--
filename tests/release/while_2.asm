@@ -31,6 +31,7 @@
 main:
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
 
   li $t0, 0
   sw $t0, _a
@@ -73,35 +74,35 @@ _L4:
   beq $t2, $zero, _L5
   lw $t0, _res
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _res
   lw $t0, _e
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _e
   j _L4
 _L5:
   lw $t0, _d
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _d
   j _L3
 _L6:
   lw $t0, _c
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _c
   j _L2
 _L7:
   lw $t0, _b
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _b
   j _L1
 _L8:
   lw $t0, _a
   li $t1, 1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _a
   j _L0
 _L9:
@@ -113,6 +114,7 @@ _L9:
   jal __print_string
 
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

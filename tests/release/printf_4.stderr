@@ -10,3 +10,4 @@ error: incompatible argument for format specifier, line 18
 error: invalid number of format arguments, line 20
 error: invalid number of format arguments, line 22
 error: invalid number of format arguments, line 23
+c-- returned nonzero exit code

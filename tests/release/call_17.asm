@@ -22,7 +22,7 @@ _f:
 
   lw $t0, 28($sp)
   lw $t1, 24($sp)
-  add $t2, $t1, $t0
+  addu $t2, $t1, $t0
   lb $t0, ($t2)
   li $t1, 0
   seq $t2, $t0, $t1
@@ -33,20 +33,22 @@ _L0:
   lw $t0, _u
   lw $t1, 28($sp)
   lw $t2, 24($sp)
-  add $t3, $t2, $t1
+  addu $t3, $t2, $t1
   lb $t1, ($t3)
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   sw $t2, _u
   lw $t0, 24($sp)
   lw $t1, 28($sp)
   li $t2, 1
-  add $t3, $t1, $t2
+  addu $t3, $t1, $t2
   move $a1, $t3
   move $a0, $t0
   jal _f
 _L1:
 
 __leave_f:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jr $ra
@@ -54,6 +56,8 @@ __leave_f:
 main:
   la $sp, -24($sp)
   sw $ra, 16($sp)
+  sw $a0, 24($sp)
+  sw $a1, 28($sp)
 
   la $t0, _str0
   li $t1, 0
@@ -68,6 +72,8 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit

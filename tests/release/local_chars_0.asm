@@ -14,6 +14,7 @@
 main:
   la $sp, -40($sp)
   sw $ra, 16($sp)
+  sw $a0, 40($sp)
 
   li $t0, 'A'
   sb $t0, 24($sp)
@@ -41,6 +42,7 @@ main:
   jal __print_string
 
 __leavemain:
+  lw $a0, 40($sp)
   lw $ra, 16($sp)
   la $sp, 40($sp)
   jal __exit

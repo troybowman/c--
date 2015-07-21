@@ -12,7 +12,7 @@ _add:
 
   move $t0, $a0
   move $t1, $a1
-  add $t2, $t0, $t1
+  addu $t2, $t0, $t1
   move $v0, $t2
   j __leave_add
 
@@ -34,6 +34,8 @@ __leave_two:
 main:
   la $sp, -32($sp)
   sw $ra, 20($sp)
+  sw $a0, 32($sp)
+  sw $a1, 36($sp)
   sw $s0, 16($sp)
 
   li $s0, 1
@@ -53,6 +55,8 @@ main:
 
 __leavemain:
   lw $s0, 16($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
   lw $ra, 20($sp)
   la $sp, 32($sp)
   jal __exit

@@ -9,3 +9,4 @@ error: void type is only valid for parameter declarations, line 20
 error: variable wrong redeclared at line 21 (previous declaration at line 21)
 error: void type is only valid for parameter declarations, line 23
 error: non-void funcion main must return a value
+c-- returned nonzero exit code
