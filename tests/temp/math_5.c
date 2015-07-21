@@ -42,12 +42,12 @@ void memset(char buf[], char val, int buflen)
 }
 
 /*---------------------------------------------------------------------------*/
-/*int strlen(char string[])*/
-/*{*/
-  /*int i;*/
-  /*for ( i = 0; string[i] != '\0'; i = i + 1 );*/
-  /*return i;*/
-/*}*/
+int strlen(char string[])
+{
+  int i;
+  for ( i = 0; string[i] != 0; i = i + 1 );
+  return i;
+}
 
 /*---------------------------------------------------------------------------*/
 void get_hex_str(char out[], char hash[])
@@ -206,30 +206,30 @@ void sha256_final(char hash[], int state[], char block[], int count[])
 }
 
 /*---------------------------------------------------------------------------*/
-void sha256_from_str(char string[], int strlen)
+void sha256_from_str(char string[])
 {
   int state[8], count[3];
   char block[64], output[65], hash[32];
 
   sha256_init(state, count);
-  sha256_update(state, block, count, string, strlen);
+  sha256_update(state, block, count, string, strlen(string));
   sha256_final(hash, state, block, count);
 
   get_hex_str(output, hash);
 
-  printf("input string: %s\n", string);
+  printf("input string: '%s'\n", string);
   printf("sha256 hash:  %s\n", output);
 }
 
 /*---------------------------------------------------------------------------*/
 void phase_simple_strings(void)
 {
-  /*sha256_from_str("", 0);*/
-  /*sha256_from_str("abc", 3);*/
-  /*sha256_from_str("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 56);*/
-  /*sha256_from_str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);*/
-  /*sha256_from_str("this is a secret message", 24);*/
-  sha256_from_str("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", 112);
+  sha256_from_str("");
+  sha256_from_str("abc");
+  sha256_from_str("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
+  sha256_from_str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  sha256_from_str("this is a secret message");
+  sha256_from_str("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu");
 }
 
 /*---------------------------------------------------------------------------*/

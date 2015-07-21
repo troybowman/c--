@@ -46,7 +46,7 @@ void memset(uint8_t buf[], uint8_t val, uint32_t buflen)
 int strlen(char string[])
 {
   int i;
-  for ( i = 0; string[i] != '\0'; i = i + 1 );
+  for ( i = 0; string[i] != 0; i = i + 1 );
   return i;
 }
 
@@ -67,7 +67,7 @@ void get_hex_str(uint8_t out[], uint8_t hash[])
     out[2*i+1] = map[(hash[i] & 0x0f)];
   }
 
-  out[64] = '\0';
+  out[64] = 0;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -218,7 +218,7 @@ void sha256_from_str(uint8_t string[])
 
   get_hex_str(output, hash);
 
-  printf("input string: %s\n", string);
+  printf("input string: '%s'\n", string);
   printf("sha256 hash:  %s\n", output);
 }
 
@@ -234,7 +234,7 @@ void phase_simple_strings(void)
 }
 
 /*---------------------------------------------------------------------------*/
-void main()
+void main(void)
 {
   init_k();
   phase_simple_strings();
