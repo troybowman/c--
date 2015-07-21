@@ -21,6 +21,14 @@ void memset(char buf[], char val, int buflen)
 }
 
 /*---------------------------------------------------------------------------*/
+int strlen(char string[])
+{
+  int i;
+  for ( i = 0; string[i] != '\0'; i = i + 1 );
+  return i;
+}
+
+/*---------------------------------------------------------------------------*/
 void get_hex_str(char out[], char hash[])
 {
   int i;
@@ -88,6 +96,8 @@ int main(void)
   get_hex_str(string, hash);
   printf("hashstr: %s\n", string);
 
+  printf("strlen: %d\n", strlen(""));
+  printf("strlen: %d\n", strlen(string));
+
   return 0;
 }
-
