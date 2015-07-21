@@ -1,0 +1,1 @@
+../decl/printf_3.c

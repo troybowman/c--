@@ -1,0 +1,1 @@
+../decl/mixed_2.c
