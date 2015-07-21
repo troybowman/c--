@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
-# size: 14
+# size: 16
 # sym: _print_int
 #   line: -1
 #   type: ST_FUNCTION
@@ -49,18 +49,6 @@
 #       1: ST_ELLIPSIS
 #     is_extern: yes
 # sym: rotl
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: a
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: b
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: rotr
 #   line: 6
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -72,22 +60,19 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: ch
+# sym: rotr
 #   line: 7
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
 #     params:
-#       0: x
+#       0: a
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
-#       1: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       2: z
+#       1: b
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: maj
+# sym: ch
 #   line: 8
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -102,7 +87,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: ep0
+# sym: maj
 #   line: 9
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -110,8 +95,14 @@
 #       0: x
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
+#       1: y
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#       2: z
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
 #     is_extern: no
-# sym: ep1
+# sym: ep0
 #   line: 10
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -120,7 +111,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: sig0
+# sym: ep1
 #   line: 11
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -129,7 +120,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: sig1
+# sym: sig0
 #   line: 12
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -138,8 +129,44 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
+# sym: sig1
+#   line: 13
+#   type: ST_FUNCTION
+#     rt_type: PRIM_INT
+#     params:
+#       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
+# sym: memset
+#   line: 16
+#   type: ST_FUNCTION
+#     rt_type: PRIM_VOID
+#     params:
+#       0: buf
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       1: val
+#         type: ST_PRIMITIVE
+#           base: PRIM_CHAR
+#       2: buflen
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
+# sym: get_hex_str
+#   line: 24
+#   type: ST_FUNCTION
+#     rt_type: PRIM_VOID
+#     params:
+#       0: out
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#       1: hash
+#         type: ST_ARRAY
+#           base: PRIM_CHAR
+#     is_extern: no
 # sym: main
-#   line: 14
+#   line: 44
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
 #     params:
@@ -150,11 +177,11 @@
 #-----------------------------------------------------------------------------
 # size: 2
 # sym: a
-#   line: 5
+#   line: 6
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: b
-#   line: 5
+#   line: 6
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -186,11 +213,11 @@
 #-----------------------------------------------------------------------------
 # size: 2
 # sym: a
-#   line: 6
+#   line: 7
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: b
-#   line: 6
+#   line: 7
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -222,15 +249,15 @@
 #-----------------------------------------------------------------------------
 # size: 3
 # sym: x
-#   line: 7
+#   line: 8
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: y
-#   line: 7
+#   line: 8
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: z
-#   line: 7
+#   line: 8
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -260,15 +287,15 @@
 #-----------------------------------------------------------------------------
 # size: 3
 # sym: x
-#   line: 8
+#   line: 9
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: y
-#   line: 8
+#   line: 9
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: z
-#   line: 8
+#   line: 9
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -304,7 +331,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 9
+#   line: 10
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -352,7 +379,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 10
+#   line: 11
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -400,7 +427,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 11
+#   line: 12
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -444,7 +471,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 12
+#   line: 13
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -484,29 +511,369 @@
 # child RHS for node 15
 # node 17: type: TNT_INTCON val: 10
 #-----------------------------------------------------------------------------
+# LOCAL SYMBOLS FOR FUNCTION: memset
+#-----------------------------------------------------------------------------
+# size: 4
+# sym: buf
+#   line: 16
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0xffffffff
+# sym: val
+#   line: 16
+#   type: ST_PRIMITIVE
+#     base: PRIM_CHAR
+# sym: buflen
+#   line: 16
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: i
+#   line: 18
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+#-----------------------------------------------------------------------------
+# SYNTAX TREE FOR FUNCTION: memset
+#-----------------------------------------------------------------------------
+# node 1: type: TNT_STMT
+# child SEQ_CUR for node 1
+# node 2: type: TNT_FOR
+# child FOR_INIT for node 2
+# node 3: type: TNT_ASSG
+# child LHS for node 3
+# node 4: type: TNT_SYMBOL sym: i
+# child RHS for node 3
+# node 5: type: TNT_INTCON val: 0
+# child FOR_COND for node 2
+# node 6: type: TNT_LT
+# child LHS for node 6
+# node 7: type: TNT_SYMBOL sym: i
+# child RHS for node 6
+# node 8: type: TNT_SYMBOL sym: buflen
+# child FOR_INC for node 2
+# node 9: type: TNT_ASSG
+# child LHS for node 9
+# node 10: type: TNT_SYMBOL sym: i
+# child RHS for node 9
+# node 11: type: TNT_PLUS
+# child LHS for node 11
+# node 12: type: TNT_SYMBOL sym: i
+# child RHS for node 11
+# node 13: type: TNT_INTCON val: 1
+# child FOR_BODY for node 2
+# node 14: type: TNT_ASSG
+# child LHS for node 14
+# node 15: type: TNT_ARRAY_LOOKUP sym: buf
+# child AL_OFFSET for node 15
+# node 16: type: TNT_SYMBOL sym: i
+# child RHS for node 14
+# node 17: type: TNT_SYMBOL sym: val
+#-----------------------------------------------------------------------------
+# LOCAL SYMBOLS FOR FUNCTION: get_hex_str
+#-----------------------------------------------------------------------------
+# size: 4
+# sym: out
+#   line: 24
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0xffffffff
+# sym: hash
+#   line: 24
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0xffffffff
+# sym: i
+#   line: 26
+#   type: ST_PRIMITIVE
+#     base: PRIM_INT
+# sym: map
+#   line: 27
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0x10
+#-----------------------------------------------------------------------------
+# SYNTAX TREE FOR FUNCTION: get_hex_str
+#-----------------------------------------------------------------------------
+# node 1: type: TNT_STMT
+# child SEQ_CUR for node 1
+# node 2: type: TNT_ASSG
+# child LHS for node 2
+# node 3: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 3
+# node 4: type: TNT_INTCON val: 0
+# child RHS for node 2
+# node 5: type: TNT_CHARCON str: '0'
+# child SEQ_NEXT for node 1
+# node 6: type: TNT_STMT
+# child SEQ_CUR for node 6
+# node 7: type: TNT_ASSG
+# child LHS for node 7
+# node 8: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 8
+# node 9: type: TNT_INTCON val: 1
+# child RHS for node 7
+# node 10: type: TNT_CHARCON str: '1'
+# child SEQ_NEXT for node 6
+# node 11: type: TNT_STMT
+# child SEQ_CUR for node 11
+# node 12: type: TNT_ASSG
+# child LHS for node 12
+# node 13: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 13
+# node 14: type: TNT_INTCON val: 2
+# child RHS for node 12
+# node 15: type: TNT_CHARCON str: '2'
+# child SEQ_NEXT for node 11
+# node 16: type: TNT_STMT
+# child SEQ_CUR for node 16
+# node 17: type: TNT_ASSG
+# child LHS for node 17
+# node 18: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 18
+# node 19: type: TNT_INTCON val: 3
+# child RHS for node 17
+# node 20: type: TNT_CHARCON str: '3'
+# child SEQ_NEXT for node 16
+# node 21: type: TNT_STMT
+# child SEQ_CUR for node 21
+# node 22: type: TNT_ASSG
+# child LHS for node 22
+# node 23: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 23
+# node 24: type: TNT_INTCON val: 4
+# child RHS for node 22
+# node 25: type: TNT_CHARCON str: '4'
+# child SEQ_NEXT for node 21
+# node 26: type: TNT_STMT
+# child SEQ_CUR for node 26
+# node 27: type: TNT_ASSG
+# child LHS for node 27
+# node 28: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 28
+# node 29: type: TNT_INTCON val: 5
+# child RHS for node 27
+# node 30: type: TNT_CHARCON str: '5'
+# child SEQ_NEXT for node 26
+# node 31: type: TNT_STMT
+# child SEQ_CUR for node 31
+# node 32: type: TNT_ASSG
+# child LHS for node 32
+# node 33: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 33
+# node 34: type: TNT_INTCON val: 6
+# child RHS for node 32
+# node 35: type: TNT_CHARCON str: '6'
+# child SEQ_NEXT for node 31
+# node 36: type: TNT_STMT
+# child SEQ_CUR for node 36
+# node 37: type: TNT_ASSG
+# child LHS for node 37
+# node 38: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 38
+# node 39: type: TNT_INTCON val: 7
+# child RHS for node 37
+# node 40: type: TNT_CHARCON str: '7'
+# child SEQ_NEXT for node 36
+# node 41: type: TNT_STMT
+# child SEQ_CUR for node 41
+# node 42: type: TNT_ASSG
+# child LHS for node 42
+# node 43: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 43
+# node 44: type: TNT_INTCON val: 8
+# child RHS for node 42
+# node 45: type: TNT_CHARCON str: '8'
+# child SEQ_NEXT for node 41
+# node 46: type: TNT_STMT
+# child SEQ_CUR for node 46
+# node 47: type: TNT_ASSG
+# child LHS for node 47
+# node 48: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 48
+# node 49: type: TNT_INTCON val: 9
+# child RHS for node 47
+# node 50: type: TNT_CHARCON str: '9'
+# child SEQ_NEXT for node 46
+# node 51: type: TNT_STMT
+# child SEQ_CUR for node 51
+# node 52: type: TNT_ASSG
+# child LHS for node 52
+# node 53: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 53
+# node 54: type: TNT_INTCON val: 10
+# child RHS for node 52
+# node 55: type: TNT_CHARCON str: 'a'
+# child SEQ_NEXT for node 51
+# node 56: type: TNT_STMT
+# child SEQ_CUR for node 56
+# node 57: type: TNT_ASSG
+# child LHS for node 57
+# node 58: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 58
+# node 59: type: TNT_INTCON val: 11
+# child RHS for node 57
+# node 60: type: TNT_CHARCON str: 'b'
+# child SEQ_NEXT for node 56
+# node 61: type: TNT_STMT
+# child SEQ_CUR for node 61
+# node 62: type: TNT_ASSG
+# child LHS for node 62
+# node 63: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 63
+# node 64: type: TNT_INTCON val: 12
+# child RHS for node 62
+# node 65: type: TNT_CHARCON str: 'c'
+# child SEQ_NEXT for node 61
+# node 66: type: TNT_STMT
+# child SEQ_CUR for node 66
+# node 67: type: TNT_ASSG
+# child LHS for node 67
+# node 68: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 68
+# node 69: type: TNT_INTCON val: 13
+# child RHS for node 67
+# node 70: type: TNT_CHARCON str: 'd'
+# child SEQ_NEXT for node 66
+# node 71: type: TNT_STMT
+# child SEQ_CUR for node 71
+# node 72: type: TNT_ASSG
+# child LHS for node 72
+# node 73: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 73
+# node 74: type: TNT_INTCON val: 14
+# child RHS for node 72
+# node 75: type: TNT_CHARCON str: 'e'
+# child SEQ_NEXT for node 71
+# node 76: type: TNT_STMT
+# child SEQ_CUR for node 76
+# node 77: type: TNT_ASSG
+# child LHS for node 77
+# node 78: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 78
+# node 79: type: TNT_INTCON val: 15
+# child RHS for node 77
+# node 80: type: TNT_CHARCON str: 'f'
+# child SEQ_NEXT for node 76
+# node 81: type: TNT_STMT
+# child SEQ_CUR for node 81
+# node 82: type: TNT_FOR
+# child FOR_INIT for node 82
+# node 83: type: TNT_ASSG
+# child LHS for node 83
+# node 84: type: TNT_SYMBOL sym: i
+# child RHS for node 83
+# node 85: type: TNT_INTCON val: 0
+# child FOR_COND for node 82
+# node 86: type: TNT_LT
+# child LHS for node 86
+# node 87: type: TNT_SYMBOL sym: i
+# child RHS for node 86
+# node 88: type: TNT_INTCON val: 32
+# child FOR_INC for node 82
+# node 89: type: TNT_ASSG
+# child LHS for node 89
+# node 90: type: TNT_SYMBOL sym: i
+# child RHS for node 89
+# node 91: type: TNT_PLUS
+# child LHS for node 91
+# node 92: type: TNT_SYMBOL sym: i
+# child RHS for node 91
+# node 93: type: TNT_INTCON val: 1
+# child FOR_BODY for node 82
+# node 94: type: TNT_STMT
+# child SEQ_CUR for node 94
+# node 95: type: TNT_ASSG
+# child LHS for node 95
+# node 96: type: TNT_ARRAY_LOOKUP sym: out
+# child AL_OFFSET for node 96
+# node 97: type: TNT_MULT
+# child LHS for node 97
+# node 98: type: TNT_INTCON val: 2
+# child RHS for node 97
+# node 99: type: TNT_SYMBOL sym: i
+# child RHS for node 95
+# node 100: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 100
+# node 101: type: TNT_SHR
+# child LHS for node 101
+# node 102: type: TNT_BAND
+# child LHS for node 102
+# node 103: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 103
+# node 104: type: TNT_SYMBOL sym: i
+# child RHS for node 102
+# node 105: type: TNT_INTCON val: 240
+# child RHS for node 101
+# node 106: type: TNT_INTCON val: 4
+# child SEQ_NEXT for node 94
+# node 107: type: TNT_STMT
+# child SEQ_CUR for node 107
+# node 108: type: TNT_ASSG
+# child LHS for node 108
+# node 109: type: TNT_ARRAY_LOOKUP sym: out
+# child AL_OFFSET for node 109
+# node 110: type: TNT_PLUS
+# child LHS for node 110
+# node 111: type: TNT_MULT
+# child LHS for node 111
+# node 112: type: TNT_INTCON val: 2
+# child RHS for node 111
+# node 113: type: TNT_SYMBOL sym: i
+# child RHS for node 110
+# node 114: type: TNT_INTCON val: 1
+# child RHS for node 108
+# node 115: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 115
+# node 116: type: TNT_BAND
+# child LHS for node 116
+# node 117: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 117
+# node 118: type: TNT_SYMBOL sym: i
+# child RHS for node 116
+# node 119: type: TNT_INTCON val: 15
+# child SEQ_NEXT for node 81
+# node 120: type: TNT_STMT
+# child SEQ_CUR for node 120
+# node 121: type: TNT_ASSG
+# child LHS for node 121
+# node 122: type: TNT_ARRAY_LOOKUP sym: out
+# child AL_OFFSET for node 122
+# node 123: type: TNT_INTCON val: 65
+# child RHS for node 121
+# node 124: type: TNT_CHARCON str: '\0'
+#-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# size: 5
+# size: 7
 # sym: a
-#   line: 16
+#   line: 46
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: b
-#   line: 16
+#   line: 46
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: c
-#   line: 16
+#   line: 46
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: d
-#   line: 16
+#   line: 46
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: e
-#   line: 16
+#   line: 46
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
+# sym: hash
+#   line: 47
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0x20
+# sym: string
+#   line: 47
+#   type: ST_ARRAY
+#     base: PRIM_CHAR
+#     size: 0x41
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
@@ -2160,9 +2527,425 @@
 # child SEQ_NEXT for node 769
 # node 825: type: TNT_STMT
 # child SEQ_CUR for node 825
-# node 826: type: TNT_RET
-# child RET_EXPR for node 826
-# node 827: type: TNT_INTCON val: 0
+# node 826: type: TNT_CALL sym: memset
+# child CALL_ARGS for node 826
+# node 827: type: TNT_ARG
+# child SEQ_CUR for node 827
+# node 828: type: TNT_SYMBOL sym: hash
+# child SEQ_NEXT for node 827
+# node 829: type: TNT_ARG
+# child SEQ_CUR for node 829
+# node 830: type: TNT_CHARCON str: 'a'
+# child SEQ_NEXT for node 829
+# node 831: type: TNT_ARG
+# child SEQ_CUR for node 831
+# node 832: type: TNT_INTCON val: 32
+# child SEQ_NEXT for node 825
+# node 833: type: TNT_STMT
+# child SEQ_CUR for node 833
+# node 834: type: TNT_CALL sym: get_hex_str
+# child CALL_ARGS for node 834
+# node 835: type: TNT_ARG
+# child SEQ_CUR for node 835
+# node 836: type: TNT_SYMBOL sym: string
+# child SEQ_NEXT for node 835
+# node 837: type: TNT_ARG
+# child SEQ_CUR for node 837
+# node 838: type: TNT_SYMBOL sym: hash
+# child SEQ_NEXT for node 833
+# node 839: type: TNT_STMT
+# child SEQ_CUR for node 839
+# node 840: type: TNT_PRINTF
+# child PRINTF_TREE for node 840
+# node 841: type: TNT_STMT
+# child SEQ_CUR for node 841
+# node 842: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 842
+# node 843: type: TNT_ARG
+# child SEQ_CUR for node 843
+# node 844: type: TNT_STRCON str: "hashstr: "
+# child SEQ_NEXT for node 841
+# node 845: type: TNT_STMT
+# child SEQ_CUR for node 845
+# node 846: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 846
+# node 847: type: TNT_ARG
+# child SEQ_CUR for node 847
+# node 848: type: TNT_SYMBOL sym: string
+# child SEQ_NEXT for node 845
+# node 849: type: TNT_STMT
+# child SEQ_CUR for node 849
+# node 850: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 850
+# node 851: type: TNT_ARG
+# child SEQ_CUR for node 851
+# node 852: type: TNT_STRCON str: "\n"
+# child SEQ_NEXT for node 839
+# node 853: type: TNT_STMT
+# child SEQ_CUR for node 853
+# node 854: type: TNT_ASSG
+# child LHS for node 854
+# node 855: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 855
+# node 856: type: TNT_INTCON val: 0
+# child RHS for node 854
+# node 857: type: TNT_INTCON val: 66
+# child SEQ_NEXT for node 853
+# node 858: type: TNT_STMT
+# child SEQ_CUR for node 858
+# node 859: type: TNT_ASSG
+# child LHS for node 859
+# node 860: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 860
+# node 861: type: TNT_INTCON val: 1
+# child RHS for node 859
+# node 862: type: TNT_INTCON val: 64
+# child SEQ_NEXT for node 858
+# node 863: type: TNT_STMT
+# child SEQ_CUR for node 863
+# node 864: type: TNT_ASSG
+# child LHS for node 864
+# node 865: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 865
+# node 866: type: TNT_INTCON val: 2
+# child RHS for node 864
+# node 867: type: TNT_INTCON val: 252
+# child SEQ_NEXT for node 863
+# node 868: type: TNT_STMT
+# child SEQ_CUR for node 868
+# node 869: type: TNT_ASSG
+# child LHS for node 869
+# node 870: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 870
+# node 871: type: TNT_INTCON val: 3
+# child RHS for node 869
+# node 872: type: TNT_INTCON val: 152
+# child SEQ_NEXT for node 868
+# node 873: type: TNT_STMT
+# child SEQ_CUR for node 873
+# node 874: type: TNT_ASSG
+# child LHS for node 874
+# node 875: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 875
+# node 876: type: TNT_INTCON val: 4
+# child RHS for node 874
+# node 877: type: TNT_INTCON val: 201
+# child SEQ_NEXT for node 873
+# node 878: type: TNT_STMT
+# child SEQ_CUR for node 878
+# node 879: type: TNT_ASSG
+# child LHS for node 879
+# node 880: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 880
+# node 881: type: TNT_INTCON val: 5
+# child RHS for node 879
+# node 882: type: TNT_INTCON val: 149
+# child SEQ_NEXT for node 878
+# node 883: type: TNT_STMT
+# child SEQ_CUR for node 883
+# node 884: type: TNT_ASSG
+# child LHS for node 884
+# node 885: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 885
+# node 886: type: TNT_INTCON val: 6
+# child RHS for node 884
+# node 887: type: TNT_INTCON val: 46
+# child SEQ_NEXT for node 883
+# node 888: type: TNT_STMT
+# child SEQ_CUR for node 888
+# node 889: type: TNT_ASSG
+# child LHS for node 889
+# node 890: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 890
+# node 891: type: TNT_INTCON val: 7
+# child RHS for node 889
+# node 892: type: TNT_INTCON val: 47
+# child SEQ_NEXT for node 888
+# node 893: type: TNT_STMT
+# child SEQ_CUR for node 893
+# node 894: type: TNT_ASSG
+# child LHS for node 894
+# node 895: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 895
+# node 896: type: TNT_INTCON val: 8
+# child RHS for node 894
+# node 897: type: TNT_INTCON val: 194
+# child SEQ_NEXT for node 893
+# node 898: type: TNT_STMT
+# child SEQ_CUR for node 898
+# node 899: type: TNT_ASSG
+# child LHS for node 899
+# node 900: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 900
+# node 901: type: TNT_INTCON val: 9
+# child RHS for node 899
+# node 902: type: TNT_INTCON val: 224
+# child SEQ_NEXT for node 898
+# node 903: type: TNT_STMT
+# child SEQ_CUR for node 903
+# node 904: type: TNT_ASSG
+# child LHS for node 904
+# node 905: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 905
+# node 906: type: TNT_INTCON val: 10
+# child RHS for node 904
+# node 907: type: TNT_INTCON val: 231
+# child SEQ_NEXT for node 903
+# node 908: type: TNT_STMT
+# child SEQ_CUR for node 908
+# node 909: type: TNT_ASSG
+# child LHS for node 909
+# node 910: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 910
+# node 911: type: TNT_INTCON val: 11
+# child RHS for node 909
+# node 912: type: TNT_INTCON val: 99
+# child SEQ_NEXT for node 908
+# node 913: type: TNT_STMT
+# child SEQ_CUR for node 913
+# node 914: type: TNT_ASSG
+# child LHS for node 914
+# node 915: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 915
+# node 916: type: TNT_INTCON val: 12
+# child RHS for node 914
+# node 917: type: TNT_INTCON val: 195
+# child SEQ_NEXT for node 913
+# node 918: type: TNT_STMT
+# child SEQ_CUR for node 918
+# node 919: type: TNT_ASSG
+# child LHS for node 919
+# node 920: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 920
+# node 921: type: TNT_INTCON val: 13
+# child RHS for node 919
+# node 922: type: TNT_INTCON val: 94
+# child SEQ_NEXT for node 918
+# node 923: type: TNT_STMT
+# child SEQ_CUR for node 923
+# node 924: type: TNT_ASSG
+# child LHS for node 924
+# node 925: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 925
+# node 926: type: TNT_INTCON val: 14
+# child RHS for node 924
+# node 927: type: TNT_INTCON val: 57
+# child SEQ_NEXT for node 923
+# node 928: type: TNT_STMT
+# child SEQ_CUR for node 928
+# node 929: type: TNT_ASSG
+# child LHS for node 929
+# node 930: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 930
+# node 931: type: TNT_INTCON val: 15
+# child RHS for node 929
+# node 932: type: TNT_INTCON val: 145
+# child SEQ_NEXT for node 928
+# node 933: type: TNT_STMT
+# child SEQ_CUR for node 933
+# node 934: type: TNT_ASSG
+# child LHS for node 934
+# node 935: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 935
+# node 936: type: TNT_INTCON val: 16
+# child RHS for node 934
+# node 937: type: TNT_INTCON val: 92
+# child SEQ_NEXT for node 933
+# node 938: type: TNT_STMT
+# child SEQ_CUR for node 938
+# node 939: type: TNT_ASSG
+# child LHS for node 939
+# node 940: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 940
+# node 941: type: TNT_INTCON val: 17
+# child RHS for node 939
+# node 942: type: TNT_INTCON val: 61
+# child SEQ_NEXT for node 938
+# node 943: type: TNT_STMT
+# child SEQ_CUR for node 943
+# node 944: type: TNT_ASSG
+# child LHS for node 944
+# node 945: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 945
+# node 946: type: TNT_INTCON val: 18
+# child RHS for node 944
+# node 947: type: TNT_INTCON val: 196
+# child SEQ_NEXT for node 943
+# node 948: type: TNT_STMT
+# child SEQ_CUR for node 948
+# node 949: type: TNT_ASSG
+# child LHS for node 949
+# node 950: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 950
+# node 951: type: TNT_INTCON val: 19
+# child RHS for node 949
+# node 952: type: TNT_INTCON val: 64
+# child SEQ_NEXT for node 948
+# node 953: type: TNT_STMT
+# child SEQ_CUR for node 953
+# node 954: type: TNT_ASSG
+# child LHS for node 954
+# node 955: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 955
+# node 956: type: TNT_INTCON val: 20
+# child RHS for node 954
+# node 957: type: TNT_INTCON val: 74
+# child SEQ_NEXT for node 953
+# node 958: type: TNT_STMT
+# child SEQ_CUR for node 958
+# node 959: type: TNT_ASSG
+# child LHS for node 959
+# node 960: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 960
+# node 961: type: TNT_INTCON val: 21
+# child RHS for node 959
+# node 962: type: TNT_INTCON val: 225
+# child SEQ_NEXT for node 958
+# node 963: type: TNT_STMT
+# child SEQ_CUR for node 963
+# node 964: type: TNT_ASSG
+# child LHS for node 964
+# node 965: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 965
+# node 966: type: TNT_INTCON val: 22
+# child RHS for node 964
+# node 967: type: TNT_INTCON val: 7
+# child SEQ_NEXT for node 963
+# node 968: type: TNT_STMT
+# child SEQ_CUR for node 968
+# node 969: type: TNT_ASSG
+# child LHS for node 969
+# node 970: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 970
+# node 971: type: TNT_INTCON val: 23
+# child RHS for node 969
+# node 972: type: TNT_INTCON val: 53
+# child SEQ_NEXT for node 968
+# node 973: type: TNT_STMT
+# child SEQ_CUR for node 973
+# node 974: type: TNT_ASSG
+# child LHS for node 974
+# node 975: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 975
+# node 976: type: TNT_INTCON val: 24
+# child RHS for node 974
+# node 977: type: TNT_INTCON val: 237
+# child SEQ_NEXT for node 973
+# node 978: type: TNT_STMT
+# child SEQ_CUR for node 978
+# node 979: type: TNT_ASSG
+# child LHS for node 979
+# node 980: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 980
+# node 981: type: TNT_INTCON val: 25
+# child RHS for node 979
+# node 982: type: TNT_INTCON val: 211
+# child SEQ_NEXT for node 978
+# node 983: type: TNT_STMT
+# child SEQ_CUR for node 983
+# node 984: type: TNT_ASSG
+# child LHS for node 984
+# node 985: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 985
+# node 986: type: TNT_INTCON val: 26
+# child RHS for node 984
+# node 987: type: TNT_INTCON val: 230
+# child SEQ_NEXT for node 983
+# node 988: type: TNT_STMT
+# child SEQ_CUR for node 988
+# node 989: type: TNT_ASSG
+# child LHS for node 989
+# node 990: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 990
+# node 991: type: TNT_INTCON val: 27
+# child RHS for node 989
+# node 992: type: TNT_INTCON val: 23
+# child SEQ_NEXT for node 988
+# node 993: type: TNT_STMT
+# child SEQ_CUR for node 993
+# node 994: type: TNT_ASSG
+# child LHS for node 994
+# node 995: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 995
+# node 996: type: TNT_INTCON val: 28
+# child RHS for node 994
+# node 997: type: TNT_INTCON val: 247
+# child SEQ_NEXT for node 993
+# node 998: type: TNT_STMT
+# child SEQ_CUR for node 998
+# node 999: type: TNT_ASSG
+# child LHS for node 999
+# node 1000: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 1000
+# node 1001: type: TNT_INTCON val: 29
+# child RHS for node 999
+# node 1002: type: TNT_INTCON val: 65
+# child SEQ_NEXT for node 998
+# node 1003: type: TNT_STMT
+# child SEQ_CUR for node 1003
+# node 1004: type: TNT_ASSG
+# child LHS for node 1004
+# node 1005: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 1005
+# node 1006: type: TNT_INTCON val: 30
+# child RHS for node 1004
+# node 1007: type: TNT_INTCON val: 18
+# child SEQ_NEXT for node 1003
+# node 1008: type: TNT_STMT
+# child SEQ_CUR for node 1008
+# node 1009: type: TNT_ASSG
+# child LHS for node 1009
+# node 1010: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 1010
+# node 1011: type: TNT_INTCON val: 31
+# child RHS for node 1009
+# node 1012: type: TNT_INTCON val: 162
+# child SEQ_NEXT for node 1008
+# node 1013: type: TNT_STMT
+# child SEQ_CUR for node 1013
+# node 1014: type: TNT_CALL sym: get_hex_str
+# child CALL_ARGS for node 1014
+# node 1015: type: TNT_ARG
+# child SEQ_CUR for node 1015
+# node 1016: type: TNT_SYMBOL sym: string
+# child SEQ_NEXT for node 1015
+# node 1017: type: TNT_ARG
+# child SEQ_CUR for node 1017
+# node 1018: type: TNT_SYMBOL sym: hash
+# child SEQ_NEXT for node 1013
+# node 1019: type: TNT_STMT
+# child SEQ_CUR for node 1019
+# node 1020: type: TNT_PRINTF
+# child PRINTF_TREE for node 1020
+# node 1021: type: TNT_STMT
+# child SEQ_CUR for node 1021
+# node 1022: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 1022
+# node 1023: type: TNT_ARG
+# child SEQ_CUR for node 1023
+# node 1024: type: TNT_STRCON str: "hashstr: "
+# child SEQ_NEXT for node 1021
+# node 1025: type: TNT_STMT
+# child SEQ_CUR for node 1025
+# node 1026: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 1026
+# node 1027: type: TNT_ARG
+# child SEQ_CUR for node 1027
+# node 1028: type: TNT_SYMBOL sym: string
+# child SEQ_NEXT for node 1025
+# node 1029: type: TNT_STMT
+# child SEQ_CUR for node 1029
+# node 1030: type: TNT_CALL sym: _print_string
+# child CALL_ARGS for node 1030
+# node 1031: type: TNT_ARG
+# child SEQ_CUR for node 1031
+# node 1032: type: TNT_STRCON str: "\n"
+# child SEQ_NEXT for node 1019
+# node 1033: type: TNT_STMT
+# child SEQ_CUR for node 1033
+# node 1034: type: TNT_RET
+# child RET_EXPR for node 1034
+# node 1035: type: TNT_INTCON val: 0
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: rotl
 #-----------------------------------------------------------------------------
@@ -2952,9 +3735,949 @@
 # dest -> ST_RETVAL
 # src1 -> ST_TEMP (0)
 #-----------------------------------------------------------------------------
+# INTERMEDIATE CODE FOR FUNCTION: memset
+#-----------------------------------------------------------------------------
+# temps used:    4
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (0)
+# |
+# >
+# CNT_SW
+# ------
+# dest -> ST_PRIMITIVE (i)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (0)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_PRIMITIVE (buflen)
+# |
+# >
+# CNT_SLT
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (1)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_PRIMITIVE (val)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (buf)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (1)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SW
+# ------
+# dest -> ST_PRIMITIVE (i)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_JUMP
+# --------
+# dest -> ST_LABEL (0)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (1)
+#-----------------------------------------------------------------------------
+# INTERMEDIATE CODE FOR FUNCTION: get_hex_str
+#-----------------------------------------------------------------------------
+# temps used:    4
+# svregs used:   0
+# stktemps used: 0
+# regargs used:  0
+# stkargs used:  0
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('0')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (0)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('1')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (1)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('2')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (2)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('3')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (3)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('4')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (4)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('5')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (5)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('6')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (6)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('7')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (7)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('8')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (8)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('9')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (9)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('a')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (10)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('b')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (11)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('c')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (12)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('d')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (13)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('e')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (14)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('f')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (15)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (0)
+# |
+# >
+# CNT_SW
+# ------
+# dest -> ST_PRIMITIVE (i)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (0)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (32)
+# |
+# >
+# CNT_SLT
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_CNDJMP
+# ----------
+# dest -> ST_LABEL (1)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (0)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (240)
+# |
+# >
+# CNT_AND
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (4)
+# |
+# >
+# CNT_SRLV
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (0)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (2)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (2)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_MUL
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (2)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_ARRAY (out)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (3)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (0)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (15)
+# |
+# >
+# CNT_AND
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_ARRAY (map)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (2)
+# |
+# >
+# CNT_LB
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_TEMP (1)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (2)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (2)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_MUL
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (2)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (1)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (3)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_ARRAY (out)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (1)
+# src2 -> ST_TEMP (2)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LW
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_PRIMITIVE (i)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (1)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_TEMP (0)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SW
+# ------
+# dest -> ST_PRIMITIVE (i)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_JUMP
+# --------
+# dest -> ST_LABEL (0)
+# |
+# >
+# CNT_LABEL
+# ---------
+# src1 -> ST_LABEL (1)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_CHARCON ('\0')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (65)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (out)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
-# temps used:    3
+# temps used:    4
 # svregs used:   0
 # stktemps used: 0
 # regargs used:  3
@@ -7043,6 +8766,1199 @@
 # src1 -> ST_FUNCTION (_print_string)
 # |
 # >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_CHARCON ('a')
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (2)
+# src1 -> ST_INTCON (32)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (2)
+# src1 -> ST_TEMP (2)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (1)
+# src1 -> ST_TEMP (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (memset)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_ARRAY (string)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (1)
+# src1 -> ST_TEMP (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (get_hex_str)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_STRCON ("hashstr: ")
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (_print_string)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_ARRAY (string)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (_print_string)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_STRCON ("\n")
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (_print_string)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (66)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (0)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (64)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (1)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (252)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (2)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (152)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (3)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (201)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (4)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (149)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (5)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (46)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (6)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (47)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (7)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (194)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (8)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (224)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (9)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (231)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (10)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (99)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (11)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (195)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (12)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (94)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (13)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (57)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (14)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (145)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (15)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (92)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (16)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (61)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (17)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (196)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (18)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (64)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (19)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (74)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (20)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (225)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (21)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (7)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (22)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (53)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (23)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (237)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (24)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (211)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (25)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (230)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (26)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (23)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (27)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (247)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (28)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (65)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (29)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (18)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (30)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (0)
+# src1 -> ST_INTCON (162)
+# |
+# >
+# CNT_LI
+# ------
+# dest -> ST_TEMP (1)
+# src1 -> ST_INTCON (31)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (2)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ADD
+# -------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (2)
+# src2 -> ST_TEMP (1)
+# |
+# >
+# CNT_SB
+# ------
+# dest -> ST_TEMP (3)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_ARRAY (string)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (1)
+# src1 -> ST_ARRAY (hash)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (1)
+# src1 -> ST_TEMP (1)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (get_hex_str)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_STRCON ("hashstr: ")
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (_print_string)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_ARRAY (string)
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (_print_string)
+# |
+# >
+# CNT_LEA
+# -------
+# dest -> ST_TEMP (0)
+# src1 -> ST_STRCON ("\n")
+# |
+# >
+# CNT_ARG
+# -------
+# dest -> ST_REGARG (0)
+# src1 -> ST_TEMP (0)
+# |
+# >
+# CNT_CALL
+# --------
+# src1 -> ST_FUNCTION (_print_string)
+# |
+# >
 # CNT_LI
 # ------
 # dest -> ST_TEMP (0)
@@ -7094,6 +10010,10 @@
 
   _str9:
     .asciiz "sig1: "
+    .align 2
+
+  _str10:
+    .asciiz "hashstr: "
     .align 2
 
 .text
@@ -7389,10 +10309,202 @@ __leave_sig1:
   la $sp, 24($sp)
   jr $ra
 
+_memset:
+
+  # |--------------------------------|
+  # |       <buflen is in $a2>       |
+  # |--------------------------------| sp+16
+  # |        <val is in $a1>         |
+  # |--------------------------------| sp+12
+  # |        <buf is in $a0>         |
+  # |--------------------------------| sp+8  <-- start of caller's stack
+  # |           <padding>            |
+  # |--------------------------------| sp+4
+  # |               i                |
+  # |--------------------------------| sp+0
+  la $sp, -8($sp)
+
+  li $t0, 0
+  sw $t0, 0($sp)
+_L0:
+  lw $t0, 0($sp)
+  move $t1, $a2
+  slt $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  move $t0, $a1
+  lw $t1, 0($sp)
+  move $t2, $a0
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  lw $t0, 0($sp)
+  li $t1, 1
+  add $t2, $t0, $t1
+  sw $t2, 0($sp)
+  j _L0
+_L1:
+
+__leave_memset:
+  la $sp, 8($sp)
+  jr $ra
+
+_get_hex_str:
+
+  # |--------------------------------|
+  # |        <hash is in $a1>        |
+  # |--------------------------------| sp+28
+  # |        <out is in $a0>         |
+  # |--------------------------------| sp+24  <-- start of caller's stack
+  # |           <padding>            |
+  # |--------------------------------| sp+20
+  # |              map               |
+  # |--------------------------------| sp+4
+  # |               i                |
+  # |--------------------------------| sp+0
+  la $sp, -24($sp)
+
+  li $t0, '0'
+  li $t1, 0
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '1'
+  li $t1, 1
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '2'
+  li $t1, 2
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '3'
+  li $t1, 3
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '4'
+  li $t1, 4
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '5'
+  li $t1, 5
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '6'
+  li $t1, 6
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '7'
+  li $t1, 7
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '8'
+  li $t1, 8
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, '9'
+  li $t1, 9
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'a'
+  li $t1, 10
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'b'
+  li $t1, 11
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'c'
+  li $t1, 12
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'd'
+  li $t1, 13
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'e'
+  li $t1, 14
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'f'
+  li $t1, 15
+  la $t2, 4($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 0
+  sw $t0, 0($sp)
+_L2:
+  lw $t0, 0($sp)
+  li $t1, 32
+  slt $t2, $t0, $t1
+  beq $t2, $zero, _L3
+  lw $t0, 0($sp)
+  move $t1, $a1
+  add $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 240
+  and $t2, $t0, $t1
+  li $t0, 4
+  srlv $t1, $t2, $t0
+  la $t0, 4($sp)
+  add $t2, $t0, $t1
+  lb $t0, ($t2)
+  li $t1, 2
+  lw $t2, 0($sp)
+  mul $t3, $t1, $t2
+  move $t1, $a0
+  add $t2, $t1, $t3
+  sb $t0, ($t2)
+  lw $t0, 0($sp)
+  move $t1, $a1
+  add $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 15
+  and $t2, $t0, $t1
+  la $t0, 4($sp)
+  add $t1, $t0, $t2
+  lb $t0, ($t1)
+  li $t1, 2
+  lw $t2, 0($sp)
+  mul $t3, $t1, $t2
+  li $t1, 1
+  add $t2, $t3, $t1
+  move $t1, $a0
+  add $t3, $t1, $t2
+  sb $t0, ($t3)
+  lw $t0, 0($sp)
+  li $t1, 1
+  add $t2, $t0, $t1
+  sw $t2, 0($sp)
+  j _L2
+_L3:
+  li $t0, '\0'
+  li $t1, 65
+  move $t2, $a0
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+
+__leave_get_hex_str:
+  la $sp, 24($sp)
+  jr $ra
+
 main:
 
   # |--------------------------------|
-  # |           <padding>            |
+  # |             string             |
+  # |--------------------------------| sp+76
+  # |              hash              |
   # |--------------------------------| sp+44
   # |               e                |
   # |--------------------------------| sp+40
@@ -7410,7 +10522,7 @@ main:
   # |--------------------------------| sp+16
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
-  la $sp, -48($sp)
+  la $sp, -144($sp)
   sw $ra, 16($sp)
 
   li $t0, 0
@@ -8117,13 +11229,208 @@ main:
   la $t0, _str2
   move $a0, $t0
   jal __print_string
+  la $t0, 44($sp)
+  li $t1, 'a'
+  li $t2, 32
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _memset
+  la $t0, 76($sp)
+  la $t1, 44($sp)
+  move $a1, $t1
+  move $a0, $t0
+  jal _get_hex_str
+  la $t0, _str10
+  move $a0, $t0
+  jal __print_string
+  la $t0, 76($sp)
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str2
+  move $a0, $t0
+  jal __print_string
+  li $t0, 66
+  li $t1, 0
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 64
+  li $t1, 1
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 252
+  li $t1, 2
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 152
+  li $t1, 3
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 201
+  li $t1, 4
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 149
+  li $t1, 5
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 46
+  li $t1, 6
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 47
+  li $t1, 7
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 194
+  li $t1, 8
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 224
+  li $t1, 9
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 231
+  li $t1, 10
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 99
+  li $t1, 11
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 195
+  li $t1, 12
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 94
+  li $t1, 13
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 57
+  li $t1, 14
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 145
+  li $t1, 15
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 92
+  li $t1, 16
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 61
+  li $t1, 17
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 196
+  li $t1, 18
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 64
+  li $t1, 19
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 74
+  li $t1, 20
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 225
+  li $t1, 21
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 7
+  li $t1, 22
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 53
+  li $t1, 23
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 237
+  li $t1, 24
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 211
+  li $t1, 25
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 230
+  li $t1, 26
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 23
+  li $t1, 27
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 247
+  li $t1, 28
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 65
+  li $t1, 29
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 18
+  li $t1, 30
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 162
+  li $t1, 31
+  la $t2, 44($sp)
+  add $t3, $t2, $t1
+  sb $t0, ($t3)
+  la $t0, 76($sp)
+  la $t1, 44($sp)
+  move $a1, $t1
+  move $a0, $t0
+  jal _get_hex_str
+  la $t0, _str10
+  move $a0, $t0
+  jal __print_string
+  la $t0, 76($sp)
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str2
+  move $a0, $t0
+  jal __print_string
   li $t0, 0
   move $v0, $t0
   j __leavemain
 
 __leavemain:
   lw $ra, 16($sp)
-  la $sp, 48($sp)
+  la $sp, 144($sp)
   jal __exit
 
 __print_string:
