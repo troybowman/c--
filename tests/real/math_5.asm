@@ -39,7 +39,7 @@
 #           base: PRIM_CHAR
 #     is_extern: yes
 # sym: printf
-#   line: 1
+#   line: 3
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -49,19 +49,19 @@
 #       1: ST_ELLIPSIS
 #     is_extern: yes
 # sym: k
-#   line: 3
+#   line: 5
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0x40
 # sym: init_k
-#   line: 6
+#   line: 8
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: rotl
-#   line: 27
+#   line: 29
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
 #     params:
@@ -73,7 +73,7 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: rotr
-#   line: 28
+#   line: 30
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
 #     params:
@@ -85,7 +85,7 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: ch
-#   line: 29
+#   line: 31
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
 #     params:
@@ -100,7 +100,7 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: maj
-#   line: 30
+#   line: 32
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
 #     params:
@@ -115,24 +115,6 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: ep0
-#   line: 31
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: ep1
-#   line: 32
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: sig0
 #   line: 33
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -141,7 +123,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: sig1
+# sym: ep1
 #   line: 34
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
@@ -150,8 +132,26 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
+# sym: sig0
+#   line: 35
+#   type: ST_FUNCTION
+#     rt_type: PRIM_INT
+#     params:
+#       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
+# sym: sig1
+#   line: 36
+#   type: ST_FUNCTION
+#     rt_type: PRIM_INT
+#     params:
+#       0: x
+#         type: ST_PRIMITIVE
+#           base: PRIM_INT
+#     is_extern: no
 # sym: memset
-#   line: 37
+#   line: 39
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -166,7 +166,7 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: strlen
-#   line: 45
+#   line: 47
 #   type: ST_FUNCTION
 #     rt_type: PRIM_INT
 #     params:
@@ -175,7 +175,7 @@
 #           base: PRIM_CHAR
 #     is_extern: no
 # sym: get_hex_str
-#   line: 53
+#   line: 55
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -187,7 +187,7 @@
 #           base: PRIM_CHAR
 #     is_extern: no
 # sym: sha256_transform
-#   line: 73
+#   line: 75
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -199,7 +199,7 @@
 #           base: PRIM_CHAR
 #     is_extern: no
 # sym: sha256_init
-#   line: 117
+#   line: 119
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -211,7 +211,7 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: sha256_update
-#   line: 134
+#   line: 136
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -232,7 +232,7 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: sha256_final
-#   line: 155
+#   line: 157
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -250,7 +250,7 @@
 #           base: PRIM_INT
 #     is_extern: no
 # sym: sha256_from_str
-#   line: 208
+#   line: 210
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -259,14 +259,14 @@
 #           base: PRIM_CHAR
 #     is_extern: no
 # sym: phase_simple_strings
-#   line: 224
+#   line: 226
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
 #       none
 #     is_extern: no
 # sym: main
-#   line: 235
+#   line: 237
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
 #     params:
@@ -923,11 +923,11 @@
 #-----------------------------------------------------------------------------
 # size: 2
 # sym: a
-#   line: 27
+#   line: 29
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: b
-#   line: 27
+#   line: 29
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -959,11 +959,11 @@
 #-----------------------------------------------------------------------------
 # size: 2
 # sym: a
-#   line: 28
+#   line: 30
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: b
-#   line: 28
+#   line: 30
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -995,15 +995,15 @@
 #-----------------------------------------------------------------------------
 # size: 3
 # sym: x
-#   line: 29
+#   line: 31
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: y
-#   line: 29
+#   line: 31
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: z
-#   line: 29
+#   line: 31
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1033,15 +1033,15 @@
 #-----------------------------------------------------------------------------
 # size: 3
 # sym: x
-#   line: 30
+#   line: 32
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: y
-#   line: 30
+#   line: 32
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: z
-#   line: 30
+#   line: 32
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1077,7 +1077,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 31
+#   line: 33
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1125,7 +1125,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 32
+#   line: 34
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1173,7 +1173,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 33
+#   line: 35
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1217,7 +1217,7 @@
 #-----------------------------------------------------------------------------
 # size: 1
 # sym: x
-#   line: 34
+#   line: 36
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1261,20 +1261,20 @@
 #-----------------------------------------------------------------------------
 # size: 4
 # sym: buf
-#   line: 37
+#   line: 39
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: val
-#   line: 37
+#   line: 39
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
 # sym: buflen
-#   line: 37
+#   line: 39
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: i
-#   line: 39
+#   line: 41
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1314,12 +1314,12 @@
 #-----------------------------------------------------------------------------
 # size: 2
 # sym: string
-#   line: 45
+#   line: 47
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: i
-#   line: 47
+#   line: 49
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -1359,21 +1359,21 @@
 #-----------------------------------------------------------------------------
 # size: 4
 # sym: out
-#   line: 53
+#   line: 55
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: hash
-#   line: 53
+#   line: 55
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: i
-#   line: 55
+#   line: 57
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: map
-#   line: 56
+#   line: 58
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0x10
@@ -1628,65 +1628,65 @@
 #-----------------------------------------------------------------------------
 # size: 15
 # sym: state
-#   line: 73
+#   line: 75
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
 # sym: block
-#   line: 73
+#   line: 75
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: a
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: b
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: c
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: d
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: e
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: f
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: g
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: h
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: i
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: j
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: t1
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: t2
-#   line: 75
+#   line: 77
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: m
-#   line: 75
+#   line: 77
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0x40
@@ -2237,12 +2237,12 @@
 #-----------------------------------------------------------------------------
 # size: 2
 # sym: state
-#   line: 117
+#   line: 119
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
 # sym: count
-#   line: 117
+#   line: 119
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
@@ -2363,31 +2363,31 @@
 #-----------------------------------------------------------------------------
 # size: 6
 # sym: state
-#   line: 134
+#   line: 136
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
 # sym: block
-#   line: 134
+#   line: 136
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: count
-#   line: 134
+#   line: 136
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
 # sym: data
-#   line: 134
+#   line: 136
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: datalen
-#   line: 134
+#   line: 136
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: i
-#   line: 136
+#   line: 138
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -2507,35 +2507,35 @@
 #-----------------------------------------------------------------------------
 # size: 7
 # sym: hash
-#   line: 155
+#   line: 157
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: state
-#   line: 155
+#   line: 157
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
 # sym: block
-#   line: 155
+#   line: 157
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: count
-#   line: 155
+#   line: 157
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0xffffffff
 # sym: i
-#   line: 157
+#   line: 159
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: h
-#   line: 157
+#   line: 159
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 # sym: l
-#   line: 157
+#   line: 159
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
 #-----------------------------------------------------------------------------
@@ -3117,32 +3117,32 @@
 #-----------------------------------------------------------------------------
 # size: 6
 # sym: string
-#   line: 208
+#   line: 210
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
 # sym: state
-#   line: 210
+#   line: 212
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0x8
 # sym: count
-#   line: 210
+#   line: 212
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0x3
 # sym: block
-#   line: 211
+#   line: 213
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0x40
 # sym: output
-#   line: 211
+#   line: 213
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0x41
 # sym: hash
-#   line: 211
+#   line: 213
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0x20

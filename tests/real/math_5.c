@@ -1,3 +1,5 @@
+/* sha256 */
+
 extern void printf(char format[], ...);
 
 int k[64];
