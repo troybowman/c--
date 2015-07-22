@@ -37,7 +37,7 @@ int sig1(int x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10); }
 void memset(char buf[], char val, int buflen)
 {
   int i;
-  for ( i=0; i<buflen; i=i+1 )
+  for ( i = 0; i < buflen; i += 1 )
     buf[i] = val;
 }
 
@@ -45,7 +45,7 @@ void memset(char buf[], char val, int buflen)
 int strlen(char string[])
 {
   int i;
-  for ( i = 0; string[i] != 0; i = i + 1 );
+  for ( i = 0; string[i] != 0; i += 1 );
   return i;
 }
 
@@ -60,7 +60,7 @@ void get_hex_str(char out[], char hash[])
   map[8]  = '8'; map[9]  = '9'; map[10] = 'a'; map[11] = 'b';
   map[12] = 'c'; map[13] = 'd'; map[14] = 'e'; map[15] = 'f';
 
-  for ( i=0; i<32; i=i+1 )
+  for ( i = 0; i < 32; i += 1 )
   {
     out[2*i]   = map[(hash[i] & 0xf0) >> 4];
     out[2*i+1] = map[(hash[i] & 0x0f)];
@@ -73,12 +73,11 @@ void get_hex_str(char out[], char hash[])
 void sha256_transform(int state[], char block[])
 {
   int a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
-  int one, two, three, four;
 
-  for ( i = 0, j = 0; i < 16; i = i + 1, j = j + 4 )
-    m[i] = (block[j] << 24) | (block[j+1] << 16) | (block[j+2] << 8) | (block[j+3]);
+  for ( i = 0, j = 0; i < 16; i += 1, j += 4 )
+    m[i] = (block[j] << 24) | (block[j+1] << 16) | (block[j+2] << 8) | (block[j+3] & 0xff);
 
-  for ( ; i < 64; i = i + 1 )
+  for ( ; i < 64; i += 1 )
     m[i] = sig1(m[i-2]) + m[i-7] + sig0(m[i-15]) + m[i-16];
 
   a = state[0];
@@ -90,7 +89,7 @@ void sha256_transform(int state[], char block[])
   g = state[6];
   h = state[7];
 
-  for ( i = 0; i < 64; i = i + 1 )
+  for ( i = 0; i < 64; i += 1 )
   {
     t1 = h + ep1(e) + ch(e, f, g) + k[i] + m[i];
     t2 = ep0(a) + maj(a, b, c);
@@ -136,16 +135,16 @@ void sha256_update(int state[], char block[], int count[], char data[], int data
 {
   int i;
 
-  for ( i = 0; i < datalen; i=i+1 )
+  for ( i = 0; i < datalen; i += 1 )
   {
     block[count[0]] = data[i];
-    count[0] = count[0] + 1;
+    count[0] += 1;
     if ( count[0] == 64 )
     {
       /* update block count */
-      count[1] = count[1] + 1;
+      count[1] += 1;
       if ( count[1] == 0 )
-        count[2] = count[2] + 1;
+        count[2] += 1;
       sha256_transform(state, block);
       count[0] = 0;
     }
@@ -162,15 +161,15 @@ void sha256_final(char hash[], int state[], char block[], int count[])
   if ( count[0] < 56 )
   {
     block[i] = 0x80;
-    i = i + 1;
-    for ( ; i < 56; i = i + 1 )
+    i += 1;
+    for ( ; i < 56; i += 1 )
       block[i] = 0x00;
   }
   else
   {
     block[i] = 0x80;
-    i = i + 1;
-    for ( ; i < 64; i = i + 1 )
+    i += 1;
+    for ( ; i < 64; i += 1 )
       block[i] = 0x00;
     sha256_transform(state, block);
     memset(block, 0, 56);
@@ -192,16 +191,16 @@ void sha256_final(char hash[], int state[], char block[], int count[])
 
   sha256_transform(state, block);
 
-	for ( i = 0; i < 4; i = i + 1)
+	for ( i = 0; i < 4; i += 1 )
   {
-		hash[i]    = (state[0] >> (24 - i * 8)) & 0x000000ff;
-		hash[i+4]  = (state[1] >> (24 - i * 8)) & 0x000000ff;
-		hash[i+8]  = (state[2] >> (24 - i * 8)) & 0x000000ff;
-		hash[i+12] = (state[3] >> (24 - i * 8)) & 0x000000ff;
-		hash[i+16] = (state[4] >> (24 - i * 8)) & 0x000000ff;
-		hash[i+20] = (state[5] >> (24 - i * 8)) & 0x000000ff;
-		hash[i+24] = (state[6] >> (24 - i * 8)) & 0x000000ff;
-		hash[i+28] = (state[7] >> (24 - i * 8)) & 0x000000ff;
+		hash[i]    = (state[0] >> (24 - i * 8)) & 0xff;
+		hash[i+4]  = (state[1] >> (24 - i * 8)) & 0xff;
+		hash[i+8]  = (state[2] >> (24 - i * 8)) & 0xff;
+		hash[i+12] = (state[3] >> (24 - i * 8)) & 0xff;
+		hash[i+16] = (state[4] >> (24 - i * 8)) & 0xff;
+		hash[i+20] = (state[5] >> (24 - i * 8)) & 0xff;
+		hash[i+24] = (state[6] >> (24 - i * 8)) & 0xff;
+		hash[i+28] = (state[7] >> (24 - i * 8)) & 0xff;
 	}
 }
 

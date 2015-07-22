@@ -1,0 +1,12 @@
+input string: ''
+sha256 hash:  e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+input string: 'abc'
+sha256 hash:  ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+input string: 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq'
+sha256 hash:  248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1
+input string: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+sha256 hash:  3ba3f5f43b92602683c19aee62a20342b084dd5971ddd33808d81a328879a547
+input string: 'this is a secret message'
+sha256 hash:  3f98b95c16476f0b2fc37e8e664a11312966b635f60537f1f5ed75216fa0c060
+input string: 'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu'
+sha256 hash:  cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1
