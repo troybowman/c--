@@ -93,7 +93,7 @@ static       bool  process_var_decl   (parser_ctx_t &, symref_t, primitive_t);
 static   symref_t  process_stmt_id    (parser_ctx_t &, const char *, int);
 static treenode_t *process_stmt_var   (parser_ctx_t &, symref_t, treenode_t *, int);
 static treenode_t *process_call       (parser_ctx_t &, symref_t, treenode_t *, int);
-static treenode_t *process_assg       (parser_ctx_t &, treenode_t *, treenode_t *, int);
+static treenode_t *process_assg       (parser_ctx_t &, treenode_t *, treenode_type_t, treenode_t *, int);
 static treenode_t *process_call_ctx   (parser_ctx_t &, treenode_t *, int, bool);
 static treenode_t *process_ret_stmt   (parser_ctx_t &, treenode_t *expr, int line);
 static treenode_t *process_bool_expr  (parser_ctx_t &, treenode_t *, treenode_type_t, treenode_t *, int);
@@ -172,6 +172,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %token INT_TYPE CHAR_TYPE VOID
 %token WHILE RETURN EXTERN IF ELSE FOR
 %token EQ NEQ LEQ GEQ AND OR ELLIPSIS
+%token PEQ MEQ TEQ DEQ
 %token SHL SHR
 
 %type<prim>   type
@@ -356,7 +357,11 @@ op_expr : expr        { $$ = $1; }
         ;
 
 /*---------------------------------------------------------------------------*/
-assg : stmt_var '=' expr { $$ = process_assg(ctx, $1, $3, lineno); }
+assg : stmt_var '=' expr { $$ = process_assg(ctx, $1, TNT_ASSG, $3, lineno); }
+     | stmt_var PEQ expr { $$ = process_assg(ctx, $1, TNT_PEQ,  $3, lineno); }
+     | stmt_var MEQ expr { $$ = process_assg(ctx, $1, TNT_MEQ,  $3, lineno); }
+     | stmt_var TEQ expr { $$ = process_assg(ctx, $1, TNT_TEQ,  $3, lineno); }
+     | stmt_var DEQ expr { $$ = process_assg(ctx, $1, TNT_DEQ,  $3, lineno); }
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -1071,6 +1076,7 @@ static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
 static treenode_t *process_assg(
     parser_ctx_t &ctx,
     treenode_t *lhs,
+    treenode_type_t type,
     treenode_t *rhs,
     int line)
 {
@@ -1084,7 +1090,7 @@ static treenode_t *process_assg(
     return ERRNODE;
   }
 
-  return new treenode_t(TNT_ASSG, lhs, rhs);
+  return new treenode_t(type, lhs, rhs);
 }
 
 //-----------------------------------------------------------------------------

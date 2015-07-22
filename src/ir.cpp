@@ -43,6 +43,10 @@ static codenode_type_t tnt2cnt(treenode_type_t type)
     case TNT_BAND:  return CNT_AND;
     case TNT_BOR:   return CNT_OR;
     case TNT_BNOT:  return CNT_NOT;
+    case TNT_PEQ:   return CNT_ADD;
+    case TNT_MEQ:   return CNT_SUB;
+    case TNT_TEQ:   return CNT_MUL;
+    case TNT_DEQ:   return CNT_DIV;
     default:
       INTERR(1081);
   }
@@ -199,14 +203,17 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
     case TNT_STRCON:
       {
         std::string key(tree->str());
+
         symref_t str = ir.strings.get(key);
         if ( str == NULL )
         {
           str = symref_t(new symbol_t(ST_STRCON, tree->str()));
           ir.strings.insert(key, str);
         }
+
         symref_t dest = gen_temp(ctx.flags);
         append(CNT_LEA, dest, str);
+
         return dest;
       }
     case TNT_ASSG:
@@ -218,6 +225,25 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t dest = generate(lhs, TCTX_LVAL);
 
         append(CNT_STORE(lhs->sym()), dest, src1);
+        break;
+      }
+    case TNT_PEQ:
+    case TNT_MEQ:
+    case TNT_TEQ:
+    case TNT_DEQ:
+      {
+        treenode_t *rhs = tree->children[RHS];
+        treenode_t *lhs = tree->children[LHS];
+
+        symref_t src1 = generate(lhs, has_call(rhs) ? TCTX_SAVE : 0);
+        symref_t src2 = generate(rhs);
+        symref_t temp = gen_temp();
+
+        append(tnt2cnt(tree->type()), temp, src1, src2);
+
+        symref_t dest = generate(lhs, TCTX_LVAL);
+        append(CNT_STORE(lhs->sym()), dest, temp);
+
         break;
       }
     case TNT_SYMBOL:

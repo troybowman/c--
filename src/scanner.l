@@ -33,6 +33,10 @@ class parser_ctx_t;
 "..."    { return ELLIPSIS; }
 "<<"     { return SHL; }
 ">>"     { return SHR; }
+"+="     { return PEQ; }
+"-="     { return MEQ; }
+"*="     { return TEQ; }
+"/="     { return DEQ; }
 "main"   { yylval->str = strdup(yytext); return MAIN; }
 "printf" { yylval->str = strdup(yytext); return PRINTF; }
 

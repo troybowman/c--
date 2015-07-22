@@ -34,6 +34,10 @@ enum treenode_type_t
   TNT_BOR,
   TNT_BNOT,
   TNT_XOR,
+  TNT_PEQ,
+  TNT_MEQ,
+  TNT_TEQ,
+  TNT_DEQ,
 #define LHS         0
 #define RHS         1
   TNT_ARRAY_LOOKUP,

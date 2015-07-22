@@ -16,7 +16,7 @@ int sig1(int x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10); }
 void memset(char buf[], char val, int buflen)
 {
   int i;
-  for ( i=0; i<buflen; i=i+1 )
+  for ( i = 0; i < buflen; i += 1 )
     buf[i] = val;
 }
 
@@ -24,7 +24,7 @@ void memset(char buf[], char val, int buflen)
 int strlen(char string[])
 {
   int i;
-  for ( i = 0; string[i] != 0; i = i + 1 );
+  for ( i = 0; string[i] != 0; i += 1 );
   return i;
 }
 
@@ -39,7 +39,7 @@ void get_hex_str(char out[], char hash[])
   map[8]  = '8'; map[9]  = '9'; map[10] = 'a'; map[11] = 'b';
   map[12] = 'c'; map[13] = 'd'; map[14] = 'e'; map[15] = 'f';
 
-  for ( i=0; i<32; i=i+1 )
+  for ( i = 0; i < 32; i += 1 )
   {
     out[2*i]   = map[(hash[i] & 0xf0) >> 4];
     out[2*i+1] = map[(hash[i] & 0x0f)];

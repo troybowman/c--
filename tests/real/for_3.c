@@ -13,6 +13,6 @@ void main(void)
   a2[12] = 'l'; a2[13] = 'X'; a2[14] = 'X'; a2[15] = 'X';
   a2[16] = 'd';
 
-  for ( i=0, j=0; i<5 && j<17; i=i+1, j=j+4 )
+  for ( i = 0, j = 0; i < 5 && j < 17; i += 1, j += 4 )
     printf("%c %c\n", a1[i], a2[j]);
 }

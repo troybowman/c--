@@ -559,23 +559,19 @@
 # child RHS for node 6
 # node 8: type: TNT_SYMBOL sym: buflen
 # child FOR_INC for node 2
-# node 9: type: TNT_ASSG
+# node 9: type: TNT_PEQ
 # child LHS for node 9
 # node 10: type: TNT_SYMBOL sym: i
 # child RHS for node 9
-# node 11: type: TNT_PLUS
-# child LHS for node 11
-# node 12: type: TNT_SYMBOL sym: i
-# child RHS for node 11
-# node 13: type: TNT_INTCON val: 1
+# node 11: type: TNT_INTCON val: 1
 # child FOR_BODY for node 2
-# node 14: type: TNT_ASSG
-# child LHS for node 14
-# node 15: type: TNT_ARRAY_LOOKUP sym: buf
-# child AL_OFFSET for node 15
-# node 16: type: TNT_SYMBOL sym: i
-# child RHS for node 14
-# node 17: type: TNT_SYMBOL sym: val
+# node 12: type: TNT_ASSG
+# child LHS for node 12
+# node 13: type: TNT_ARRAY_LOOKUP sym: buf
+# child AL_OFFSET for node 13
+# node 14: type: TNT_SYMBOL sym: i
+# child RHS for node 12
+# node 15: type: TNT_SYMBOL sym: val
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: strlen
 #-----------------------------------------------------------------------------
@@ -610,21 +606,17 @@
 # child RHS for node 6
 # node 9: type: TNT_INTCON val: 0
 # child FOR_INC for node 2
-# node 10: type: TNT_ASSG
+# node 10: type: TNT_PEQ
 # child LHS for node 10
 # node 11: type: TNT_SYMBOL sym: i
 # child RHS for node 10
-# node 12: type: TNT_PLUS
-# child LHS for node 12
-# node 13: type: TNT_SYMBOL sym: i
-# child RHS for node 12
-# node 14: type: TNT_INTCON val: 1
+# node 12: type: TNT_INTCON val: 1
 # child SEQ_NEXT for node 1
-# node 15: type: TNT_STMT
-# child SEQ_CUR for node 15
-# node 16: type: TNT_RET
-# child RET_EXPR for node 16
-# node 17: type: TNT_SYMBOL sym: i
+# node 13: type: TNT_STMT
+# child SEQ_CUR for node 13
+# node 14: type: TNT_RET
+# child RET_EXPR for node 14
+# node 15: type: TNT_SYMBOL sym: i
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: get_hex_str
 #-----------------------------------------------------------------------------
@@ -827,77 +819,73 @@
 # child RHS for node 86
 # node 88: type: TNT_INTCON val: 32
 # child FOR_INC for node 82
-# node 89: type: TNT_ASSG
+# node 89: type: TNT_PEQ
 # child LHS for node 89
 # node 90: type: TNT_SYMBOL sym: i
 # child RHS for node 89
-# node 91: type: TNT_PLUS
-# child LHS for node 91
-# node 92: type: TNT_SYMBOL sym: i
-# child RHS for node 91
-# node 93: type: TNT_INTCON val: 1
+# node 91: type: TNT_INTCON val: 1
 # child FOR_BODY for node 82
-# node 94: type: TNT_STMT
-# child SEQ_CUR for node 94
-# node 95: type: TNT_ASSG
+# node 92: type: TNT_STMT
+# child SEQ_CUR for node 92
+# node 93: type: TNT_ASSG
+# child LHS for node 93
+# node 94: type: TNT_ARRAY_LOOKUP sym: out
+# child AL_OFFSET for node 94
+# node 95: type: TNT_MULT
 # child LHS for node 95
-# node 96: type: TNT_ARRAY_LOOKUP sym: out
-# child AL_OFFSET for node 96
-# node 97: type: TNT_MULT
-# child LHS for node 97
-# node 98: type: TNT_INTCON val: 2
-# child RHS for node 97
-# node 99: type: TNT_SYMBOL sym: i
+# node 96: type: TNT_INTCON val: 2
 # child RHS for node 95
-# node 100: type: TNT_ARRAY_LOOKUP sym: map
-# child AL_OFFSET for node 100
-# node 101: type: TNT_SHR
-# child LHS for node 101
-# node 102: type: TNT_BAND
-# child LHS for node 102
-# node 103: type: TNT_ARRAY_LOOKUP sym: hash
-# child AL_OFFSET for node 103
-# node 104: type: TNT_SYMBOL sym: i
-# child RHS for node 102
-# node 105: type: TNT_INTCON val: 240
-# child RHS for node 101
-# node 106: type: TNT_INTCON val: 4
-# child SEQ_NEXT for node 94
-# node 107: type: TNT_STMT
-# child SEQ_CUR for node 107
-# node 108: type: TNT_ASSG
+# node 97: type: TNT_SYMBOL sym: i
+# child RHS for node 93
+# node 98: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 98
+# node 99: type: TNT_SHR
+# child LHS for node 99
+# node 100: type: TNT_BAND
+# child LHS for node 100
+# node 101: type: TNT_ARRAY_LOOKUP sym: hash
+# child AL_OFFSET for node 101
+# node 102: type: TNT_SYMBOL sym: i
+# child RHS for node 100
+# node 103: type: TNT_INTCON val: 240
+# child RHS for node 99
+# node 104: type: TNT_INTCON val: 4
+# child SEQ_NEXT for node 92
+# node 105: type: TNT_STMT
+# child SEQ_CUR for node 105
+# node 106: type: TNT_ASSG
+# child LHS for node 106
+# node 107: type: TNT_ARRAY_LOOKUP sym: out
+# child AL_OFFSET for node 107
+# node 108: type: TNT_PLUS
 # child LHS for node 108
-# node 109: type: TNT_ARRAY_LOOKUP sym: out
-# child AL_OFFSET for node 109
-# node 110: type: TNT_PLUS
-# child LHS for node 110
-# node 111: type: TNT_MULT
-# child LHS for node 111
-# node 112: type: TNT_INTCON val: 2
-# child RHS for node 111
-# node 113: type: TNT_SYMBOL sym: i
-# child RHS for node 110
-# node 114: type: TNT_INTCON val: 1
+# node 109: type: TNT_MULT
+# child LHS for node 109
+# node 110: type: TNT_INTCON val: 2
+# child RHS for node 109
+# node 111: type: TNT_SYMBOL sym: i
 # child RHS for node 108
-# node 115: type: TNT_ARRAY_LOOKUP sym: map
+# node 112: type: TNT_INTCON val: 1
+# child RHS for node 106
+# node 113: type: TNT_ARRAY_LOOKUP sym: map
+# child AL_OFFSET for node 113
+# node 114: type: TNT_BAND
+# child LHS for node 114
+# node 115: type: TNT_ARRAY_LOOKUP sym: hash
 # child AL_OFFSET for node 115
-# node 116: type: TNT_BAND
-# child LHS for node 116
-# node 117: type: TNT_ARRAY_LOOKUP sym: hash
-# child AL_OFFSET for node 117
-# node 118: type: TNT_SYMBOL sym: i
-# child RHS for node 116
-# node 119: type: TNT_INTCON val: 15
+# node 116: type: TNT_SYMBOL sym: i
+# child RHS for node 114
+# node 117: type: TNT_INTCON val: 15
 # child SEQ_NEXT for node 81
-# node 120: type: TNT_STMT
-# child SEQ_CUR for node 120
-# node 121: type: TNT_ASSG
-# child LHS for node 121
-# node 122: type: TNT_ARRAY_LOOKUP sym: out
-# child AL_OFFSET for node 122
-# node 123: type: TNT_INTCON val: 65
-# child RHS for node 121
-# node 124: type: TNT_INTCON val: 0
+# node 118: type: TNT_STMT
+# child SEQ_CUR for node 118
+# node 119: type: TNT_ASSG
+# child LHS for node 119
+# node 120: type: TNT_ARRAY_LOOKUP sym: out
+# child AL_OFFSET for node 120
+# node 121: type: TNT_INTCON val: 65
+# child RHS for node 119
+# node 122: type: TNT_INTCON val: 0
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------
