@@ -1517,14 +1517,12 @@
 _f0:
 
   # |--------------------------------|
-  la $sp, -0($sp)
 
   li $t0, 0
   move $v0, $t0
   j __leave_f0
 
 __leave_f0:
-  la $sp, 0($sp)
   jr $ra
 
 _f1:
@@ -1921,11 +1919,9 @@ __leave_f5:
 main:
 
   # |--------------------------------|
-  la $sp, -0($sp)
 
 
 __leavemain:
-  la $sp, 0($sp)
   jal __exit
 
 __print_string:

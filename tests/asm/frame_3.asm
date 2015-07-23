@@ -312,11 +312,9 @@ _simple:
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_simple:
-  la $sp, 0($sp)
   jr $ra
 
 _another:
@@ -371,11 +369,9 @@ __leave_another:
 main:
 
   # |--------------------------------|
-  la $sp, -0($sp)
 
 
 __leavemain:
-  la $sp, 0($sp)
   jal __exit
 
 __print_string:

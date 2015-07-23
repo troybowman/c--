@@ -629,7 +629,6 @@ _add:
   # |--------------------------------| sp+4
   # |         <x is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -638,7 +637,6 @@ _add:
   j __leave_add
 
 __leave_add:
-  la $sp, 0($sp)
   jr $ra
 
 main:

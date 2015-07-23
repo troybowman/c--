@@ -420,7 +420,6 @@ _char_at:
   # |--------------------------------| sp+4
   # |       <string is in $a0>       |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a1
   move $t1, $a0
@@ -430,7 +429,6 @@ _char_at:
   j __leave_char_at
 
 __leave_char_at:
-  la $sp, 0($sp)
   jr $ra
 
 main:

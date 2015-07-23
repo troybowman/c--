@@ -2654,11 +2654,9 @@ _one:
   # |--------------------------------|
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_one:
-  la $sp, 0($sp)
   jr $ra
 
 _two:
@@ -2668,11 +2666,9 @@ _two:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_two:
-  la $sp, 0($sp)
   jr $ra
 
 _three:
@@ -2684,11 +2680,9 @@ _three:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_three:
-  la $sp, 0($sp)
   jr $ra
 
 _four:
@@ -2702,11 +2696,9 @@ _four:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_four:
-  la $sp, 0($sp)
   jr $ra
 
 _five:
@@ -2722,11 +2714,9 @@ _five:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_five:
-  la $sp, 0($sp)
   jr $ra
 
 _six:
@@ -2744,11 +2734,9 @@ _six:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_six:
-  la $sp, 0($sp)
   jr $ra
 
 _seven:
@@ -2768,11 +2756,9 @@ _seven:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_seven:
-  la $sp, 0($sp)
   jr $ra
 
 _eight:
@@ -2794,11 +2780,9 @@ _eight:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_eight:
-  la $sp, 0($sp)
   jr $ra
 
 _f1a:
@@ -3568,11 +3552,9 @@ __leave_f2h:
 main:
 
   # |--------------------------------|
-  la $sp, -0($sp)
 
 
 __leavemain:
-  la $sp, 0($sp)
   jal __exit
 
 __print_string:

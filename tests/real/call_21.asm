@@ -520,7 +520,6 @@ _func1:
   # |--------------------------------| sp+4
   # |         <x is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   li $t0, 1
   sub $t1, $zero, $t0
@@ -533,7 +532,6 @@ _func1:
   move $a2, $t1
 
 __leave_func1:
-  la $sp, 0($sp)
   jr $ra
 
 _func2:

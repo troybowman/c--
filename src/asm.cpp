@@ -395,7 +395,8 @@ static const struct saver_pair_t { int sec; int base; } pairs[3] =
 //-----------------------------------------------------------------------------
 void stack_frame_t::gen_prologue()
 {
-  ctx.out(TAB1"la $sp, -%u($sp)\n", size());
+  if ( size() > 0 )
+    ctx.out(TAB1"la $sp, -%u($sp)\n", size());
 
   for ( int i = 0; i < 3; i++ )
   {
@@ -417,7 +418,8 @@ void stack_frame_t::gen_epilogue()
     visit_items(pairs[i].sec, saver, FIV_REVERSE);
   }
 
-  ctx.out(TAB1"la $sp, %u($sp)\n", size());
+  if ( size() > 0 )
+    ctx.out(TAB1"la $sp, %u($sp)\n", size());
 
   // MARS, for some utterly moronic reason, does not call main. we must manually exit
   if ( f.sym->is_main() )

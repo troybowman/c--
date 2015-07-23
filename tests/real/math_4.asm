@@ -10395,7 +10395,6 @@ _rotl:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -10410,7 +10409,6 @@ _rotl:
   j __leave_rotl
 
 __leave_rotl:
-  la $sp, 0($sp)
   jr $ra
 
 _rotr:
@@ -10420,7 +10418,6 @@ _rotr:
   # |--------------------------------| sp+4
   # |         <a is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -10435,7 +10432,6 @@ _rotr:
   j __leave_rotr
 
 __leave_rotr:
-  la $sp, 0($sp)
   jr $ra
 
 _ch:
@@ -10447,7 +10443,6 @@ _ch:
   # |--------------------------------| sp+4
   # |         <x is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -10461,7 +10456,6 @@ _ch:
   j __leave_ch
 
 __leave_ch:
-  la $sp, 0($sp)
   jr $ra
 
 _maj:
@@ -10473,7 +10467,6 @@ _maj:
   # |--------------------------------| sp+4
   # |         <x is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -10490,7 +10483,6 @@ _maj:
   j __leave_maj
 
 __leave_maj:
-  la $sp, 0($sp)
   jr $ra
 
 _ep0:

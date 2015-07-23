@@ -631,7 +631,6 @@ _func1:
   # |--------------------------------| sp+4
   # |       <array is in $a0>        |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   li $t0, 5
   li $t1, 2
@@ -641,7 +640,6 @@ _func1:
   sw $t0, ($t3)
 
 __leave_func1:
-  la $sp, 0($sp)
   jr $ra
 
 _func2:

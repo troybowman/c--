@@ -1021,11 +1021,9 @@ _f0:
   # |--------------------------------|
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_f0:
-  la $sp, 0($sp)
   jr $ra
 
 _f1:
@@ -1058,11 +1056,9 @@ _f2:
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_f2:
-  la $sp, 0($sp)
   jr $ra
 
 _f3:
@@ -1101,11 +1097,9 @@ _f4:
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_f4:
-  la $sp, 0($sp)
   jr $ra
 
 _f5:
@@ -1150,11 +1144,9 @@ _f6:
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_f6:
-  la $sp, 0($sp)
   jr $ra
 
 _f7:
@@ -1205,11 +1197,9 @@ _f8:
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_f8:
-  la $sp, 0($sp)
   jr $ra
 
 _f9:
@@ -1264,11 +1254,9 @@ _f10:
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_f10:
-  la $sp, 0($sp)
   jr $ra
 
 _f11:
@@ -1331,11 +1319,9 @@ _f12:
   # |--------------------------------| sp+4
   # |        <one is in $a0>         |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
 
 __leave_f12:
-  la $sp, 0($sp)
   jr $ra
 
 _f13:
@@ -1386,11 +1372,9 @@ __leave_f13:
 main:
 
   # |--------------------------------|
-  la $sp, -0($sp)
 
 
 __leavemain:
-  la $sp, 0($sp)
   jal __exit
 
 __print_string:

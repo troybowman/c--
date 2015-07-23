@@ -1537,7 +1537,6 @@ _dub:
   # |--------------------------------|
   # |         <x is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   li $t1, 2
@@ -1546,7 +1545,6 @@ _dub:
   j __leave_dub
 
 __leave_dub:
-  la $sp, 0($sp)
   jr $ra
 
 _half:
@@ -1554,7 +1552,6 @@ _half:
   # |--------------------------------|
   # |         <x is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   li $t1, 2
@@ -1563,7 +1560,6 @@ _half:
   j __leave_half
 
 __leave_half:
-  la $sp, 0($sp)
   jr $ra
 
 _sum:
@@ -1575,7 +1571,6 @@ _sum:
   # |--------------------------------| sp+4
   # |         <x is in $a0>          |
   # |--------------------------------| sp+0  <-- start of caller's stack
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -1586,7 +1581,6 @@ _sum:
   j __leave_sum
 
 __leave_sum:
-  la $sp, 0($sp)
   jr $ra
 
 _sumchars:
