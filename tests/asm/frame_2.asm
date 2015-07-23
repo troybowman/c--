@@ -3188,12 +3188,12 @@ _f1h:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -40($sp)
+  sw $s0, 32($sp)
   sw $ra, 36($sp)
   sw $a0, 40($sp)
   sw $a1, 44($sp)
   sw $a2, 48($sp)
   sw $a3, 52($sp)
-  sw $s0, 32($sp)
 
   li $t0, 1
   li $t1, 2
@@ -3214,12 +3214,12 @@ _f1h:
   jal _eight
 
 __leave_f1h:
-  lw $s0, 32($sp)
   lw $a3, 52($sp)
   lw $a2, 48($sp)
   lw $a1, 44($sp)
   lw $a0, 40($sp)
   lw $ra, 36($sp)
+  lw $s0, 32($sp)
   la $sp, 40($sp)
   jr $ra
 
@@ -3530,12 +3530,12 @@ _f2h:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -40($sp)
+  sw $s0, 32($sp)
   sw $ra, 36($sp)
   sw $a0, 40($sp)
   sw $a1, 44($sp)
   sw $a2, 48($sp)
   sw $a3, 52($sp)
-  sw $s0, 32($sp)
 
   li $t0, 1
   li $t1, 2
@@ -3556,12 +3556,12 @@ _f2h:
   jal _eight
 
 __leave_f2h:
-  lw $s0, 32($sp)
   lw $a3, 52($sp)
   lw $a2, 48($sp)
   lw $a1, 44($sp)
   lw $a0, 40($sp)
   lw $ra, 36($sp)
+  lw $s0, 32($sp)
   la $sp, 40($sp)
   jr $ra
 

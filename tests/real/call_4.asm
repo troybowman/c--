@@ -327,9 +327,9 @@ _fact:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 24($sp)
   li $t1, 0
@@ -353,9 +353,9 @@ _L0:
 _L1:
 
 __leave_fact:
-  lw $s0, 16($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 

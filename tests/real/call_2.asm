@@ -671,12 +671,12 @@ main:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -64($sp)
-  sw $ra, 28($sp)
-  sw $a0, 64($sp)
-  sw $a1, 68($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
   sw $s2, 24($sp)
+  sw $ra, 28($sp)
+  sw $a0, 64($sp)
+  sw $a1, 68($sp)
 
   li $t0, 1
   sw $t0, 56($sp)
@@ -736,12 +736,12 @@ _L1:
   jal __print_string
 
 __leavemain:
-  lw $s2, 24($sp)
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 68($sp)
   lw $a0, 64($sp)
   lw $ra, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 64($sp)
   jal __exit
 

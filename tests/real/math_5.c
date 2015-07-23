@@ -105,14 +105,14 @@ void sha256_transform(int state[], char block[])
     a = t1 + t2;
   }
 
-  state[0] = state[0] + a;
-  state[1] = state[1] + b;
-  state[2] = state[2] + c;
-  state[3] = state[3] + d;
-  state[4] = state[4] + e;
-  state[5] = state[5] + f;
-  state[6] = state[6] + g;
-  state[7] = state[7] + h;
+  state[0] += a;
+  state[1] += b;
+  state[2] += c;
+  state[3] += d;
+  state[4] += e;
+  state[5] += f;
+  state[6] += g;
+  state[7] += h;
 }
 
 /*---------------------------------------------------------------------------*/

@@ -2107,131 +2107,83 @@
 # child SEQ_NEXT for node 124
 # node 207: type: TNT_STMT
 # child SEQ_CUR for node 207
-# node 208: type: TNT_ASSG
+# node 208: type: TNT_PEQ
 # child LHS for node 208
 # node 209: type: TNT_ARRAY_LOOKUP sym: state
 # child AL_OFFSET for node 209
 # node 210: type: TNT_INTCON val: 0
 # child RHS for node 208
-# node 211: type: TNT_PLUS
-# child LHS for node 211
-# node 212: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 212
-# node 213: type: TNT_INTCON val: 0
-# child RHS for node 211
-# node 214: type: TNT_SYMBOL sym: a
+# node 211: type: TNT_SYMBOL sym: a
 # child SEQ_NEXT for node 207
-# node 215: type: TNT_STMT
-# child SEQ_CUR for node 215
-# node 216: type: TNT_ASSG
-# child LHS for node 216
-# node 217: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 217
-# node 218: type: TNT_INTCON val: 1
-# child RHS for node 216
-# node 219: type: TNT_PLUS
-# child LHS for node 219
-# node 220: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 220
-# node 221: type: TNT_INTCON val: 1
-# child RHS for node 219
-# node 222: type: TNT_SYMBOL sym: b
-# child SEQ_NEXT for node 215
-# node 223: type: TNT_STMT
-# child SEQ_CUR for node 223
-# node 224: type: TNT_ASSG
-# child LHS for node 224
-# node 225: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 225
-# node 226: type: TNT_INTCON val: 2
-# child RHS for node 224
-# node 227: type: TNT_PLUS
-# child LHS for node 227
-# node 228: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 228
-# node 229: type: TNT_INTCON val: 2
-# child RHS for node 227
-# node 230: type: TNT_SYMBOL sym: c
-# child SEQ_NEXT for node 223
-# node 231: type: TNT_STMT
-# child SEQ_CUR for node 231
-# node 232: type: TNT_ASSG
-# child LHS for node 232
-# node 233: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 233
-# node 234: type: TNT_INTCON val: 3
-# child RHS for node 232
-# node 235: type: TNT_PLUS
-# child LHS for node 235
-# node 236: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 236
-# node 237: type: TNT_INTCON val: 3
-# child RHS for node 235
-# node 238: type: TNT_SYMBOL sym: d
-# child SEQ_NEXT for node 231
-# node 239: type: TNT_STMT
-# child SEQ_CUR for node 239
-# node 240: type: TNT_ASSG
-# child LHS for node 240
-# node 241: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 241
-# node 242: type: TNT_INTCON val: 4
-# child RHS for node 240
-# node 243: type: TNT_PLUS
+# node 212: type: TNT_STMT
+# child SEQ_CUR for node 212
+# node 213: type: TNT_PEQ
+# child LHS for node 213
+# node 214: type: TNT_ARRAY_LOOKUP sym: state
+# child AL_OFFSET for node 214
+# node 215: type: TNT_INTCON val: 1
+# child RHS for node 213
+# node 216: type: TNT_SYMBOL sym: b
+# child SEQ_NEXT for node 212
+# node 217: type: TNT_STMT
+# child SEQ_CUR for node 217
+# node 218: type: TNT_PEQ
+# child LHS for node 218
+# node 219: type: TNT_ARRAY_LOOKUP sym: state
+# child AL_OFFSET for node 219
+# node 220: type: TNT_INTCON val: 2
+# child RHS for node 218
+# node 221: type: TNT_SYMBOL sym: c
+# child SEQ_NEXT for node 217
+# node 222: type: TNT_STMT
+# child SEQ_CUR for node 222
+# node 223: type: TNT_PEQ
+# child LHS for node 223
+# node 224: type: TNT_ARRAY_LOOKUP sym: state
+# child AL_OFFSET for node 224
+# node 225: type: TNT_INTCON val: 3
+# child RHS for node 223
+# node 226: type: TNT_SYMBOL sym: d
+# child SEQ_NEXT for node 222
+# node 227: type: TNT_STMT
+# child SEQ_CUR for node 227
+# node 228: type: TNT_PEQ
+# child LHS for node 228
+# node 229: type: TNT_ARRAY_LOOKUP sym: state
+# child AL_OFFSET for node 229
+# node 230: type: TNT_INTCON val: 4
+# child RHS for node 228
+# node 231: type: TNT_SYMBOL sym: e
+# child SEQ_NEXT for node 227
+# node 232: type: TNT_STMT
+# child SEQ_CUR for node 232
+# node 233: type: TNT_PEQ
+# child LHS for node 233
+# node 234: type: TNT_ARRAY_LOOKUP sym: state
+# child AL_OFFSET for node 234
+# node 235: type: TNT_INTCON val: 5
+# child RHS for node 233
+# node 236: type: TNT_SYMBOL sym: f
+# child SEQ_NEXT for node 232
+# node 237: type: TNT_STMT
+# child SEQ_CUR for node 237
+# node 238: type: TNT_PEQ
+# child LHS for node 238
+# node 239: type: TNT_ARRAY_LOOKUP sym: state
+# child AL_OFFSET for node 239
+# node 240: type: TNT_INTCON val: 6
+# child RHS for node 238
+# node 241: type: TNT_SYMBOL sym: g
+# child SEQ_NEXT for node 237
+# node 242: type: TNT_STMT
+# child SEQ_CUR for node 242
+# node 243: type: TNT_PEQ
 # child LHS for node 243
 # node 244: type: TNT_ARRAY_LOOKUP sym: state
 # child AL_OFFSET for node 244
-# node 245: type: TNT_INTCON val: 4
+# node 245: type: TNT_INTCON val: 7
 # child RHS for node 243
-# node 246: type: TNT_SYMBOL sym: e
-# child SEQ_NEXT for node 239
-# node 247: type: TNT_STMT
-# child SEQ_CUR for node 247
-# node 248: type: TNT_ASSG
-# child LHS for node 248
-# node 249: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 249
-# node 250: type: TNT_INTCON val: 5
-# child RHS for node 248
-# node 251: type: TNT_PLUS
-# child LHS for node 251
-# node 252: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 252
-# node 253: type: TNT_INTCON val: 5
-# child RHS for node 251
-# node 254: type: TNT_SYMBOL sym: f
-# child SEQ_NEXT for node 247
-# node 255: type: TNT_STMT
-# child SEQ_CUR for node 255
-# node 256: type: TNT_ASSG
-# child LHS for node 256
-# node 257: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 257
-# node 258: type: TNT_INTCON val: 6
-# child RHS for node 256
-# node 259: type: TNT_PLUS
-# child LHS for node 259
-# node 260: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 260
-# node 261: type: TNT_INTCON val: 6
-# child RHS for node 259
-# node 262: type: TNT_SYMBOL sym: g
-# child SEQ_NEXT for node 255
-# node 263: type: TNT_STMT
-# child SEQ_CUR for node 263
-# node 264: type: TNT_ASSG
-# child LHS for node 264
-# node 265: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 265
-# node 266: type: TNT_INTCON val: 7
-# child RHS for node 264
-# node 267: type: TNT_PLUS
-# child LHS for node 267
-# node 268: type: TNT_ARRAY_LOOKUP sym: state
-# child AL_OFFSET for node 268
-# node 269: type: TNT_INTCON val: 7
-# child RHS for node 267
-# node 270: type: TNT_SYMBOL sym: h
+# node 246: type: TNT_SYMBOL sym: h
 #-----------------------------------------------------------------------------
 # LOCAL SYMBOLS FOR FUNCTION: sha256_init
 #-----------------------------------------------------------------------------
@@ -13769,11 +13721,11 @@ _ep0:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -32($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
   sw $a1, 36($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   lw $t0, 32($sp)
   li $t1, 2
@@ -13799,11 +13751,11 @@ _ep0:
   j __leave_ep0
 
 __leave_ep0:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 36($sp)
   lw $a0, 32($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 32($sp)
   jr $ra
 
@@ -13823,11 +13775,11 @@ _ep1:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -32($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
   sw $a1, 36($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   lw $t0, 32($sp)
   li $t1, 6
@@ -13853,11 +13805,11 @@ _ep1:
   j __leave_ep1
 
 __leave_ep1:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 36($sp)
   lw $a0, 32($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 32($sp)
   jr $ra
 
@@ -13873,10 +13825,10 @@ _sig0:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
   sw $a1, 28($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 24($sp)
   li $t1, 7
@@ -13899,10 +13851,10 @@ _sig0:
   j __leave_sig0
 
 __leave_sig0:
-  lw $s0, 16($sp)
   lw $a1, 28($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 
@@ -13918,10 +13870,10 @@ _sig1:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
   sw $a1, 28($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 24($sp)
   li $t1, 17
@@ -13944,10 +13896,10 @@ _sig1:
   j __leave_sig1
 
 __leave_sig1:
-  lw $s0, 16($sp)
   lw $a1, 28($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 
@@ -14220,12 +14172,12 @@ _sha256_transform:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -336($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 336($sp)
   sw $a1, 340($sp)
   sw $a2, 344($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   li $t0, 0
   sw $t0, 64($sp)
@@ -14558,12 +14510,12 @@ _L11:
   sw $t2, ($t3)
 
 __leave_sha256_transform:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a2, 344($sp)
   lw $a1, 340($sp)
   lw $a0, 336($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 336($sp)
   jr $ra
 
@@ -15174,15 +15126,15 @@ _sha256_from_str:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -248($sp)
+  sw $s0, 20($sp)
+  sw $s1, 24($sp)
+  sw $s2, 28($sp)
+  sw $s3, 32($sp)
   sw $ra, 36($sp)
   sw $a0, 248($sp)
   sw $a1, 252($sp)
   sw $a2, 256($sp)
   sw $a3, 260($sp)
-  sw $s0, 20($sp)
-  sw $s1, 24($sp)
-  sw $s2, 28($sp)
-  sw $s3, 32($sp)
 
   la $t0, 40($sp)
   la $t1, 72($sp)
@@ -15237,15 +15189,15 @@ _sha256_from_str:
   jal __print_string
 
 __leave_sha256_from_str:
-  lw $s3, 32($sp)
-  lw $s2, 28($sp)
-  lw $s1, 24($sp)
-  lw $s0, 20($sp)
   lw $a3, 260($sp)
   lw $a2, 256($sp)
   lw $a1, 252($sp)
   lw $a0, 248($sp)
   lw $ra, 36($sp)
+  lw $s3, 32($sp)
+  lw $s2, 28($sp)
+  lw $s1, 24($sp)
+  lw $s0, 20($sp)
   la $sp, 248($sp)
   jr $ra
 

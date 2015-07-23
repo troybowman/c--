@@ -387,9 +387,9 @@ struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
 //-----------------------------------------------------------------------------
 static const struct saver_pair_t { int sec; int base; } pairs[3] =
 {
- { FS_RA, FS_RA },
+ { FS_SVREGS,  FS_SVREGS },
+ { FS_RA,      FS_RA     },
  { FS_REGARGS, FS_PARAMS },
- { FS_SVREGS, FS_SVREGS },
 };
 
 //-----------------------------------------------------------------------------
@@ -833,9 +833,9 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
   }
 
   gen_builtin_function(ctx, "_"BI_PRINT_STRING, 4);
-  gen_builtin_function(ctx, "_"BI_PRINT_INT, 1);
-  gen_builtin_function(ctx, "_"BI_PRINT_CHAR, 11);
-  gen_builtin_function(ctx, "_"BI_PRINT_HEX, 34);
+  gen_builtin_function(ctx, "_"BI_PRINT_INT,    1);
+  gen_builtin_function(ctx, "_"BI_PRINT_CHAR,  11);
+  gen_builtin_function(ctx, "_"BI_PRINT_HEX,   34);
   gen_builtin_function(ctx, EXIT, 10);
 }
 

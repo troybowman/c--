@@ -10509,11 +10509,11 @@ _ep0:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -32($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
   sw $a1, 36($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   lw $t0, 32($sp)
   li $t1, 2
@@ -10539,11 +10539,11 @@ _ep0:
   j __leave_ep0
 
 __leave_ep0:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 36($sp)
   lw $a0, 32($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 32($sp)
   jr $ra
 
@@ -10563,11 +10563,11 @@ _ep1:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -32($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
   sw $a1, 36($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   lw $t0, 32($sp)
   li $t1, 6
@@ -10593,11 +10593,11 @@ _ep1:
   j __leave_ep1
 
 __leave_ep1:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 36($sp)
   lw $a0, 32($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 32($sp)
   jr $ra
 
@@ -10613,10 +10613,10 @@ _sig0:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
   sw $a1, 28($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 24($sp)
   li $t1, 7
@@ -10639,10 +10639,10 @@ _sig0:
   j __leave_sig0
 
 __leave_sig0:
-  lw $s0, 16($sp)
   lw $a1, 28($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 
@@ -10658,10 +10658,10 @@ _sig1:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
   sw $a1, 28($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 24($sp)
   li $t1, 17
@@ -10684,10 +10684,10 @@ _sig1:
   j __leave_sig1
 
 __leave_sig1:
-  lw $s0, 16($sp)
   lw $a1, 28($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 

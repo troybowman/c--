@@ -1656,12 +1656,12 @@ main:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -80($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 80($sp)
   sw $a1, 84($sp)
   sw $a2, 88($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
 _L2:
   li $t0, 1
@@ -1805,12 +1805,12 @@ _L14:
 _L15:
 
 __leavemain:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a2, 88($sp)
   lw $a1, 84($sp)
   lw $a0, 80($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 80($sp)
   jal __exit
 

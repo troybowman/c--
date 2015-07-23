@@ -1629,7 +1629,6 @@ _f3:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -64($sp)
-  sw $ra, 48($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
   sw $s2, 24($sp)
@@ -1638,6 +1637,7 @@ _f3:
   sw $s5, 36($sp)
   sw $s6, 40($sp)
   sw $s7, 44($sp)
+  sw $ra, 48($sp)
 
   jal _f0
   move $s0, $v0
@@ -1668,6 +1668,7 @@ _f3:
   sw $t0, 56($sp)
 
 __leave_f3:
+  lw $ra, 48($sp)
   lw $s7, 44($sp)
   lw $s6, 40($sp)
   lw $s5, 36($sp)
@@ -1676,7 +1677,6 @@ __leave_f3:
   lw $s2, 24($sp)
   lw $s1, 20($sp)
   lw $s0, 16($sp)
-  lw $ra, 48($sp)
   la $sp, 64($sp)
   jr $ra
 
@@ -1710,7 +1710,6 @@ _f4:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -64($sp)
-  sw $ra, 52($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
   sw $s2, 24($sp)
@@ -1719,6 +1718,7 @@ _f4:
   sw $s5, 36($sp)
   sw $s6, 40($sp)
   sw $s7, 44($sp)
+  sw $ra, 52($sp)
 
   jal _f0
   move $s0, $v0
@@ -1753,6 +1753,7 @@ _f4:
   sw $t1, 56($sp)
 
 __leave_f4:
+  lw $ra, 52($sp)
   lw $s7, 44($sp)
   lw $s6, 40($sp)
   lw $s5, 36($sp)
@@ -1761,7 +1762,6 @@ __leave_f4:
   lw $s2, 24($sp)
   lw $s1, 20($sp)
   lw $s0, 16($sp)
-  lw $ra, 52($sp)
   la $sp, 64($sp)
   jr $ra
 
@@ -1807,7 +1807,6 @@ _f5:
   # |     <minimum 4 arg slots>      |
   # |--------------------------------| sp+0
   la $sp, -88($sp)
-  sw $ra, 76($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
   sw $s2, 24($sp)
@@ -1816,6 +1815,7 @@ _f5:
   sw $s5, 36($sp)
   sw $s6, 40($sp)
   sw $s7, 44($sp)
+  sw $ra, 76($sp)
 
   jal _f0
   move $s0, $v0
@@ -1906,6 +1906,7 @@ _f5:
   sw $t1, 80($sp)
 
 __leave_f5:
+  lw $ra, 76($sp)
   lw $s7, 44($sp)
   lw $s6, 40($sp)
   lw $s5, 36($sp)
@@ -1914,7 +1915,6 @@ __leave_f5:
   lw $s2, 24($sp)
   lw $s1, 20($sp)
   lw $s0, 16($sp)
-  lw $ra, 76($sp)
   la $sp, 88($sp)
   jr $ra
 
