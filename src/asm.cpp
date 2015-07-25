@@ -172,9 +172,9 @@ void stack_frame_t::build_regargs_section()
 {
   frame_section_t &regargs = sections[FS_REGARGS];
 
-  regargs.init(f.regargs);
+  regargs.init(*f.get(ST_REGARG));
 
-  if ( f.has_call )
+  if ( f.has_call() )
     regargs.end = ARGREGQTY * WORDSIZE;
 
   struct regargs_builder_t : public frame_item_visitor_t
@@ -194,7 +194,7 @@ void stack_frame_t::build_stkargs_section()
 {
   frame_section_t &stkargs = sections[FS_STKARGS];
 
-  stkargs.init(f.stkargs);
+  stkargs.init(*f.get(ST_STKARG));
   stkargs.start = stkargs.end = sections[FS_REGARGS].end;
 
   struct stkargs_builder_t : public frame_item_visitor_t
@@ -214,7 +214,7 @@ void stack_frame_t::build_svregs_section()
 {
   frame_section_t &svregs = sections[FS_SVREGS];
 
-  svregs.init(f.svregs);
+  svregs.init(*f.get(ST_SVTEMP));
   svregs.start = svregs.end = sections[FS_STKARGS].end;
 
   struct svregs_builder_t : public frame_item_visitor_t
@@ -235,7 +235,7 @@ void stack_frame_t::build_stktemps_section()
 {
   frame_section_t &stktemps = sections[FS_STKTEMPS];
 
-  stktemps.init(f.stktemps);
+  stktemps.init(*f.get(ST_STKTEMP));
   stktemps.start = stktemps.end = sections[FS_SVREGS].end;
 
   struct stktemps_builder_t : public frame_item_visitor_t
@@ -255,7 +255,7 @@ void stack_frame_t::build_ra_section()
 {
   frame_section_t &ra = sections[FS_RA];
 
-  ra.init(f.ra);
+  ra.init(*f.get(ST_RETADDR));
   ra.start = ra.end = sections[FS_STKTEMPS].end;
 
   struct ra_builder_t : public frame_item_visitor_t
@@ -284,7 +284,7 @@ void stack_frame_t::build_lvars_section()
 {
   frame_section_t &lvars = sections[FS_LVARS];
 
-  lvars.init(*f.sym->symbols());
+  lvars.init(*f.sym()->symbols());
   lvars.start = lvars.end = sections[FS_PADDING1].end;
 
   struct lvars_builder_t : public frame_item_visitor_t
@@ -325,7 +325,7 @@ void stack_frame_t::build_params_section()
 {
   frame_section_t &params = sections[FS_PARAMS];
 
-  params.init(*f.sym->params());
+  params.init(*f.sym()->params());
   params.start = params.end = sections[FS_PADDING2].end;
 
   struct params_builder_t : public frame_item_visitor_t
@@ -353,7 +353,7 @@ void stack_frame_t::build_params_section()
 stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
   : f(_f), ctx(_ctx), epilogue_lbl(new symbol_t(ST_LABEL))
 {
-  prepare_named_symbol(ctx, epilogue_lbl, "%s%s", "__leave", f.sym->c_str());
+  prepare_named_symbol(ctx, epilogue_lbl, "%s%s", "__leave", f.sym()->c_str());
 
   build_regargs_section();
   build_stkargs_section();
@@ -422,7 +422,7 @@ void stack_frame_t::gen_epilogue()
     ctx.out(TAB1"la $sp, %u($sp)\n", size());
 
   // MARS, for some utterly moronic reason, does not call main. we must manually exit
-  if ( f.sym->is_main() )
+  if ( f.sym()->is_main() )
     ctx.out(TAB1"jal %s\n", EXIT);
   else
     ctx.out(TAB1"jr $ra\n");
@@ -798,7 +798,7 @@ static void init_resources(ir_func_t &f)
 {
   // temps
   symvec_t temps;
-  f.temps.get_used_resources(temps);
+  f.get_used_resources(ST_TEMP, temps);
 
   for ( symvec_t::iterator i = temps.begin(); i != temps.end(); i++ )
   {
@@ -807,11 +807,12 @@ static void init_resources(ir_func_t &f)
   }
 
   // $v0
-  symref_t retval = f.retval.gen_resource();
+  symref_t retval = f.gen_resource(ST_RETVAL);
   retval->loc.set_reg("$v0");
 
   // $zero
-  f.zero->loc.set_reg("$zero");
+  symref_t zero = f.gen_resource(ST_ZERO);
+  zero->loc.set_reg("$zero");
 }
 
 //-----------------------------------------------------------------------------
@@ -824,13 +825,13 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
     ir_func_t &f = **i;
     init_resources(f);
 
-    ctx.out("\n%s:\n", f.sym->c_str());
+    ctx.out("\n%s:\n", f.sym()->c_str());
 
     stack_frame_t frame(f, ctx);
     LOG_FRAME_SUMMARY(frame);
 
     frame.gen_prologue();
-    gen_func_body(ctx, f.code, frame.epilogue_lbl);
+    gen_func_body(ctx, f.code(), frame.epilogue_lbl);
     frame.gen_epilogue();
   }
 

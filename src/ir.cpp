@@ -6,6 +6,135 @@
 #define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
 
 //-----------------------------------------------------------------------------
+symref_t resource_manager_t::get_first_available()
+{
+  if ( _free.size() > 0 )
+  {
+    symref_t ret = _free.begin()->second;
+    _free.erase(_free.begin());
+    return ret;
+  }
+  return NULLREF;
+}
+
+//-----------------------------------------------------------------------------
+void resource_manager_t::reset()
+{
+  _free.clear();
+  rmap_t::const_iterator i;
+  for ( i = _used.begin(); i != _used.end(); i++ )
+    free(i->second);
+}
+
+//-----------------------------------------------------------------------------
+void resource_manager_t::get_used_resources(symvec_t &vec) const
+{
+  rmap_t::const_iterator i;
+  for ( i = _used.begin(); i != _used.end(); i++ )
+    vec.push_back(i->second);
+}
+
+//-----------------------------------------------------------------------------
+// manage available registers
+class reg_manager_t : public resource_manager_t
+{
+  int _max;
+
+public:
+  reg_manager_t(symbol_type_t type, int max)
+    : resource_manager_t(type), _max(max) {}
+
+  virtual symref_t gen_resource()
+  {
+    symref_t ret = get_first_available();
+    if ( ret == NULL && _cnt < _max )
+      ret = symref_t(new symbol_t(_type, _cnt++));
+    return ret;
+  }
+};
+
+//-----------------------------------------------------------------------------
+// manage stack resources
+class stack_manager_t : public resource_manager_t
+{
+public:
+  stack_manager_t(symbol_type_t type) : resource_manager_t(type) {}
+
+  virtual symref_t gen_resource()
+  {
+    symref_t ret = get_first_available();
+    if ( ret == NULL )
+      ret = symref_t(new symbol_t(_type, _cnt++));
+    return ret;
+  }
+};
+
+//-----------------------------------------------------------------------------
+// return address location and zero register
+class fixed_resource_t : public resource_manager_t
+{
+  symref_t sym;
+
+public:
+  fixed_resource_t(symbol_type_t _type)
+    : resource_manager_t(_type), sym(new symbol_t(_type)) {}
+
+  virtual symref_t gen_resource() { return sym; }
+};
+
+//-----------------------------------------------------------------------------
+ir_func_t::ir_func_t(symref_t s) : _sym(s), _code(NULL), _has_call(false)
+{
+  _store[ST_STKTEMP] = new stack_manager_t(ST_STKTEMP);
+  _store[ST_STKARG]  = new stack_manager_t(ST_STKARG);
+  _store[ST_TEMP]    = new reg_manager_t(ST_TEMP,   TEMPREGQTY);
+  _store[ST_SVTEMP]  = new reg_manager_t(ST_SVTEMP, SVREGQTY);
+  _store[ST_REGARG]  = new reg_manager_t(ST_REGARG, ARGREGQTY);
+  _store[ST_RETVAL]  = new reg_manager_t(ST_RETVAL, 1);
+  _store[ST_RETADDR] = new fixed_resource_t(ST_RETADDR);
+  _store[ST_ZERO]    = new fixed_resource_t(ST_ZERO);
+}
+
+//-----------------------------------------------------------------------------
+const resource_manager_t *ir_func_t::get(symbol_type_t st) const
+{
+  return _store.at(st);
+}
+
+//-----------------------------------------------------------------------------
+void ir_func_t::get_used_resources(symbol_type_t st, symvec_t &vec) const
+{
+  _store.at(st)->get_used_resources(vec);
+}
+
+//-----------------------------------------------------------------------------
+symref_t ir_func_t::gen_resource(symbol_type_t st)
+{
+  return _store.at(st)->gen_resource();
+}
+
+//-----------------------------------------------------------------------------
+void ir_func_t::reset(symbol_type_t st)
+{
+  _store.at(st)->reset();
+}
+
+//-----------------------------------------------------------------------------
+int ir_func_t::count(symbol_type_t st) const
+{
+  return _store.at(st)->count();
+}
+
+//-----------------------------------------------------------------------------
+ir_func_t::~ir_func_t()
+{
+  delete _code;
+  resource_store_t::iterator i;
+  for ( i = _store.begin(); i != _store.end(); i++ )
+    delete i->second;
+}
+
+//-----------------------------------------------------------------------------
 static bool has_call(const treenode_t *tree)
 {
   if ( tree == NULL )
@@ -61,24 +190,15 @@ void ir_engine_t::check_dest(symref_t sym)
   switch ( sym->type() )
   {
     case ST_TEMP:
-      f.temps.use(sym);
-      break;
     case ST_SVTEMP:
-      f.svregs.use(sym);
-      break;
     case ST_REGARG:
-      f.regargs.use(sym);
-      break;
     case ST_STKARG:
-      f.stkargs.use(sym);
-      break;
     case ST_STKTEMP:
-      f.stktemps.use(sym);
-      break;
     case ST_RETVAL:
-      f.retval.use(sym);
+      f.use(sym);
       break;
     case ST_RETADDR:
+    case ST_ZERO:
       INTERR(1082);
     default:
       break;
@@ -94,16 +214,10 @@ void ir_engine_t::check_src(symref_t sym)
   switch ( sym->type() )
   {
     case ST_TEMP:
-      f.temps.free(sym);
-      break;
     case ST_SVTEMP:
-      f.svregs.free(sym);
-      break;
     case ST_STKTEMP:
-      f.stktemps.free(sym);
-      break;
     case ST_RETVAL:
-      f.retval.free(sym);
+      f.free(sym);
       break;
     case ST_LABEL:
       sym->set_val(lblcnt++);
@@ -126,20 +240,20 @@ symref_t ir_engine_t::gen_temp(uint32_t flags)
   if ( (flags & TCTX_SAVE) == 0 )
   {
     // use a temporary
-    temp = f.temps.gen_resource();
+    temp = f.gen_resource(ST_TEMP);
     // use a saved reg if no temps left
     if ( temp == NULL )
-      temp = f.svregs.gen_resource();
+      temp = f.gen_resource(ST_SVTEMP);
   }
   else
   {
     // this temp must persist across a function call
-    temp = f.svregs.gen_resource();
+    temp = f.gen_resource(ST_SVTEMP);
   }
 
   // if all else fails, use the stack
   if ( temp == NULL )
-    temp = f.stktemps.gen_resource();
+    temp = f.gen_resource(ST_STKTEMP);
 
   ASSERT(1110, temp != NULL);
   return temp;
@@ -148,10 +262,10 @@ symref_t ir_engine_t::gen_temp(uint32_t flags)
 //-----------------------------------------------------------------------------
 symref_t ir_engine_t::gen_argloc()
 {
-  symref_t argloc = f.regargs.gen_resource();
+  symref_t argloc = f.gen_resource(ST_REGARG);
 
   if ( argloc == NULL )
-    argloc = f.stkargs.gen_resource();
+    argloc = f.gen_resource(ST_STKARG);
 
   ASSERT(1111, argloc != NULL);
   return argloc;
@@ -290,10 +404,10 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_CALL:
       {
-        if ( !f.has_call )
+        if ( !f.has_call() )
         {
-          f.has_call = true;
-          f.ra.use(f.ra.gen_resource());
+          f.set_has_call();
+          f.use(f.gen_resource(ST_RETADDR));
         }
 
         symvec_t argvals;
@@ -314,13 +428,13 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
           append(CNT_ARG, *loc, *val);
 
-        f.regargs.reset();
-        f.stkargs.reset();
+        f.reset(ST_REGARG);
+        f.reset(ST_STKARG);
 
         symref_t sym = tree->sym();
         if ( sym->base() != PRIM_VOID )
         {
-          symref_t retval = f.retval.gen_resource();
+          symref_t retval = f.gen_resource(ST_RETVAL);
           append(CNT_CALL, retval, sym);
 
           symref_t temp = gen_temp(ctx.flags);
@@ -336,7 +450,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       {
         symref_t val = generate(tree->children[RET_EXPR]);
         if ( val != NULL )
-          append(CNT_RET, f.retval.gen_resource(), val);
+          append(CNT_RET, f.gen_resource(ST_RETVAL), val);
         else
           append(CNT_RET);
         break;
@@ -400,6 +514,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 
         if ( (ctx.flags & TCTX_IF) == 0 )
           append(CNT_LABEL, NULLREF, endif);
+
         break;
       }
     case TNT_FOR:
@@ -454,7 +569,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t no  = gen_temp(ctx.flags);
 
         if ( tree->type() == TNT_NEG )
-          append(CNT_SUB, no, f.zero, val);
+          append(CNT_SUB, no, f.gen_resource(ST_ZERO), val);
         else if ( tree->type () == TNT_NOT )
           append(CNT_XOR, no, val, symref_t(new symbol_t(ST_INTCON, 1)));
         else
@@ -466,10 +581,10 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       INTERR(1059);
   }
 
-  f.temps.reset();
-  f.svregs.reset();
-  f.stktemps.reset();
-  f.retval.reset();
+  f.reset(ST_TEMP);
+  f.reset(ST_SVTEMP);
+  f.reset(ST_STKTEMP);
+  f.reset(ST_RETVAL);
 
   return NULLREF;
 }
@@ -478,7 +593,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 void ir_engine_t::start(const treenode_t *root)
 {
   generate(root);
-  f.code = head;
+  f.set_code(head);
 }
 
 //-----------------------------------------------------------------------------

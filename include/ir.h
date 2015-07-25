@@ -12,9 +12,6 @@ struct ir_t;
 void generate_ir(ir_t &ir, const stx_trees_t &functions);
 
 //-----------------------------------------------------------------------------
-// THREE ADDRESS CODE NODE
-//-----------------------------------------------------------------------------
-
 enum codenode_type_t
 {
   CNT_LW,   CNT_OR,   CNT_MOV,    CNT_LI,
@@ -28,6 +25,7 @@ enum codenode_type_t
 };
 
 //-----------------------------------------------------------------------------
+// three address code node
 struct codenode_t
 {
   codenode_type_t type;
@@ -68,10 +66,6 @@ public:
   }
 };
 
-//-----------------------------------------------------------------------------
-// RESOURCES
-//-----------------------------------------------------------------------------
-
 #define TEMPREGQTY 7
 #define SVREGQTY   8
 #define ARGREGQTY  4
@@ -87,125 +81,55 @@ protected:
   rmap_t _free;
   rmap_t _used;
 
-  symref_t get_first_available()
-  {
-    if ( _free.size() > 0 )
-    {
-      symref_t ret = _free.begin()->second;
-      _free.erase(_free.begin());
-      return ret;
-    }
-    return NULLREF;
-  }
+  symref_t get_first_available();
 
 public:
   resource_manager_t(symbol_type_t type) : _type(type), _cnt(0) {}
+  virtual ~resource_manager_t() {}
 
   void free(symref_t s) { _free[s->val()] = s; }
   void use(symref_t s)  { _used[s->val()] = s; }
+  int count()     const { return _used.size(); }
+
+  void reset();
+  void get_used_resources(symvec_t &vec) const;
 
   virtual symref_t gen_resource() = 0;
-
-  int count() const { return _used.size(); }
-
-  void reset()
-  {
-    _free.clear();
-    rmap_t::const_iterator i;
-    for ( i = _used.begin(); i != _used.end(); i++ )
-      free(i->second);
-  }
-
-  void get_used_resources(symvec_t &vec) const
-  {
-    rmap_t::const_iterator i;
-    for ( i = _used.begin(); i != _used.end(); i++ )
-      vec.push_back(i->second);
-  }
 };
 
 //-----------------------------------------------------------------------------
-// manage available registers
-class reg_manager_t : public resource_manager_t
+typedef std::map<symbol_type_t, resource_manager_t *> resource_store_t;
+
+//-----------------------------------------------------------------------------
+// intermediate representation of a function
+class ir_func_t
 {
-  int _max;
+  symref_t _sym;
+  codenode_t *_code;
+  bool _has_call;
+  resource_store_t _store;
 
 public:
-  reg_manager_t(symbol_type_t type, int max)
-    : resource_manager_t(type), _max(max) {}
+  ir_func_t(symref_t s);
+  ~ir_func_t();
 
-  virtual symref_t gen_resource()
-  {
-    symref_t ret = get_first_available();
-    if ( ret == NULL && _cnt < _max )
-      ret = symref_t(new symbol_t(_type, _cnt++));
-    return ret;
-  }
-};
+  void set_has_call()          { _has_call = true; }
+  void set_code(codenode_t *c) { _code = c; }
 
-//-----------------------------------------------------------------------------
-// manage stack resources
-class stack_manager_t : public resource_manager_t
-{
-public:
-  stack_manager_t(symbol_type_t type) : resource_manager_t(type) {}
+  symref_t sym()         const { return _sym; }
+  bool has_call()        const { return _has_call; }
+  codenode_t *code()     const { return _code; }
 
-  virtual symref_t gen_resource()
-  {
-    symref_t ret = get_first_available();
-    if ( ret == NULL )
-      ret = symref_t(new symbol_t(_type, _cnt++));
-    return ret;
-  }
-};
+  void free(symref_t sym)      { _store[sym->type()]->free(sym); }
+  void use(symref_t sym)       { _store[sym->type()]->use(sym);  }
 
-//-----------------------------------------------------------------------------
-// return address location is a special case
-class ra_manager_t : public resource_manager_t
-{
-  symref_t ra;
+  symref_t gen_resource(symbol_type_t st);
 
-public:
-  ra_manager_t()
-    : resource_manager_t(ST_RETADDR), ra(new symbol_t(_type)) {}
+  void get_used_resources(symbol_type_t st, symvec_t &vec) const;
 
-  virtual symref_t gen_resource() { return ra; }
-};
-
-//-----------------------------------------------------------------------------
-// IR
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// intermediate representation of a function.
-struct ir_func_t
-{
-  symref_t sym;
-  codenode_t *code;
-  bool has_call;
-
-  // ir_func_t objects own all the resources that they use
-  symref_t zero;
-  ra_manager_t ra;
-
-  stack_manager_t stktemps;
-  stack_manager_t stkargs;
-
-  reg_manager_t temps;
-  reg_manager_t svregs;
-  reg_manager_t regargs;
-  reg_manager_t retval;
-
-  ir_func_t(symref_t s)
-    : sym(s), code(NULL), has_call(false), zero(new symbol_t(ST_ZERO)),
-      stktemps(ST_STKTEMP),
-       stkargs(ST_STKARG),
-         temps(ST_TEMP,   TEMPREGQTY),
-        svregs(ST_SVTEMP, SVREGQTY),
-       regargs(ST_REGARG, ARGREGQTY),
-        retval(ST_RETVAL, 1) {}
-
-  ~ir_func_t() { delete code; }
+  void reset(symbol_type_t st);
+  int count(symbol_type_t st) const;
+  const resource_manager_t *get(symbol_type_t st) const;
 };
 
 //-----------------------------------------------------------------------------
@@ -229,10 +153,6 @@ struct ir_t
 
   ir_t(symtab_t &_gsyms) { gsyms.swap(_gsyms); }
 };
-
-//-----------------------------------------------------------------------------
-// IR GENERATOR
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 struct tree_ctx_t
