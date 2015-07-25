@@ -186,7 +186,7 @@ class TesterPhase:
                 try:
                     subprocess.check_call(argv, stdout=errors, stderr=errors)
                 except subprocess.CalledProcessError:
-                    errors.write("c-- returned nonzero exit code")
+                    errors.write("c-- returned a nonzero exit code\n")
                 except OSError as e:
                     errors.write("couldn't launch c--: %s\n" % e.strerror)
 

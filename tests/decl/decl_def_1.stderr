@@ -1,4 +1,4 @@
 error: function dont_define_me is defined at line 5 but is declared extern at line 2
 error: function dont_define_me redefined at line 6 (previous definition starts at line 5)
 error: non-void funcion dont_define_me must return a value
-c-- returned nonzero exit code
+c-- returned a nonzero exit code

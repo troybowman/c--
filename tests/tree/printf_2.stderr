@@ -1,2 +1,2 @@
 error: expected 1 arguments for function printf, 2 were provided. line 5
-c-- returned nonzero exit code
+c-- returned a nonzero exit code

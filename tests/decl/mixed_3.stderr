@@ -1,4 +1,4 @@
 error: function symbol redeclared at line 3 (previous declaration at line 1)
 error: variable x redeclared at line 5 (previous declaration at line 3)
 syntax error, line: 9
-c-- returned nonzero exit code
+c-- returned a nonzero exit code

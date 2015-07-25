@@ -7,4 +7,4 @@ syntax error, line: 19
 syntax error, line: 21
 syntax error, line: 25
 syntax error, line: 28
-c-- returned nonzero exit code
+c-- returned a nonzero exit code
