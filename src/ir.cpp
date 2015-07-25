@@ -383,7 +383,8 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symvec_t argvals;
         symvec_t arglocs;
 
-        for ( const_tree_iterator_t ti(tree->children[CALL_ARGS]); *ti != NULL; ti++ )
+        const_tree_iterator_t ti(tree->children[CALL_ARGS]);
+        for ( ; *ti != NULL; ti++ )
         {
           symref_t argval = generate(*ti, has_call(ti.next()) ? TCTX_SAVE : 0);
           argvals.push_back(argval);

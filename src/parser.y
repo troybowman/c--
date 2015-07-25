@@ -167,7 +167,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 }
 
 %token<i>   INT
-%token<str> CHAR STRING ID MAIN PRINTF
+%token<str> CHAR STRING MAIN ID
 
 %token INT_TYPE CHAR_TYPE VOID
 %token WHILE RETURN EXTERN IF ELSE FOR
@@ -183,7 +183,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %type<seq>    stmts arg_list assg_list
 %type<ni>     name
 
-%destructor { free($$); } ID MAIN PRINTF
+%destructor { free($$); } ID MAIN
 %destructor { free($$.str); } name
 %destructor { delete $$; ctx.trash(); } params
 %destructor { delete $$; } var_decls func_decls var_decl_list func_decl_list param_decl_list
@@ -263,7 +263,6 @@ func_decl : name '(' { ctx.settemp(); } params { ctx.trash(); } ')'
           ;
 
 name : MAIN   { $$.str = $1; $$.flags = SF_MAIN; }
-     | PRINTF { $$.str = $1; $$.flags = SF_PRINTF; }
      | ID     { $$.str = $1; $$.flags = 0; }
      ;
 
@@ -1157,7 +1156,7 @@ static bool validate_printf_decl(const symbol_t &func, primitive_t rt, bool is_e
 {
   const symvec_t &params = *func.params();
 
-  return func.is_printf()
+  return func.name() == "printf"
       && rt == PRIM_VOID
       && is_extern
       && params.size() == 2
@@ -1227,7 +1226,8 @@ static void process_fdecl_error(parser_ctx_t &ctx, terr_info_t err, const symbol
 //-----------------------------------------------------------------------------
 static void build_print_functions(parser_ctx_t &ctx, symref_t printf)
 {
-  ASSERT(1108, printf != NULL && printf->is_printf());
+  ASSERT(1108, printf != NULL);
+  printf->set_printf();
 
   ctx.print_int    = build_print_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);
   ctx.print_hex    = build_print_function(BI_PRINT_HEX,    "hex",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);

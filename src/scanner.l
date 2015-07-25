@@ -37,8 +37,6 @@ class parser_ctx_t;
 "-="     { return MEQ; }
 "*="     { return TEQ; }
 "/="     { return DEQ; }
-"main"   { yylval->str = strdup(yytext); return MAIN; }
-"printf" { yylval->str = strdup(yytext); return PRINTF; }
 
 "[" |
 "]" |
@@ -68,6 +66,8 @@ class parser_ctx_t;
 '[[:print:]]{-}[\]{-}[']' |
 '\\n' |
 '\\0' { yylval->str = strdup(yytext); return CHAR; }
+
+"main" { yylval->str = strdup(yytext); return MAIN; }
 
 [[:alpha:]]([[:alpha:]]{+}[_]{+}[0-9]+)? { yylval->str = strdup(yytext); return ID; }
 

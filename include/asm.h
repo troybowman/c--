@@ -55,9 +55,7 @@ public:
 //-----------------------------------------------------------------------------
 class stack_frame_t
 {
-#define FRAME_SECTION_QTY 9
-  frame_section_t sections[FRAME_SECTION_QTY];
-
+  frame_section_t sections[9];
 #define FS_PARAMS   8
 #define FS_PADDING2 7
 #define FS_LVARS    6

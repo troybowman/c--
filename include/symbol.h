@@ -162,6 +162,7 @@ public:
   void set_extern()               { _flags |= SF_EXTERN; }
   void set_defined()              { _flags |= SF_DEFINED; }
   void set_ret_resolved()         { _flags |= SF_RET_RESOLVED; }
+  void set_printf()               { _flags |= SF_PRINTF; }
 
   void set_val(int val)           { _val = val; }
 
