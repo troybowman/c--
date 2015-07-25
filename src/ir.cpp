@@ -260,18 +260,14 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
     case TNT_ARRAY_LOOKUP:
       {
         treenode_t *idxtree = tree->children[AL_OFFSET];
-        symref_t idx = generate(idxtree);
+        symref_t off = generate(idxtree);
 
-        symref_t off;
         if ( tree->sym()->base() == PRIM_INT )
         {
           // multiply by sizeof(int)
-          off = gen_temp();
-          append(CNT_SLL, off, idx, symref_t(new symbol_t(ST_INTCON, WORDSIZE/2)));
-        }
-        else
-        {
-          off = idx;
+          symref_t m_off = gen_temp();
+          append(CNT_SLL, m_off, off, symref_t(new symbol_t(ST_INTCON, WORDSIZE/2)));
+          off = m_off;
         }
 
         symref_t base = gen_temp();
@@ -451,21 +447,19 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         break;
       }
     case TNT_NEG:
-      {
-        symref_t val = generate(tree->children[RHS]);
-        symref_t neg = gen_temp(ctx.flags);
-        append(CNT_SUB, neg, f.zero, val);
-        return neg;
-      }
     case TNT_NOT:
     case TNT_BNOT:
       {
         symref_t val = generate(tree->children[RHS]);
         symref_t no  = gen_temp(ctx.flags);
-        if ( tree->type () == TNT_NOT )
+
+        if ( tree->type() == TNT_NEG )
+          append(CNT_SUB, no, f.zero, val);
+        else if ( tree->type () == TNT_NOT )
           append(CNT_XOR, no, val, symref_t(new symbol_t(ST_INTCON, 1)));
         else
           append(CNT_NOT, no, val);
+
         return no;
       }
     default:
