@@ -120,16 +120,26 @@ public:
   bool has_call()        const { return _has_call; }
   codenode_t *code()     const { return _code; }
 
-  void free(symref_t sym)      { _store[sym->type()]->free(sym); }
-  void use(symref_t sym)       { _store[sym->type()]->use(sym);  }
+  void free(symref_t sym) { _store[sym->type()]->free(sym); }
+  void use(symref_t sym)  { _store[sym->type()]->use(sym);  }
 
-  symref_t gen_resource(symbol_type_t st);
+  void reset(symbol_type_t st)      { _store.at(st)->reset(); }
+  int count(symbol_type_t st) const { return _store.at(st)->count(); }
 
-  void get_used_resources(symbol_type_t st, symvec_t &vec) const;
+  symref_t gen_resource(symbol_type_t st)
+  {
+    return _store.at(st)->gen_resource();
+  }
 
-  void reset(symbol_type_t st);
-  int count(symbol_type_t st) const;
-  const resource_manager_t *get(symbol_type_t st) const;
+  void get_used_resources(symbol_type_t st, symvec_t &vec) const
+  {
+    _store.at(st)->get_used_resources(vec);
+  }
+
+  const resource_manager_t *get(symbol_type_t st) const
+  {
+    return _store.at(st);
+  }
 };
 
 //-----------------------------------------------------------------------------

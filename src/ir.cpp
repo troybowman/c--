@@ -96,36 +96,6 @@ ir_func_t::ir_func_t(symref_t s) : _sym(s), _code(NULL), _has_call(false)
 }
 
 //-----------------------------------------------------------------------------
-const resource_manager_t *ir_func_t::get(symbol_type_t st) const
-{
-  return _store.at(st);
-}
-
-//-----------------------------------------------------------------------------
-void ir_func_t::get_used_resources(symbol_type_t st, symvec_t &vec) const
-{
-  _store.at(st)->get_used_resources(vec);
-}
-
-//-----------------------------------------------------------------------------
-symref_t ir_func_t::gen_resource(symbol_type_t st)
-{
-  return _store.at(st)->gen_resource();
-}
-
-//-----------------------------------------------------------------------------
-void ir_func_t::reset(symbol_type_t st)
-{
-  _store.at(st)->reset();
-}
-
-//-----------------------------------------------------------------------------
-int ir_func_t::count(symbol_type_t st) const
-{
-  return _store.at(st)->count();
-}
-
-//-----------------------------------------------------------------------------
 ir_func_t::~ir_func_t()
 {
   delete _code;
