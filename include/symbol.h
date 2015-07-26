@@ -82,12 +82,12 @@ class symbol_t : public refcnt_obj_t
   symbol_type_t _type;
 
   uint32_t _flags;
-#define SF_PARAMETER       0x01 // is a function parameter?
-#define SF_EXTERN          0x02 // is extern?
-#define SF_DEFINED         0x04 // has been defined?
-#define SF_RET_RESOLVED    0x08 // have we seen a 'return expr' statement yet? (for non-void funcs)
-#define SF_PRINTF          0x10 // identifies the builtin printf function
-#define SF_MAIN            0x20 // identifies entry point function
+#define SF_PARAMETER    0x01 // is a function parameter?
+#define SF_EXTERN       0x02 // is extern?
+#define SF_DEFINED      0x04 // has been defined?
+#define SF_RET_RESOLVED 0x08 // have we seen a 'return expr' statement yet? (for non-void funcs)
+#define SF_PRINTF       0x10 // identifies the builtin printf function
+#define SF_MAIN         0x20 // identifies entry point function
 
   std::string _name;
 

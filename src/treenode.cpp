@@ -45,6 +45,9 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
     case TNT_MEQ:
     case TNT_TEQ:
     case TNT_DEQ:
+    case TNT_AEQ:
+    case TNT_OEQ:
+    case TNT_XEQ:
       children[LHS] = va_arg(va, treenode_t *);
       children[RHS] = va_arg(va, treenode_t *);
       ASSERT(1015, children[LHS] != NULL);

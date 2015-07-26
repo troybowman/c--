@@ -146,6 +146,9 @@ static codenode_type_t tnt2cnt(treenode_type_t type)
     case TNT_MEQ:   return CNT_SUB;
     case TNT_TEQ:   return CNT_MUL;
     case TNT_DEQ:   return CNT_DIV;
+    case TNT_AEQ:   return CNT_AND;
+    case TNT_OEQ:   return CNT_OR;
+    case TNT_XEQ:   return CNT_XOR;
     default:
       INTERR(1081);
   }
@@ -315,6 +318,9 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
     case TNT_MEQ:
     case TNT_TEQ:
     case TNT_DEQ:
+    case TNT_AEQ:
+    case TNT_OEQ:
+    case TNT_XEQ:
       {
         treenode_t *rhs = tree->children[RHS];
         treenode_t *lhs = tree->children[LHS];

@@ -172,7 +172,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %token INT_TYPE CHAR_TYPE VOID
 %token WHILE RETURN EXTERN IF ELSE FOR
 %token EQ NEQ LEQ GEQ AND OR ELLIPSIS
-%token PEQ MEQ TEQ DEQ
+%token PEQ MEQ TEQ DEQ AEQ OEQ XEQ
 %token SHL SHR
 
 %type<prim>   type
@@ -361,6 +361,9 @@ assg : stmt_var '=' expr { $$ = process_assg(ctx, $1, TNT_ASSG, $3, lineno); }
      | stmt_var MEQ expr { $$ = process_assg(ctx, $1, TNT_MEQ,  $3, lineno); }
      | stmt_var TEQ expr { $$ = process_assg(ctx, $1, TNT_TEQ,  $3, lineno); }
      | stmt_var DEQ expr { $$ = process_assg(ctx, $1, TNT_DEQ,  $3, lineno); }
+     | stmt_var AEQ expr { $$ = process_assg(ctx, $1, TNT_AEQ,  $3, lineno); }
+     | stmt_var OEQ expr { $$ = process_assg(ctx, $1, TNT_OEQ,  $3, lineno); }
+     | stmt_var XEQ expr { $$ = process_assg(ctx, $1, TNT_XEQ,  $3, lineno); }
      ;
 
 /*---------------------------------------------------------------------------*/

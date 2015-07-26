@@ -38,6 +38,9 @@ enum treenode_type_t
   TNT_MEQ,
   TNT_TEQ,
   TNT_DEQ,
+  TNT_AEQ,
+  TNT_OEQ,
+  TNT_XEQ,
 #define LHS         0
 #define RHS         1
   TNT_ARRAY_LOOKUP,

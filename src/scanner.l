@@ -37,6 +37,9 @@ class parser_ctx_t;
 "-="     { return MEQ; }
 "*="     { return TEQ; }
 "/="     { return DEQ; }
+"&="     { return AEQ; }
+"|="     { return OEQ; }
+"^="     { return XEQ; }
 
 "[" |
 "]" |

@@ -70,6 +70,9 @@ static const char *tnt2str(treenode_type_t tnt)
     case TNT_MEQ:          return "TNT_MEQ";
     case TNT_TEQ:          return "TNT_TEQ";
     case TNT_DEQ:          return "TNT_DEQ";
+    case TNT_AEQ:          return "TNT_AEQ";
+    case TNT_OEQ:          return "TNT_OEQ";
+    case TNT_XEQ:          return "TNT_XEQ";
     case TNT_ARRAY_LOOKUP: return "TNT_ARRAY_LOOKUP";
     case TNT_FOR:          return "TNT_FOR";
     case TNT_STMT:         return "TNT_STMT";
@@ -116,6 +119,9 @@ static const char *child2str(treenode_type_t type, int child)
     case TNT_MEQ:
     case TNT_TEQ:
     case TNT_DEQ:
+    case TNT_AEQ:
+    case TNT_OEQ:
+    case TNT_XEQ:
       ASSERT(1031, child == LHS || child == RHS);
       return child == LHS ? "LHS" : "RHS";
     case TNT_ARRAY_LOOKUP:
