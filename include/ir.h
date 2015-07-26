@@ -3,13 +3,12 @@
 
 #include <symbol.h>
 
-class stx_trees_t;
-class treenode_t;
-struct codenode_t;
 struct ir_t;
+class treenode_t;
+struct parse_results_t;
 
 //-----------------------------------------------------------------------------
-void generate_ir(ir_t &ir, const stx_trees_t &functions);
+void generate_ir(ir_t &out, parse_results_t &pres);
 
 //-----------------------------------------------------------------------------
 enum codenode_type_t
@@ -160,8 +159,6 @@ struct ir_t
   symtab_t strings;
   symvec_t labels;
   ir_funcs_t funcs;
-
-  ir_t(symtab_t &_gsyms) { gsyms.swap(_gsyms); }
 };
 
 //-----------------------------------------------------------------------------

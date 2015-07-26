@@ -223,8 +223,8 @@ int main(int argc, char **argv)
   LOG_CHECK_PHASE_FLAG(dbg_no_ir);
 
   // intermediate representation ----------------------------------------------
-  ir_t ir(res.gsyms);
-  generate_ir(ir, res.trees);
+  ir_t ir;
+  generate_ir(ir, res);
 
   LOG_IR(ir);
   LOG_CHECK_PHASE_FLAG(dbg_no_code);

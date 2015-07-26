@@ -1,6 +1,7 @@
 #include <ir.h>
 #include <treenode.h>
 #include <logger.h>
+#include <parser.h>
 
 #define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
 #define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
@@ -574,17 +575,19 @@ void ir_engine_t::start(const treenode_t *root)
 }
 
 //-----------------------------------------------------------------------------
-void generate_ir(ir_t &ir, const stx_trees_t &trees)
+void generate_ir(ir_t &out, parse_results_t &pres)
 {
+  out.gsyms.swap(pres.gsyms);
+
   stx_trees_t::const_iterator i;
-  for ( i = trees.begin(); i != trees.end(); i++ )
+  for ( i = pres.trees.begin(); i != pres.trees.end(); i++ )
   {
     const stx_tree_t &st = **i;
     ir_func_t *f = new ir_func_t(st.sym);
 
-    ir_engine_t e(*f, ir);
+    ir_engine_t e(*f, out);
     e.start(st.root);
 
-    ir.funcs.push_back(f);
+    out.funcs.push_back(f);
   }
 }
