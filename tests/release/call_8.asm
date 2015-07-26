@@ -15,7 +15,6 @@
 .text
 
 _f:
-  la $sp, -0($sp)
 
   move $t0, $a0
   li $t1, 1
@@ -24,14 +23,13 @@ _f:
   j __leave_f
 
 __leave_f:
-  la $sp, 0($sp)
   jr $ra
 
 main:
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
-  sw $s0, 16($sp)
 
   li $t0, 1
   sb $t0, _y
@@ -62,9 +60,9 @@ main:
   jal __print_string
 
 __leavemain:
-  lw $s0, 16($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jal __exit
 

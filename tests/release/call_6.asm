@@ -8,7 +8,6 @@
 .text
 
 _f:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -23,7 +22,6 @@ _f:
   j __leave_f
 
 __leave_f:
-  la $sp, 0($sp)
   jr $ra
 
 main:

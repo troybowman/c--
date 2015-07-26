@@ -11,7 +11,6 @@
 .text
 
 _acc:
-  la $sp, -0($sp)
 
   lw $t0, _y
   move $t1, $a0
@@ -19,7 +18,6 @@ _acc:
   sw $t2, _y
 
 __leave_acc:
-  la $sp, 0($sp)
   jr $ra
 
 main:

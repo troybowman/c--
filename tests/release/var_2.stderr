@@ -6,4 +6,4 @@ syntax error, line: 10
 syntax error, line: 13
 syntax error, line: 15
 syntax error, line: 17
-c-- returned nonzero exit code
+c-- returned a nonzero exit code

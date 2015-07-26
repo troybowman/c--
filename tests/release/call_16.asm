@@ -44,7 +44,6 @@ __leave_f:
   jr $ra
 
 _incr:
-  la $sp, -0($sp)
 
   move $t0, $a0
   lw $t1, _u
@@ -52,7 +51,6 @@ _incr:
   sw $t2, _u
 
 __leave_incr:
-  la $sp, 0($sp)
   jr $ra
 
 main:

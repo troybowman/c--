@@ -11,4 +11,4 @@ error: variable func7 redeclared at line 26 (previous declaration at line 15)
 syntax error, line: 30
 syntax error, line: 32
 syntax error, line: 34
-c-- returned nonzero exit code
+c-- returned a nonzero exit code

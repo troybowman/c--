@@ -47,7 +47,6 @@
 .text
 
 _init_k:
-  la $sp, -0($sp)
 
   li $t0, 1116352408
   li $t1, 0
@@ -435,11 +434,9 @@ _init_k:
   sw $t0, ($t3)
 
 __leave_init_k:
-  la $sp, 0($sp)
   jr $ra
 
 _rotl:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -454,11 +451,9 @@ _rotl:
   j __leave_rotl
 
 __leave_rotl:
-  la $sp, 0($sp)
   jr $ra
 
 _rotr:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -473,11 +468,9 @@ _rotr:
   j __leave_rotr
 
 __leave_rotr:
-  la $sp, 0($sp)
   jr $ra
 
 _ch:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -491,11 +484,9 @@ _ch:
   j __leave_ch
 
 __leave_ch:
-  la $sp, 0($sp)
   jr $ra
 
 _maj:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -512,16 +503,15 @@ _maj:
   j __leave_maj
 
 __leave_maj:
-  la $sp, 0($sp)
   jr $ra
 
 _ep0:
   la $sp, -32($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
   sw $a1, 36($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   lw $t0, 32($sp)
   li $t1, 2
@@ -547,21 +537,21 @@ _ep0:
   j __leave_ep0
 
 __leave_ep0:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 36($sp)
   lw $a0, 32($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 32($sp)
   jr $ra
 
 _ep1:
   la $sp, -32($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 32($sp)
   sw $a1, 36($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   lw $t0, 32($sp)
   li $t1, 6
@@ -587,20 +577,20 @@ _ep1:
   j __leave_ep1
 
 __leave_ep1:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 36($sp)
   lw $a0, 32($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 32($sp)
   jr $ra
 
 _sig0:
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
   sw $a1, 28($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 24($sp)
   li $t1, 7
@@ -623,19 +613,19 @@ _sig0:
   j __leave_sig0
 
 __leave_sig0:
-  lw $s0, 16($sp)
   lw $a1, 28($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 
 _sig1:
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
   sw $a1, 28($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 24($sp)
   li $t1, 17
@@ -658,10 +648,10 @@ _sig1:
   j __leave_sig1
 
 __leave_sig1:
-  lw $s0, 16($sp)
   lw $a1, 28($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 
@@ -860,12 +850,12 @@ __leave_get_hex_str:
 
 _sha256_transform:
   la $sp, -336($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
   sw $ra, 24($sp)
   sw $a0, 336($sp)
   sw $a1, 340($sp)
   sw $a2, 344($sp)
-  sw $s0, 16($sp)
-  sw $s1, 20($sp)
 
   li $t0, 0
   sw $t0, 64($sp)
@@ -1198,17 +1188,16 @@ _L11:
   sw $t2, ($t3)
 
 __leave_sha256_transform:
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a2, 344($sp)
   lw $a1, 340($sp)
   lw $a0, 336($sp)
   lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 336($sp)
   jr $ra
 
 _sha256_init:
-  la $sp, -0($sp)
 
   li $t0, 0
   li $t1, 0
@@ -1278,7 +1267,6 @@ _sha256_init:
   sw $t0, ($t3)
 
 __leave_sha256_init:
-  la $sp, 0($sp)
   jr $ra
 
 _sha256_update:
@@ -1734,15 +1722,15 @@ __leave_sha256_final:
 
 _sha256_from_str:
   la $sp, -248($sp)
+  sw $s0, 20($sp)
+  sw $s1, 24($sp)
+  sw $s2, 28($sp)
+  sw $s3, 32($sp)
   sw $ra, 36($sp)
   sw $a0, 248($sp)
   sw $a1, 252($sp)
   sw $a2, 256($sp)
   sw $a3, 260($sp)
-  sw $s0, 20($sp)
-  sw $s1, 24($sp)
-  sw $s2, 28($sp)
-  sw $s3, 32($sp)
 
   la $t0, 40($sp)
   la $t1, 72($sp)
@@ -1797,15 +1785,15 @@ _sha256_from_str:
   jal __print_string
 
 __leave_sha256_from_str:
-  lw $s3, 32($sp)
-  lw $s2, 28($sp)
-  lw $s1, 24($sp)
-  lw $s0, 20($sp)
   lw $a3, 260($sp)
   lw $a2, 256($sp)
   lw $a1, 252($sp)
   lw $a0, 248($sp)
   lw $ra, 36($sp)
+  lw $s3, 32($sp)
+  lw $s2, 28($sp)
+  lw $s1, 24($sp)
+  lw $s0, 20($sp)
   la $sp, 248($sp)
   jr $ra
 

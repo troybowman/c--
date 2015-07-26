@@ -6,4 +6,4 @@ error: line 28 - function sum called as part of an expression but does not retur
 error: expected 3 arguments for function char_at, 2 were provided. line 29
 error: line 35 - function sum called as part of an expression but does not return a value
 error: expected 3 arguments for function char_at, 2 were provided. line 36
-c-- returned nonzero exit code
+c-- returned a nonzero exit code

@@ -12,14 +12,12 @@
 .text
 
 _id:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $v0, $t0
   j __leave_id
 
 __leave_id:
-  la $sp, 0($sp)
   jr $ra
 
 _sum:
@@ -83,11 +81,6 @@ __leave_sum:
 
 main:
   la $sp, -256($sp)
-  sw $ra, 216($sp)
-  sw $a0, 256($sp)
-  sw $a1, 260($sp)
-  sw $a2, 264($sp)
-  sw $a3, 268($sp)
   sw $s0, 80($sp)
   sw $s1, 84($sp)
   sw $s2, 88($sp)
@@ -96,6 +89,11 @@ main:
   sw $s5, 100($sp)
   sw $s6, 104($sp)
   sw $s7, 108($sp)
+  sw $ra, 216($sp)
+  sw $a0, 256($sp)
+  sw $a1, 260($sp)
+  sw $a2, 264($sp)
+  sw $a3, 268($sp)
 
   li $t0, 1
   sw $t0, 224($sp)
@@ -370,6 +368,11 @@ main:
   jal _sum
 
 __leavemain:
+  lw $a3, 268($sp)
+  lw $a2, 264($sp)
+  lw $a1, 260($sp)
+  lw $a0, 256($sp)
+  lw $ra, 216($sp)
   lw $s7, 108($sp)
   lw $s6, 104($sp)
   lw $s5, 100($sp)
@@ -378,11 +381,6 @@ __leavemain:
   lw $s2, 88($sp)
   lw $s1, 84($sp)
   lw $s0, 80($sp)
-  lw $a3, 268($sp)
-  lw $a2, 264($sp)
-  lw $a1, 260($sp)
-  lw $a0, 256($sp)
-  lw $ra, 216($sp)
   la $sp, 256($sp)
   jal __exit
 

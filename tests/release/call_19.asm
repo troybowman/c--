@@ -8,21 +8,19 @@
 .text
 
 _id:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $v0, $t0
   j __leave_id
 
 __leave_id:
-  la $sp, 0($sp)
   jr $ra
 
 main:
   la $sp, -72($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 72($sp)
-  sw $s0, 16($sp)
 
   li $t0, 0
   sw $t0, 64($sp)
@@ -171,9 +169,9 @@ _L1:
   jal __print_string
 
 __leavemain:
-  lw $s0, 16($sp)
   lw $a0, 72($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 72($sp)
   jal __exit
 

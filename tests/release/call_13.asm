@@ -13,10 +13,10 @@
 
 _sum:
   la $sp, -24($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 24($sp)
   sw $a1, 28($sp)
-  sw $s0, 16($sp)
 
   lw $t0, 28($sp)
   lw $t1, 24($sp)
@@ -48,10 +48,10 @@ _L0:
 _L1:
 
 __leave_sum:
-  lw $s0, 16($sp)
   lw $a1, 28($sp)
   lw $a0, 24($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 24($sp)
   jr $ra
 

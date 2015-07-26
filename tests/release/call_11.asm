@@ -78,10 +78,10 @@ __leave_count:
 
 main:
   la $sp, -32($sp)
+  sw $s0, 16($sp)
   sw $ra, 20($sp)
   sw $a0, 32($sp)
   sw $a1, 36($sp)
-  sw $s0, 16($sp)
 
   la $t0, _x
   li $t1, 10
@@ -107,10 +107,10 @@ main:
   jal __print_string
 
 __leavemain:
-  lw $s0, 16($sp)
   lw $a1, 36($sp)
   lw $a0, 32($sp)
   lw $ra, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 32($sp)
   jal __exit
 

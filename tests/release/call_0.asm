@@ -8,14 +8,12 @@
 .text
 
 _id:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $v0, $t0
   j __leave_id
 
 __leave_id:
-  la $sp, 0($sp)
   jr $ra
 
 main:

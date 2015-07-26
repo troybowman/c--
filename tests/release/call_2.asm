@@ -8,7 +8,6 @@
 .text
 
 _add:
-  la $sp, -0($sp)
 
   move $t0, $a0
   move $t1, $a1
@@ -17,17 +16,16 @@ _add:
   j __leave_add
 
 __leave_add:
-  la $sp, 0($sp)
   jr $ra
 
 main:
   la $sp, -64($sp)
-  sw $ra, 28($sp)
-  sw $a0, 64($sp)
-  sw $a1, 68($sp)
   sw $s0, 16($sp)
   sw $s1, 20($sp)
   sw $s2, 24($sp)
+  sw $ra, 28($sp)
+  sw $a0, 64($sp)
+  sw $a1, 68($sp)
 
   li $t0, 1
   sw $t0, 56($sp)
@@ -87,12 +85,12 @@ _L1:
   jal __print_string
 
 __leavemain:
-  lw $s2, 24($sp)
-  lw $s1, 20($sp)
-  lw $s0, 16($sp)
   lw $a1, 68($sp)
   lw $a0, 64($sp)
   lw $ra, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
   la $sp, 64($sp)
   jal __exit
 

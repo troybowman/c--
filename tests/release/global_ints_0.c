@@ -1,1 +1,0 @@
-../real/global_ints_0.c
