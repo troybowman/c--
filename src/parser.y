@@ -61,10 +61,13 @@ public:
       delete syms;
     setglobal();
   }
+
   void setglobal()          { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
   void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(sym, f); }
   void settemp()            { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
+
   symref_t &func()    const { return getref(sym); }
+
   void insert(symref_t sym)
   {
     if ( mode == CTX_GLOBAL || mode == CTX_TEMP )
@@ -856,6 +859,9 @@ treenode_t *process_printf_call(
 
   type_error_t res = validate_printf_call(ctx, fmtargs, allargs);
 
+  // original TNT_ARG sequence is no longer needed; it has been split into fmtargs
+  cleanup_fmtarg_list(allargs);
+
   if ( res != TERR_OK )
   {
     switch ( res )
@@ -875,11 +881,8 @@ treenode_t *process_printf_call(
       default:
         INTERR(0);
     }
-    delete allargs;
     return ERRNODE;
   }
-
-  cleanup_fmtarg_list(allargs); // original TNT_ARG sequence longer needed
 
   return build_printf_tree(printf, fmtargs);
 }
