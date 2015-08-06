@@ -93,22 +93,19 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
 }
 
 //-----------------------------------------------------------------------------
-treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
+treenode_t::treenode_t(symref_t sym, treenode_type_t type, ...) : _type(type)
 {
   INIT_CHILDREN();
 
-  putref(_sym, ref);
+  putsym(_sym, sym);
   ASSERT(1113, sym() != NULL);
 
   va_list va;
   va_start(va, type);
+
   switch ( _type )
   {
     case TNT_SYMBOL:
-      break;
-    case TNT_ARRAY_LOOKUP:
-      children[AL_OFFSET] = va_arg(va, treenode_t *);
-      ASSERT(1018, children[AL_OFFSET] != NULL);
       break;
     case TNT_CALL:
       children[CALL_ARGS] = va_arg(va, treenode_t *);
@@ -122,6 +119,33 @@ treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
     default:
       INTERR(0);
   }
+
+  va_end(va);
+}
+
+//-----------------------------------------------------------------------------
+treenode_t::treenode_t(typeref_t tinfo, treenode_type_t type, ...) _type(type)
+{
+  INIT_CHILDREN();
+
+  emplace(_tinfo, tinfo);
+  ASSERT(0, tinfo() != NULL);
+
+  va_list va;
+  va_start(va, type);
+
+  switch ( _type )
+  {
+    case TNT_ARRAY_LOOKUP:
+      children[AL_BASE]   = va_arg(va, treenode_t *);
+      children[AL_OFFSET] = va_arg(va, treenode_t *);
+      ASSERT(0, children[AL_BASE]   != NULL);
+      ASSERT(0, children[AL_OFFSET] != NULL);
+      break;
+    default:
+      INTERR(0);
+  }
+
   va_end(va);
 }
 
@@ -131,11 +155,14 @@ treenode_t::~treenode_t()
   switch ( _type )
   {
     case TNT_SYMBOL:
-    case TNT_ARRAY_LOOKUP:
     case TNT_CALL:
     case TNT_PRINTF:
       sym().~symref_t();
       break;
+    case TNT_ARRAY_LOOKUP:
+      tinfo().~typeref_t();
+      break;
+    case ;
     case TNT_STRCON:
     case TNT_CHARCON:
       free(_str);

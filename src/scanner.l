@@ -21,6 +21,7 @@ class parser_ctx_t;
 "while"  { return WHILE; }
 "return" { return RETURN; }
 "extern" { return EXTERN; }
+"struct" { return STRUCT; }
 "if"     { return IF; }
 "else"   { return ELSE; }
 "for"    { return FOR; }
@@ -40,6 +41,7 @@ class parser_ctx_t;
 "&="     { return AEQ; }
 "|="     { return OEQ; }
 "^="     { return XEQ; }
+"->"     { return SPD; }
 
 "[" |
 "]" |

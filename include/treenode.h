@@ -44,7 +44,8 @@ enum treenode_type_t
 #define LHS         0
 #define RHS         1
   TNT_ARRAY_LOOKUP,
-#define AL_OFFSET   0
+#define AL_BASE     0
+#define AL_OFFSET   1
   TNT_FOR,
 #define FOR_INIT    0
 #define FOR_COND    1
@@ -67,6 +68,8 @@ enum treenode_type_t
 #define WHILE_BODY  1
   TNT_PRINTF,
 #define PRINTF_TREE 0
+  TNT_DEREF
+#define DEREF_ADDR  0
 };
 
 //-----------------------------------------------------------------------------
@@ -77,20 +80,23 @@ class treenode_t
   {
     int _val;
     char *_str;
-    usymref_t _sym;
+    splace_t _sym;
+    tplace_t _tinfo;
   };
 
 public:
   treenode_t *children[4];
 
   treenode_t(treenode_type_t type, ...);
-  treenode_t(symref_t ref, treenode_type_t, ...);
+  treenode_t(symref_t sym, treenode_type_t, ...);
+  treenode_t(typeref_t tinfo, treenode_type_t, ...);
   ~treenode_t();
 
   treenode_type_t type()  const { return _type; }
   int val()               const { return _val;  }
   char *str()             const { return _str;  }
-  symref_t &sym()         const { return getref(_sym); }
+  symref_t &sym()         const { return deplace(_sym); }
+  typeref_t &tinfo()      const { return deplace(_tinfo); }
 
   bool is_int_compat()    const;
   bool is_bool_compat()   const;
