@@ -44,10 +44,10 @@ symbol_t::symbol_t(symbol_type_t st) :
 //-----------------------------------------------------------------------------
 void symbol_t::set_base(typeref_t base)
 {
-  if ( tinfo() == NULL )
-    emplace(_tinfo, base);
+  if ( _tinfo == NULL )
+    _tinfo = base;
   else
-    tinfo()->set_base(base);
+    _tinfo->set_base(base);
 }
 
 //-----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ offset_t symbol_t::size()
   switch ( _st )
   {
     case ST_VARIABLE:
-      return tinfo()->size();
+      return _tinfo->size();
     case ST_TEMP:
     case ST_SVTEMP:
     case ST_STKTEMP:
@@ -87,9 +87,6 @@ symbol_t::~symbol_t()
     case ST_FUNCTION:
       delete _params;
       delete _lvars;
-      // no break
-    case ST_VARIABLE:
-      type().~typeref();
       break;
     case ST_STRCON:
     case ST_CHARCON:
@@ -99,4 +96,3 @@ symbol_t::~symbol_t()
       break;
   }
 }
-

@@ -68,39 +68,50 @@ enum treenode_type_t
 #define WHILE_BODY  1
   TNT_PRINTF,
 #define PRINTF_TREE 0
-  TNT_DEREF
+  TNT_DEREF,
 #define DEREF_ADDR  0
+  TNT_UDT_LOOKUP,
+#define UDT_BASE    0
+  TNT_ADDROF,
+#define ADDROF_BASE 0
 };
+
+//-----------------------------------------------------------------------------
+#define CHILDPARAMS      \
+  treenode_t *c0 = NULL, \
+  treenode_t *c1 = NULL, \
+  treenode_t *c2 = NULL, \
+  treenode_t *c3 = NULL
 
 //-----------------------------------------------------------------------------
 class treenode_t
 {
   treenode_type_t _type;
+
   union
   {
-    int _val;
-    char *_str;
-    splace_t _sym;
-    tplace_t _tinfo;
+    int _val;      // TNT_INTCON
+    char *_str;    // TNT_CHARCON, TNT_STRCON
+    splace_t _sym; // TNT_SYMBOL, TNT_CALL, TNT_PRINTF, TNT_UDT_LOOKUP
   };
 
 public:
+  typeref_t tinfo;
+
   treenode_t *children[4];
 
-  treenode_t(treenode_type_t type, ...);
-  treenode_t(symref_t sym, treenode_type_t, ...);
-  treenode_t(typeref_t tinfo, treenode_type_t, ...);
+  treenode_t(int val, typeref_t tinfo);
+  treenode_t(treenode_type_t type, char *str, typeref_t tinfo);
+  treenode_t(treenode_type_t type, CHILDPARAMS);
+  treenode_t(treenode_type_t type, typeref_t tinfo, CHILDPARAMS);
+  treenode_t(treenode_type_t type, symref_t sym, CHILDPARAMS);
+
   ~treenode_t();
 
   treenode_type_t type()  const { return _type; }
   int val()               const { return _val;  }
   char *str()             const { return _str;  }
   symref_t &sym()         const { return deplace(_sym); }
-  typeref_t &tinfo()      const { return deplace(_tinfo); }
-
-  bool is_int_compat()    const;
-  bool is_bool_compat()   const;
-  bool is_string_compat() const;
 };
 
 //-----------------------------------------------------------------------------

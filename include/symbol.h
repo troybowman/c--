@@ -44,21 +44,21 @@ public:
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_VARIABLE,  // source level variable
-  ST_FUNCTION,  // source level function
-  ST_TEMP,      // temporary value
-  ST_SVTEMP,    // saved temporary value
-  ST_STKTEMP,   // temporary that must be stored on the stack
-  ST_INTCON,    // integer constant
-  ST_CHARCON,   // character constant
-  ST_STRCON,    // string constant
-  ST_LABEL,     // asm label
-  ST_RETVAL,    // return value location
-  ST_RETADDR,   // return address location
-  ST_REGARG,    // function register argument
-  ST_STKARG,    // function stack argument
-  ST_ELLIPSIS,  // identifies "..." parameter declaration
-  ST_ZERO       // zero register
+  ST_VAR,      // source level variable
+  ST_FUNC,     // source level function
+  ST_TEMP,     // temporary value
+  ST_SVTEMP,   // saved temporary value
+  ST_STKTEMP,  // temporary that must be stored on the stack
+  ST_INTCON,   // integer constant
+  ST_CHARCON,  // character constant
+  ST_STRCON,   // string constant
+  ST_LABEL,    // asm label
+  ST_RETVAL,   // return value location
+  ST_RETADDR,  // return address location
+  ST_REGARG,   // function register argument
+  ST_STKARG,   // function stack argument
+  ST_ELLIPSIS, // identifies "..." parameter declaration
+  ST_ZERO      // zero register
 };
 
 //-----------------------------------------------------------------------------
@@ -85,9 +85,9 @@ class symbol_t : public refcnt_obj_t
       union
       {
         tplace_t _tinfo; // ST_VARIABLE
-        struct // ST_FUNCTION
+        struct           // ST_FUNCTION
         {
-          tplace_t _rtype;
+          tplace_t _rt;
           symvec_t *_params;
           symtab_t *_lvars;
         };
@@ -113,22 +113,24 @@ public:
   bool is_var()             const { return _st == ST_VARIABLE; }
   bool is_func()            const { return _st == ST_FUNCTION; }
 
-  bool is_prim()            const { return is_var() && tinfo()->is_prim();   }
-  bool is_array()           const { return is_var() && tinfo()->is_array();  }
-  bool is_ptr()             const { return is_var() && tinfo()->is_ptr();    }
+  bool is_prim()            const { return is_var() && _tinfo->is_prim();   }
+  bool is_array()           const { return is_var() && _tinfo->is_array();  }
+  bool is_ptr()             const { return is_var() && _tinfo->is_ptr();    }
 
-  bool is_prim(prim_t p)    const { return is_var() && tinfo()->is_prim(p);  }
-  bool is_array(prim_t p)   const { return is_var() && tinfo()->is_array(p); }
-  bool is_ptr(prim_t p)     const { return is_var() && tinfo()->is_ptr(p);   }
+  bool is_prim(prim_t p)    const { return is_var() && _tinfo->is_prim(p);  }
+  bool is_array(prim_t p)   const { return is_var() && _tinfo->is_array(p); }
+  bool is_ptr(prim_t p)     const { return is_var() && _tinfo->is_ptr(p);   }
 
-  bool is_param()           const { return (_flags & SF_PARAMETER)    != 0;  }
-  bool is_extern()          const { return (_flags & SF_EXTERN)       != 0;  }
-  bool is_defined()         const { return (_flags & SF_DEFINED)      != 0;  }
-  bool is_ret_resolved()    const { return (_flags & SF_RET_RESOLVED) != 0;  }
-  bool is_printf()          const { return (_flags & SF_PRINTF)       != 0;  }
-  bool is_main()            const { return (_flags & SF_MAIN)         != 0;  }
+  bool has_ptr()            const { return _tinfo != NULL && _tinfo->has_ptr(); }
 
-  typeref_t &tinfo()        const { return deplace(_type); }
+  bool is_param()           const { return (_flags & SF_PARAMETER)    != 0; }
+  bool is_extern()          const { return (_flags & SF_EXTERN)       != 0; }
+  bool is_defined()         const { return (_flags & SF_DEFINED)      != 0; }
+  bool is_ret_resolved()    const { return (_flags & SF_RET_RESOLVED) != 0; }
+  bool is_printf()          const { return (_flags & SF_PRINTF)       != 0; }
+  bool is_main()            const { return (_flags & SF_MAIN)         != 0; }
+
+  typeref_t &tinfo()        const { return deplace(_tinfo); }
 
   uint32_t flags()          const { return _flags; }
   const std::string &name() const { return _name; }
@@ -139,24 +141,22 @@ public:
 
   symvec_t *params()        const { return _params; }
   symtab_t *lvars()         const { return _lvars; }
-  primitive_t prim()        const { return tinfo()->prim(); }
-  offset_t length()         const { return tinfo()->length(); }
+  primitive_t prim()        const { return _tinfo->prim(); }
+  offset_t length()         const { return _tinfo->length(); }
+  offset_t size()           const;
 
   void set_name(const char *name) { _name.assign(name); }
   void set_line(int line)         { _line = line; }
-
-  void set_extern()               { _flags |= SF_EXTERN;       }
-  void set_defined()              { _flags |= SF_DEFINED;      }
-  void set_ret_resolved()         { _flags |= SF_RET_RESOLVED; }
-  void set_printf()               { _flags |= SF_PRINTF;       }
   void set_lvars(symtab_t *lvars) { _lvars = lvars; }
-
   void set_val(int val)           { _val = val; }
+  void set_base(typeref_t base);
+
+  void set_extern()               { _flags |= SF_EXTERN; }
+  void set_defined()              { _flags |= SF_DEFINED; }
+  void set_ret_resolved()         { _flags |= SF_RET_RESOLVED; }
+  void set_printf()               { _flags |= SF_PRINTF; }
 
   virtual void release()          { delete this; }
-
-  void set_base(typeref_t base);
-  offset_t size() const;
 };
 
 //-----------------------------------------------------------------------------

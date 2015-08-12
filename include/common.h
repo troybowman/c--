@@ -19,9 +19,9 @@ do                                              \
   exit(code);                                   \
 } while ( false );
 
-//-----------------------------------------------------------------------------
 #ifndef NDEBUG
 
+//-----------------------------------------------------------------------------
 #define ASSERT(code, cond) \
 do                         \
 {                          \
@@ -31,9 +31,10 @@ do                         \
 
 #else
 
+//-----------------------------------------------------------------------------
 #define ASSERT(code, cond) // nothing
 
-#endif
+#endif // !NDEBUG
 
 //-----------------------------------------------------------------------------
 #define APPCHAR(ptr, c, len) \
@@ -44,6 +45,7 @@ do                           \
     { *ptr = c; ptr++; }     \
 } while ( false )
 
+//-----------------------------------------------------------------------------
 #define APPSTR(ptr, str, len) \
 do                            \
 {                             \
@@ -133,7 +135,8 @@ template <class T> inline T &deplace(uint8_t const addr[])
 }
 
 //-----------------------------------------------------------------------------
-template <class T> class reftab_t // table: strings -> smart pointers
+// table of smart pointers
+template <class T> class reftab_t
 {
   typedef std::map<std::string, T> map_t;
   typedef std::vector<T> vec_t;
@@ -214,4 +217,4 @@ struct area_t
 #define BI_PRINT_CHAR   "_print_char"
 #define BI_PRINT_HEX    "_print_hex"
 
-#endif // COMMON_H
+#endif // !COMMON_H

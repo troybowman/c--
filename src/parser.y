@@ -31,17 +31,26 @@ class parser_ctx_t : public parse_results_t
     {
       symtab_t *_members;
       tplace_t _tinfo;
-    }
+    };
   };
+
+  void init_lsyms()
+  {
+    symvec_t::const_iterator i;
+    for ( i = func().params()->begin(); i != func().params()->end(); i++ )
+      insert(*i);
+  }
 
 public:
   udttab_t udts;
 
   parser_ctx_t() :
-      mode(CTX_GLOBAL), syms(&gsyms),
+      mode(CTX_GLOBAL), _syms(&gsyms),
       i(new tinfo_t(PRIM_INT)),
       c(new tinfo_t(PRIM_CHAR)),
-      v(new tinfo_t(PRIM_VOID)) {}
+      v(new tinfo_t(PRIM_VOID))
+      s(new tinfo_t(BADOFFSET, i)),
+      b(new tinfo_t(TID_BOOL)),
 
   ~parser_ctx_t() { clear(); }
 
@@ -53,10 +62,10 @@ public:
       tinfo().~typeref_t();
   }
 
-  void setglobal()         { clear(); mode = CTX_GLOB; _syms = &gsyms; }
-  void setfunc(symref_t f) { clear(); mode = CTX_FUNC; _syms = new symtab_t; emplace(_func, f);  }
+  void setfunc(symref_t f) { clear(); mode = CTX_FUNC; _syms = new symtab_t; emplace(_func, f); init_lsyms(); }
   void setudt(typeref_t t) { clear(); mode = CTX_UDT;  _syms = new memtab_t; emplace(_tinfo, t); }
   void settemp()           { clear(); mode = CTX_TEMP; _syms = new symtab_t; }
+  void setglobal()         { clear(); mode = CTX_GLOB; _syms = &gsyms; }
 
   void trash()             { if ( mode != CTX_GLOB ) { delete syms; setglobal(); } }
 
@@ -66,11 +75,13 @@ public:
 
   bool insert(symref_t s)  { return _syms->insert(s); }
 
-  symref_t get(const std::string &key) const { _syms->get(key); }
+  symref_t get(const std::string &key) const { return _syms->get(key); }
 
   typeref_t i; // int
   typeref_t c; // char
   typeref_t v; // void
+  typeref_t s; // string
+  typeref_t b; // bool
 
   // built-in print functions
   symref_t print_string;
@@ -94,7 +105,7 @@ static treenode_t *process_if_stmt    (parser_ctx_t &, treenode_t *, treenode_t 
 static treenode_t *process_while_stmt (parser_ctx_t &, treenode_t *, treenode_t *, int);
 static treenode_t *process_for_stmt   (parser_ctx_t &, treenode_t *, treenode_t *, treenode_t *, treenode_t *, int);
 static treenode_t *process_math_expr  (parser_ctx_t &, treenode_t *, treenode_type_t, treenode_t *, int);
-static terr_info_t process_array_sfx  (parser_ctx_t &, typeref_t, offset_t, int);
+static terr_info_t process_array_sfx  (parser_ctx_t &, typeref_t, int, int);
 static       void  process_fdecl_error(parser_ctx_t &, terr_info_t, const symbol_t &);
 static  typeref_t  process_udt_id     (parser_ctx_t &, const char *, int);
 static   symref_t  process_var_id(const char *, typeref_t, typeref_t, line, uint32_t);
@@ -112,8 +123,8 @@ static symvec_t *process_param_list(symref_t, symvec_t *, symref_t);
 static  symref_t yydeplace(const splace_t &);
 static typeref_t yydeplace(const tplace_t &);
 
-#define EMP(a, b) emplace(a, b)
-#define DPL(a)    yydeplace(a)
+#define EMPL(a, b) emplace(a, b)
+#define DPL(a)     yydeplace(a)
 
 //---------------------------------------------------------------------------
 #define EMPTYSTRING "\"\""
@@ -191,7 +202,7 @@ struct scanner_t
 %type<symvec> var_decls var_decl_list func_decls func_decl_list params param_decl_list
 %type<tree>   func_body stmt stmt_var stmt_array_sfx expr call args op_expr else assg op_assg
 %type<seq>    stmts arg_list assg_list
-%type<tinfo>  typename ptr asfx struct
+%type<tinfo>  typename ptr asfx udt
 %type<ni>     name
 
 %destructor { free($$); } ID MAIN
@@ -201,7 +212,7 @@ struct scanner_t
 %destructor { DPL($$); } var_decl func_decl ellipsis param_decl
 %destructor { delete $$; } stmt_var stmt_array_sfx assg
 %destructor { delete $$.head; } stmts arg_list assg_list
-%destructor { DPL($$); } type
+%destructor { DPL($$); } typename
 
 /*---------------------------------------------------------------------------*/
 /* precedence increases as we go down the list */
@@ -216,7 +227,7 @@ struct scanner_t
 %left '-' '+'
 %left '/' '*'
 %right UNARY
-%left SPD '.'
+%left '.' SPD
 
 %start prog
 
@@ -224,6 +235,7 @@ struct scanner_t
 
 /*---------------------------------------------------------------------------*/
 prog : prog decl  ';'
+     | prog udt   ';'
      | prog error ';' { yyerrok; }
      | prog func
      | /* empty */
@@ -233,6 +245,7 @@ prog : prog decl  ';'
 decl :        typename  var_decls { process_var_list (ctx, $2, DPL($1));        delete $2; }
      |        typename func_decls { process_func_list(ctx, $2, DPL($1), false); delete $2; }
      | EXTERN typename func_decls { process_func_list(ctx, $3, DPL($2), true);  delete $3; }
+     | STRUCT ID                  { process_udt_decl(ctx, $2); free($2);  }
      ;
 
 /*---------------------------------------------------------------------------*/
@@ -253,7 +266,7 @@ var_decl : ptr name asfx
            }
          ;
 
-asfx : asfx '[' INT ']' { EMPL($$, process_array_sfx(ctx, DPL($1), $2, lineno)); }
+asfx : asfx '[' INT ']' { EMPL($$, process_array_sfx(ctx, DPL($1), $3, lineno)); }
      | /* empty */      { EMPL($$, NULLTYPE); }
      ;
 
@@ -318,15 +331,15 @@ param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, DPL(
                 ;
 
 /*---------------------------------------------------------------------------*/
-struct : STRUCT ID
-         '{'
-            { struct_enter(ctx, $2, yylineno); free($2); }
-            var_block
-            { struct_leave(ctx); }
-         '}'
-       | error '{' { yyerrok; }
-       | error '}' { yyerrok; }
-       ;
+udt : STRUCT ID
+      '{'
+         { udt_enter(ctx, $2, lineno); free($2); }
+         var_block
+         { udt_leave(ctx); }
+      '}'
+    | error '{' { yyerrok; }
+    | error '}' { yyerrok; }
+    ;
 
 /*---------------------------------------------------------------------------*/
 var_block : var_block type var_decls ';' { process_var_list(ctx, $3, DPL($2)); delete $3; }
@@ -422,55 +435,210 @@ arg_list : arg_list ',' expr { $$ = seq_append($1, $3, TNT_ARG); }
          ;
 
 /*---------------------------------------------------------------------------*/
-stmt_var : name stmt_array_sfx
-           {
-             symref_t sym = process_stmt_id(ctx, $1.str, lineno);
-             $$ = sym != NULL
-                ? process_stmt_var(ctx, sym, $2, lineno)
-                : ERRNODE;
-             free($1.str);
-           }
-         ;
-
-stmt_array_sfx : '[' expr ']' { $$ = $2; }
-               | /* empty */  { $$ = NULL; }
-               ;
-
-/*---------------------------------------------------------------------------*/
-expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
-     | CHAR                 { $$ = new treenode_t(TNT_CHARCON, $1); }
-     | STRING               { $$ = new treenode_t(TNT_STRCON, $1); }
-     | ID                   { $$ = ? }
+expr : INT                  { $$ = new treenode_t($1, ctx.i); }
+     | CHAR                 { $$ = new treenode_t(TNT_CHARCON, $1, ctx.c); }
+     | STRING               { $$ = new treenode_t(TNT_STRCON,  $1, ctx.s); }
+     | ID                   { $$ = process_expr_id(ctx, $1, lineno); free($1); }
      | call                 { $$ = process_call_ctx(ctx, $1, lineno, true); }
-     | expr EQ  expr        { $$ = process_bool_expr(ctx, $1,   TNT_EQ,    $3, lineno); }
-     | expr NEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_NEQ,   $3, lineno); }
-     | expr '<' expr        { $$ = process_bool_expr(ctx, $1,   TNT_LT,    $3, lineno); }
-     | expr LEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_LEQ,   $3, lineno); }
-     | expr '>' expr        { $$ = process_bool_expr(ctx, $1,   TNT_GT,    $3, lineno); }
-     | expr GEQ expr        { $$ = process_bool_expr(ctx, $1,   TNT_GEQ,   $3, lineno); }
-     | expr AND expr        { $$ = process_bool_expr(ctx, $1,   TNT_AND,   $3, lineno); }
-     | expr OR  expr        { $$ = process_bool_expr(ctx, $1,   TNT_OR,    $3, lineno); }
-     | expr '+' expr        { $$ = process_math_expr(ctx, $1,   TNT_PLUS,  $3, lineno); }
-     | expr '-' expr        { $$ = process_math_expr(ctx, $1,   TNT_MINUS, $3, lineno); }
-     | expr '*' expr        { $$ = process_math_expr(ctx, $1,   TNT_MULT,  $3, lineno); }
-     | expr '/' expr        { $$ = process_math_expr(ctx, $1,   TNT_DIV,   $3, lineno); }
-     | expr SHL expr        { $$ = process_math_expr(ctx, $1,   TNT_SHL,   $3, lineno); }
-     | expr SHR expr        { $$ = process_math_expr(ctx, $1,   TNT_SHR,   $3, lineno); }
-     | expr '^' expr        { $$ = process_math_expr(ctx, $1,   TNT_XOR,   $3, lineno); }
-     | expr '&' expr        { $$ = process_math_expr(ctx, $1,   TNT_BAND,  $3, lineno); }
-     | expr '|' expr        { $$ = process_math_expr(ctx, $1,   TNT_BOR,   $3, lineno); }
-     | expr '.' name        { $$ = ?; }
-     | expr SPD name        { $$ = ?; }
-     | expr '[' expr ']'    { $$ = ?; }
-     | '-' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_NEG,   $2, lineno); }
-     | '!' expr %prec UNARY { $$ = process_bool_expr(ctx, NULL, TNT_NOT,   $2, lineno); }
-     | '~' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_BNOT,  $2, lineno); }
-     | '*' expr %prec UNARY { $$ = ?; }
-     | '&' expr %prec UNARY { $$ = ?; }
+     | expr EQ  expr        { $$ = process_bool_expr(ctx, $1, TNT_EQ,    $3, lineno); }
+     | expr NEQ expr        { $$ = process_bool_expr(ctx, $1, TNT_NEQ,   $3, lineno); }
+     | expr '<' expr        { $$ = process_bool_expr(ctx, $1, TNT_LT,    $3, lineno); }
+     | expr LEQ expr        { $$ = process_bool_expr(ctx, $1, TNT_LEQ,   $3, lineno); }
+     | expr '>' expr        { $$ = process_bool_expr(ctx, $1, TNT_GT,    $3, lineno); }
+     | expr GEQ expr        { $$ = process_bool_expr(ctx, $1, TNT_GEQ,   $3, lineno); }
+     | expr AND expr        { $$ = process_bool_expr(ctx, $1, TNT_AND,   $3, lineno); }
+     | expr OR  expr        { $$ = process_bool_expr(ctx, $1, TNT_OR,    $3, lineno); }
+     | expr '+' expr        { $$ = process_math_expr(ctx, $1, TNT_PLUS,  $3, lineno); }
+     | expr '-' expr        { $$ = process_math_expr(ctx, $1, TNT_MINUS, $3, lineno); }
+     | expr '*' expr        { $$ = process_math_expr(ctx, $1, TNT_MULT,  $3, lineno); }
+     | expr '/' expr        { $$ = process_math_expr(ctx, $1, TNT_DIV,   $3, lineno); }
+     | expr SHL expr        { $$ = process_math_expr(ctx, $1, TNT_SHL,   $3, lineno); }
+     | expr SHR expr        { $$ = process_math_expr(ctx, $1, TNT_SHR,   $3, lineno); }
+     | expr '^' expr        { $$ = process_math_expr(ctx, $1, TNT_XOR,   $3, lineno); }
+     | expr '&' expr        { $$ = process_math_expr(ctx, $1, TNT_BAND,  $3, lineno); }
+     | expr '|' expr        { $$ = process_math_expr(ctx, $1, TNT_BOR,   $3, lineno); }
+     | expr '.' name        { $$ = process_udt_lookup(ctx, $1, $3, lineno); free($3); }
+     | expr SPD name        { $$ = process_spd(ctx, $1, $3, lineno); free($3); }
+     | expr '[' expr ']'    { $$ = process_array_lookup(ctx, $1, $3, lineno); }
+     | '-' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_NEG,  $2, lineno); }
+     | '!' expr %prec UNARY { $$ = process_bool_expr(ctx, NULL, TNT_NOT,  $2, lineno); }
+     | '~' expr %prec UNARY { $$ = process_math_expr(ctx, NULL, TNT_BNOT, $2, lineno); }
+     | '*' expr %prec UNARY { $$ = process_deref(ctx, $1, lineno); }
+     | '&' expr %prec UNARY { $$ = process_addrof(ctx, $1, lineno); }
      | '(' expr ')'         { $$ = $2; }
      ;
 
 %%
+
+//-----------------------------------------------------------------------------
+static type_error_t validate_addrof(const treenode_t &base)
+{
+  treenode_type_t type = base.type();
+
+  if ( type == TNT_ERROR
+    || type == TNT_VAR
+    || type == TNT_ARRAY_LOOKUP
+    || type == TNT_UDT_LOOKUP )
+  {
+    return TERR_OK;
+  }
+
+  return TERR_ADDROF;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_addrof(parser_ctx_t &ctx, treenode_t *base, int line)
+{
+  ASSERT(0, base != NULL);
+
+  type_error_t err = validate_addrof(*base);
+
+  if ( err != TERR_OK )
+  {
+    usererr(ctx, "error: invalid operand for addrof(&) operator, line %d\n", line);
+    delete base;
+    return ERRNODE;
+  }
+
+  return new treenode_t(TNT_ADDROF, typeref_t(new tinfo_t(base.tinfo)), base);
+}
+
+//-----------------------------------------------------------------------------
+static type_error_t validate_array_lookup(
+    const treenode_t &base
+    const treenode_t &idx)
+{
+  if ( base.type() == TNT_ERROR || idx.type() == TNT_ERROR )
+    return TERR_OK;
+
+  const tinfo_t &t1 = *base.tinfo;
+  const tinfo_t &t2 = *idx.tinfo;
+
+  return !t1.is_array()   ? TERR_BASE
+       : !t2.is_integer() ? TERR_INDEX
+       :                    TERR_OK;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_array_lookup(
+    parser_ctx_t &ctx,
+    treenode_t *base,
+    treenode_t *idx,
+    int line)
+{
+  ASSERT(0, base != NULL && idx != NULL);
+
+  type_error_t err = validate_array_lookup(*base, *idx);
+
+  if ( err != TERR_OK )
+  {
+    switch ( err )
+    {
+      case TERR_BASE:
+        usererr(ctx, "error: symbol %s used as an array but is not of array type, line %d\n",
+                sym->c_str(), line);
+        break;
+      case TERR_INDEX:
+        usererr(ctx, "error: expression for array index is not of integer type, line %d\n", line);
+        break;
+      default:
+        INTERR(1034);
+    }
+    delete base; delete idx;
+    return ERRNODE;
+  }
+
+  const tinfo_t &tinfo = *base->tinfo();
+
+  return new treenode_t(TNT_ARRAY_LOOKUP, tinfo.subtype(), base, idx);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_spd(
+    parser_ctx_t &ctx,
+    treenode_t *base,
+    const char *id,
+    int line)
+{
+  ASSERT(0, base != NULL);
+
+  treenode_t *deref = process_deref(ctx, base, line);
+
+  return process_udt_lookup(ctx, deref, id, line);
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_deref(parser_ctx_t &ctx, treenode_t *base, int line)
+{
+  ASSERT(0, base != NULL);
+
+  if ( base->type() == TNT_ERROR )
+    return base;
+
+  const tinfo_t &tinfo = *base->tinfo;
+
+  if ( !tinfo.is_ptr() )
+  {
+    usererr(ctx, "error: cannot deference value that is not of pointer type, line %d\n", line);
+    delete base;
+    return BADNODE;
+  }
+
+  return new treenode_t(TNT_DEREF, tinfo.subtype(), base);
+}
+
+//-----------------------------------------------------------------------------
+type_error_t validate_udt_lookup(
+    const treenode_t &base,
+    const char *id,
+    symref_t &mem)
+{
+  if ( base.type() == TNT_ERROR )
+    return TERR_OK;
+
+  const tinfo_t &tinfo = *base.tinfo();
+
+  if ( !tinfo.is_udt() )
+    return TERR_NO_UDT;
+
+  mem = tinfo.members()->get(name);
+
+  return mem == NULL ? TERR_NO_MEM : TERR_OK;
+}
+
+//-----------------------------------------------------------------------------
+static treenode_t *process_udt_lookup(
+    parser_ctx_t &ctx,
+    treenode_t *base,
+    const char *id,
+    int line)
+{
+  symref_t mem;
+  const tinfo_t &tinfo = *base->tinfo();
+
+  type_error_t err = validate_udt_lookup(tinfo, id, mem);
+
+  if ( err != TERR_OK )
+  {
+    switch ( err )
+    {
+      case TERR_NO_UDT:
+        usererr(ctx, "error: request for \'%s\' in a type that is not a udt, line %d\n",
+                id, line);
+        break;
+      case TERR_NO_MEM:
+        usererr(ctx, "error: no member \'%s\' in type %s, line %d\n",
+                id, tinfo.name().c_str(), line);
+        break;
+      default:
+        INTERR(0);
+    }
+    delete base;
+    return ERRNODE;
+  }
+
+  return new treenode_t(TNT_UDT_LOOKUP, mem, base);
+}
 
 //-----------------------------------------------------------------------------
 static symref_t process_var_id(
@@ -495,11 +663,13 @@ static symref_t process_var_id(
 static typeref_t process_udt_id(parser_ctx_t &ctx, const char *name, int line)
 {
   typeref_t udt = ctx.udts.get(name);
+
   if ( udt == NULL )
   {
     usererr(ctx, "error: unknown type name, line %d\n", line);
-    return typeref(new tinfo_t);
+    return BADTYPE;
   }
+
   return udt;
 }
 
@@ -513,12 +683,13 @@ static bool check_params(const symvec_t &p1, const symvec_t &p2)
         i1 != p1.end() && i2 != p2.end();
         i1++, i2++ )
   {
-    typeref_t t1 = (*i1)->tinfo();
-    typeref_t t2 = (*i2)->tinfo();
+    const tinfo_t &t1 = *(*i1)->tinfo();
+    const tinfo_t &t2 = *(*i2)->tinfo();
 
     if ( t1 != t2 )
       return false;
   }
+
   return true;
 }
 
@@ -545,19 +716,8 @@ static type_error_t validate_func_def(const symbol_t &def, symref_t prev)
        :  prev->is_defined()                           ? TERR_REDEFINED
        :  prev->is_extern()                            ? TERR_EXTERN
        : !check_params(*prev->params(), *def.params()) ? TERR_PARAMS
-       :  prev->tinfo() != def.tinfo()                 ? TERR_RTN_TYPES
+       :  *prev->tinfo() != *def.tinfo()               ? TERR_RTN_TYPES
        :                                                 TERR_OK2;
-}
-
-//-----------------------------------------------------------------------------
-static void init_lsyms(symbol_t &f)
-{
-  symvec_t::const_iterator i;
-  for ( i = f.params()->begin(); i != f.params()->end(); i++ )
-  {
-    ASSERT(1003, *i != NULL);
-    f.lvars()->insert(*i);
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -612,8 +772,7 @@ static void func_enter(parser_ctx_t &ctx, symref_t f, typeref_t rt)
       break;
   }
 
-  init_lsyms(*f);
-  ctx.setlocal(f);
+  ctx.setfunc(f);
 }
 
 //-----------------------------------------------------------------------------
@@ -633,27 +792,39 @@ static void func_leave(parser_ctx_t &ctx, treenode_t *root)
 }
 
 //-----------------------------------------------------------------------------
-static void struct_enter(parser_ctx_t &ctx, const char *name, int line)
+static void process_udt_decl(parser_ctx_t &ctx, const char *id, int line)
 {
-  typeref_t prev = ctx.udts.get(name);
+  if ( ctx.udts.get(id) == NULL )
+    ctx.udts.insert(typeref_t(new tinfo_t(id, line)));
+}
 
-  if ( prev != NULL )
+//-----------------------------------------------------------------------------
+static void udt_enter(parser_ctx_t &ctx, const char *name, int line)
+{
+  typeref_t udt = ctx.udts.get(name);
+
+  if ( udt != NULL )
   {
-    usererr(ctx, "error: type %s redefined at line %d (previous definition at line %d)\n",
-            name, line, prev->line());
-    ctx.setudt(typeref_t(new tinfo_t));
-    return;
+    if ( udt->is_complete() )
+    {
+      usererr(ctx, "error: type %s redefined at line %d (previous definition at line %d)\n",
+              name, line, udt->line());
+
+      udt = BADTYPE;
+    }
+    udt->set_line(line);
   }
-
-  typeref_t udt(new tinfo_t(name, line));
-
-  ctx.udts.insert(udt);
+  else
+  {
+    udt = typeref_t(new tinfo_t(name, line));
+    ctx.udts.insert(udt);
+  }
 
   ctx.setudt(udt);
 }
 
 //-----------------------------------------------------------------------------
-static void struct_leave(parser_ctx_t &ctx)
+static void udt_leave(parser_ctx_t &ctx)
 {
   memtab_t *members = (memtab_t *)ctx.syms();
 
@@ -667,12 +838,14 @@ static void struct_leave(parser_ctx_t &ctx)
 //-----------------------------------------------------------------------------
 static type_error_t validate_ret_stmt(const parser_ctx_t &ctx, const treenode_t *expr)
 {
-  if ( ctx.func()->prim() == PRIM_VOID )
+  const tinfo_t &rt = ctx.func()->tinfo();
+
+  if ( rt.is_prim(PRIM_VOID) )
     return expr != NULL ? TERR_BAD_RET : TERR_OK;
   else
-    return expr == NULL           ? TERR_NO_RET
-         : !expr->is_int_compat() ? TERR_RET_EXPR
-         :                          TERR_OK2;
+    return expr == NULL                 ? TERR_NO_RET
+         : !rt.is_compat(expr->tinfo()) ? TERR_RET_EXPR
+         :                                TERR_OK2;
 }
 
 //-----------------------------------------------------------------------------
@@ -789,7 +962,7 @@ static void prepare_substring_arg(
   APPCHAR(ptr, '"', 1);
   *ptr = '\0';
 
-  treenode_t *node = new treenode_t(TNT_STRCON, str);
+  treenode_t *node = new treenode_t(TNT_STRCON, str, ctx.s);
   fmtargs.push_back(format_arg_t(ctx.print_string, node));
 }
 
@@ -802,7 +975,7 @@ static type_error_t handle_empty_fmt(
   if ( calc_seq_len(argtree) > 0 )
     return TERR_NUM_FMT;
 
-  treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING));
+  treenode_t *node = new treenode_t(TNT_STRCON, strdup(EMPTYSTRING), ctx.s);
   fmtargs.push_back(format_arg_t(ctx.print_string, node));
 
   return TERR_OK;
@@ -920,13 +1093,13 @@ static treenode_t *build_printf_tree(symref_t printf, const format_args_t &fmtar
     const format_arg_t &fmtarg = fmtargs[i];
 
     treenode_t *argtree =
-        new treenode_t(TNT_ARG, fmtarg.expr, NULL);
+        new treenode_t(TNT_ARG, fmtarg.expr);
 
-    treenode_t *call = new treenode_t(fmtarg.func, TNT_CALL, argtree);
+    treenode_t *call = new treenode_t(TNT_CALL, fmtarg.func, argtree);
     seq_append(seq, call, TNT_STMT);
   }
 
-  return seq.head == NULL ? ERRNODE : new treenode_t(printf, TNT_PRINTF, seq.head);
+  return seq.head == NULL ? ERRNODE : new treenode_t(TNT_PRINTF, printf, seq.head);
 }
 
 //-----------------------------------------------------------------------------
@@ -1005,7 +1178,7 @@ static treenode_t *process_call(
     return ERRNODE;
   }
 
-  return new treenode_t(f, TNT_CALL, args);
+  return new treenode_t(TNT_CALL, f, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -1016,12 +1189,12 @@ static type_error_t validate_call_ctx(const treenode_t &call, bool expr)
 
   ASSERT(1043, call.type() == TNT_CALL || call.type() == TNT_PRINTF);
 
-  primitive_t rt = call.sym()->prim();
+  const tinfo_t &rt = call.tinfo();
 
   if ( expr )
-    return rt == PRIM_VOID ? TERR_VOID_EXPR : TERR_OK;
+    return  rt.is_prim(PRIM_VOID) ? TERR_VOID_EXPR : TERR_OK;
   else
-    return rt != PRIM_VOID ? TERR_PROCEDURE : TERR_OK;
+    return !rt.is_prim(PRIM_VOID) ? TERR_PROCEDURE : TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -1060,7 +1233,7 @@ static treenode_t *process_call_ctx(
 }
 
 //-----------------------------------------------------------------------------
-static inline symref_t yygetsym(const splace_t &sp)
+static inline symref_t yydeplace(const splace_t &sp)
 {
   symref_t &yyref = deplace(sp);
   symref_t ret = yyref;
@@ -1069,7 +1242,7 @@ static inline symref_t yygetsym(const splace_t &sp)
 }
 
 //-----------------------------------------------------------------------------
-static inline typeref_t yygettype(const tplace_t &tp)
+static inline typeref_t yydeplace(const tplace_t &tp)
 {
   typeref_t &yytype = deplace(tp);
   typeref_t ret = yytype;
@@ -1091,48 +1264,20 @@ static symref_t process_stmt_id(parser_ctx_t &ctx, const char *id, int line)
 }
 
 //-----------------------------------------------------------------------------
-static type_error_t validate_array_lookup(
-    const symbol_t &sym,
-    const treenode_t &idx)
+static treenode_t *process_expr_id(parser_ctx_t &ctx, const char *id, line)
 {
-  return !sym.is_array()      ? TERR_BASE
-       : !idx.is_int_compat() ? TERR_INDEX
-       :                        TERR_OK;
-}
+  symref_t sym = process_stmt_id(ctx, id, line);
 
-//-----------------------------------------------------------------------------
-static treenode_t *process_stmt_var(
-    parser_ctx_t &ctx,
-    symref_t sym,
-    treenode_t *idx,
-    int line)
-{
-  ASSERT(1045, sym != NULL);
+  if ( sym == NULL )
+    return ERRNODE;
 
-  if ( idx == NULL )
-    return new treenode_t(sym, TNT_SYMBOL);
-
-  type_error_t err = validate_array_lookup(*sym, *idx);
-
-  if ( err != TERR_OK )
+  if ( sym->is_func() )
   {
-    switch ( err )
-    {
-      case TERR_BASE:
-        usererr(ctx, "error: symbol %s used as an array but is not of array type, line %d\n",
-                sym->c_str(), line);
-        break;
-      case TERR_INDEX:
-        usererr(ctx, "error: expression for array index is not of integer type, line %d\n", line);
-        break;
-      default:
-        INTERR(1034);
-    }
-    delete idx;
+    usererr(ctx, "error: symbol with function type used in an expression, line %d\n", line);
     return ERRNODE;
   }
 
-  return new treenode_t(sym, TNT_ARRAY_LOOKUP, idx);
+  return new treenode_t(TNT_VAR, sym);
 }
 
 //-----------------------------------------------------------------------------
@@ -1169,13 +1314,19 @@ static treenode_t *process_assg(
 }
 
 //-----------------------------------------------------------------------------
+static bool is_base_complete(const symbol_t &sym, const tinfo_t &tinfo)
+{
+  return sym.has_ptr() || tinfo.is_complete();
+}
+
+//-----------------------------------------------------------------------------
 static terr_info_t validate_var_decl(
     const parser_ctx_t &ctx,
     const symbol_t &sym,
     const tinfo_t &base)
 {
-  if ( !sym.is_ptr() && base.is_prim(PRIM_VOID) )
-    return TERR_BAD_VOID;
+  if ( !is_base_complete(sym, base) )
+    return TERR_INCOMPLETE;
 
   symref_t prev = ctx.get(sym.name());
   if ( prev != NULL )
@@ -1203,6 +1354,10 @@ static bool process_var_decl(parser_ctx_t &ctx, symref_t sym, typeref_t base)
         usererr(ctx, "error: cannot declare variable of type void, line %d\n",
                      sym->line());
         return false;
+      case TERR_INCOMPLETE:
+        usererr(ctx, "error: cannot declare variable of incomplete type %s, line %d\n",
+                     base->name().c_str(), sym->line());
+        break;
       default:
         INTERR(0);
     }
@@ -1226,15 +1381,16 @@ static void process_var_list(parser_ctx_t &ctx, symvec_t *vec, typeref_t base)
     ASSERT(1107, var != NULL);
 
     if ( process_var_decl(ctx, var, base) )
-    {
       // at this point, we should have a variable with a valid size
       var->tinfo()->complete();
-    }
   }
 }
 
 //-----------------------------------------------------------------------------
-static bool validate_printf_decl(const symbol_t &func, typeref_t rt, bool is_extern)
+static bool validate_printf_decl(
+    const symbol_t &func,
+    const tinfo_t &rt,
+    bool is_extern)
 {
   const symvec_t &params = *func.params();
 
@@ -1250,9 +1406,12 @@ static bool validate_printf_decl(const symbol_t &func, typeref_t rt, bool is_ext
 static terr_info_t validate_func_decl(
     const parser_ctx_t &ctx,
     const symbol_t &func,
-    typeref_t rt,
+    const tinfo_t &rt,
     bool is_extern)
 {
+  if ( !rt.is_prim(PRIM_VOID) && !is_base_complete(func, rt) )
+    return TERR_INCOMPLETE;
+
   symref_t prev = ctx.get(func.name());
   if ( prev != NULL )
     return terr_info_t(TERR_REDECLARED, prev->line());
@@ -1299,6 +1458,10 @@ static void process_fdecl_error(parser_ctx_t &ctx, terr_info_t err, const symbol
               "builtin function: extern void printf(char format[], ...);\n",
               sym.line());
       break;
+    case TERR_INCOMPLETE:
+      usererr(ctx, "error: function %s has incomplete return type, line %d\n",
+                   sym.c_str(), sym.line());
+      break;
     default:
       INTERR(0);
   }
@@ -1328,14 +1491,14 @@ static void process_func_list(
     bool is_extern)
 {
   ASSERT(1010, vec != NULL);
-  ASSERT(1025, rt != PRIM_UNKNOWN);
+  ASSERT(1025, rt  != NULL);
 
   for ( symvec_t::iterator i = vec->begin(); i != vec->end(); i++ )
   {
     ASSERT(1011, *i != NULL);
 
     symref_t sym = *i;
-    terr_info_t err = validate_func_decl(ctx, *sym, rt, is_extern);
+    terr_info_t err = validate_func_decl(ctx, *sym, *rt, is_extern);
 
     if ( err.code > TERR_OK2 )
     {
@@ -1362,11 +1525,13 @@ static typeref_t process_array_sfx(
     offset_t size,
     int line)
 {
-  if ( size > 0 )
-    return typeref_t(new tinfo_t(size, subtype));
+  if ( size == 0 )
+  {
+    usererr(ctx, "error, line %d: arrays must have positive size\n", line);
+    return NULLTYPE;
+  }
 
-  usererr(ctx, "error, line %d: arrays must have positive size\n", line);
-  return NULLTYPE;
+  return typeref_t(new tinfo_t(size, subtype));
 }
 
 //-----------------------------------------------------------------------------
@@ -1412,9 +1577,12 @@ static bool validate_math_expr(
     case TNT_NEG:
     case TNT_BNOT:
       ASSERT(1070, lhs == NULL);
-      return rhs->is_int_compat();
+      return rhs->tinfo->is_integer();
     case TNT_PLUS:
     case TNT_MINUS:
+      ASSERT(0, lhs != NULL);
+      return lhs->tinfo->is_arithmetic()
+          && rhs->tinfo->is_arithmetic();
     case TNT_MULT:
     case TNT_DIV:
     case TNT_SHL:
@@ -1423,8 +1591,8 @@ static bool validate_math_expr(
     case TNT_BOR:
     case TNT_XOR:
       ASSERT(1071, lhs != NULL);
-      return lhs->is_int_compat()
-          && rhs->is_int_compat();
+      return lhs->tinfo->is_integer()
+          && rhs->tinfo->is_integer();
     default:
       INTERR(1064);
   }
@@ -1440,12 +1608,16 @@ static treenode_t *process_math_expr(
 {
   if ( !validate_math_expr(lhs, type, rhs) )
   {
-    usererr(ctx, "error: incompatible arithmetic operand, line %d\n", line);
+    usererr(ctx, "error: incompatible arithmetic operands, line %d\n", line);
     delete lhs; delete rhs;
     return ERRNODE;
   }
 
-  return new treenode_t(type, lhs, rhs);
+  typeref_t tinfo = lhs != NULL && lhs->tinfo->is_ptr()
+                  ? lhs->tinfo
+                  : rhs->tinfo;
+
+  return new treenode_t(type, tinfo, lhs, rhs);
 }
 
 //-----------------------------------------------------------------------------
@@ -1457,12 +1629,13 @@ static treenode_t *process_for_stmt(
     treenode_t *body,
     int line)
 {
-  if ( cond != NULL && !cond->is_bool_compat() )
+  if ( cond != NULL && !cond->tinfo->is_bool() )
   {
     usererr(ctx, "error: expression in for condition is not of type bool, line %d\n", line);
     delete init; delete cond; delete inc; delete body;
     return ERRNODE;
   }
+
   return new treenode_t(TNT_FOR, init, cond, inc, body);
 }
 
@@ -1481,6 +1654,7 @@ static treenode_t *process_while_stmt(
     delete cond; delete body;
     return ERRNODE;
   }
+
   return new treenode_t(TNT_WHILE, cond, body);
 }
 
@@ -1500,6 +1674,7 @@ static treenode_t *process_if_stmt(
     delete cond; delete body; delete el;
     return ERRNODE;
   }
+
   return new treenode_t(TNT_IF, cond, body, el);
 }
 
@@ -1515,7 +1690,7 @@ static bool validate_bool_expr(
   {
     case TNT_NOT:
       ASSERT(1049, lhs == NULL);
-      return rhs->is_bool_compat();
+      return rhs->tinfo().is_bool();
     case TNT_EQ:
     case TNT_NEQ:
     case TNT_LT:
@@ -1523,13 +1698,13 @@ static bool validate_bool_expr(
     case TNT_GT:
     case TNT_GEQ:
       ASSERT(1050, lhs != NULL);
-      return lhs->is_int_compat()
-          && rhs->is_int_compat();
+      return lhs->tinfo().is_arithmetic()
+          && rhs->tinfo().is_arithmetic();
     case TNT_AND:
     case TNT_OR:
       ASSERT(1051, lhs != NULL);
-      return lhs->is_bool_compat()
-          && rhs->is_bool_compat();
+      return lhs->tinfo().is_bool()
+          && rhs->tinfo().is_bool();
     default:
       INTERR(1052);
   }
@@ -1549,7 +1724,8 @@ static treenode_t *process_bool_expr(
     delete lhs; delete rhs;
     return ERRNODE;
   }
-  return new treenode_t(type, lhs, rhs);
+
+  return new treenode_t(type, ctx.b, lhs, rhs);
 }
 
 //-----------------------------------------------------------------------------
@@ -1560,7 +1736,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s)
 }
 
 //-----------------------------------------------------------------------------
-void usererr(parser_ctx_t &ctx, const char *format, ...)
+static void usererr(parser_ctx_t &ctx, const char *format, ...)
 {
   va_list va;
   va_start(va, format);
@@ -1570,6 +1746,14 @@ void usererr(parser_ctx_t &ctx, const char *format, ...)
   ctx.errmsgs.push_back(buf);
 
   va_end(va);
+}
+
+//---------------------------------------------------------------------------
+void parse_results_t::swap(parse_results_t &res)
+{
+  gsyms.swap(res.gsyms);
+  trees.swap(res.trees);
+  errmsgs.swap(res.errmsgs);
 }
 
 //---------------------------------------------------------------------------

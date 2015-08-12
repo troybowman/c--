@@ -1,29 +1,92 @@
 #include <treenode.h>
 #include <logger.h>
 
-#define INIT_CHILDREN() memset(children, 0, sizeof(children))
+#define CLEAR_CHILDREN() memset(children, 0, sizeof(children))
+
+#define CHILDPARAMS2 \
+  treenode_t *c0,    \
+  treenode_t *c1,    \
+  treenode_t *c2,    \
+  treenode_t *c3
+
+#define INIT_CHILDREN() \
+  children[0] = c0;     \
+  children[1] = c1;     \
+  children[2] = c2;     \
+  children[3] = c3;
 
 //-----------------------------------------------------------------------------
-treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
+treenode_t::treenode_t(int val, typeref_t _tinfo) :
+  _type(TNT_INTCON),
+  _val(val),
+  tinfo(_tinfo)
+{
+  CLEAR_CHILDREN();
+  ASSERT(0, tinfo != NULL);
+}
+
+//-----------------------------------------------------------------------------
+treenode_t::treenode_t(treenode_type_t t, char *str, typeref_t _tinfo) :
+  _type(type),
+  // we own this pointer now. it will be freed in the destructor
+  _str(str),
+  tinfo(_tinfo)
+{
+  CLEAR_CHILDREN();
+  ASSERT(1037, _str != NULL);
+  ASSERT(0, tinfo != NULL);
+}
+
+//-----------------------------------------------------------------------------
+treenode_t::treenode_t(treenode_type_t type, CHILDPARAMS2) : _type(type)
 {
   INIT_CHILDREN();
 
-  va_list va;
-  va_start(va, type);
-  switch ( type )
+#ifndef NDEBUG
+  switch ( _type )
   {
     case TNT_ERROR:
-      break;
-    case TNT_INTCON:
-      _val = va_arg(va, int);
-      break;
-    case TNT_STRCON:
-    case TNT_CHARCON:
-      // we own this pointer now. it will be freed in the destructor
-      _str = va_arg(va, char *);
-      ASSERT(1037, _str != NULL);
+    case TNT_STMT:
+    case TNT_ARG:
+    case TNT_RET:
+    case TNT_FOR:
       break;
     case TNT_ASSG:
+    case TNT_PEQ:
+    case TNT_MEQ:
+    case TNT_TEQ:
+    case TNT_DEQ:
+    case TNT_AEQ:
+    case TNT_OEQ:
+    case TNT_XEQ:
+      ASSERT(0, children[LHS] != NULL);
+      ASSERT(0, children[RHS] != NULL);
+      break;
+    case TNT_IF:
+      ASSERT(1051, children[IF_COND] != NULL);
+      break;
+    case TNT_WHILE:
+      ASSERT(1074, children[WHILE_COND] != NULL);
+      break;
+    default:
+      INTERR(0);
+  }
+  ASSERT(0, tinfo == NULL);
+#endif
+}
+
+//-----------------------------------------------------------------------------
+treenode_t::treenode_t(treenode_type_t type, typeref_t _tinfo, CHILDPARAMS2) :
+  _type(type),
+  tinfo(_tinfo)
+{
+  INIT_CHILDREN();
+
+  ASSERT(0, tinfo != NULL);
+
+#ifndef NDEBUG
+  switch ( _type )
+  {
     case TNT_PLUS:
     case TNT_MINUS:
     case TNT_MULT:
@@ -41,112 +104,60 @@ treenode_t::treenode_t(treenode_type_t type, ...) : _type(type)
     case TNT_BAND:
     case TNT_XOR:
     case TNT_BOR:
-    case TNT_PEQ:
-    case TNT_MEQ:
-    case TNT_TEQ:
-    case TNT_DEQ:
-    case TNT_AEQ:
-    case TNT_OEQ:
-    case TNT_XEQ:
-      children[LHS] = va_arg(va, treenode_t *);
-      children[RHS] = va_arg(va, treenode_t *);
       ASSERT(1015, children[LHS] != NULL);
       ASSERT(1016, children[RHS] != NULL);
       break;
     case TNT_NOT:
     case TNT_NEG:
     case TNT_BNOT:
-      children[LHS] = va_arg(va, treenode_t *);
-      children[RHS] = va_arg(va, treenode_t *);
       ASSERT(1053, children[LHS] == NULL);
       ASSERT(1054, children[RHS] != NULL);
+    case TNT_ARRAY_LOOKUP:
+      ASSERT(0, children[AL_BASE]   != NULL);
+      ASSERT(0, children[AL_OFFSET] != NULL);
+    case TNT_DEREF:
+      ASSERT(0, children[DEREF_ADDR] != NULL);
       break;
-    case TNT_FOR:
-      children[FOR_INIT] = va_arg(va, treenode_t *);
-      children[FOR_COND] = va_arg(va, treenode_t *);
-      children[FOR_INC]  = va_arg(va, treenode_t *);
-      children[FOR_BODY] = va_arg(va, treenode_t *);
-      break;
-    case TNT_STMT:
-    case TNT_ARG:
-      children[SEQ_CUR]  = va_arg(va, treenode_t *);
-      children[SEQ_NEXT] = va_arg(va, treenode_t *);
-      break;
-    case TNT_RET:
-      children[RET_EXPR]  = va_arg(va, treenode_t *);
-      break;
-    case TNT_IF:
-      children[IF_COND] = va_arg(va, treenode_t *);
-      children[IF_BODY] = va_arg(va, treenode_t *);
-      children[IF_ELSE] = va_arg(va, treenode_t *);
-      ASSERT(1051, children[IF_COND] != NULL);
-      break;
-    case TNT_WHILE:
-      children[WHILE_COND] = va_arg(va, treenode_t *);
-      children[WHILE_BODY] = va_arg(va, treenode_t *);
-      ASSERT(1074, children[WHILE_COND] != NULL);
+    case TNT_ADDROF:
+      ASSERT(0, children[ADDROF_BASE] != NULL);
       break;
     default:
       INTERR(1020);
   }
-  va_end(va);
+#endif
 }
 
 //-----------------------------------------------------------------------------
-treenode_t::treenode_t(symref_t sym, treenode_type_t type, ...) : _type(type)
+treenode_t::treenode_t(treenode_type_t type, symref_t sym, CHILDPARAMS2) :
+  _type(type),
+  tinfo(sym->tinfo())
 {
   INIT_CHILDREN();
 
-  putsym(_sym, sym);
+  emplace(_sym, sym);
   ASSERT(1113, sym() != NULL);
+  ASSERT(0, tinfo != NULL);
 
-  va_list va;
-  va_start(va, type);
-
+#ifndef NDEBUG
   switch ( _type )
   {
-    case TNT_SYMBOL:
+    case TNT_VAR:
+      ASSERT(0, sym->is_var());
       break;
     case TNT_CALL:
-      children[CALL_ARGS] = va_arg(va, treenode_t *);
       ASSERT(1038, sym()->is_func());
       break;
     case TNT_PRINTF:
-      children[PRINTF_TREE] = va_arg(va, treenode_t *);
       ASSERT(1100, sym()->is_printf());
       ASSERT(1099, children[PRINTF_TREE] != NULL);
       break;
-    default:
-      INTERR(0);
-  }
-
-  va_end(va);
-}
-
-//-----------------------------------------------------------------------------
-treenode_t::treenode_t(typeref_t tinfo, treenode_type_t type, ...) _type(type)
-{
-  INIT_CHILDREN();
-
-  emplace(_tinfo, tinfo);
-  ASSERT(0, tinfo() != NULL);
-
-  va_list va;
-  va_start(va, type);
-
-  switch ( _type )
-  {
-    case TNT_ARRAY_LOOKUP:
-      children[AL_BASE]   = va_arg(va, treenode_t *);
-      children[AL_OFFSET] = va_arg(va, treenode_t *);
-      ASSERT(0, children[AL_BASE]   != NULL);
-      ASSERT(0, children[AL_OFFSET] != NULL);
+    case TNT_UDT_LOOKUP:
+      ASSERT(0, children[UDT_BASE] != NULL);
       break;
     default:
       INTERR(0);
   }
-
-  va_end(va);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -157,10 +168,8 @@ treenode_t::~treenode_t()
     case TNT_SYMBOL:
     case TNT_CALL:
     case TNT_PRINTF:
+    case TNT_UDT_LOOKUP:
       sym().~symref_t();
-      break;
-    case TNT_ARRAY_LOOKUP:
-      tinfo().~typeref_t();
       break;
     case ;
     case TNT_STRCON:

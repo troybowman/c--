@@ -2,15 +2,15 @@
 #include <symbol.h>
 
 //-----------------------------------------------------------------------------
-tinfo_t::tinfo_t()
-  _id(TID_ERROR),
+tinfo_t::tinfo_t(type_id_t id) :
+  _id(id),
   _size(BADOFFSET)
 {
   emplace(_subtype, NULLTYPE);
 }
 
 //-----------------------------------------------------------------------------
-tinfo_t::tinfo_t(primitive_t prim) :
+tinfo_t::tinfo_t(prim_t prim) :
   _id(TID_PRIM),
   _prim(prim)
 {
@@ -39,7 +39,7 @@ tinfo_t::tinfo_t(offset_t length, typeref_t eltype) :
 //-----------------------------------------------------------------------------
 tinfo_t::tinfo_t(const char *name, int line) :
   _id(TID_UDT),
-  _size(0),
+  _size(BADOFFSET),
   _name(new std::string(name)),
   _line(line) {}
 
@@ -68,14 +68,14 @@ offset_t tinfo_t::complete()
     case TID_PTR:
     case TID_PRIM:
     case TID_UDT:
-      ASSERT(0, _size != BADOFFSET);
+      ASSERT(0, is_complete());
       return _size;
       break;
     case TID_ARRAY:
       _size = _length * subtype()->complete();
       return _size;
     default:
-      return BADOFFSET;
+      INTERR(0);
   }
 }
 
