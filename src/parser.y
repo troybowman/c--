@@ -34,10 +34,10 @@ class parser_ctx_t : public parse_results_t
     };
   };
 
-  void init_lsyms()
+  void init_lsyms(const symbol_t &f)
   {
     symvec_t::const_iterator i;
-    for ( i = func().params()->begin(); i != func().params()->end(); i++ )
+    for ( i = f.params()->begin(); i != f.params()->end(); i++ )
       insert(*i);
   }
 
@@ -62,7 +62,7 @@ public:
       tinfo().~typeref_t();
   }
 
-  void setfunc(symref_t f) { clear(); mode = CTX_FUNC; _syms = new symtab_t; emplace(_func, f); init_lsyms(); }
+  void setfunc(symref_t f) { clear(); mode = CTX_FUNC; _syms = new symtab_t; emplace(_func, f); init_lsyms(*f); }
   void setudt(typeref_t t) { clear(); mode = CTX_UDT;  _syms = new memtab_t; emplace(_tinfo, t); }
   void settemp()           { clear(); mode = CTX_TEMP; _syms = new symtab_t; }
   void setglobal()         { clear(); mode = CTX_GLOB; _syms = &gsyms; }
@@ -471,29 +471,11 @@ expr : INT                  { $$ = new treenode_t($1, ctx.i); }
 %%
 
 //-----------------------------------------------------------------------------
-static type_error_t validate_addrof(const treenode_t &base)
-{
-  treenode_type_t type = base.type();
-
-  if ( type == TNT_ERROR
-    || type == TNT_VAR
-    || type == TNT_ARRAY_LOOKUP
-    || type == TNT_UDT_LOOKUP )
-  {
-    return TERR_OK;
-  }
-
-  return TERR_ADDROF;
-}
-
-//-----------------------------------------------------------------------------
 static treenode_t *process_addrof(parser_ctx_t &ctx, treenode_t *base, int line)
 {
   ASSERT(0, base != NULL);
 
-  type_error_t err = validate_addrof(*base);
-
-  if ( err != TERR_OK )
+  if ( !base->has_addr() )
   {
     usererr(ctx, "error: invalid operand for addrof(&) operator, line %d\n", line);
     delete base;
@@ -581,7 +563,7 @@ static treenode_t *process_deref(parser_ctx_t &ctx, treenode_t *base, int line)
   {
     usererr(ctx, "error: cannot deference value that is not of pointer type, line %d\n", line);
     delete base;
-    return BADNODE;
+    return ERRNODE;
   }
 
   return new treenode_t(TNT_DEREF, tinfo.subtype(), base);
@@ -613,10 +595,11 @@ static treenode_t *process_udt_lookup(
     const char *id,
     int line)
 {
-  symref_t mem;
-  const tinfo_t &tinfo = *base->tinfo();
+  ASSERT(0, base != NULL);
 
-  type_error_t err = validate_udt_lookup(tinfo, id, mem);
+  symref_t mem;
+
+  type_error_t err = validate_udt_lookup(*base, id, mem);
 
   if ( err != TERR_OK )
   {
@@ -628,7 +611,7 @@ static treenode_t *process_udt_lookup(
         break;
       case TERR_NO_MEM:
         usererr(ctx, "error: no member \'%s\' in type %s, line %d\n",
-                id, tinfo.name().c_str(), line);
+                id, base.tinfo->name().c_str(), line);
         break;
       default:
         INTERR(0);
@@ -708,7 +691,7 @@ static type_error_t validate_func_def(const symbol_t &def, symref_t prev)
     return prev == NULL ? TERR_PRINTF_DEF1 : TERR_PRINTF_DEF2;
 
   if ( prev == NULL )
-    return TERR_OK;
+    return def.tinfo()->is_udt() ? TERR_RET_UDT : TERR_OK;
 
   ASSERT(1102, def.name() == prev->name());
 
@@ -721,7 +704,7 @@ static type_error_t validate_func_def(const symbol_t &def, symref_t prev)
 }
 
 //-----------------------------------------------------------------------------
-static void set_decl_srcinfo(symbol_t &f1, const symbol_t &f2)
+static void merge_decl_and_def(symbol_t &f1, const symbol_t &f2)
 {
   f1.set_line(f2.line());
 
@@ -766,7 +749,7 @@ static void func_enter(parser_ctx_t &ctx, symref_t f, typeref_t rt)
     case TERR_OK2:
       if ( prev->is_func() )
       {
-        set_decl_srcinfo(*prev, *f);
+        merge_decl_and_def(*prev, *f);
         f = prev;
       }
       break;
@@ -1284,12 +1267,17 @@ static treenode_t *process_expr_id(parser_ctx_t &ctx, const char *id, line)
 static bool validate_assg(const treenode_t &lhs, const treenode_t &rhs)
 {
   if ( lhs.type() == TNT_ERROR || rhs.type() == TNT_ERROR )
-    return true;
+    return TERR_OK;
 
-  bool lhs_valid = (lhs.type() == TNT_SYMBOL && lhs.sym()->is_prim())
-                 || lhs.type() == TNT_ARRAY_LOOKUP;
+  if ( !lhs.has_addr() )
+    return TERR_ASSG_LVAL;
 
-  return lhs_valid && rhs.is_int_compat();
+  const tinfo_t &ltif = *lhs.tinfo;
+  const tinfo_t &rtif = *ths.tinfo;
+
+  return ltif.is_array()           ? TERR_ASSG_ARRAY
+       : !ltif.is_compatible(rtif) ? TERR_ASSG_COMPAT
+       :                             TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -1303,9 +1291,24 @@ static treenode_t *process_assg(
   ASSERT(1046, lhs != NULL);
   ASSERT(1047, rhs != NULL);
 
-  if ( !validate_assg(*lhs, *rhs) )
+  type_error_t err = validate_assg(*lhs, *rhs);
+
+  if ( err != TERR_OK )
   {
-    usererr(ctx, "error: invalid operand types for assignment, line %d\n", line);
+    switch ( err )
+    {
+      case TERR_ASSG_LVAL:
+        usererr(ctx, "error: lhs is not assignable, line %d\n", line);
+        break;
+      case TERR_ASSG_ARRAY:
+        usererr(ctx, "error: cannot assign to an array, line %d\n", line);
+        break;
+      case TERR_ASSG_COMPAT:
+        usererr(ctx, "error: assignment operands are not compatible, line %d\n", line);
+        break;
+      default:
+        INTERR(0);
+    }
     delete lhs; delete rhs;
     return ERRNODE;
   }
@@ -1409,8 +1412,8 @@ static terr_info_t validate_func_decl(
     const tinfo_t &rt,
     bool is_extern)
 {
-  if ( !rt.is_prim(PRIM_VOID) && !is_base_complete(func, rt) )
-    return TERR_INCOMPLETE;
+  if ( rt.is_udt() )
+    return TERR_RET_UDT;
 
   symref_t prev = ctx.get(func.name());
   if ( prev != NULL )
@@ -1648,7 +1651,7 @@ static treenode_t *process_while_stmt(
 {
   ASSERT(1072, cond != NULL);
 
-  if ( !cond->is_bool_compat() )
+  if ( !cond->tinfo->is_bool() )
   {
     usererr(ctx, "error: expression in while condition is not of type bool, line %d\n", line);
     delete cond; delete body;

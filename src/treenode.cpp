@@ -219,39 +219,48 @@ bool treenode_t::is_int_compat() const
 }
 
 //-----------------------------------------------------------------------------
-bool treenode_t::is_bool_compat() const
+bool treenode_t::has_addr() const
 {
-  switch ( _type )
-  {
-    case TNT_LT:
-    case TNT_GT:
-    case TNT_LEQ:
-    case TNT_GEQ:
-    case TNT_EQ:
-    case TNT_NEQ:
-    case TNT_AND:
-    case TNT_OR:
-    case TNT_NOT:
-    case TNT_ERROR:
-      return true;
-    default:
-      return false;
-  }
+  return _type == TNT_ERROR
+      || _type == TNT_VAR
+      || _type == TNT_ARRAY_LOOKUP
+      || _type == TNT_UDT_LOOKUP;
 }
 
 //-----------------------------------------------------------------------------
-bool treenode_t::is_string_compat() const
-{
-  switch ( _type )
-  {
-    case TNT_SYMBOL:
-      return sym()->is_array() && sym()->base() == PRIM_CHAR;
-    case TNT_STRCON:
-      return true;
-    default:
-      return false;
-  }
-}
+//bool treenode_t::is_bool_compat() const
+//{
+  //switch ( _type )
+  //{
+    //case TNT_LT:
+    //case TNT_GT:
+    //case TNT_LEQ:
+    //case TNT_GEQ:
+    //case TNT_EQ:
+    //case TNT_NEQ:
+    //case TNT_AND:
+    //case TNT_OR:
+    //case TNT_NOT:
+    //case TNT_ERROR:
+      //return true;
+    //default:
+      //return false;
+  //}
+//}
+
+//-----------------------------------------------------------------------------
+//bool treenode_t::is_string_compat() const
+//{
+  //switch ( _type )
+  //{
+    //case TNT_SYMBOL:
+      //return sym()->is_array() && sym()->base() == PRIM_CHAR;
+    //case TNT_STRCON:
+      //return true;
+    //default:
+      //return false;
+  //}
+//}
 
 //-----------------------------------------------------------------------------
 int calc_seq_len(const treenode_t *root)

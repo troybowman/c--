@@ -135,7 +135,7 @@ template <class T> inline T &deplace(uint8_t const addr[])
 }
 
 //-----------------------------------------------------------------------------
-// table of smart pointers
+// table of smart pointers, indexed by strings
 template <class T> class reftab_t
 {
   typedef std::map<std::string, T> map_t;

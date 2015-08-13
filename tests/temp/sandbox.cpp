@@ -15,6 +15,10 @@ struct another_t;
 
 fuckyou_t func() { fuckyou_t blah; return blah; }
 
+int *func2(int *x) { return x; }
+
+void func3(int **x) { return; }
+
 int main()
 {
   int x[4], y, z, *d;
@@ -35,6 +39,11 @@ int main()
   //x[ptr] = 4;
   //ptr = 3;
   //ptr = 'a';
+  *func2(&y) = 4;
+  //func3(&x);
+
+  ptr = x;
+  ptr = &(x+2);
 
   z = *&y;
   d = &*ptr;

@@ -112,6 +112,8 @@ public:
   int val()               const { return _val;  }
   char *str()             const { return _str;  }
   symref_t &sym()         const { return deplace(_sym); }
+
+  bool has_addr() const;
 };
 
 //-----------------------------------------------------------------------------
