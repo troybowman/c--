@@ -704,19 +704,19 @@ static type_error_t validate_func_def(const symbol_t &def, symref_t prev)
 }
 
 //-----------------------------------------------------------------------------
-static void merge_decl_and_def(symbol_t &f1, const symbol_t &f2)
+static void merge_decl_and_def(symbol_t &decl, const symbol_t &def)
 {
-  f1.set_line(f2.line());
+  decl.set_line(def.line());
 
-        symvec_t &params1 = *f1.params();
-  const symvec_t &params2 = *f2.params();
+        symvec_t &decparams = *decl.params();
+  const symvec_t &defparams = *def.params();
 
-        symvec_t::iterator i = params1.begin();
-  symvec_t::const_iterator j = params2.begin();
+        symvec_t::iterator i = decparams.begin();
+  symvec_t::const_iterator j = defparams.begin();
 
-  for ( ; i != params1.end() && j != params2.end(); i++, j++ )
+  for ( ; i != decparams.end() && j != defparams.end(); i++, j++ )
   {
-    symbol_t &p1 = **i;
+          symbol_t &p1 = **i;
     const symbol_t &p2 = **j;
 
     p1.set_name(p2.c_str());
@@ -742,7 +742,12 @@ static void func_enter(parser_ctx_t &ctx, symref_t f, typeref_t rt)
     case TERR_PRINTF_DEF1:
       process_fdecl_error(ctx, err, *f);
       break;
-    default:
+    case TERR_PRINTF_DEF2:
+    case TERR_RET_UDT:
+    case TERR_REDECLARED:
+    case TERR_REDEFINED:
+    case TERR_EXTERN:
+    case TERR_RTN_TYPES:
       err.data = prev->line();
       process_fdecl_error(ctx, err, *f);
       // no break
@@ -753,6 +758,8 @@ static void func_enter(parser_ctx_t &ctx, symref_t f, typeref_t rt)
         f = prev;
       }
       break;
+    default:
+      INTERR(0);
   }
 
   ctx.setfunc(f);
@@ -866,28 +873,12 @@ static treenode_t *process_ret_stmt(parser_ctx_t &ctx, treenode_t *expr, int lin
 }
 
 //-----------------------------------------------------------------------------
-static bool check_arg(const type_t &param, const treenode_t &expr)
+static bool check_arg(const tinfo_t &tinfo, const treenode_t &expr)
 {
-  switch ( param.cls() )
-  {
-    case TYPE_PRIM:
-      return expr.is_int_compat();
+  if ( expr.type() == TNT_ERROR )
+    return true;
 
-    case TYPE_ARRAY:
-      if ( expr.type() == TNT_STRCON )
-      {
-        return param.prim() == PRIM_CHAR;
-      }
-      else if ( expr.type() == TNT_SYMBOL )
-      {
-        return expr.sym()->is_array()
-            && expr.sym()->prim() == param.prim();
-      }
-      return false;
-
-    default:
-      INTERR(1031);
-  }
+  return tinfo.is_compatible(*expr.tinfo);
 }
 
 //-----------------------------------------------------------------------------
@@ -906,7 +897,7 @@ static terr_info_t validate_call(const symbol_t &f, const treenode_t *args)
   const_tree_iterator_t ti(args);
   for ( size_t i = 0; *ti != NULL && i < nparams; ti++, i++ )
   {
-    if ( !check_arg(*params[i]->type(), **ti) )
+    if ( !check_arg(*params[i]->tinfo(), **ti) )
       return terr_info_t(TERR_BADARG, i+1);
   }
 
