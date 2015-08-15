@@ -786,7 +786,6 @@ static void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
 //-----------------------------------------------------------------------------
 static void init_resources(ir_func_t &f)
 {
-  // temps
   symvec_t temps;
   f.get_used_resources(ST_TEMP, temps);
 
@@ -796,11 +795,9 @@ static void init_resources(ir_func_t &f)
     temp.loc.set_reg(tempreg_names[temp.val()]);
   }
 
-  // $v0
   symref_t retval = f.gen_resource(ST_RETVAL);
   retval->loc.set_reg("$v0");
 
-  // $zero
   symref_t zero = f.gen_resource(ST_ZERO);
   zero->loc.set_reg("$zero");
 }

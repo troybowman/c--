@@ -30,11 +30,11 @@ else
   BISON = bison
 endif
 
-OBJFILES = $(OBJ)parser.o $(obj)tinfo.o $(OBJ)scanner.o $(OBJ)symbol.o \
-	$(OBJ)treenode.o $(OBJ)ir.o $(OBJ)logger.o $(OBJ)main.o $(OBJ)asm.o
+OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)tinfo.o $(OBJ)symbol.o \
+ $(OBJ)treenode.o $(OBJ)ir.o $(OBJ)asm.o $(OBJ)logger.o $(OBJ)main.o
 
-HFILES = $(I)common.h $(I)symbol.h $(I)tinfo.h $(I)treenode.h $(I)ir.h \
- $(I)logger.h $(I)parser.h $(I)asm.h
+HFILES = $(I)common.h $(I)tinfo.h $(I)symbol.h $(I)treenode.h $(I)ir.h \
+ $(I)asm.h $(I)logger.h $(I)parser.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJ)parser.cpp $(OBJ)scanner.cpp $(OBJFILES)

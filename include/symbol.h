@@ -44,8 +44,8 @@ public:
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_VAR,      // source level variable
-  ST_FUNC,     // source level function
+  ST_VAR,      // variable
+  ST_FUNC,     // function
   ST_TEMP,     // temporary value
   ST_SVTEMP,   // saved temporary value
   ST_STKTEMP,  // temporary that must be stored on the stack
@@ -55,8 +55,8 @@ enum symbol_type_t
   ST_LABEL,    // asm label
   ST_RETVAL,   // return value location
   ST_RETADDR,  // return address location
-  ST_REGARG,   // function register argument
-  ST_STKARG,   // function stack argument
+  ST_REGARG,   // register argument
+  ST_STKARG,   // stack argument
   ST_ELLIPSIS, // identifies "..." parameter declaration
   ST_ZERO      // zero register
 };
@@ -79,26 +79,20 @@ class symbol_t : public refcnt_obj_t
 
   union
   {
-    struct // source level symbols
+    int _val;   // ST_VAR, ST_INTCON, ST_TEMP, ST_SVTEMP, ST_LABEL, ST_STKTEMP, ST_STKARG, ST_REGARG
+    char *_str; // ST_STRCON, ST_CHARCON
+    struct      // ST_FUNCTION
     {
       int _line;
-      union
-      {
-        tplace_t _tinfo; // ST_VARIABLE
-        struct           // ST_FUNCTION
-        {
-          tplace_t _rt;
-          symvec_t *_params;
-          symtab_t *_lvars;
-        };
-      };
+      symvec_t *_params;
+      symtab_t *_lvars;
     };
-    int _val;   // ST_INTCON, ST_TEMP, ST_SVTEMP, ST_LABEL, ST_STKTEMP, ST_STKARG, ST_REGARG
-    char *_str; // ST_STRCON, ST_CHARCON
   };
 
 public:
   symloc_t loc;
+
+  typeref_t tinfo;
 
   symbol_t(uint32_t flags, const char *name, int line);
   symbol_t(uint32_t flags, const char *name, int line, typeref_t rt, symvec_t *params);
@@ -106,22 +100,21 @@ public:
   symbol_t(symbol_type_t st, char *str);
   symbol_t(symbol_type_t st);
 
-  virtual ~symbol_t(); // TODO: why does it have to be virtual? (release())
-
   symbol_type_t st()        const { return _st; }
 
   bool is_var()             const { return _st == ST_VARIABLE; }
   bool is_func()            const { return _st == ST_FUNCTION; }
 
-  bool is_prim()            const { return is_var() && _tinfo->is_prim();   }
-  bool is_array()           const { return is_var() && _tinfo->is_array();  }
-  bool is_ptr()             const { return is_var() && _tinfo->is_ptr();    }
+  bool is_prim()            const { return has_ti() && tinfo->is_prim();  }
+  bool is_array()           const { return has_ti() && tinfo->is_array(); }
+  bool is_ptr()             const { return has_ti() && tinfo->is_ptr();   }
 
-  bool is_prim(prim_t p)    const { return is_var() && _tinfo->is_prim(p);  }
-  bool is_array(prim_t p)   const { return is_var() && _tinfo->is_array(p); }
-  bool is_ptr(prim_t p)     const { return is_var() && _tinfo->is_ptr(p);   }
+  bool is_prim(prim_t p)    const { return has_ti() && tinfo->is_prim(p);  }
+  bool is_array(prim_t p)   const { return has_ti() && tinfo->is_array(p); }
+  bool is_ptr(prim_t p)     const { return has_ti() && tinfo->is_ptr(p);   }
 
-  bool has_ptr()            const { return _tinfo != NULL && _tinfo->has_ptr(); }
+  bool has_ti()             const { return tinfo != NULL; }
+  bool has_ptr()            const { return has_ti() && tinfo->has_ptr(); }
 
   bool is_param()           const { return (_flags & SF_PARAMETER)    != 0; }
   bool is_extern()          const { return (_flags & SF_EXTERN)       != 0; }
@@ -130,20 +123,18 @@ public:
   bool is_printf()          const { return (_flags & SF_PRINTF)       != 0; }
   bool is_main()            const { return (_flags & SF_MAIN)         != 0; }
 
-  typeref_t &tinfo()        const { return deplace(_tinfo); }
-
   uint32_t flags()          const { return _flags; }
   const std::string &name() const { return _name; }
   const char *c_str()       const { return _name.c_str(); }
-  int line()                const { return _line; }
   const char *str()         const { return _str; }
   int val()                 const { return _val; }
+  int line()                const { return _val; }
 
   symvec_t *params()        const { return _params; }
   symtab_t *lvars()         const { return _lvars; }
-  primitive_t prim()        const { return _tinfo->prim(); }
-  offset_t length()         const { return _tinfo->length(); }
-  offset_t size()           const;
+  primitive_t prim()        const { return tinfo->prim(); }
+  offset_t length()         const { return tinfo->length(); }
+  offset_t size()           const { return tinfo->size(); }
 
   void set_name(const char *name) { _name.assign(name); }
   void set_line(int line)         { _line = line; }
@@ -157,6 +148,8 @@ public:
   void set_printf()               { _flags |= SF_PRINTF; }
 
   virtual void release()          { delete this; }
+
+  virtual ~symbol_t();
 };
 
 //-----------------------------------------------------------------------------
@@ -166,7 +159,7 @@ typedef std::vector<symref_t> symvec_t;
 #define NULLREF symref_t()
 
 //-----------------------------------------------------------------------------
-inline void place(splace_t &sp, symref_t ref)
+inline void emplace(splace_t &sp, symref_t ref)
 {
   place<symref_t>(sp, ref);
 }
@@ -178,7 +171,7 @@ inline symref_t &deplace(const splace_t &sp)
 }
 
 //-----------------------------------------------------------------------------
-class symtab_t : public reftab_t<symref_t>
+class symtab_t : public reftab_t<symref_t> // symbol table
 {
 public:
   virtual bool insert(symref_t sym)
@@ -189,7 +182,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class memtab_t : public symtab_t
+class memtab_t : public symtab_t // struct member table
 {
   offset_t _offsize;
 #define MTASSERT(s) ASSERT(0, s != NULL && s->is_var() && s->size() != BADOFFSET)

@@ -135,7 +135,7 @@ template <class T> inline T &deplace(uint8_t const addr[])
 }
 
 //-----------------------------------------------------------------------------
-// table of smart pointers, indexed by strings
+// table of smart pointers, indexed by string
 template <class T> class reftab_t
 {
   typedef std::map<std::string, T> map_t;
@@ -206,7 +206,7 @@ struct area_t
   offset_t end;
 
   area_t() : start(0), end(0) {}
-  area_t(offset_t o1, offset_t o2) : start(o1), end(o2) {}
+  area_t(offset_t s, offset_t e) : start(s), end(e) {}
 
   offset_t size() const { return end - start; }
 };

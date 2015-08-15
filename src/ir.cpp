@@ -3,9 +3,6 @@
 #include <logger.h>
 #include <parser.h>
 
-#define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
-#define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)
-
 //-----------------------------------------------------------------------------
 symref_t resource_manager_t::get_first_available()
 {
@@ -37,7 +34,7 @@ void resource_manager_t::get_used_resources(symvec_t &vec) const
 
 //-----------------------------------------------------------------------------
 // manage available registers
-class reg_manager_t : public resource_manager_t
+class reg_resource_t : public resource_manager_t
 {
   int _max;
 
@@ -56,7 +53,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // manage stack resources
-class stack_manager_t : public resource_manager_t
+class stack_resource_t : public resource_manager_t
 {
 public:
   stack_manager_t(symbol_type_t type) : resource_manager_t(type) {}
@@ -86,12 +83,12 @@ public:
 //-----------------------------------------------------------------------------
 ir_func_t::ir_func_t(symref_t s) : _sym(s), _code(NULL), _has_call(false)
 {
-  _store[ST_STKTEMP] = new stack_manager_t(ST_STKTEMP);
-  _store[ST_STKARG]  = new stack_manager_t(ST_STKARG);
-  _store[ST_TEMP]    = new reg_manager_t(ST_TEMP,   TEMPREGQTY);
-  _store[ST_SVTEMP]  = new reg_manager_t(ST_SVTEMP, SVREGQTY);
-  _store[ST_REGARG]  = new reg_manager_t(ST_REGARG, ARGREGQTY);
-  _store[ST_RETVAL]  = new reg_manager_t(ST_RETVAL, 1);
+  _store[ST_STKTEMP] = new stack_resource_t(ST_STKTEMP);
+  _store[ST_STKARG]  = new stack_resource_t(ST_STKARG);
+  _store[ST_TEMP]    = new reg_resource_t(ST_TEMP,   TEMPREGQTY);
+  _store[ST_SVTEMP]  = new reg_resource_t(ST_SVTEMP, SVREGQTY);
+  _store[ST_REGARG]  = new reg_resource_t(ST_REGARG, ARGREGQTY);
+  _store[ST_RETVAL]  = new reg_resource_t(ST_RETVAL, 1);
   _store[ST_RETADDR] = new fixed_resource_t(ST_RETADDR);
   _store[ST_ZERO]    = new fixed_resource_t(ST_ZERO);
 }
@@ -104,6 +101,26 @@ ir_func_t::~ir_func_t()
   for ( i = _store.begin(); i != _store.end(); i++ )
     delete i->second;
 }
+
+//-----------------------------------------------------------------------------
+static inline codenode_type_t get_load_type(const symbol_t &s)
+{
+  ASSERT(0, s.has_ti());
+
+  return s.is_prim(PRIM_CHAR) ? CNT_LB : CNT_LW;
+}
+
+//-----------------------------------------------------------------------------
+static inline codenode_type_t get_store_type(const symbol_t &s)
+{
+  ASSERT(0, s.has_ti());
+
+  return s.is_prim(PRIM_CHAR) ? CNT_SB : CNT_SW;
+}
+
+//-----------------------------------------------------------------------------
+#define LOAD(sym)  get_load_type(*sym)
+#define STORE(sym) get_store_type(*sym)
 
 //-----------------------------------------------------------------------------
 static bool has_call(const treenode_t *tree)
@@ -207,7 +224,7 @@ void ir_engine_t::check_src(symref_t sym)
 }
 
 //-----------------------------------------------------------------------------
-symref_t ir_engine_t::gen_temp(uint32_t flags)
+symref_t ir_engine_t::gen_temp(uint32_t flags, typeref_t tinfo)
 {
   symref_t temp;
 
@@ -230,11 +247,13 @@ symref_t ir_engine_t::gen_temp(uint32_t flags)
     temp = f.gen_resource(ST_STKTEMP);
 
   ASSERT(1110, temp != NULL);
+
+  temp->tinfo = tinfo;
   return temp;
 }
 
 //-----------------------------------------------------------------------------
-symref_t ir_engine_t::gen_argloc()
+symref_t ir_engine_t::gen_argloc(const symbol_t &callee)
 {
   symref_t argloc = f.gen_resource(ST_REGARG);
 
@@ -242,6 +261,9 @@ symref_t ir_engine_t::gen_argloc()
     argloc = f.gen_resource(ST_STKARG);
 
   ASSERT(1111, argloc != NULL);
+
+  argloc->tinfo = callee.params->at(argloc->val())->tinfo;
+
   return argloc;
 }
 
@@ -262,6 +284,47 @@ void ir_engine_t::append(
     head = tail = node;
   else
     tail = tail->next = node;
+}
+
+//-----------------------------------------------------------------------------
+void ir_engine_t::apparg(symref_t argloc, symref_t argval)
+{
+  // we have to be careful with arg values, since they may need to be truncated
+  if ( argloc->is_prim(PRIM_CHAR) )
+  {
+    symref_t newarg = gen_temp();
+    append(CNT_AND, newarg, argval, symref_t(new symbol_t(ST_INTCON, 0xff)));
+    argval = newarg;
+  }
+
+  append(CNT_ARG, argloc, argval);
+}
+
+//-----------------------------------------------------------------------------
+symref_t ir_engine_t::applookup(
+    const treenode_t *parent,
+    symref_t base,
+    symref_t off,
+    uint32_t flags)
+{
+  symref_t dest;
+
+  if ( (flags & TCTX_LVAL) != 0 )
+  {
+    dest = gen_temp();
+    append(CNT_ADD, dest, base, off);
+  }
+  else
+  {
+    symref_t loc = gen_temp(0, parent.tinfo); // TODO: don't like
+    append(CNT_ADD, loc, base, off);
+    dest = gen_temp(ctx.flags);
+    append(LOAD(loc), dest, loc);
+  }
+
+  dest->tinfo = parent.tinfo;
+
+  return dest;
 }
 
 //-----------------------------------------------------------------------------
@@ -290,17 +353,15 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_STRCON:
       {
-        std::string key(tree->str());
-
-        symref_t str = ir.strings.get(key);
-        if ( str == NULL )
+        symref_t strcon = ir.strings.get(tree->str());
+        if ( strcon == NULL )
         {
-          str = symref_t(new symbol_t(ST_STRCON, tree->str()));
-          ir.strings.insert(key, str);
+          strcon = symref_t(new symbol_t(ST_STRCON, tree->str()));
+          ir.strings.insert(str);
         }
 
         symref_t dest = gen_temp(ctx.flags);
-        append(CNT_LEA, dest, str);
+        append(CNT_LEA, dest, strcon);
 
         return dest;
       }
@@ -312,7 +373,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t src1 = generate(rhs, has_call(lhs) ? TCTX_SAVE : 0);
         symref_t dest = generate(lhs, TCTX_LVAL);
 
-        append(CNT_STORE(lhs->sym()), dest, src1);
+        append(STORE(dest), dest, src1);
         break;
       }
     case TNT_PEQ:
@@ -333,57 +394,78 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         append(tnt2cnt(tree->type()), temp, src1, src2);
 
         symref_t dest = generate(lhs, TCTX_LVAL);
-        append(CNT_STORE(lhs->sym()), dest, temp);
+        append(STORE(dest), dest, temp);
 
         break;
       }
-    case TNT_SYMBOL:
+    case TNT_VAR:
       {
-        symref_t sym = tree->sym();
+        symref_t var = tree->sym();
         if ( (ctx.flags & TCTX_LVAL) != 0 )
-          return sym;
+          return var;
 
         symref_t dest = gen_temp(ctx.flags);
-        append(sym->is_array() ? CNT_LEA : CNT_LOAD(sym), dest, sym);
+        append(var->is_array() || var->is_struct() ? CNT_LEA : LOAD(var),
+               dest,
+               var);
 
         return dest;
       }
     case TNT_ARRAY_LOOKUP:
       {
-        treenode_t *idxtree = tree->children[AL_OFFSET];
-        symref_t off = generate(idxtree);
+        treenode_t *basetree = tree->children[AL_BASE];
+        treenode_t *idxtree  = tree->children[AL_INDEX];
 
-        if ( tree->sym()->base() == PRIM_INT )
+        symref_t base = generate(basetree, TCTX_LVAL|(has_call(idxtree) ? TCTX_SAVE : 0));
+        symref_t off  = generate(idxtree);
+
+        const tinfo_t &tinfo = *base->tinfo->subtype();
+
+        if ( !tinfo.is_prim(PRIM_CHAR) )
         {
-          // multiply by sizeof(int)
-          symref_t m_off = gen_temp();
-          append(CNT_SLL, m_off, off, symref_t(new symbol_t(ST_INTCON, WORDSIZE/2)));
-          off = m_off;
+          // multiply by sizeof(eltype)
+          symref_t newoff = gen_temp();
+          append(CNT_MUL, newoff, off, symref_t(new symbol_t(ST_INTCON, tinfo.size())));
+          off = newoff;
         }
 
-        symref_t base = gen_temp();
-        append(CNT_LEA, base, tree->sym());
+        return applookup(*tree, base, off, ctx.flags);
+      }
+    case TNT_STRUCT_LOOKUP:
+      {
+        symref_t base = generate(tree->children[STRUCT_BASE], TCTX_LVAL);
+        symref_t mem  = tree->sym();
+        symref_t off  = symref_t(new symbol_t(ST_INTCON, mem->loc.off()));
 
-        symref_t dest;
-        if ( (ctx.flags & TCTX_LVAL) != 0 )
+        return applookup(*tree, base, off, ctx.flags);
+      }
+    case TNT_ADDROF:
+      {
+        symref_t base = generate(tree->children[ADDROF_BASE], TCTX_LVAL);
+        symref_t addr = gen_temp(ctx.flags);
+
+        append(CNT_LEA, addr, base);
+        return addr;
+      }
+    case TNT_DEREF:
+      {
+        symref_t addr, dest;
+        dest = addr = generate(tree->children[DEREF_ADDR]);
+
+        if ( (ctx.flags & TCTX_LVAL) == 0 )
         {
-          dest = gen_temp();
-          append(CNT_ADD, dest, base, off);
-        }
-        else
-        {
-          symref_t loc = gen_temp();
-          append(CNT_ADD, loc, base, off);
           dest = gen_temp(ctx.flags);
-          append(CNT_LOAD(tree->sym()), dest, loc);
+          append(LOAD(addr), dest, addr);
         }
+
+        dest->tinfo = tree->tinfo;
         return dest;
       }
     case TNT_CALL:
       {
         if ( !f.has_call() )
         {
-          f.set_has_call();
+          f.set_call();
           f.use(f.gen_resource(ST_RETADDR));
         }
 
@@ -397,23 +479,24 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           argvals.push_back(argval);
         }
 
+        symref_t callee = tree->sym();
+
         for ( size_t i = 0; i < argvals.size(); i++ )
-          arglocs.push_back(gen_argloc());
+          arglocs.push_back(gen_argloc(*callee));
 
         symvec_t::reverse_iterator val = argvals.rbegin();
         symvec_t::reverse_iterator loc = arglocs.rbegin();
 
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
-          append(CNT_ARG, *loc, *val);
+          apparg(*loc, *val);
 
         f.reset(ST_REGARG);
         f.reset(ST_STKARG);
 
-        symref_t sym = tree->sym();
-        if ( sym->base() != PRIM_VOID )
+        if ( callee->base() != PRIM_VOID )
         {
           symref_t retval = f.gen_resource(ST_RETVAL);
-          append(CNT_CALL, retval, sym);
+          append(CNT_CALL, retval, callee);
 
           symref_t temp = gen_temp(ctx.flags);
           append(CNT_MOV, temp, retval);
@@ -421,7 +504,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
           return temp;
         }
 
-        append(CNT_CALL, NULLREF, sym);
+        append(CNT_CALL, NULLREF, callee);
         break;
       }
     case TNT_RET:
@@ -548,7 +631,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 
         if ( tree->type() == TNT_NEG )
           append(CNT_SUB, no, f.gen_resource(ST_ZERO), val);
-        else if ( tree->type () == TNT_NOT )
+        else if ( tree->type() == TNT_NOT )
           append(CNT_XOR, no, val, symref_t(new symbol_t(ST_INTCON, 1)));
         else
           append(CNT_NOT, no, val);

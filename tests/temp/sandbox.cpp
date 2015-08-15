@@ -28,22 +28,29 @@ int main()
   fuckyou_t a[5][6][7];
   fuckyou_t *p = a[1][2];
 
+  ptr = x;
+  (ptr + 2)[0] = 3;
+
   a[2][*(x+1)][x[x[5]]].x = 5;
 
   (a+a[1][2][3].x)[0][1][1].y = 10;
 
   ***(((a+4-x[0])[100]+x[x[0]])[1][0]).z->b += 'a';
 
+  // must catch:
   //func().x = 4;
   //blah += 4;
   //x[ptr] = 4;
   //ptr = 3;
   //ptr = 'a';
-  *func2(&y) = 4;
   //func3(&x);
+  //ptr = &(x+2);
 
+  *ptr = *ptr;
+  *ptr += *ptr;
+
+  *func2(&y) = 4;
   ptr = x;
-  ptr = &(x+2);
 
   z = *&y;
   d = &*ptr;

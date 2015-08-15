@@ -28,7 +28,7 @@ tinfo_t::tinfo_t(typeref_t pointed) :
 }
 
 //-----------------------------------------------------------------------------
-tinfo_t::tinfo_t(offset_t length, typeref_t eltype) :
+tinfo_t::tinfo_t(typeref_t eltype, offset_t length) :
   _id(TID_ARRAY),
   _size(BADOFFSET),
   _length(length)
@@ -38,7 +38,7 @@ tinfo_t::tinfo_t(offset_t length, typeref_t eltype) :
 
 //-----------------------------------------------------------------------------
 tinfo_t::tinfo_t(const char *name, int line) :
-  _id(TID_UDT),
+  _id(TID_STRUCT),
   _size(BADOFFSET),
   _name(new std::string(name)),
   _line(line) {}
@@ -46,7 +46,7 @@ tinfo_t::tinfo_t(const char *name, int line) :
 //-----------------------------------------------------------------------------
 void tinfo_t::set_base(typeref_t base)
 {
-  if ( tinfo() == NULL )
+  if ( subtype() == NULL )
     emplace(_subtype, base);
   else
     subtype()->set_base(base);
@@ -67,7 +67,7 @@ offset_t tinfo_t::complete()
   {
     case TID_PTR:
     case TID_PRIM:
-    case TID_UDT:
+    case TID_STRUCT;
       ASSERT(0, is_complete());
       return _size;
       break;
@@ -88,7 +88,7 @@ tinfo_t::~tinfo_t()
     case TID_ARRAY:
       subtype().~typeref_t();
       break;
-    case TID_UDT:
+    case TID_STRUCT:
       delete _name;
       delete _members;
       break;
@@ -133,10 +133,10 @@ bool tinfo_t::is_compatible(const tinfo_t &t) const
       // pointers are compatible pointers or arrays of the same subtype
       return (t.is_ptr() || t.is_array()) && subtype() == t.subtype();
 
-    case TID_UDT:
+    case TID_STRUCT:
     case TID_BOOL:
     case TID_ERROR:
-      // udts and bool expressions are only compatible with identical types
+      // structs and bool expressions are only compatible with identical types
       return *this == t;
 
     default:

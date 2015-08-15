@@ -28,13 +28,19 @@ enum codenode_type_t
 struct codenode_t
 {
   codenode_type_t type;
+
   symref_t dest;
   symref_t src1;
   symref_t src2;
+
   codenode_t *next;
 
-  codenode_t(codenode_type_t t, symref_t d, symref_t s1, symref_t s2)
-    : type(t), dest(d), src1(s1), src2(s2), next(NULL) {}
+  codenode_t(codenode_type_t t, symref_t d, symref_t s1, symref_t s2) :
+    type(t),
+    dest(d),
+    src1(s1),
+    src2(s2),
+    next(NULL) {}
 
   ~codenode_t() { delete next; }
 };
@@ -112,15 +118,15 @@ public:
   ir_func_t(symref_t s);
   ~ir_func_t();
 
-  void set_has_call()          { _has_call = true; }
-  void set_code(codenode_t *c) { _code = c; }
+  symref_t sym()              const { return _sym; }
+  bool has_call()             const { return _has_call; }
+  codenode_t *code()          const { return _code; }
 
-  symref_t sym()         const { return _sym; }
-  bool has_call()        const { return _has_call; }
-  codenode_t *code()     const { return _code; }
+  void setcall()                    { _has_call = true; }
+  void set_code(codenode_t *c)      { _code = c; }
 
-  void free(symref_t sym) { _store[sym->type()]->free(sym); }
-  void use(symref_t sym)  { _store[sym->type()]->use(sym);  }
+  void free(symref_t sym)           { _store[sym->type()]->free(sym); }
+  void use(symref_t sym)            { _store[sym->type()]->use(sym);  }
 
   void reset(symbol_type_t st)      { _store.at(st)->reset(); }
   int count(symbol_type_t st) const { return _store.at(st)->count(); }
@@ -129,12 +135,10 @@ public:
   {
     return _store.at(st)->gen_resource();
   }
-
   void get_used_resources(symbol_type_t st, symvec_t &vec) const
   {
     _store.at(st)->get_used_resources(vec);
   }
-
   const resource_manager_t *get(symbol_type_t st) const
   {
     return _store.at(st);
@@ -153,10 +157,21 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+class strtab_t : public reftab_t<symbol_t>
+{
+public:
+  virtual bool insert(symret_t strcon)
+  {
+    ASSERT(0, strcon != NULL && strcon->st() == ST_STRCON);
+    return insert(strcon->str(), strcon);
+  }
+}
+
+//-----------------------------------------------------------------------------
 struct ir_t
 {
   symtab_t gsyms;
-  symtab_t strings;
+  strtab_t strings;
   symvec_t labels;
   ir_funcs_t funcs;
 };
@@ -191,7 +206,7 @@ private:
   void check_dest(symref_t src);
   void check_src(symref_t src);
 
-  symref_t gen_temp(uint32_t flags = 0);
+  symref_t gen_temp(uint32_t flags = 0, typeref_t = NULLTYPE);
   symref_t gen_argloc();
 
   void append(
@@ -199,6 +214,9 @@ private:
       symref_t dest = NULLREF,
       symref_t src1 = NULLREF,
       symref_t src2 = NULLREF);
+
+  void apparg(symref_t argloc, symref_t val);
+  symref_t applookup(symref_t base, symref_t off, uint32_t flags);
 
   symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 

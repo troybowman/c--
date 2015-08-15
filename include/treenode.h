@@ -11,7 +11,7 @@ enum treenode_type_t
   TNT_INTCON,
   TNT_CHARCON,
   TNT_STRCON,
-  TNT_SYMBOL,
+  TNT_VAR,
   // non-leaf nodes
   TNT_ASSG,
   TNT_PLUS,
@@ -45,7 +45,7 @@ enum treenode_type_t
 #define RHS         1
   TNT_ARRAY_LOOKUP,
 #define AL_BASE     0
-#define AL_OFFSET   1
+#define AL_INDEX    1
   TNT_FOR,
 #define FOR_INIT    0
 #define FOR_COND    1
@@ -70,8 +70,8 @@ enum treenode_type_t
 #define PRINTF_TREE 0
   TNT_DEREF,
 #define DEREF_ADDR  0
-  TNT_UDT_LOOKUP,
-#define UDT_BASE    0
+  TNT_STRUCT_LOOKUP,
+#define STRUCT_BASE 0
   TNT_ADDROF,
 #define ADDROF_BASE 0
 };
@@ -92,7 +92,7 @@ class treenode_t
   {
     int _val;      // TNT_INTCON
     char *_str;    // TNT_CHARCON, TNT_STRCON
-    splace_t _sym; // TNT_SYMBOL, TNT_CALL, TNT_PRINTF, TNT_UDT_LOOKUP
+    splace_t _sym; // TNT_SYMBOL, TNT_CALL, TNT_PRINTF, TNT_STRUCT_LOOKUP
   };
 
 public:

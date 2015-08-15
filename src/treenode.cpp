@@ -114,7 +114,7 @@ treenode_t::treenode_t(treenode_type_t type, typeref_t _tinfo, CHILDPARAMS2) :
       ASSERT(1054, children[RHS] != NULL);
     case TNT_ARRAY_LOOKUP:
       ASSERT(0, children[AL_BASE]   != NULL);
-      ASSERT(0, children[AL_OFFSET] != NULL);
+      ASSERT(0, children[AL_INDEX]  != NULL);
     case TNT_DEREF:
       ASSERT(0, children[DEREF_ADDR] != NULL);
       break;
@@ -151,8 +151,8 @@ treenode_t::treenode_t(treenode_type_t type, symref_t sym, CHILDPARAMS2) :
       ASSERT(1100, sym()->is_printf());
       ASSERT(1099, children[PRINTF_TREE] != NULL);
       break;
-    case TNT_UDT_LOOKUP:
-      ASSERT(0, children[UDT_BASE] != NULL);
+    case TNT_STRUCT_LOOKUP:
+      ASSERT(0, children[STRUCT_BASE] != NULL);
       break;
     default:
       INTERR(0);
@@ -168,7 +168,7 @@ treenode_t::~treenode_t()
     case TNT_SYMBOL:
     case TNT_CALL:
     case TNT_PRINTF:
-    case TNT_UDT_LOOKUP:
+    case TNT_STRUCT_LOOKUP:
       sym().~symref_t();
       break;
     case ;
@@ -185,82 +185,14 @@ treenode_t::~treenode_t()
 }
 
 //-----------------------------------------------------------------------------
-bool treenode_t::is_int_compat() const
-{
-  switch ( _type )
-  {
-    // all arithmetic expressions resolve to int, and thus are int compatible
-    case TNT_PLUS:
-    case TNT_MINUS:
-    case TNT_MULT:
-    case TNT_DIV:
-    case TNT_NEG:
-    case TNT_SHL:
-    case TNT_SHR:
-    case TNT_BAND:
-    case TNT_BOR:
-    case TNT_XOR:
-    case TNT_BNOT:
-    // we can only have arrays of ints or chars, so array lookups are always good
-    case TNT_ARRAY_LOOKUP:
-    // report error nodes as compatible to avoid cascading error messages
-    case TNT_ERROR:
-    // int,char are of course compatible
-    case TNT_INTCON:
-    case TNT_CHARCON:
-      return true;
-    case TNT_SYMBOL:
-      return sym()->is_prim();
-    case TNT_CALL:
-      return sym()->base() != PRIM_VOID;
-    default:
-      return false;
-  }
-}
-
-//-----------------------------------------------------------------------------
 bool treenode_t::has_addr() const
 {
   return _type == TNT_ERROR
       || _type == TNT_VAR
       || _type == TNT_ARRAY_LOOKUP
-      || _type == TNT_UDT_LOOKUP;
+      || _type == TNT_STRUCT_LOOKUP
+      || _type == TNT_DEREF;
 }
-
-//-----------------------------------------------------------------------------
-//bool treenode_t::is_bool_compat() const
-//{
-  //switch ( _type )
-  //{
-    //case TNT_LT:
-    //case TNT_GT:
-    //case TNT_LEQ:
-    //case TNT_GEQ:
-    //case TNT_EQ:
-    //case TNT_NEQ:
-    //case TNT_AND:
-    //case TNT_OR:
-    //case TNT_NOT:
-    //case TNT_ERROR:
-      //return true;
-    //default:
-      //return false;
-  //}
-//}
-
-//-----------------------------------------------------------------------------
-//bool treenode_t::is_string_compat() const
-//{
-  //switch ( _type )
-  //{
-    //case TNT_SYMBOL:
-      //return sym()->is_array() && sym()->base() == PRIM_CHAR;
-    //case TNT_STRCON:
-      //return true;
-    //default:
-      //return false;
-  //}
-//}
 
 //-----------------------------------------------------------------------------
 int calc_seq_len(const treenode_t *root)

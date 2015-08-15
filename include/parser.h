@@ -51,14 +51,15 @@ enum type_error_t
   TERR_NO_FMT,      // no arguments passed to printf
   TERR_BAD_FMT,     // format arg does not match format specifier
   TERR_FMTSTR,      // format string not a string constant
-  TERR_NO_UDT,      // '.' or '->' used on a variable that is not a udt
+  TERR_NO_STRUCT,   // '.' or '->' used on a variable that is not a structure
   TERR_NO_MEM,      // request for nonexistent udt member
   TERR_INCOMPLETE,  // invalid use of incomplete type
   TERR_ADDROF,      // invalid use of '&'
-  TERR_RET_UDT,     // function returning udt type
+  TERR_RET_STRUCT,  // functions cant return struct types. TODO: fix that
   TERR_ASSG_LVAL,   // lhs of assignment does not resolve to a memory location
   TERR_ASSG_ARRAY,  // assignment to an array is not valid
   TERR_ASSG_COMPAT, // assignment operands have incompatible types
+  TERR_ASGG_STRUCT  // structs are not assignable. TODO: fix that
 };
 
 //-----------------------------------------------------------------------------
@@ -69,21 +70,6 @@ struct terr_info_t
   terr_info_t(type_error_t _code, int _data = 0)
     : code(_code), data(_data) {}
 };
-
-//---------------------------------------------------------------------------
-typedef uint8_t terr_place_t[sizeof(terr_info_t)];
-
-//-----------------------------------------------------------------------------
-static inline terr_info_t deplace(const terr_place_t &uerr)
-{
-  return deplace<terr_info_t>(uerr);
-}
-
-//-----------------------------------------------------------------------------
-static inline void emplace(terr_place_t &uerr, terr_info_t err)
-{
-  emplace<terr_info_t>(uerr, err);
-}
 
 //---------------------------------------------------------------------------
 struct name_info_t

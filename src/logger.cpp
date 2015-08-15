@@ -125,8 +125,8 @@ static const char *child2str(treenode_type_t type, int child)
       ASSERT(1031, child == LHS || child == RHS);
       return child == LHS ? "LHS" : "RHS";
     case TNT_ARRAY_LOOKUP:
-      ASSERT(1032, child == AL_OFFSET);
-      return "AL_OFFSET";
+      ASSERT(1032, child == AL_INDEX);
+      return "AL_INDEX";
     case TNT_FOR:
       return child == FOR_INIT  ? "FOR_INIT"
            : child == FOR_COND  ? "FOR_COND"
