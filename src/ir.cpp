@@ -105,17 +105,13 @@ ir_func_t::~ir_func_t()
 //-----------------------------------------------------------------------------
 static inline codenode_type_t get_load_type(const symbol_t &s)
 {
-  ASSERT(0, s.has_ti());
-
-  return s.is_prim(PRIM_CHAR) ? CNT_LB : CNT_LW;
+  return s.has_ti() && s.is_prim(PRIM_CHAR) ? CNT_LB : CNT_LW;
 }
 
 //-----------------------------------------------------------------------------
 static inline codenode_type_t get_store_type(const symbol_t &s)
 {
-  ASSERT(0, s.has_ti());
-
-  return s.is_prim(PRIM_CHAR) ? CNT_SB : CNT_SW;
+  return s.has_ti() && s.is_prim(PRIM_CHAR) ? CNT_SB : CNT_SW;
 }
 
 //-----------------------------------------------------------------------------
@@ -224,7 +220,7 @@ void ir_engine_t::check_src(symref_t sym)
 }
 
 //-----------------------------------------------------------------------------
-symref_t ir_engine_t::gen_temp(uint32_t flags, typeref_t tinfo)
+symref_t ir_engine_t::gen_temp(uint32_t flags)
 {
   symref_t temp;
 
@@ -248,7 +244,6 @@ symref_t ir_engine_t::gen_temp(uint32_t flags, typeref_t tinfo)
 
   ASSERT(1110, temp != NULL);
 
-  temp->tinfo = tinfo;
   return temp;
 }
 
@@ -287,7 +282,7 @@ void ir_engine_t::append(
 }
 
 //-----------------------------------------------------------------------------
-void ir_engine_t::apparg(symref_t argloc, symref_t argval)
+void ir_engine_t::gen_arg(symref_t argloc, symref_t argval)
 {
   // we have to be careful with arg values, since they may need to be truncated
   if ( argloc->is_prim(PRIM_CHAR) )
@@ -301,8 +296,8 @@ void ir_engine_t::apparg(symref_t argloc, symref_t argval)
 }
 
 //-----------------------------------------------------------------------------
-symref_t ir_engine_t::applookup(
-    const treenode_t *parent,
+symref_t ir_engine_t::gen_lookup(
+    const treenode_t &parent,
     symref_t base,
     symref_t off,
     uint32_t flags)
@@ -316,7 +311,7 @@ symref_t ir_engine_t::applookup(
   }
   else
   {
-    symref_t loc = gen_temp(0, parent.tinfo); // TODO: don't like
+    symref_t loc = gen_temp();
     append(CNT_ADD, loc, base, off);
     dest = gen_temp(ctx.flags);
     append(LOAD(loc), dest, loc);
@@ -325,6 +320,33 @@ symref_t ir_engine_t::applookup(
   dest->tinfo = parent.tinfo;
 
   return dest;
+}
+
+//-----------------------------------------------------------------------------
+void ir_engine_t::gen_arithmetic(
+    const treenode_t &parent,
+    symref_t dest,
+    symref_t src1,
+    symref_t src2)
+{
+  treenode_type_t tnt = parent.type();
+  const tinfo_t &tinfo = *parent.tinfo;
+
+  if ( (tnt == TNT_PLUS || tnt == TNT_MINUS) && tinfo.is_ptr() )
+  {
+    // multiply by size of pointed type
+    symref_t off  = gen_temp();
+    symref_t size = symref_t(new symbol_t(ST_INTCON, tinfo.subtype()->size()));
+    symref_t &src = src1->is_integer() : src1 : src2;
+
+    append(CNT_MUL, off, src, size);
+
+    src = off;
+  }
+
+  dest->tinfo = parent.tinfo;
+
+  append(tnt2cnt(tnt), dest, src1, src2);
 }
 
 //-----------------------------------------------------------------------------
@@ -348,6 +370,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t src1 = tree->type() == TNT_CHARCON
                       ? symref_t(new symbol_t(ST_CHARCON, tree->str()))
                       : symref_t(new symbol_t(ST_INTCON, tree->val()));
+
         append(CNT_LI, dest, src1);
         return dest;
       }
@@ -391,7 +414,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t src2 = generate(rhs);
         symref_t temp = gen_temp();
 
-        append(tnt2cnt(tree->type()), temp, src1, src2);
+        gen_arithmetic(*tree, temp, src1, src2);
 
         symref_t dest = generate(lhs, TCTX_LVAL);
         append(STORE(dest), dest, temp);
@@ -419,17 +442,17 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t base = generate(basetree, TCTX_LVAL|(has_call(idxtree) ? TCTX_SAVE : 0));
         symref_t off  = generate(idxtree);
 
-        const tinfo_t &tinfo = *base->tinfo->subtype();
+        const tinfo_t &eltype = *base->tinfo->subtype();
 
-        if ( !tinfo.is_prim(PRIM_CHAR) )
+        if ( !eltype.is_prim(PRIM_CHAR) )
         {
-          // multiply by sizeof(eltype)
+          // multiply by sizeof(element type)
           symref_t newoff = gen_temp();
-          append(CNT_MUL, newoff, off, symref_t(new symbol_t(ST_INTCON, tinfo.size())));
+          append(CNT_MUL, newoff, off, symref_t(new symbol_t(ST_INTCON, eltype.size())));
           off = newoff;
         }
 
-        return applookup(*tree, base, off, ctx.flags);
+        return gen_lookup(*tree, base, off, ctx.flags);
       }
     case TNT_STRUCT_LOOKUP:
       {
@@ -437,7 +460,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t mem  = tree->sym();
         symref_t off  = symref_t(new symbol_t(ST_INTCON, mem->loc.off()));
 
-        return applookup(*tree, base, off, ctx.flags);
+        return gen_lookup(*tree, base, off, ctx.flags);
       }
     case TNT_ADDROF:
       {
@@ -445,11 +468,12 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t addr = gen_temp(ctx.flags);
 
         append(CNT_LEA, addr, base);
+
         return addr;
       }
     case TNT_DEREF:
       {
-        symref_t addr, dest;
+        symref_t dest, addr;
         dest = addr = generate(tree->children[DEREF_ADDR]);
 
         if ( (ctx.flags & TCTX_LVAL) == 0 )
@@ -459,6 +483,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         }
 
         dest->tinfo = tree->tinfo;
+
         return dest;
       }
     case TNT_CALL:
@@ -488,7 +513,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symvec_t::reverse_iterator loc = arglocs.rbegin();
 
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
-          apparg(*loc, *val);
+          gen_arg(*loc, *val);
 
         f.reset(ST_REGARG);
         f.reset(ST_STKARG);
@@ -541,7 +566,8 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t src2 = generate(rhs);
         symref_t dest = gen_temp(ctx.flags);
 
-        append(tnt2cnt(tree->type()), dest, src1, src2);
+        gen_arithmetic(*tree, dest, src1, src2);
+
         return dest;
       }
     case TNT_IF:

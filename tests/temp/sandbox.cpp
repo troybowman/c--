@@ -49,6 +49,12 @@ int main()
   *ptr = *ptr;
   *ptr += *ptr;
 
+  ptr += ptr;
+
+  int **ptr2;
+  **ptr2 = 4;
+  **ptr2 += **ptr2;
+
   *func2(&y) = 4;
   ptr = x;
 

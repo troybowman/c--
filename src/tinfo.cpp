@@ -100,12 +100,15 @@ tinfo_t::~tinfo_t()
 //-----------------------------------------------------------------------------
 bool tinfo_t::operator==(const tinfo_t &t) const
 {
+  if ( t.is_error() )
+    return true;
+
   return is_prim()  ? (t.is_prim()  && prim()    == t.prim())
        : is_ptr()   ? (t.is_ptr()   && subtype() == t.subtype())
        : is_array() ? (t.is_array() && subtype() == t.subtype())
        : is_udt()   ? (t.is_udt()   && name()    == t.name())
-       : is_bool()  ? (t.is_bool())
-       : true; // silently ignore erroneous types
+       : is_bool()  ? t.is_bool()
+       : true;
 }
 
 //-----------------------------------------------------------------------------
@@ -122,7 +125,7 @@ bool tinfo_t::is_compatible(const tinfo_t &t) const
     case TID_PRIM:
       // ints and chars are compatible
       return t.is_prim()
-          && (_prim    == PRIM_INT || _prim    == PRIM_CHAR)
+          && (prim()   == PRIM_INT || prim()   == PRIM_CHAR)
           && (t.prim() == PRIM_INT || t.prim() == PRIM_CHAR);
 
     case TID_ARRAY:
@@ -130,13 +133,13 @@ bool tinfo_t::is_compatible(const tinfo_t &t) const
       return t.is_array() && subtype() == t.subtype();
 
     case TID_PTR:
-      // pointers are compatible pointers or arrays of the same subtype
+      // pointers are compatible with pointers or arrays of the same subtype
       return (t.is_ptr() || t.is_array()) && subtype() == t.subtype();
 
     case TID_STRUCT:
     case TID_BOOL:
     case TID_ERROR:
-      // structs and bool expressions are only compatible with identical types
+      // structs/bools are only compatible with other structs/bools
       return *this == t;
 
     default:

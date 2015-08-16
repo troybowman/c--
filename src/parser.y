@@ -1572,6 +1572,7 @@ static bool validate_math_expr(
     const treenode_t *rhs)
 {
   ASSERT(1069, rhs != NULL);
+  ASSERT(0, rhs->has_ti());
 
   switch ( type )
   {
@@ -1581,9 +1582,17 @@ static bool validate_math_expr(
       return rhs->tinfo->is_integer();
     case TNT_PLUS:
     case TNT_MINUS:
-      ASSERT(0, lhs != NULL);
-      return lhs->tinfo->is_arithmetic()
-          && rhs->tinfo->is_arithmetic();
+      {
+        ASSERT(0, lhs != NULL);
+        ASSERT(0, lhs->has_ti());
+
+        const tinfo_t &l = *lhs->tinfo;
+        const tinfo_t &r = *rhs->tinfo;
+
+        return l.is_ptr() ? r.is_integer()
+             : r.is_ptr() ? l.is_integer()
+             : l.is_integer() && r.is_integer();
+      }
     case TNT_MULT:
     case TNT_DIV:
     case TNT_SHL:
@@ -1592,6 +1601,7 @@ static bool validate_math_expr(
     case TNT_BOR:
     case TNT_XOR:
       ASSERT(1071, lhs != NULL);
+      ASSERT(0, lhs->has_ti());
       return lhs->tinfo->is_integer()
           && rhs->tinfo->is_integer();
     default:
@@ -1699,8 +1709,8 @@ static bool validate_bool_expr(
     case TNT_GT:
     case TNT_GEQ:
       ASSERT(1050, lhs != NULL);
-      return lhs->tinfo->is_arithmetic()
-          && rhs->tinfo->is_arithmetic();
+      return lhs->tinfo->is_comparable()
+          && rhs->tinfo->is_comparable();
     case TNT_AND:
     case TNT_OR:
       ASSERT(1051, lhs != NULL);

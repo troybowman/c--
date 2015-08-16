@@ -121,15 +121,14 @@ public:
   symref_t sym()              const { return _sym; }
   bool has_call()             const { return _has_call; }
   codenode_t *code()          const { return _code; }
+  int count(symbol_type_t st) const { return _store.at(st)->count(); }
 
-  void setcall()                    { _has_call = true; }
+  void set_call()                   { _has_call = true; }
   void set_code(codenode_t *c)      { _code = c; }
 
   void free(symref_t sym)           { _store[sym->type()]->free(sym); }
   void use(symref_t sym)            { _store[sym->type()]->use(sym);  }
-
   void reset(symbol_type_t st)      { _store.at(st)->reset(); }
-  int count(symbol_type_t st) const { return _store.at(st)->count(); }
 
   symref_t gen_resource(symbol_type_t st)
   {
@@ -206,8 +205,22 @@ private:
   void check_dest(symref_t src);
   void check_src(symref_t src);
 
-  symref_t gen_temp(uint32_t flags = 0, typeref_t = NULLTYPE);
-  symref_t gen_argloc();
+  symref_t gen_temp(uint32_t flags = 0);
+  symref_t gen_argloc(const symbol_t &callee);
+
+  void gen_arg(symref_t argloc, symref_t argval);
+
+  symref_t gen_lookup(
+      const treenode_t &parent,
+      symref_t base,
+      symref_t off,
+      uint32_t flags);
+
+  void gen_arithmetic(
+      const treenode_t &parent,
+      symref_t dest,
+      symref_t src1,
+      symref_t src2);
 
   void append(
       codenode_type_t type,
@@ -215,14 +228,15 @@ private:
       symref_t src1 = NULLREF,
       symref_t src2 = NULLREF);
 
-  void apparg(symref_t argloc, symref_t val);
-  symref_t applookup(symref_t base, symref_t off, uint32_t flags);
-
   symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 
 public:
-  ir_engine_t(ir_func_t &_f, ir_t &_ir)
-    : f(_f), ir(_ir), head(NULL), tail(NULL), lblcnt(0) {}
+  ir_engine_t(ir_func_t &_f, ir_t &_ir) :
+    f(_f),
+    ir(_ir),
+    head(NULL),
+    tail(NULL),
+    lblcnt(0) {}
 
   void start(const treenode_t *root);
 };

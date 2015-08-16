@@ -100,8 +100,8 @@ public:
 
   bool has_ptr()            const { return is_ptr() || (is_array() && subtype()->has_ptr()); }
 
-  bool is_integer()         const { return is_prim(PRIM_CHAR) || is_prim(PRIM_INT); }
-  bool is_arithmetic()      const { return is_integer() || is_ptr(); }
+  bool is_integer()         const { return is_prim() && (_prim == PRIM_CHAR || _prim == PRIM_INT); }
+  bool is_comparable()      const { return is_integer() || is_ptr(); }
 
   bool operator==(const tinfo_t &t) const;
   bool operator!=(const tinfo_t &t) const;
@@ -118,10 +118,10 @@ public:
 class structab_t : public reftab_t<typeref_t>
 {
 public:
-  virtual bool insert(typref_t s)
+  virtual bool insert(typref_t tinfo)
   {
-    ASSERT(0, s != NULL && s->is_struct())
-    return insert(s->name(), s);
+    ASSERT(0, tinfo != NULL && tinfo->is_struct())
+    return insert(tinfo->name(), tinfo);
   }
 };
 
