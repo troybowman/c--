@@ -1,7 +1,11 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <tinfo.h>
+#include <common.h>
+
+class symtab_t;
+class symvec_t;
+class symbol_t;
 
 //-----------------------------------------------------------------------------
 enum symloc_type_t
@@ -9,7 +13,7 @@ enum symloc_type_t
   SLT_UNKNOWN,
   SLT_GLOBAL,
   SLT_REG,
-  SLT_OFF,
+  SLT_STKOFF
 };
 
 //-----------------------------------------------------------------------------
@@ -19,33 +23,34 @@ class symloc_t
   union
   {
     const char *_reg;
-    offset_t _off;
+    offset_t _stkoff;
   };
 
 public:
   symloc_t() : _type(SLT_UNKNOWN) {}
 
   bool is_global() const { return _type == SLT_GLOBAL; }
-  bool is_reg()    const { return _type == SLT_REG; }
-  bool is_off()    const { return _type == SLT_OFF; }
+  bool is_reg()    const { return _type == SLT_REG;    }
+  bool is_stkoff() const { return _type == SLT_STKOFF; }
 
   void set_global()
     { _type = SLT_GLOBAL; }
   void set_reg(const char *reg)
     { _type = SLT_REG; _reg = reg; }
-  void set_off(offset_t off)
-    { _type = SLT_OFF; _off = off; }
+  void set_stkoff(offset_t stkoff)
+    { _type = SLT_STKOFF; _stkoff = stkoff; }
 
   symloc_type_t type() const { return _type; }
   const char *reg()    const { return _reg;  }
-  offset_t off()       const { return _off;  }
+  offset_t stkoff()    const { return _stkoff; }
 };
 
 //-----------------------------------------------------------------------------
 enum symbol_type_t
 {
-  ST_VARIABLE,  // source level variable
-  ST_FUNCTION,  // source level function
+  ST_PRIMITIVE, // primitive (int/char/void)
+  ST_ARRAY,     // array (base type is a primitive)
+  ST_FUNCTION,  // function (return type + local vars)
   ST_TEMP,      // temporary value
   ST_SVTEMP,    // saved temporary value
   ST_STKTEMP,   // temporary that must be stored on the stack
@@ -62,10 +67,19 @@ enum symbol_type_t
 };
 
 //-----------------------------------------------------------------------------
+enum primitive_t
+{
+  PRIM_UNKNOWN,
+  PRIM_INT,
+  PRIM_CHAR,
+  PRIM_VOID
+};
+
+//-----------------------------------------------------------------------------
 // symbolic address in a three-address code node
 class symbol_t : public refcnt_obj_t
 {
-  symbol_type_t _st;
+  symbol_type_t _type;
 
   uint32_t _flags;
 #define SF_PARAMETER    0x01 // is a function parameter?
@@ -73,7 +87,7 @@ class symbol_t : public refcnt_obj_t
 #define SF_DEFINED      0x04 // has been defined?
 #define SF_RET_RESOLVED 0x08 // have we seen a 'return expr' statement yet? (for non-void funcs)
 #define SF_PRINTF       0x10 // identifies the builtin printf function
-#define SF_MAIN         0x20 // identifies the entry point function
+#define SF_MAIN         0x20 // identifies entry point function
 
   std::string _name;
 
@@ -81,15 +95,20 @@ class symbol_t : public refcnt_obj_t
   {
     struct // source level symbols
     {
-      int _line;
-      union
+      int _line; // source line
+      union      // type
       {
-        tplace_t _tinfo; // ST_VARIABLE
-        struct // ST_FUNCTION
+        primitive_t _base;    // ST_PRIMITIVE
+        struct                // ST_ARRAY
         {
-          tplace_t _rtype;
+          primitive_t _eltyp;
+          offsize_t   _size;
+        };
+        struct                // ST_FUNCTION
+        {
+          primitive_t _rt;
           symvec_t *_params;
-          symtab_t *_lvars;
+          symtab_t *_symbols;
         };
       };
     };
@@ -101,113 +120,131 @@ public:
   symloc_t loc;
 
   symbol_t(uint32_t flags, const char *name, int line);
-  symbol_t(uint32_t flags, const char *name, int line, typeref_t rt, symvec_t *params);
-  symbol_t(symbol_type_t st, int val);
-  symbol_t(symbol_type_t st, char *str);
-  symbol_t(symbol_type_t st);
+  symbol_t(uint32_t flags, const char *name, int line, offsize_t size);
+  symbol_t(uint32_t flags, const char *name, int line, symvec_t *params);
+  symbol_t(symbol_type_t type, int val);
+  symbol_t(symbol_type_t type, char *str);
+  symbol_t(symbol_type_t type);
 
   virtual ~symbol_t(); // TODO: why does it have to be virtual? (release())
 
-  symbol_type_t st()        const { return _st; }
+  bool is_prim()            const { return _type  == ST_PRIMITIVE; }
+  bool is_array()           const { return _type  == ST_ARRAY; }
+  bool is_func()            const { return _type  == ST_FUNCTION; }
+  bool is_param()           const { return (_flags & SF_PARAMETER) != 0; }
 
-  bool is_var()             const { return _st == ST_VARIABLE; }
-  bool is_func()            const { return _st == ST_FUNCTION; }
-
-  bool is_prim()            const { return is_var() && tinfo()->is_prim();   }
-  bool is_array()           const { return is_var() && tinfo()->is_array();  }
-  bool is_ptr()             const { return is_var() && tinfo()->is_ptr();    }
-
-  bool is_prim(prim_t p)    const { return is_var() && tinfo()->is_prim(p);  }
-  bool is_array(prim_t p)   const { return is_var() && tinfo()->is_array(p); }
-  bool is_ptr(prim_t p)     const { return is_var() && tinfo()->is_ptr(p);   }
-
-  bool is_param()           const { return (_flags & SF_PARAMETER)    != 0;  }
-  bool is_extern()          const { return (_flags & SF_EXTERN)       != 0;  }
-  bool is_defined()         const { return (_flags & SF_DEFINED)      != 0;  }
-  bool is_ret_resolved()    const { return (_flags & SF_RET_RESOLVED) != 0;  }
-  bool is_printf()          const { return (_flags & SF_PRINTF)       != 0;  }
-  bool is_main()            const { return (_flags & SF_MAIN)         != 0;  }
-
-  typeref_t &tinfo()        const { return deplace(_type); }
-
+  symbol_type_t type()      const { return _type; }
   uint32_t flags()          const { return _flags; }
-  const std::string &name() const { return _name; }
+  std::string name()        const { return _name; }
   const char *c_str()       const { return _name.c_str(); }
   int line()                const { return _line; }
   const char *str()         const { return _str; }
   int val()                 const { return _val; }
 
+  primitive_t base()        const { return _base; }
+
+  offsize_t size()          const { return _size; }
+
   symvec_t *params()        const { return _params; }
-  symtab_t *lvars()         const { return _lvars; }
-  primitive_t prim()        const { return tinfo()->prim(); }
-  offset_t length()         const { return tinfo()->length(); }
+  symtab_t *symbols()       const { return _symbols; }
+  bool is_extern()          const { return (_flags & SF_EXTERN) != 0; }
+  bool is_defined()         const { return (_flags & SF_DEFINED) != 0; }
+  bool is_ret_resolved()    const { return (_flags & SF_RET_RESOLVED) != 0; }
+  bool is_printf()          const { return (_flags & SF_PRINTF) != 0; }
+  bool is_main()            const { return (_flags & SF_MAIN) != 0; }
 
   void set_name(const char *name) { _name.assign(name); }
   void set_line(int line)         { _line = line; }
+  void set_base(primitive_t base) { _base = base; }
 
-  void set_extern()               { _flags |= SF_EXTERN;       }
-  void set_defined()              { _flags |= SF_DEFINED;      }
+  void set_size(offsize_t size)   { _size = size; }
+
+  void set_extern()               { _flags |= SF_EXTERN; }
+  void set_defined()              { _flags |= SF_DEFINED; }
   void set_ret_resolved()         { _flags |= SF_RET_RESOLVED; }
-  void set_printf()               { _flags |= SF_PRINTF;       }
-  void set_lvars(symtab_t *lvars) { _lvars = lvars; }
+  void set_printf()               { _flags |= SF_PRINTF; }
 
   void set_val(int val)           { _val = val; }
 
   virtual void release()          { delete this; }
-
-  void set_base(typeref_t base);
-  offset_t size() const;
 };
 
 //-----------------------------------------------------------------------------
 typedef refcnt_t<symbol_t> symref_t;
-typedef uint8_t splace_t[sizeof(symref_t)];
-typedef std::vector<symref_t> symvec_t;
-#define NULLREF symref_t()
+typedef uint8_t usymref_t[sizeof(symref_t)];
+#define NULLREF symref_t(NULL)
 
 //-----------------------------------------------------------------------------
-inline void place(splace_t &sp, symref_t ref)
+inline void putref(usymref_t uref, symref_t ref)
 {
-  place<symref_t>(sp, ref);
+  unionize<symref_t>(uref, ref);
+}
+
+inline symref_t &getref(const usymref_t &uref)
+{
+  return deunionize<symref_t>(uref);
 }
 
 //-----------------------------------------------------------------------------
-inline symref_t &deplace(const splace_t &sp)
+class symvec_t : public std::vector<symref_t>
 {
-  return deplace<symref_t>(sp);
-}
+  typedef std::vector<symref_t> inherited;
 
-//-----------------------------------------------------------------------------
-class symtab_t : public reftab_t<symref_t>
-{
 public:
-  virtual bool insert(symref_t sym)
+  void assign(const symvec_t &vec)
   {
-    ASSERT(0, sym != NULL);
-    return insert(sym->name(), sym);
+    inherited::assign(vec.begin(), vec.end());
   }
 };
 
 //-----------------------------------------------------------------------------
-class memtab_t : public symtab_t
+// symbol table
+class symtab_t
 {
-  offset_t _offsize;
-#define MTASSERT(s) ASSERT(0, s != NULL && s->is_var() && s->size() != BADOFFSET)
+  typedef std::map<std::string, symref_t> symmap_t;
+
+  symmap_t map;   // fast lookups
+  symvec_t vec;   // maintain insertion order
 
 public:
-  memtab_t() : _offsize(0) {}
-
-  virtual bool insert(symref_t sym)
+  symref_t get(const std::string &key) const
   {
-    MTASSERT(sym);
-    if ( !insert(sym->name(), sym) )
+    symmap_t::const_iterator i = map.find(key);
+    return i != map.end() ? i->second : NULLREF;
+  }
+  bool insert(const std::string &key, symref_t value)
+  {
+    if ( value == NULL || get(key) != NULL )
       return false;
-    sym->loc.set_off(_offsize);
-    _offsize += sym->size();
+    map[key] = value;
+    vec.push_back(value);
     return true;
   }
+  bool insert(symref_t sym)
+  {
+    if ( sym == NULL )
+      return false;
+    return insert(sym->name(), sym);
+  }
 
-  offset_t offsize() const { return _offsize; }
+#define DEFINE_TABLE_ITERATOR(iterator, begin, end)      \
+  typedef symvec_t::iterator iterator;                   \
+  typedef symvec_t::const_##iterator const_##iterator;   \
+  iterator begin() { return vec.begin(); }               \
+  iterator end()   { return vec.end(); }                 \
+  const_##iterator begin() const { return vec.begin(); } \
+  const_##iterator end()   const { return vec.end(); }
+
+  DEFINE_TABLE_ITERATOR(iterator, begin, end)
+  DEFINE_TABLE_ITERATOR(reverse_iterator, rbegin, rend)
+
+#undef DEFINE_TABLE_ITERATOR
+
+  size_t size() const    { return vec.size(); }
+  void swap(symtab_t &r) { map.swap(r.map); vec.swap(r.vec); }
+  void clear()           { map.clear(); vec.clear(); }
+
+  void assign_to(symvec_t &out) const { out.assign(vec); }
 };
 
 #endif // SYMBOL_H

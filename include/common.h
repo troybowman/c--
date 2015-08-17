@@ -121,77 +121,27 @@ public:
 
 //-----------------------------------------------------------------------------
 // used to stuff smart pointers into union members
-template <class T> inline void emplace(uint8_t const addr[], T &obj)
+template <class T> inline void unionize(uint8_t const addr[], T &obj)
 {
   new ((T *)addr) T(obj);
 }
 
-//-----------------------------------------------------------------------------
-template <class T> inline T &deplace(uint8_t const addr[])
+template <class T> inline T &deunionize(uint8_t const addr[])
 {
   return *(T *)addr;
 }
 
 //-----------------------------------------------------------------------------
-template <class T> class reftab_t // table: strings -> smart pointers
-{
-  typedef std::map<std::string, T> map_t;
-  typedef std::vector<T> vec_t;
-
-  map_t map; // fast lookups
-  vec_t vec; // maintain insertion order
-
-public:
-  T get(const std::string &key) const
-  {
-    map_t::const_iterator i = map.find(key);
-    return i != map.end() ? i->second : T();
-  }
-  bool insert(const std::string &key, T val)
-  {
-    if ( val == NULL || get(key) != NULL )
-      return false;
-    map[key] = val;
-    vec.push_back(val);
-    return true;
-  }
-  virtual bool insert(T val)
-  {
-    return false;
-  }
-
-#define DEFINE_TABLE_ITERATOR(iterator, begin, end)      \
-  typedef vec_t::iterator iterator;                      \
-  typedef vec_t::const_##iterator const_##iterator;      \
-  iterator begin() { return vec.begin(); }               \
-  iterator end()   { return vec.end(); }                 \
-  const_##iterator begin() const { return vec.begin(); } \
-  const_##iterator end()   const { return vec.end(); }
-
-  DEFINE_TABLE_ITERATOR(iterator, begin, end)
-  DEFINE_TABLE_ITERATOR(reverse_iterator, rbegin, rend)
-
-#undef DEFINE_TABLE_ITERATOR
-
-  size_t size()    const { return vec.size(); }
-  T back()         const { return vec.back(); }
-  void swap(symtab_t &r) { map.swap(r.map); vec.swap(r.vec); }
-  void clear()           { map.clear(); vec.clear(); }
-
-  void assign_to(vec_t &out)
-  {
-    out.assign(vec.begin(), vec.end());
-  }
-};
-
-//-----------------------------------------------------------------------------
 #ifndef __EA64__
 typedef uint32_t offset_t;
+typedef uint32_t offsize_t;
+#define WORDSIZE 4
 #else
 typedef uint64_t offset_t;
+typedef uint64_t offsize_t;
+#define WORDSIZE 8
 #endif
 
-#define WORDSIZE  sizeof(offset_t)
 #define BADOFFSET offset_t(-1)
 #define DWORDSIZE (WORDSIZE*2)
 #define ALIGN(off, val) ((off + (val-1)) & ~(val-1))
@@ -205,7 +155,7 @@ struct area_t
   area_t() : start(0), end(0) {}
   area_t(offset_t o1, offset_t o2) : start(o1), end(o2) {}
 
-  offset_t size() const { return end - start; }
+  offsize_t size() const { return end - start; }
 };
 
 // names of the built-in print functions

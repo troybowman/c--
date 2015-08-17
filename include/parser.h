@@ -18,13 +18,6 @@ struct parse_results_t
   symtab_t gsyms;
   stx_trees_t trees;
   errvec_t errmsgs;
-
-  void swap(parse_results_t &res)
-  {
-    gsyms.swap(res.gsyms);
-    trees.swap(res.trees);
-    errmsgs.swap(res.errmsgs);
-  }
 };
 
 //-----------------------------------------------------------------------------
@@ -68,19 +61,7 @@ struct terr_info_t
 };
 
 //---------------------------------------------------------------------------
-typedef uint8_t terr_place_t[sizeof(terr_info_t)];
-
-//-----------------------------------------------------------------------------
-static inline terr_info_t deplace(const terr_place_t &uerr)
-{
-  return deplace<terr_info_t>(uerr);
-}
-
-//-----------------------------------------------------------------------------
-static inline void emplace(terr_place_t &uerr, terr_info_t err)
-{
-  emplace<terr_info_t>(uerr, err);
-}
+typedef uint8_t uterr_info_t[sizeof(terr_info_t)];
 
 //---------------------------------------------------------------------------
 struct name_info_t
