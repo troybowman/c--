@@ -444,7 +444,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 
         const tinfo_t &eltype = *base->tinfo->subtype();
 
-        if ( !eltype.is_prim(PRIM_CHAR) )
+        if ( eltype.size() != 1 )
         {
           // multiply by sizeof(element type)
           symref_t newoff = gen_temp();
