@@ -107,7 +107,6 @@ bool tinfo_t::operator==(const tinfo_t &t) const
        : is_ptr()   ? (t.is_ptr()   && subtype() == t.subtype())
        : is_array() ? (t.is_array() && subtype() == t.subtype())
        : is_udt()   ? (t.is_udt()   && name()    == t.name())
-       : is_bool()  ? t.is_bool()
        : true;
 }
 
@@ -137,10 +136,12 @@ bool tinfo_t::is_compatible(const tinfo_t &t) const
       return (t.is_ptr() || t.is_array()) && subtype() == t.subtype();
 
     case TID_STRUCT:
-    case TID_BOOL:
-    case TID_ERROR:
-      // structs/bools are only compatible with other structs/bools
+      // structs are only compatible with the same struct
       return *this == t;
+
+    case TID_ERROR:
+      // ignore erroneous types
+      return true;
 
     default:
       INTERR(0);
