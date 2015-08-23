@@ -8,6 +8,13 @@
 #define RESERVED_TEMP2 "$t8"
 #define RESERVED_TEMP3 "$t9"
 
+#define TAB "  "
+#define TABLEN (sizeof(TAB)-1)
+
+#define TAB0 0
+#define TAB1 1
+#define TAB2 2
+
 //-----------------------------------------------------------------------------
 static const char *header =
 "#-----------------------------------------------------------------------------\n"
@@ -47,6 +54,7 @@ static const char *prim2str(primitive_t p)
     case PRIM_INT:  return "int";
     case PRIM_CHAR: return "char";
     case PRIM_VOID: return "void";
+    case PRIM_BOOL: return "bool";
     default:
       INTERR(0);
   }
@@ -510,148 +518,199 @@ void logger_t::walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
 }
 
 //-----------------------------------------------------------------------------
-#define FMTLEN  1024
 #define NAMELEN 32
-#define OFFLEN  64
-
-static const char *sep =
-"|--------------------------------|";
+#define SEPARATOR "|--------------------------------|"
 
 //-----------------------------------------------------------------------------
-static void print_frame_item(stack_frame_t &frame, offset_t off, const char *fmt, ...)
+static void vprint_frame_item(
+    asm_context_t &actx,
+    offset_t off,
+    offset_t framesize,
+    const char *fmt,
+    va_list va)
 {
-  char namestr[FMTLEN];
+  char namestr[NAMELEN];
+  vsnprintf(namestr, NAMELEN, fmt, va);
 
-  va_list va;
-  va_start(va, fmt);
-  vsnprintf(namestr, FMTLEN, fmt, va);
-  va_end(va);
-
-  char item[TABLEN+NAMELEN+5]; // <tab> + '#' + ' ' + '|' + name + '|' + '\0'
+  char item[NAMELEN+4]; // ' ' + '|' + name + '|' + '\0'
   char *ptr = item;
-
-  const char *pfx = TAB1"# |";
-  APPSTR(ptr, pfx, strlen(pfx));
 
   int len = cmin(strlen(namestr), NAMELEN);
   const char *const end = ptr + NAMELEN;
 
-  APPCHAR(ptr, ' ', (NAMELEN - len) / 2);
-  APPSTR (ptr, namestr, len);
-  APPCHAR(ptr, ' ', end-ptr);
-  APPCHAR(ptr, '|', 1);
-  *ptr = '\0';
+  APPCHAR(ptr, end, ' ', (NAMELEN - len) / 2);
+  APPSTR (ptr, end, namestr, len);
+  APPCHAR(ptr, end, ' ', end-ptr);
+  APPCHAR(ptr, end, '|', 1);
+  APPZERO(ptr, end);
 
-  frame.ctx.out("%s\n", item);
+  actx.cmtout(" %s\n", item);
 
-  char offstr[OFFLEN];
-  snprintf(offstr, OFFLEN,
+  char offstr[MAXSTR];
+  snprintf(offstr,
+           MAXSTR,
            "sp+%d%s",
-           off, off == frame.size() ? "  <-- start of caller's stack" : "");
+           off, off == framesize ? "  <-- start of caller's stack" : "");
 
-  frame.ctx.out(TAB1"# %s %s\n", sep, offstr);
+  actx.cmtout(" %s %s\n", SEPARATOR, offstr);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::print_pseudo_section(int sectionid, const char *label)
+static void print_frame_item(
+    asm_context_t &actx,
+    offset_t off,
+    offset_t framesize,
+    const char *fmt,
+    ...)
 {
-  if ( sections[sectionid].is_valid() )
-    print_frame_item(*this, sections[sectionid].start, label);
+  va_list va;
+  va_start(va, fmt);
+  vprint_frame_item(actx, off, framesize, fmt, va);
+  va_end(va);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::print()
+static void print_pseudo_section(
+    asm_context_t &actx,
+    const stack_frame_t &frame,
+    int sectionid,
+    const char *label)
 {
-  ctx.out("\n"TAB1"# %s\n", sep);
+  const frame_section_t &sec = frame.sections[sectionid];
 
-  // PARAMS -------------------------------------------------------------------
-  struct param_printer_t : public frame_item_visitor_t
+  if ( sec.is_valid() )
+    print_frame_item(actx, sec.start, frame.size, label);
+}
+
+//-----------------------------------------------------------------------------
+struct frame_item_printer_t : public frame_item_visitor_t
+{
+  offset_t framesize;
+
+protected:
+  void print_frame_item(asm_context_t &actx, offset_t off, const char *fmt, ...)
   {
-    virtual void visit_item(item_info_t &info) // TODO: const?
-    {
-      symbol_t &param = info.sym;
+    va_list va;
+    va_start(va, fmt);
+    vprint_frame_item(actx, off, framesize, fmt, va);
+    va_end(va);
+  }
+};
 
+//-----------------------------------------------------------------------------
+static void print_items(
+    asm_context_t &actx,
+    const stack_frame_t &frame,
+    int sectionidx,
+    frame_item_printer_t &fip)
+{
+  fip.framesize = frame.size();
+  frame.sections[sectionidx].visit_items(actx, fip, FIV_REVERSE);
+}
+
+//-----------------------------------------------------------------------------
+static void print_params(asm_context_t &actx, const stack_frame_t &frame)
+{
+  struct param_printer_t : public frame_item_printer_t
+  {
+    virtual void visit_item(item_info_t &info, const symbol_t &param)
+    {
       if ( param.loc.is_stkoff() )
-        print_frame_item(info.frame, param.loc.stkoff(), param.c_str());
+        print_frame_item(info.actx, param.loc.stkoff(), param.c_str());
       else
-        print_frame_item(info.frame, info.sec.start + info.idx * WORDSIZE,
-                         "<%s is in %s>",
-                         param.c_str(), param.loc.reg());
+        print_frame_item(info.actx,
+                         info.sec.start + info.idx * WORDSIZE,
+                         "<%s is in %s>", param.c_str(), param.loc.reg());
     }
-  } pp;
+  } printer;
 
-  visit_items(FS_PARAMS, pp, FIV_REVERSE);
+  print_items(actx, frame, FS_PARAMS, printer);
+}
 
-  // PADDING2 -----------------------------------------------------------------
-  print_pseudo_section(FS_PADDING2, "<padding>");
-
-  // LVARS --------------------------------------------------------------------
-  struct lvar_printer_t : public frame_item_visitor_t
+//-----------------------------------------------------------------------------
+static void print_lvars(asm_context_t &actx, const stack_frame_t&frame)
+{
+  struct lvar_printer_t : public frame_item_printer_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(item_info_t &info, const symbol_t &lvar)
     {
-      symbol_t &lvar = info.sym;
-
       if ( !lvar.is_param() )
-        print_frame_item(info.frame, lvar.loc.stkoff(), lvar.c_str());
+        print_frame_item(info.actx, lvar.loc.stkoff(), lvar.c_str());
     }
-  } lvp;
+  } printer;
 
-  visit_items(FS_LVARS, lvp, FIV_REVERSE);
+  print_items(actx, frame, FS_LVARS, printer);
+}
 
-  // PADDING1 -----------------------------------------------------------------
-  print_pseudo_section(FS_PADDING1, "<padding>");
-
-  // RA -----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+static void print_ra(asm_context_t &actx, const stack_frame_t &frame)
+{
   struct ra_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(item_info_t &info, const symbol_t &ra)
     {
-      print_frame_item(info.frame, info.sec.start, info.sym.loc.reg());
+      print_frame_item(info.actx, info.sec.start, ra.loc.reg());
     }
-  } rap;
+  } printer;
 
-  visit_items(FS_RA, rap, FIV_REVERSE);
+  print_items(actx, frame, FS_RA, printer);
+}
 
-  // STKTEMPS -----------------------------------------------------------------
+//-----------------------------------------------------------------------------
+static void print_stktemps(asm_context_t &actx, const stack_frame_t &frame)
+{
   struct stktemp_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(item_info_t &info, const symbol_t &stktemp)
     {
       print_frame_item(info.frame,
-                       info.sym.loc.stkoff(),
-                       "<stktemp %d>", info.sym.val());
+                       stktemp.loc.stkoff(),
+                       "<stktemp %d>", stktemp.val());
     }
-  } stp;
+  } printer;
 
-  visit_items(FS_STKTEMPS, stp, FIV_REVERSE);
+  print_items(atcx, frame, FS_STKTEMPS, printer);
+}
 
-  // SVREGS -------------------------------------------------------------------
-  struct svregs_printer_t : public frame_item_visitor_t
-  {
-    virtual void visit_item(item_info_t &info)
-    {
-      print_frame_item(info.frame,
-                       info.sec.start + info.idx * WORDSIZE,
-                       info.sym.loc.reg());
-    }
-  } srp;
-
-  visit_items(FS_SVREGS, srp, FIV_REVERSE);
-
-  // STKARGS ------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+static void print_stkargs(asm_context_t &actx, const stack_frame_t &frame)
+{
   struct stkargs_printer_t : public frame_item_visitor_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(item_info_t &info, const symbol_t &stkarg)
     {
       print_frame_item(info.frame,
-                       info.sym.loc.stkoff(),
-                       "<stkarg %d>", info.sym.val());
+                       stkarg.loc.stkoff(),
+                       "<stkarg %d>", stkarg.val());
     }
-  } sag;
+  } printer;
 
-  visit_items(FS_STKARGS, sag, FIV_REVERSE);
+  print_items(actx, frame, FS_STKARGS, printer);
+}
 
+//-----------------------------------------------------------------------------
+void asm_context_t::print_stack_frame(const stack_frame_t &frame)
+{
+  out(TAB0, "\n");
+  actx.tablevel = TAB1;
+  cmtout(" %s\n", SEPARATOR);
+
+  // PARAMS -------------------------------------------------------------------
+  print_params(*this, frame);
+  // PADDING2 -----------------------------------------------------------------
+  print_pseudo_section(FS_PADDING2, "<padding>");
+  // LVARS --------------------------------------------------------------------
+  print_lvars(*this, frame);
+  // PADDING1 -----------------------------------------------------------------
+  print_pseudo_section(FS_PADDING1, "<padding>");
+  // RA -----------------------------------------------------------------------
+  print_ra(*this, frame);
+  // STKTEMPS -----------------------------------------------------------------
+  print_stktemps(*this, frame);
+  // SVREGS -------------------------------------------------------------------
+  print_svregs(*this, frame);
+  // STKARGS ------------------------------------------------------------------
+  print_stkargs(*this, frame);
   // REGARGS ------------------------------------------------------------------
   print_pseudo_section(FS_REGARGS, "<minimum 4 arg slots>");
 }

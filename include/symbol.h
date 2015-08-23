@@ -58,7 +58,8 @@ enum symbol_type_t
   ST_REGARG,   // register argument
   ST_STKARG,   // stack argument
   ST_ELLIPSIS, // identifies "..." parameter declaration
-  ST_ZERO      // zero register
+  ST_ZERO,     // zero register
+  ST_PADDING,  // stack padding
 };
 
 //-----------------------------------------------------------------------------
@@ -99,6 +100,7 @@ public:
   symbol_t(symbol_type_t st, int val);
   symbol_t(symbol_type_t st, char *str);
   symbol_t(symbol_type_t st);
+  symbol_t(offset_t off);
 
   symbol_type_t st()        const { return _st; }
 

@@ -119,225 +119,234 @@ static void gen_data_section(asm_ctx_t &ctx)
 
 //-----------------------------------------------------------------------------
 void frame_section_t::visit_items(
-    stack_frame_t &frame,
+    asm_context_t &actx,
     frame_item_visitor_t &fiv,
-    uint32_t flags)
+    uint32_t flags) const
 {
   for ( size_t i = 0; i < items.size(); i++ )
   {
     size_t idx = (flags & FIV_REVERSE) == 0 ? i : items.size() - 1 - i;
-    item_info_t info(frame, *this, *items[idx], idx);
-    fiv.visit_item(info);
+    item_info_t info(actx, *this, idx);
+    symbol_t &item = *items[idx];
+
+    fiv.visit_item(info, item);
   }
 }
 
 //-----------------------------------------------------------------------------
-inline void stack_frame_t::visit_items(
-    int sectionidx,
-    frame_item_visitor_t &fiv,
-    uint32_t flags)
+void frame_section_t::visit_items(
+    asm_context_t &actx,
+    frame_item_builder_t &fib)
 {
-  sections[sectionidx].visit_items(*this, fiv, flags);
+  for ( size_t i = 0; i < items.size(); i++ )
+  {
+    frame_mods_t mods(actx, *this, i);
+    symbol_t &item = *items[i];
+
+    fib.visit_item(mods, item);
+
+    if ( info.delta != BADOFFSET )
+      end += info.delta;
+  }
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_regargs_section()
+static void build_regargs_section(
+    asm_context_t &actx,
+    stack_frame_t &frame,
+    const ir_func_t &f)
 {
-  frame_section_t &regargs = sections[FS_REGARGS];
+  frame_section_t &regargs = frame.sections[FS_REGARGS];
 
   regargs.init(*f.get(ST_REGARG));
 
   if ( f.has_call() )
     regargs.end = ARGREGQTY * WORDSIZE;
 
-  struct regargs_builder_t : public frame_item_visitor_t
+  struct regargs_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(frame_mods_t &, symbol_t &arg)
     {
-      symbol_t &regarg = info.sym;
-      regarg.loc.set_reg(argreg_names[regarg.val()]);
+      arg.loc.set_reg(argreg_names[arg.val()]);
     }
   } b;
 
-  visit_items(FS_REGARGS, b);
+  regargs.visit_items(actx, b);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_stkargs_section()
+static void build_stkargs_section(asm_context_t &actx, stack_frame_t &frame)
 {
-  frame_section_t &stkargs = sections[FS_STKARGS];
+  frame_section_t &stkargs = frame.sections[FS_STKARGS];
 
   stkargs.init(*f.get(ST_STKARG));
   stkargs.start = stkargs.end = sections[FS_REGARGS].end;
 
-  struct stkargs_builder_t : public frame_item_visitor_t
+  struct stkargs_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(frame_mods_t &mods, symbol_t &stkarg)
     {
-      info.sym.loc.set_stkoff(info.sec.end);
-      info.sec.end += WORDSIZE;
+      stkarg.loc.set_stkoff(mods.sec.end);
+      mods.delta = WORDSIZE;
     }
   } b;
 
-  visit_items(FS_STKARGS, b);
+  stkargs.visit_items(actx, b);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_svregs_section()
+static void build_svregs_section(asm_context_t &actx, stack_frame_t &frame)
 {
   frame_section_t &svregs = sections[FS_SVREGS];
 
   svregs.init(*f.get(ST_SVTEMP));
   svregs.start = svregs.end = sections[FS_STKARGS].end;
 
-  struct svregs_builder_t : public frame_item_visitor_t
+  struct svregs_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(frame_mods_t &mods, symbol_t &svreg)
     {
-      symbol_t &svreg = info.sym;
       svreg.loc.set_reg(svreg_names[svreg.val()]);
-      info.sec.end += WORDSIZE;
+      mods.delta = WORDSIZE;
     }
   } b;
 
-  visit_items(FS_SVREGS, b);
+  svregs.visit_items(actx, b);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_stktemps_section()
+static void build_stktemps_section(asm_context_t &actx, stack_frame_t &frame)
 {
   frame_section_t &stktemps = sections[FS_STKTEMPS];
 
   stktemps.init(*f.get(ST_STKTEMP));
   stktemps.start = stktemps.end = sections[FS_SVREGS].end;
 
-  struct stktemps_builder_t : public frame_item_visitor_t
+  struct stktemps_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(frame_mods_t &info, symbol_t &mods)
     {
-      info.sym.loc.set_stkoff(info.sec.end);
-      info.sec.end += WORDSIZE;
+      stktemp.loc.set_stkoff(mods.sec.end);
+      mods.delta = WORDSIZE;
     }
   } b;
 
-  visit_items(FS_STKTEMPS, b);
+  stktemps.visit_items(actx, b);
 };
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_ra_section()
+static void build_ra_section(asm_context_t &actx, stack_frame_t &frame)
 {
   frame_section_t &ra = sections[FS_RA];
 
   ra.init(*f.get(ST_RETADDR));
   ra.start = ra.end = sections[FS_STKTEMPS].end;
 
-  struct ra_builder_t : public frame_item_visitor_t
+  struct ra_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(frame_mods_t &mods, symbol_t &ra)
     {
-      info.sym.loc.set_reg("$ra");
-      info.sec.end += WORDSIZE;
+      ra.loc.set_reg("$ra");
+      mods.delta = WORDSIZE;
     }
   } b;
 
-  visit_items(FS_RA, b);
+  ra.visit_items(actx, b);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_padding_section(int padid, int previd)
+static void build_padding_section(
+    stack_frame_t &frame,
+    int padid,
+    int previd)
 {
-  frame_section_t &padding = sections[padid];
+  frame_section_t &padding = frame.sections[padid];
 
-  padding.start = sections[previd].end;
+  padding.start = frame.sections[previd].end;
   padding.end   = ALIGN(padding.start, DWORDSIZE);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_lvars_section()
+static void build_lvars_section(asm_context_t &actx, frame_section_t &frame)
 {
-  frame_section_t &lvars = sections[FS_LVARS];
+  frame_section_t &lvars = frame.sections[FS_LVARS];
 
   lvars.init(*f.sym()->lvars());
   lvars.start = lvars.end = sections[FS_PADDING1].end;
 
   struct lvars_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(frame_mods_t &mods, symbol_t &lvar)
     {
-      symbol_t &lvar = info.sym;
-      frame_section_t &sec = info.sec;
-
       if ( lvar.is_param() )
         return;
 
-      lvar.loc.set_stkoff(sec.end);
-
-      sec.end += lvar.size();
-      sec.end = ALIGN(sec.end, WORDSIZE); // align to word boundary
+      lvar.loc.set_stkoff(mods.sec.end);
+      mods.delta = ALIGN(lvar.size(), WORDSIZE);
     }
   } b;
 
-  visit_items(FS_LVARS, b);
+  lvars.visit_items(actx, b);
 }
 
 //-----------------------------------------------------------------------------
-void stack_frame_t::build_params_section()
+static void build_params_section(asm_context_t &actx, stack_frame_t &frame)
 {
-  frame_section_t &params = sections[FS_PARAMS];
+  frame_section_t &params = frame.sections[FS_PARAMS];
 
   params.init(*f.sym()->params());
   params.start = params.end = sections[FS_PADDING2].end;
 
-  struct params_builder_t : public frame_item_visitor_t
+  struct params_builder_t : public frame_item_builder_t
   {
     uint32_t nregargs;
 
-    virtual void visit_item(item_info_t &info)
+    virtual void visit_item(frame_mods_t &mods, symbol_t &param)
     {
-      if ( info.idx < ARGREGQTY && info.idx >= nregargs )
-        info.sym.loc.set_reg(argreg_names[info.idx]);
+      if ( mods.idx < ARGREGQTY && mods.idx >= nregargs )
+        param.loc.set_reg(argreg_names[mods.idx]);
       else
-        info.sym.loc.set_stkoff(info.sec.end);
+        param.loc.set_stkoff(mods.sec.end);
 
-      info.sec.end += WORDSIZE;
+      mods.delta = WORDISZE;
     }
 
     params_builder_t(uint32_t _nregargs) : nregargs(_nregargs) {}
 
   } b(sections[FS_REGARGS].nitems());
 
-  visit_items(FS_PARAMS, b);
+  params.visit_items(actx, b);
 }
 
 //-----------------------------------------------------------------------------
-stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
-  : f(_f), ctx(_ctx), epilogue_lbl(new symbol_t(ST_LABEL))
+stack_frame_t::stack_frame_t(asm_ctx_t &actx, const ir_func_t &f)
 {
-  prepare_named_symbol(ctx, epilogue_lbl, "%s%s", "__leave", f.sym()->c_str());
+  epilogue_label = symref_t(new symbol_t(ST_LABEL));
+  prepare_named_symbol(ctx, epilogue_label, "%s%s", "__leave", f.sym()->c_str());
 
-  build_regargs_section();
-  build_stkargs_section();
-  build_svregs_section();
-  build_stktemps_section();
-  build_ra_section();
-  build_padding_section(FS_PADDING1, FS_RA);
-  build_lvars_section();
-  build_padding_section(FS_PADDING2, FS_LVARS);
-  build_params_section();
+  build_regargs_section(actx, *this, f);
+  build_stkargs_section(actx, *this);
+  build_svregs_section(actx, *this);
+  build_stktemps_section(actx, *this);
+  build_ra_section(actx, *this);
+  build_padding_section(*this, FS_PADDING1, FS_RA);
+  build_lvars_section(actx, *this);
+  build_padding_section(*this, FS_PADDING2, FS_LVARS);
+  build_params_section(actx, *this);
 }
 
 //-----------------------------------------------------------------------------
-struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
+struct reg_saver_t : public frame_item_visitor_t
 {
   const char *cmd;
   frame_section_t &base;
 
-  virtual void visit_item(item_info_t &info)
+  virtual void visit_item(item_info_t &info, const symbol_t &sym)
   {
-    info.ctx.out(
-        TAB1"%s %s, %d($sp)\n",
+    info.actx.out(TAB1,
+        "%s %s, %d($sp)\n",
         cmd,
-        info.sym.loc.reg(),
+        sym.loc.reg(),
         base.start + info.idx * WORDSIZE);
   }
 
@@ -370,7 +379,7 @@ void stack_frame_t::gen_prologue()
 //-----------------------------------------------------------------------------
 void stack_frame_t::gen_epilogue()
 {
-  ctx.out("\n%s:\n", epilogue_lbl->c_str());
+  ctx.out("\n%s:\n", epilogue_label->c_str());
 
   for ( int i = 2; i >= 0; i-- )
   {

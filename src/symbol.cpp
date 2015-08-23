@@ -37,6 +37,13 @@ symbol_t::symbol_t(symbol_type_t st) :
   _flags(0) {}
 
 //-----------------------------------------------------------------------------
+symbol_t::symbol_t(offset_t off) :
+  _st(ST_PADDING)
+{
+  loc.set_stkoff(off);
+}
+
+//-----------------------------------------------------------------------------
 void symbol_t::set_base(typeref_t base)
 {
   if ( tinfo == NULL )

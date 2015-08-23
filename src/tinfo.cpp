@@ -105,7 +105,7 @@ bool tinfo_t::operator==(const tinfo_t &t) const
 
   switch ( _id )
   {
-    case TID_PRIM:  return t.is_prim(prim());
+    case TID_PRIM:  return t.is_prim(_prim);
     case TID_PTR:   return t.is_ptr() && subtype() == t.subtype();
     case TID_ARRAY: return t.is_array() && subtype() == t.subtype();
     case TID_UDT:   return t.is_udt() && name() == t.name();
@@ -130,7 +130,7 @@ bool tinfo_t::is_compatible(const tinfo_t &t) const
   {
     case TID_PRIM:
       // ints and chars are compatible
-      return is_integer() ? t.is_integer() : t.is_prim(prim());
+      return is_integer() ? t.is_integer() : t.is_prim(_prim);
 
     case TID_PTR:
       // pointers are compatible with pointers or arrays of the same subtype
