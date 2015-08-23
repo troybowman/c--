@@ -11,16 +11,9 @@
 
 #define OUTFILE_EXT "asm"
 
-#ifndef NDEBUG
-dbg_flags_t dbg_flags = 0;
 static const char *argdesc  = ":v:o:";
 static const char *usagestr =
-    "usage: %s [-v dbg_flags] [-o outfile] filename\n";
-#else
-static const char *argdesc  = ":o:";
-static const char *usagestr =
-    "usage: %s [-o outfile] filename\n";
-#endif
+  "usage: %s [-v dbg_flags] [-o outfile] filename\n";
 
 //-----------------------------------------------------------------------------
 inline bool is_path_sep(char c)
@@ -60,7 +53,7 @@ static char *gen_outpath(const char *inpath)
   APPSTR(ptr, ptr1, baselen);
   APPSTR(ptr, ".", 1);
   APPSTR(ptr, OUTFILE_EXT, extlen);
-  *ptr = '\0';
+  APPZERO(ptr, end);
 
   return buf;
 }
@@ -75,6 +68,8 @@ struct args_t
 #define ARGS_INFILE  3
 #define ARGS_OUTFILE 4
 #define ARGS_NOINPUT 5
+
+  dbg_flags_t flags;
 
   FILE *infile;
   char *outpath;
@@ -91,8 +86,12 @@ struct args_t
   args_t(char *_outpath, const char *_str)
     : code(ARGS_OUTFILE), outpath(_outpath), str(_str) {}
 
-  args_t(FILE *_infile, char *_outpath, FILE *_outfile)
-    : code(ARGS_OK), infile(_infile), outpath(_outpath), outfile(_outfile) {}
+  args_t(FILE *_infile, dbg_flags_t _flags, char *_outpath, FILE *_outfile) :
+    code(ARGS_OK),
+    flags(_flags)
+    infile(_infile),
+    outpath(_outpath),
+    outfile(_outfile) {}
 
   ~args_t()
   {
@@ -113,6 +112,7 @@ struct args_t
 static args_t parseargs(int argc, char **argv)
 {
   char *outpath = NULL;
+  dbg_flags_t flags = 0;
 
   int c, prev_ind;
   while ( prev_ind = optind, (c = getopt(argc, argv, argdesc)) != -1 )
@@ -128,7 +128,7 @@ static args_t parseargs(int argc, char **argv)
     {
 #ifndef NDEBUG
       case 'v':
-        dbg_flags |= dbg_flags_t(strtoul(optarg, NULL, 0));
+        flags |= dbg_flags_t(strtoul(optarg, NULL, 0));
         break;
 #endif
       case 'o':
@@ -159,7 +159,7 @@ static args_t parseargs(int argc, char **argv)
   if ( outfile == NULL )
     return args_t(outpath, strerror(errno));
 
-  return args_t(infile, outpath, outfile);
+  return args_t(flags, infile, outpath, outfile);
 }
 
 //-----------------------------------------------------------------------------
@@ -218,20 +218,19 @@ int main(int argc, char **argv)
   if ( !parse(res, args.infile) )
     return process_parse_err(res, args);
 
-  LOG_INIT(args.outfile);
-  LOG_PARSE_RESULTS(res);
-  LOG_CHECK_PHASE_FLAG(dbg_no_ir);
+  asm_context_t actx(args.outfile, args.flags);
+  actx.print_parse_results(res);
+  CHECK_PHASE_FLAG(dbg_no_ir);
 
   // intermediate representation ----------------------------------------------
   ir_t ir;
   generate_ir(ir, res);
 
-  LOG_IR(ir);
-  LOG_CHECK_PHASE_FLAG(dbg_no_code);
+  actx.print_ir(ir);
+  CHECK_PHASE_FLAG(dbg_no_code);
 
   // backend ------------------------------------------------------------------
-  asm_ctx_t ctx(args.outfile);
-  generate_mips_asm(ctx, ir);
+  generate_mips_asm(actx, ir);
 
   return 0;
 }

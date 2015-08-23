@@ -1,19 +1,22 @@
 #include <treenode.h>
 #include <logger.h>
 
-#define CLEAR_CHILDREN() memset(children, 0, sizeof(children))
+#define INIT_LEAF() memset(children, 0, sizeof(children))
 
-#define CHILDPARAMS2 \
-  treenode_t *c0,    \
-  treenode_t *c1,    \
-  treenode_t *c2,    \
+#define CHILDPARAMS \
+  treenode_t *c0,   \
+  treenode_t *c1,   \
+  treenode_t *c2,   \
   treenode_t *c3
 
 #define INIT_CHILDREN() \
+do                      \
+{                       \
   children[0] = c0;     \
   children[1] = c1;     \
   children[2] = c2;     \
-  children[3] = c3;
+  children[3] = c3;     \
+} while ( false );
 
 //-----------------------------------------------------------------------------
 treenode_t::treenode_t(int val, typeref_t _tinfo) :
@@ -21,7 +24,7 @@ treenode_t::treenode_t(int val, typeref_t _tinfo) :
   _val(val),
   tinfo(_tinfo)
 {
-  CLEAR_CHILDREN();
+  INIT_LEAF();
   ASSERT(0, tinfo != NULL);
 }
 
@@ -32,13 +35,13 @@ treenode_t::treenode_t(treenode_type_t t, char *str, typeref_t _tinfo) :
   _str(str),
   tinfo(_tinfo)
 {
-  CLEAR_CHILDREN();
+  INIT_LEAF();
   ASSERT(1037, _str != NULL);
   ASSERT(0, tinfo != NULL);
 }
 
 //-----------------------------------------------------------------------------
-treenode_t::treenode_t(treenode_type_t type, CHILDPARAMS2) : _type(type)
+treenode_t::treenode_t(treenode_type_t type, CHILDPARAMS) : _type(type)
 {
   INIT_CHILDREN();
 
@@ -76,7 +79,7 @@ treenode_t::treenode_t(treenode_type_t type, CHILDPARAMS2) : _type(type)
 }
 
 //-----------------------------------------------------------------------------
-treenode_t::treenode_t(treenode_type_t type, typeref_t _tinfo, CHILDPARAMS2) :
+treenode_t::treenode_t(treenode_type_t type, typeref_t _tinfo, CHILDPARAMS) :
   _type(type),
   tinfo(_tinfo)
 {
@@ -128,7 +131,7 @@ treenode_t::treenode_t(treenode_type_t type, typeref_t _tinfo, CHILDPARAMS2) :
 }
 
 //-----------------------------------------------------------------------------
-treenode_t::treenode_t(treenode_type_t type, symref_t sym, CHILDPARAMS2) :
+treenode_t::treenode_t(treenode_type_t type, symref_t sym, CHILDPARAMS) :
   _type(type),
   tinfo(sym->tinfo())
 {

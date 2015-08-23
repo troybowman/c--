@@ -14,33 +14,6 @@ static const char *svreg_names[SVREGQTY] =
 static const char *argreg_names[ARGREGQTY] =
   { "$a0", "$a1", "$a2", "$a3" };
 
-#define RESERVED_TEMP1 "$t7"
-#define RESERVED_TEMP2 "$t8"
-#define RESERVED_TEMP3 "$t9"
-
-//-----------------------------------------------------------------------------
-asm_ctx_t::asm_ctx_t(FILE *_outfile) : outfile(_outfile)
-{
-  ASSERT(0, outfile);
-
-  t7 = symref_t(new symbol_t(ST_TEMP));
-  t8 = symref_t(new symbol_t(ST_TEMP));
-  t9 = symref_t(new symbol_t(ST_TEMP));
-
-  t7->loc.set_reg(RESERVED_TEMP1);
-  t8->loc.set_reg(RESERVED_TEMP2);
-  t9->loc.set_reg(RESERVED_TEMP3);
-}
-
-//-----------------------------------------------------------------------------
-void asm_ctx_t::out(const char *fmt, ...)
-{
-  va_list va;
-  va_start(va, fmt);
-  vfprintf(outfile, fmt, va);
-  va_end(va);
-}
-
 //-----------------------------------------------------------------------------
 static bool prepare_named_symbol(asm_ctx_t &ctx, symref_t sym, const char *fmt, ...)
 {
@@ -94,7 +67,7 @@ template<class T> static void gen_asm_names(
 static void init_gsyms(asm_ctx_t &ctx, ir_t &ir)
 {
   gen_asm_names<symtab_t>(ctx, ir.gsyms,   "_");
-  gen_asm_names<symtab_t>(ctx, ir.strings, "_str", true);
+  gen_asm_names<strtab_t>(ctx, ir.strings, "_str", true);
   gen_asm_names<symvec_t>(ctx, ir.labels,  "_L",   true);
 
   ir.gsyms.clear();
@@ -284,7 +257,7 @@ void stack_frame_t::build_lvars_section()
 {
   frame_section_t &lvars = sections[FS_LVARS];
 
-  lvars.init(*f.sym()->symbols());
+  lvars.init(*f.sym()->lvars());
   lvars.start = lvars.end = sections[FS_PADDING1].end;
 
   struct lvars_builder_t : public frame_item_visitor_t
@@ -299,20 +272,7 @@ void stack_frame_t::build_lvars_section()
 
       lvar.loc.set_stkoff(sec.end);
 
-      switch ( lvar.type() )
-      {
-        case ST_PRIMITIVE:
-          sec.end += lvar.base() == PRIM_INT ? WORDSIZE : 1;
-          break;
-        case ST_ARRAY:
-          sec.end += lvar.base() == PRIM_INT
-                   ? WORDSIZE * lvar.size()
-                   : lvar.size();
-          break;
-        default:
-          INTERR(1086);
-      }
-
+      sec.end += lvar.size();
       sec.end = ALIGN(sec.end, WORDSIZE); // align to word boundary
     }
   } b;
@@ -374,7 +334,7 @@ struct stack_frame_t::reg_saver_t : public frame_item_visitor_t
 
   virtual void visit_item(item_info_t &info)
   {
-    info.frame.ctx.out(
+    info.ctx.out(
         TAB1"%s %s, %d($sp)\n",
         cmd,
         info.sym.loc.reg(),

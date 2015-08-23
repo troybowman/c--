@@ -37,21 +37,33 @@ do                         \
 #endif // !NDEBUG
 
 //-----------------------------------------------------------------------------
-#define APPCHAR(ptr, c, len) \
-do                           \
-{                            \
-  int _l = len;              \
-  while ( _l-- > 0)          \
-    { *ptr = c; ptr++; }     \
+#define APPCHAR(ptr, end, chr, count) \
+do                                    \
+{                                     \
+  int __count = count;                \
+  while ( __count-- > 0 )             \
+  {                                   \
+    ASSERT(0, (ptr) < (end));         \
+    *(ptr)++ = chr;                   \
+  }                                   \
 } while ( false )
 
 //-----------------------------------------------------------------------------
-#define APPSTR(ptr, str, len) \
-do                            \
-{                             \
-  strncpy(ptr, str, len);     \
-  ptr += len;                 \
+#define APPSTR(ptr, end, str, len)  \
+do                                  \
+{                                   \
+  ASSERT(0, ((ptr)+(len)) < (end)); \
+  strncpy((ptr), (str), (len));     \
+  (ptr) += len;                     \
 } while ( false )
+
+//-----------------------------------------------------------------------------
+#define APPZERO(ptr, end)   \
+do                          \
+{                           \
+  ASSERT(0, (ptr) < (end)); \
+  *(ptr) = '\0';            \
+} while ( false );
 
 //-----------------------------------------------------------------------------
 #define cmin(a,b) ((a) < (b) ? (a) : (b))
@@ -181,7 +193,7 @@ public:
   void swap(symtab_t &r) { map.swap(r.map); vec.swap(r.vec); }
   void clear()           { map.clear(); vec.clear(); }
 
-  void assign_to(vec_t &out)
+  void assign_to(std::vector<T> &out)
   {
     out.assign(vec.begin(), vec.end());
   }

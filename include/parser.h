@@ -16,6 +16,7 @@ typedef std::vector<std::string> errvec_t;
 struct parse_results_t
 {
   symtab_t gsyms;
+  structab_t structs;
   stx_trees_t trees;
   errvec_t errmsgs;
 

@@ -2,11 +2,9 @@
 #define MIPS_ASM_H
 
 #include <ir.h>
-#include <logger.h>
 
 struct asm_ctx_t;
 class frame_section_t;
-class stack_frame_t;
 
 //-----------------------------------------------------------------------------
 void generate_mips_asm(asm_ctx_t &ctx, ir_t &ir);
@@ -14,12 +12,12 @@ void generate_mips_asm(asm_ctx_t &ctx, ir_t &ir);
 //-----------------------------------------------------------------------------
 struct item_info_t
 {
-  stack_frame_t &frame;
+  asm_ctx_t &ctx;
   frame_section_t &sec;
   symbol_t &sym;
   uint32_t idx;
 
-  item_info_t(stack_frame_t &f, frame_section_t &sn, symbol_t &s, uint32_t i)
+  item_info_t(asm_ctx_t &ctx, frame_section_t &sn, symbol_t &s, uint32_t i)
     : frame(f), sec(sn), sym(s), idx(i) {}
 };
 
@@ -53,9 +51,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class stack_frame_t
-{
-  frame_section_t sections[9];
+// frame section ids
 #define FS_PARAMS   8
 #define FS_PADDING2 7
 #define FS_LVARS    6
@@ -66,59 +62,20 @@ class stack_frame_t
 #define FS_STKARGS  1
 #define FS_REGARGS  0
 
-  void build_regargs_section();
-  void build_stkargs_section();
-  void build_svregs_section();
-  void build_stktemps_section();
-  void build_ra_section();
-  void build_lvars_section();
-  void build_params_section();
-  void build_padding_section(int, int);
+//-----------------------------------------------------------------------------
+struct stack_frame_t
+{
+  frame_section_t sections[9];
 
-  struct reg_saver_t;
+  symref_t epilogue;
 
-  const ir_func_t &f;
-
-public:
-  asm_ctx_t &ctx;
-  symref_t epilogue_lbl;
-
-  stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx);
-
-  void visit_items(int, frame_item_visitor_t &, uint32_t flags = 0);
-
-  void gen_prologue();
-  void gen_epilogue();
-
+  stack_frame_t(asm_ctx_t &_ctx, const ir_func_t &func);
+  void visit_items(int section, frame_item_visitor_t &fiv, uint32_t flags = 0);
   offset_t size() const { return sections[FS_PADDING2].end; }
 
-#ifndef NDEBUG
-  void print();
-  void print_pseudo_section(int, const char *);
-#endif
-};
-
-#define TAB1   "  "
-#define TAB2   "    "
-#define TABLEN 2
-
-//-----------------------------------------------------------------------------
-struct asm_ctx_t
-{
-  FILE *outfile;
-
-  // all named symbols (labels, strings, src symbols)
-  symtab_t gsyms;
-
-  // reserved temps. used for storing temporaries in memory when we
-  // run out of temp registers
-  symref_t t7;
-  symref_t t8;
-  symref_t t9;
-
-  asm_ctx_t(FILE *_outfile);
-
-  void out(const char *fmt, ...);
+  struct reg_saver_t;
+  void gen_prologue();
+  void gen_epilogue();
 };
 
 #endif // MIPS_ASM_H

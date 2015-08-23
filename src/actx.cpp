@@ -1,10 +1,12 @@
-#ifndef NDEBUG
+#ifndef ACTX_H
+#define ACTX_H
 
-#include <logger.h>
-#include <symbol.h>
-#include <treenode.h>
+#include <actx.h>
 #include <ir.h>
-#include <asm.h>
+
+#define RESERVED_TEMP1 "$t7"
+#define RESERVED_TEMP2 "$t8"
+#define RESERVED_TEMP3 "$t9"
 
 //-----------------------------------------------------------------------------
 static const char *header =
@@ -13,14 +15,27 @@ static const char *header =
 "#-----------------------------------------------------------------------------\n";
 
 //-----------------------------------------------------------------------------
-void logger_t::cmtout(int indent, const char *fmt, ...)
+asm_context_t::asm_context_t(FILE *_outfile, dbg_flags_t _flags)
+  : outfile(_outfile),
+    flags(_flags)
 {
-  std::string line("# ");
-  while ( --indent >= 0 ) line.append("  ");
-  line += fmt;
+  ASSERT(0, outfile != NULL);
+
+  t7 = symref_t(new symbol_t(ST_TEMP));
+  t8 = symref_t(new symbol_t(ST_TEMP));
+  t9 = symref_t(new symbol_t(ST_TEMP));
+
+  t7->loc.set_reg(RESERVED_TEMP1);
+  t8->loc.set_reg(RESERVED_TEMP2);
+  t9->loc.set_reg(RESERVED_TEMP3);
+}
+
+//-----------------------------------------------------------------------------
+void asm_context_t::out(const char *fmt, ...)
+{
   va_list va;
   va_start(va, fmt);
-  vfprintf(logfile, line.c_str(), va);
+  vfprintf(outfile, fmt, va);
   va_end(va);
 }
 
@@ -29,12 +44,76 @@ static const char *prim2str(primitive_t p)
 {
   switch ( p )
   {
-    case PRIM_INT:  return "PRIM_INT";
-    case PRIM_CHAR: return "PRIM_CHAR";
-    case PRIM_VOID: return "PRIM_VOID";
+    case PRIM_INT:  return "int";
+    case PRIM_CHAR: return "char";
+    case PRIM_VOID: return "void";
     default:
       INTERR(0);
   }
+}
+
+//-----------------------------------------------------------------------------
+void asm_context_t::print_tinfo(char *buf, size_t bufsize, const tinfo_t &tinfo)
+{
+  const char *str = NULL;
+
+  switch ( tinfo.id() )
+  {
+    case TID_PRIM:
+      str = prim2str(tinfo.prim());
+      strncpy(buf, bufsize, str);
+      break;
+    case TID_ARRAY:
+      if ( tinfo.size() != BADOFFSET )
+        buf += snprintf(buf, "[%d]->", bufsize, tinfo.size());
+      else
+        buf += snprintf(buf, "[]->", bufsize);
+      print_tinfo(buf, end-buf, *tinfo.subtype());
+      break;
+    case TID_PTR:
+      buf += snprintf(buf, "*->", bufsize);
+      print_tinfo(buf, end-buf, *tinfo.subtype());
+      break;
+    case TID_STRUCT:
+      str = tinfo.name().c_str();
+      strncpy(buf, bufsize, str);
+      break;
+    case TID_BOOL:
+      strncpy(buf, bufsize, "bool");
+      break;
+    default:
+      INTERR(0);
+  }
+}
+
+//-----------------------------------------------------------------------------
+void asm_context_t::print_gsyms(const symtab_t &gsyms)
+{
+
+}
+
+//-----------------------------------------------------------------------------
+void logger_t::print_parse_results(const parse_results_t &res)
+{
+  if ( (flags & dbg_dump_gsyms) != 0 )
+    print_gsyms(res.gsyms);
+  if ( (flags & dbg_dump_structs) != 0 )
+    print_structs(res.structs);
+  if ( (flags & dbg_dump_funcs) != 0 )
+    print_trees(res.trees);
+}
+
+//-----------------------------------------------------------------------------
+void logger_t::cmtout(int indent, const char *fmt, ...)
+{
+  std::string line("# ");
+  while ( --indent >= 0 )
+    line.append("  ");
+  line += fmt;
+  va_list va;
+  va_start(va, fmt);
+  vfprintf(logfile, line.c_str(), va);
+  va_end(va);
 }
 
 //-----------------------------------------------------------------------------
@@ -577,4 +656,4 @@ void stack_frame_t::print()
   print_pseudo_section(FS_REGARGS, "<minimum 4 arg slots>");
 }
 
-#endif // NDEBUG
+#endif // ACTX_H

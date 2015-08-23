@@ -41,8 +41,8 @@ enum treenode_type_t
   TNT_AEQ,
   TNT_OEQ,
   TNT_XEQ,
-#define LHS         0
-#define RHS         1
+#define LHS 0
+#define RHS 1
   TNT_ARRAY_LOOKUP,
 #define AL_BASE     0
 #define AL_INDEX    1
@@ -77,13 +77,6 @@ enum treenode_type_t
 };
 
 //-----------------------------------------------------------------------------
-#define CHILDPARAMS      \
-  treenode_t *c0 = NULL, \
-  treenode_t *c1 = NULL, \
-  treenode_t *c2 = NULL, \
-  treenode_t *c3 = NULL
-
-//-----------------------------------------------------------------------------
 class treenode_t
 {
   treenode_type_t _type;
@@ -102,9 +95,29 @@ public:
 
   treenode_t(int val, typeref_t tinfo);
   treenode_t(treenode_type_t type, char *str, typeref_t tinfo);
-  treenode_t(treenode_type_t type, CHILDPARAMS);
-  treenode_t(treenode_type_t type, typeref_t tinfo, CHILDPARAMS);
-  treenode_t(treenode_type_t type, symref_t sym, CHILDPARAMS);
+
+  treenode_t(
+      treenode_type_t type,
+      treenode_t *c0 = NULL,
+      treenode_t *c1 = NULL,
+      treenode_t *c2 = NULL,
+      treenode_t *c3 = NULL);
+
+  treenode_t(
+      treenode_type_t type,
+      typeref_t tinfo,
+      treenode_t *c0 = NULL,
+      treenode_t *c1 = NULL,
+      treenode_t *c2 = NULL,
+      treenode_t *c3 = NULL);
+
+  treenode_t(
+      treenode_type_t type,
+      symref_t sym,
+      treenode_t *c0 = NULL,
+      treenode_t *c1 = NULL,
+      treenode_t *c2 = NULL,
+      treenode_t *c3 = NULL);
 
   ~treenode_t();
 

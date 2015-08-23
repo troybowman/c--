@@ -42,8 +42,6 @@ class parser_ctx_t : public parse_results_t
   }
 
 public:
-  structab_t structs;
-
   parser_ctx_t() :
       mode(CTX_GLOBAL), _syms(&gsyms),
       i(new tinfo_t(PRIM_INT)),

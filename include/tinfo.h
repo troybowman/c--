@@ -38,8 +38,8 @@ enum type_id_t
 {
   TID_ERROR,   // bad type  - erroneously used/declared
   TID_PRIM,    // primitive - int/char/void
-  TID_PTR,     // pointer   - points to another tinfo_t
-  TID_ARRAY,   // array     - element type + length
+  TID_PTR,     // pointer   - points to another tinfo
+  TID_ARRAY,   // array     - element tinfo + length
   TID_STRUCT,  // udt       - name + member table
   TID_BOOL,    // boolean   - only used with boolean expressions
 };
@@ -73,8 +73,6 @@ public:
   tinfo_t(typeref_t pointed);
   tinfo_t(typeref_t eltype, offset_t length);
   tinfo_t(const char *name, int line);
-
-  virtual ~tinfo_t();
 
   type_id_t id()            const { return _id; }
 
@@ -112,6 +110,8 @@ public:
   void set_members(memtab_t *members);
 
   virtual void release() { delete this; }
+
+  virtual ~tinfo_t();
 };
 
 //-----------------------------------------------------------------------------
