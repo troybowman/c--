@@ -243,7 +243,7 @@ prog : prog decl   ';'
 decl :        typename  var_decls { process_var_list (ctx, $2, DPL($1));        delete $2; }
      |        typename func_decls { process_func_list(ctx, $2, DPL($1), false); delete $2; }
      | EXTERN typename func_decls { process_func_list(ctx, $3, DPL($2), true);  delete $3; }
-     | STRUCT ID                  { process_struct_decl(ctx, $2); free($2);  }
+     | STRUCT ID                  { process_struct_decl(ctx, $2); free($2); }
      ;
 
 /*---------------------------------------------------------------------------*/
