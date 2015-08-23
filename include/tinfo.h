@@ -30,7 +30,8 @@ enum prim_t // primitives
 {
   PRIM_INT,
   PRIM_CHAR,
-  PRIM_VOID
+  PRIM_VOID,
+  PRIM_BOOL
 };
 
 //-----------------------------------------------------------------------------
@@ -41,7 +42,6 @@ enum type_id_t
   TID_PTR,     // pointer   - points to another tinfo
   TID_ARRAY,   // array     - element tinfo + length
   TID_STRUCT,  // udt       - name + member table
-  TID_BOOL,    // boolean   - only used with boolean expressions
 };
 
 //-----------------------------------------------------------------------------
@@ -84,7 +84,6 @@ public:
   bool is_ptr()             const { return _id == TID_PTR;    }
   bool is_array()           const { return _id == TID_ARRAY;  }
   bool is_struct()          const { return _id == TID_STRUCT; }
-  bool is_bool()            const { return _id == TID_BOOL;   }
 
   prim_t prim()             const { return _prim; }
   offset_t length()         const { return _length; }
@@ -96,9 +95,16 @@ public:
   bool is_array(prim_t p)   const { return is_array() && subtype()->is_prim(p); }
   bool is_ptr(prim_t p)     const { return is_ptr() && subtype()->is_prim(p); }
 
+  bool is_char()            const { return is_prim(PRIM_CHAR); }
+  bool is_int()             const { return is_prim(PRIM_INT);  }
+  bool is_void()            const { return is_prim(PRIM_VOID); }
+  bool is_bool()            const { return is_prim(PRIM_BOOL); }
+
+  bool is_str()             const { return is_array(PRIM_CHAR); }
+
   bool has_ptr()            const { return is_ptr() || (is_array() && subtype()->has_ptr()); }
 
-  bool is_integer()         const { return is_prim() && (_prim == PRIM_CHAR || _prim == PRIM_INT); }
+  bool is_integer()         const { return is_int() || is_char(); }
   bool is_comparable()      const { return is_integer() || is_ptr(); }
 
   bool operator==(const tinfo_t &t) const;

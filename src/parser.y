@@ -46,9 +46,9 @@ public:
       mode(CTX_GLOBAL), _syms(&gsyms),
       i(new tinfo_t(PRIM_INT)),
       c(new tinfo_t(PRIM_CHAR)),
-      v(new tinfo_t(PRIM_VOID))
-      s(new tinfo_t(BADOFFSET, c)),
-      b(new tinfo_t(TID_BOOL)),
+      v(new tinfo_t(PRIM_VOID)),
+      b(new tinfo_t(PRIM_BOOL)),
+      s(new tinfo_t(BADOFFSET, c)) {}
 
   ~parser_ctx_t() { clear(); }
 
@@ -78,8 +78,8 @@ public:
   typeref_t i; // int
   typeref_t c; // char
   typeref_t v; // void
-  typeref_t s; // string
   typeref_t b; // bool
+  typeref_t s; // string
 
   // built-in print functions
   symref_t print_string;
