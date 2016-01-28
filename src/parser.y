@@ -40,11 +40,11 @@ class parser_ctx_t : public parse_results_t
 #define CTX_TEMP   2
   union
   {
-    symtab_t *_syms; // currently active symbol table
-    struct           // current function
+    symtab_t *_syms;    // currently active symbol table
+    struct
     {
-      symtab_t *_lvars;
-      usymref_t _func;
+      symtab_t *_lvars; // local variables
+      usymref_t _func;  // function we are currently parsing
     };
   };
 
@@ -80,7 +80,6 @@ public:
   symtab_t *syms() const   { return _syms; }
 
   void insert(symref_t s)  { _syms->insert(s); }
-
   symref_t get(const std::string &key) const { return _syms->get(key); }
 
   // built-in print functions
