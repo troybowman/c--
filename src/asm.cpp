@@ -32,33 +32,38 @@ static const char *argreg_names[ARGREGQTY] =
 
 //-----------------------------------------------------------------------------
 void frame_section_t::visit_items(
-    asm_context_t &actx,
+    asm_context_t &ctx,
     frame_item_visitor_t &fiv,
     uint32_t flags) const
 {
   for ( size_t i = 0; i < items.size(); i++ )
   {
     item_info_t info;
-    info.ctx = actx
+
+    info.ctx = &ctx;
     info.sec = *this;
     info.idx = (flags & FIV_REVERSE) == 0 ? i : (items.size()-1) - i;
+
     fiv.visit_item(info, *items[info.idx]);
   }
 }
 
 //-----------------------------------------------------------------------------
 void frame_section_t::build_items(
-    asm_context_t &actx,
+    asm_context_t *actx,
     frame_item_builder_t &fib)
 {
   for ( size_t i = 0; i < items.size(); i++ )
   {
     frame_mods_t mods;
-    mods.ctx = actx;
+
+    mods.ctx = &ctx;
     mods.sec = *this;
     mods.idx = i;
     mods.delta = BADOFFSET;
+
     fib.build_item(mods, *items[i]);
+
     if ( mods.delta != BADOFFSET )
       end += mods.delta;
   }
@@ -79,13 +84,13 @@ static void build_regargs(
 
   struct regargs_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(frame_mods_t &, symbol_t &arg)
+    virtual void build_item(frame_mods_t &, symbol_t &arg)
     {
       arg.loc.set_reg(argreg_names[arg.val()]);
     }
   } b;
 
-  regargs.visit_items(actx, b);
+  regargs.visit_items(ctx, b);
 }
 
 //-----------------------------------------------------------------------------
@@ -98,7 +103,7 @@ static void build_stkargs(asm_context_t &actx, stack_frame_t &frame)
 
   struct stkargs_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(frame_mods_t &mods, symbol_t &stkarg)
+    virtual void build_item(frame_mods_t &mods, symbol_t &stkarg)
     {
       stkarg.loc.set_stkoff(mods.sec.end);
       mods.delta = WORDSIZE;
@@ -118,7 +123,7 @@ static void build_svregs(asm_context_t &actx, stack_frame_t &frame)
 
   struct svregs_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(frame_mods_t &mods, symbol_t &svreg)
+    virtual void build_item(frame_mods_t &mods, symbol_t &svreg)
     {
       svreg.loc.set_reg(svreg_names[svreg.val()]);
       mods.delta = WORDSIZE;
@@ -138,7 +143,7 @@ static void build_stktemps(asm_context_t &actx, stack_frame_t &frame)
 
   struct stktemps_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(frame_mods_t &info, symbol_t &mods)
+    virtual void build_item(frame_mods_t &info, symbol_t &mods)
     {
       stktemp.loc.set_stkoff(mods.sec.end);
       mods.delta = WORDSIZE;
@@ -158,7 +163,7 @@ static void build_ra(asm_context_t &actx, stack_frame_t &frame)
 
   struct ra_builder_t : public frame_item_builder_t
   {
-    virtual void visit_item(frame_mods_t &mods, symbol_t &ra)
+    virtual void build_item(frame_mods_t &mods, symbol_t &ra)
     {
       ra.loc.set_reg("$ra");
       mods.delta = WORDSIZE;
@@ -187,7 +192,7 @@ static void build_lvars(asm_context_t &actx, frame_section_t &frame)
 
   struct lvars_builder_t : public frame_item_visitor_t
   {
-    virtual void visit_item(frame_mods_t &mods, symbol_t &lvar)
+    virtual void build_item(frame_mods_t &mods, symbol_t &lvar)
     {
       if ( lvar.is_param() )
         return;
@@ -212,7 +217,7 @@ static void build_params(asm_context_t &actx, stack_frame_t &frame)
   {
     uint32_t nregargs;
 
-    virtual void visit_item(frame_mods_t &mods, symbol_t &param)
+    virtual void build_item(frame_mods_t &mods, symbol_t &param)
     {
       if ( mods.idx < ARGREGQTY && mods.idx >= nregargs )
         param.loc.set_reg(argreg_names[mods.idx]);
@@ -366,9 +371,52 @@ static void print_tinfo(char *buf, size_t bufsize, const tinfo_t &tinfo)
 }
 
 //-----------------------------------------------------------------------------
-void asm_context_t::print_gsyms(const symtab_t &gsyms)
+void asm_context_t::print_symtab(const symtab_t &t, const char *name)
 {
+  fprintf(outfile, "# SYMBOL TABLE: %s (size = %d)", name, t.size());
 
+#define MAXNAMELEN 32
+#define MAXTYPELEN 32
+#define MAXLINENUM 10
+#define VSEP '|'
+#define ROWPFX "# "VSEP
+#define PFXLEN sizeof(ROWPFX)-1
+#define ROWLEN (PFXLEN+MAXNAMELEN+1+MAXTYPELEN+1+MAXLINELEN+2)
+
+#define FLUSH(buf) fputs(outfile, buf)
+
+#define SEPRARATOR(buf, end)        \
+do                                  \
+{                                   \
+  char *ptr = buf;                  \
+  APPSTR(ptr, end, ROWPFX, PFXLEN); \
+  APPCHAR(ptr, end, end-ptr-2);     \
+  APPCHAR(ptr, end, VSEP, 1);       \
+  APPZERO(ptr, end);                \
+  FLUSH(buf);                       \
+} while ( false )
+
+// # |------------------------------------------------------------------------------|
+// # |              name               |             type               |    line   |
+// # |------------------------------------------------------------------------------|
+// # |              name               |             type               |    line   |
+// # |------------------------------------------------------------------------------|
+// # |              name               |             type               |    line   |
+// # |------------------------------------------------------------------------------|
+
+  char buf[ROWLEN];
+  const char *const end = buf + sizeof(buf);
+
+  for ( symtab_t::const_iterator i = t.begin(); i != t.end(); i++ )
+  {
+    SEPARATOR(buf, end);
+
+    char *ptr = buf;
+    APPSTR(buf, end, ROWPFX, PFXLEN);
+
+    const symbol_t &s = *i;
+
+  }
 }
 
 //-----------------------------------------------------------------------------

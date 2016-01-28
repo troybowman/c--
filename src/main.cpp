@@ -172,7 +172,7 @@ static int process_args_err(args_t args, const char *prog)
       fprintf(stderr, "error: unknown option '-%c'\n", args.c);
       return 3;
     case ARGS_MISSING:
-      fprintf(stderr, "error: option '-%c' requiargs an argument\n", args.c);
+      fprintf(stderr, "error: option '-%c' requires an argument\n", args.c);
       return 4;
     case ARGS_INFILE:
       fprintf(stderr, "error: could not open input file: %s\n", args.str);
@@ -218,19 +218,20 @@ int main(int argc, char **argv)
   if ( !parse(res, args.infile) )
     return process_parse_err(res, args);
 
-  asm_context_t actx(args.outfile, args.flags);
-  actx.print_parse_results(res);
-  CHECK_PHASE_FLAG(dbg_no_ir);
+  asm_context_t ctx(args.outfile, args.flags);
+
+  PRINT_PARSE_RESULTS(ctx, res);
+  CHECK_PHASE_FLAG(ctx, dbg_no_ir);
 
   // intermediate representation ----------------------------------------------
   ir_t ir;
   generate_ir(ir, res);
 
-  actx.print_ir(ir);
-  CHECK_PHASE_FLAG(dbg_no_code);
+  PRINT_IR(ctx, ir);
+  CHECK_PHASE_FLAG(ctx, dbg_no_code);
 
   // backend ------------------------------------------------------------------
-  generate_mips_asm(actx, ir);
+  generate_mips_asm(ctx, ir);
 
   return 0;
 }

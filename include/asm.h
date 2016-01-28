@@ -15,14 +15,14 @@ typedef uint32_t dbg_flags_t;
 //-----------------------------------------------------------------------------
 enum dbg_flag_t
 {
-  dbg_no_parse      = 1 << 0, // just collect cmdline args and exit
-  dbg_print_gsyms   = 1 << 1, // print global symbol table
-  dbg_print_structs = 1 << 2, // print structures table
-  dbg_print_funcs   = 1 << 3, // print syntax tree and lvars for each function
-  dbg_no_ir         = 1 << 4, // exit before generating intermediate code
-  dbg_print_ir      = 1 << 5, // print intermediate code
-  dbg_no_code       = 1 << 6, // exit before final code generation
-  dbg_asm_cmts      = 1 << 7, // include debug messages in asm output
+  dbg_no_parse      = 0x00 // just collect cmdline args and exit
+  dbg_print_gsyms   = 0x01 // print global symbol table
+  dbg_print_structs = 0x02 // print structures table
+  dbg_print_funcs   = 0x04 // print syntax tree and lvars for each function
+  dbg_no_ir         = 0x08 // exit before generating intermediate code
+  dbg_print_ir      = 0x10 // print intermediate code
+  dbg_no_code       = 0x20 // exit before final code generation
+  dbg_asm_cmts      = 0x40 // include debug messages in asm output
 };
 
 //-----------------------------------------------------------------------------
@@ -42,33 +42,35 @@ class asm_context_t
 
   int tablevel;
 
-  void print_gsyms(const symtab_t &);
-  void print_trees(const stx_trees_t &);
-  void print_structs(const structab_t &);
-  void print_stack_frame(const stack_frame_t &frame);
-
-  void out(int tablevel, const char *fmt, ...);
-  void out(const char *fmt, ...);
-  void outcmt(const char *fmt, ...);
-  void outcmt(int tablevel, const char *fmt, ...);
-
 public:
   asm_context_t(FILE *_outfile, dbg_flags_t _flags);
 
+  bool has_flag(dbg_flag_t f) const { return (flags & f) != 0 ; }
+
+  // logging functions
+  void print_symtab(const symtab_t &);
+  void print_trees(const stx_trees_t &);
+  void print_structs(const structab_t &);
+  void print_stack_frame(const stack_frame_t &frame);
   void print_parse_results(const parse_results_t &res);
   void print_ir(const ir_t &ir);
 
+  // asm text generation
   void init_named_symbols(const ir_t &ir);
-
   void gen_data_section();
   void gen_text_section(ir_funcs_t &ir);
 };
 
 //-----------------------------------------------------------------------------
+#define CHECK_PHASE_FLAG(ctx, f)      if ( ctx.has_flag(f) ) return
+#define PRINT_PARSE_RESULTS(ctx, res) ctx.print_parse_results(res)
+#define PRINT_IR(ctx, ir)             ctx.print_ir(ir)
+
+//-----------------------------------------------------------------------------
 struct item_info_t
 {
-  asm_context_t &actx;
-  const area_t &sec;
+  asm_context_t *ctx;
+  area_t sec;
   uint32_t idx;
 };
 

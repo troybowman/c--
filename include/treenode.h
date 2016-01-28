@@ -90,35 +90,9 @@ class treenode_t
 
 public:
   typeref_t tinfo;
-
   treenode_t *children[4];
 
-  treenode_t(int val, typeref_t tinfo);
-  treenode_t(treenode_type_t type, char *str, typeref_t tinfo);
-
-  treenode_t(
-      treenode_type_t type,
-      treenode_t *c0 = NULL,
-      treenode_t *c1 = NULL,
-      treenode_t *c2 = NULL,
-      treenode_t *c3 = NULL);
-
-  treenode_t(
-      treenode_type_t type,
-      typeref_t tinfo,
-      treenode_t *c0 = NULL,
-      treenode_t *c1 = NULL,
-      treenode_t *c2 = NULL,
-      treenode_t *c3 = NULL);
-
-  treenode_t(
-      treenode_type_t type,
-      symref_t sym,
-      treenode_t *c0 = NULL,
-      treenode_t *c1 = NULL,
-      treenode_t *c2 = NULL,
-      treenode_t *c3 = NULL);
-
+  treenode_t() : _type(TNT_ERROR) { memset(children, 0, sizeof(children)); }
   ~treenode_t();
 
   treenode_type_t type()  const { return _type; }
@@ -169,7 +143,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-#define ERRNODE new treenode_t(TNT_ERROR)
+#define ERRNODE new treenode_t()
 
 //-----------------------------------------------------------------------------
 int calc_seq_len(const treenode_t *root);

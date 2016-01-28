@@ -706,13 +706,13 @@ static void merge_decl_and_def(symbol_t &decl, const symbol_t &def)
 {
   decl.set_line(def.line());
 
-        symvec_t &decparams = *decl.params();
-  const symvec_t &defparams = *def.params();
+        symvec_t &decp = *decl.params();
+  const symvec_t &defp = *def.params();
 
-        symvec_t::iterator i = decparams.begin();
-  symvec_t::const_iterator j = defparams.begin();
+        symvec_t::iterator i = decp.begin();
+  symvec_t::const_iterator j = defp.begin();
 
-  for ( ; i != decparams.end() && j != defparams.end(); i++, j++ )
+  for ( ; i != decp.end() && j != defp.end(); i++, j++ )
   {
           symbol_t &p1 = **i;
     const symbol_t &p2 = **j;
@@ -797,7 +797,6 @@ static void struct_enter(parser_ctx_t &ctx, const char *name, int line)
     {
       usererr(ctx, "error: type %s redefined at line %d (previous definition at line %d)\n",
               name, line, s->line());
-
       s = BADTYPE;
     }
     s->set_line(line);
@@ -1166,10 +1165,8 @@ static type_error_t validate_call_ctx(const treenode_t &call, bool expr)
 
   const tinfo_t &rt = call.tinfo();
 
-  if ( expr )
-    return  rt.is_prim(PRIM_VOID) ? TERR_VOID_EXPR : TERR_OK;
-  else
-    return !rt.is_prim(PRIM_VOID) ? TERR_PROCEDURE : TERR_OK;
+  return expr ? rt.is_prim(PRIM_VOID)  ? TERR_VOID_EXPR : TERR_OK;
+              : !rt.is_prim(PRIM_VOID) ? TERR_PROCEDURE : TERR_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -1348,11 +1345,11 @@ static bool process_var_decl(parser_ctx_t &ctx, symref_t var, typeref_t base)
       case TERR_REDECLARED:
         usererr(ctx, "error: variable %s redeclared at line %d (previous declaration at line %d)\n",
                      var->c_str(), var->line(), err.data);
-        return false;
+        break;
       case TERR_BAD_VOID:
         usererr(ctx, "error: cannot declare variable of type void, line %d\n",
                      var->line());
-        return false;
+        break;
       case TERR_INCOMPLETE:
         usererr(ctx, "error: cannot declare variable of incomplete type %s, line %d\n",
                      base->name().c_str(), var->line());
@@ -1768,11 +1765,9 @@ void parse_results_t::swap(parse_results_t &res)
 //---------------------------------------------------------------------------
 bool parse(parse_results_t &res, FILE *infile)
 {
-  ASSERT(1101, infile);
-  /*yydebug = 1;*/
-
   parser_ctx_t ctx;
   scanner_t scanner(infile);
+  /*yydebug = 1;*/
 
   yyparse(scanner.yyscan, ctx);
 

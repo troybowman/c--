@@ -193,7 +193,7 @@ public:
   void swap(symtab_t &r) { map.swap(r.map); vec.swap(r.vec); }
   void clear()           { map.clear(); vec.clear(); }
 
-  void assign_to(std::vector<T> &out)
+  void assign_to(std::vector<T> &out) const
   {
     out.assign(vec.begin(), vec.end());
   }
