@@ -40,12 +40,10 @@ class parser_ctx_t : public parse_results_t
 #define CTX_TEMP   2
   union
   {
-    symtab_t *_syms; // currently active symbol table
-    struct           // current function
-    {
-      symtab_t *_lvars;
-      usymref_t _func;
-    };
+    // pointer to currently active symbol table
+    symtab_t *syms;
+    // pointer to function we are currently parsing
+    usymref_t sym;
   };
 
   void init_params()
@@ -57,7 +55,7 @@ class parser_ctx_t : public parse_results_t
   }
 
 public:
-  parser_ctx_t() : _mode(CTX_GLOBAL), _syms(&gsyms) {}
+  parser_ctx_t() : mode(CTX_GLOBAL), syms(&gsyms) {}
   ~parser_ctx_t() { clear(); }
 
   void clear()
@@ -67,21 +65,30 @@ public:
   }
   void trash()
   {
-    if ( _mode == CTX_TEMP )
-      delete _syms;
+    if ( mode == CTX_TEMP )
+      delete syms;
     setglobal();
   }
 
-  void setglobal()         { clear(); _mode = CTX_GLOBAL; _syms = &gsyms; }
-  void setfunc(symref_t f) { clear(); _mode = CTX_LOCAL;  _syms = new symtab_t; putref(_func, f); init_params(); }
-  void settemp()           { clear(); _mode = CTX_TEMP;   _syms = new symtab_t; }
+  void setglobal()          { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
+  void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(sym, f); }
+  void settemp()            { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
 
-  symref_t &func() const   { return getref(_func); }
-  symtab_t *syms() const   { return _syms; }
+  symref_t &func()    const { return getref(sym); }
 
-  void insert(symref_t s)  { _syms->insert(s); }
-
-  symref_t get(const std::string &key) const { return _syms->get(key); }
+  void insert(symref_t sym)
+  {
+    if ( mode == CTX_GLOBAL || mode == CTX_TEMP )
+      syms->insert(sym);
+    else
+      func()->symbols()->insert(sym);
+  }
+  symref_t get(const std::string &key) const
+  {
+    return mode == CTX_GLOBAL || mode == CTX_TEMP
+         ? syms->get(key)
+         : func()->symbols()->get(key);
+  }
 
   // built-in print functions
   symref_t print_string;
