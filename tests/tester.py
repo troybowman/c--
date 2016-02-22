@@ -14,6 +14,7 @@ TREE     = "tree"
 IR       = "ir"
 ASM      = "asm"
 REAL     = "real"
+ALL_PHASES = [DECL, TREE, IR, ASM, REAL]
 
 #------------------------------------------------------------------------------
 DBG_NO_PARSE   = 0x01
@@ -39,13 +40,21 @@ WARNING  = '\033[93m'
 ENDCOLOR = '\033[0m'
 
 #------------------------------------------------------------------------------
+def replace_ext(path, ext):
+    base = os.path.splitext(path)[0]
+    return base + "." + ext
+
+#------------------------------------------------------------------------------
 class Tester(ArgumentParser):
 
     def __init__(self):
-        self.__find_cmm__() # fail if we're not in the c-- directory tree
+        self.__find_home__()
+        self.__find_cmm_path__("dbg")
+        self.__find_cmm_path__("opt")
         self.__init_args__()
 
-    def __find_cmm__(self):
+    def __find_home__(self):
+        # fail if we're not in the c-- directory tree
         cur = os.getcwd()
         while not os.path.basename(cur).lower() == "c--":
             parent = os.path.dirname(cur)
@@ -53,12 +62,10 @@ class Tester(ArgumentParser):
                 raise Exception("Error: could not find c-- root directory!")
             cur = parent
         self.home = cur
-        self.dbg = os.path.join(self.home, "bin", "dbg", "c--")
-        if not os.path.exists(self.dbg):
-            self.dbg = None
-        self.opt = os.path.join(self.home, "bin", "opt", "c--")
-        if not os.path.exists(self.opt):
-            self.opt = None
+
+    def __find_cmm_path__(self, build):
+        path = os.path.join(self.home, "bin", build, "c--")
+        setattr(self, build, path if os.path.exists(path) else None)
 
     def __init_args__(self):
         ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
@@ -67,8 +74,8 @@ class Tester(ArgumentParser):
             help="list of phases to run",
             metavar="PHASES",
             nargs="+",
-            choices=[DECL, TREE, IR, ASM, REAL],
-            default=[DECL, TREE, IR, ASM, REAL],
+            choices=ALL_PHASES,
+            default=ALL_PHASES,
             dest="phase_spec")
         self.add_argument(
             "-f", "--file-pattern",
@@ -97,15 +104,11 @@ class Tester(ArgumentParser):
             dest="opt")
         self.args = super(Tester, self).parse_args()
 
-    def debug(self):
-        if self.dbg is None:
-            raise Exception("Error: could not find c-- debug binary!")
-        return self.dbg
-
-    def release(self):
-        if self.opt is None:
-            raise Exception("Error: could not find c-- release binary!")
-        return self.opt
+    def get_cmm_path(self, debug):
+        path = getattr(self, "dbg" if debug else "opt")
+        if path is None:
+            raise Exception("Error: could not find c-- %s binary!" % build)
+        return path
 
     def out(self, verbosity, text, color=""):
         if self.args.verbosity >= verbosity:
@@ -114,29 +117,21 @@ class Tester(ArgumentParser):
 
     def info(self, text, color=""):
         self.out(INFO, text, color)
+
     def verb(self, text, color=""):
         self.out(VERB, text, color)
+
     def trce(self, text, color=""):
         self.out(TRCE, text, color)
 
     def success(self, text):
         self.info(text, SUCCESS)
+
     def failure(self, text):
         self.info(text, FAILURE)
+
     def warning(self, text):
         self.info(text, WARNING)
-
-#------------------------------------------------------------------------------
-def replace_ext(path, ext):
-    base = os.path.splitext(path)[0]
-    return base + "." + ext
-
-#------------------------------------------------------------------------------
-def simplify_inpath(path):
-    f = os.path.basename(path)
-    b = os.path.dirname(path)
-    d = os.path.basename(b)
-    return os.path.join(d, f)
 
 #------------------------------------------------------------------------------
 class StderrMonitor:
@@ -204,10 +199,16 @@ class TesterPhase:
         os.chdir(self.prevdir)
 
     def argv(self, t):
-        return [ t.release() if t.args.opt else t.debug(), "-v", hex(self.flags) ]
+        return [ t.get_cmm_path(t.args.opt), "-v", hex(self.flags) ]
+
+    def simplify_inpath(self, path):
+        f = os.path.basename(path)
+        b = os.path.dirname(path)
+        d = os.path.basename(b)
+        return os.path.join(d, f)
 
     def compile(self, t, inpath):
-        t.verb("compiling: %s\n" % simplify_inpath(inpath))
+        t.verb("compiling: %s\n" % self.simplify_inpath(inpath))
         with StderrMonitor(inpath) as errors:
             with MemoryMonitor(t, self.argv(t), inpath) as argv:
                 try:
@@ -264,11 +265,11 @@ if __name__ == "__main__":
     t = Tester()
 
     phases = {
-        DECL    : TesterPhase(t, DECL, DBG_ALL_DECL | DBG_NO_IR),
-        TREE    : TesterPhase(t, TREE, DBG_ALL_TREE | DBG_NO_IR),
-        IR      : TesterPhase(t, IR,   DBG_ALL_IR   | DBG_NO_CODE),
-        ASM     : TesterPhase(t, ASM,  DBG_ALL_IR),
-        REAL    : RealPhase(t),
+        DECL : TesterPhase(t, DECL, DBG_ALL_DECL | DBG_NO_IR),
+        TREE : TesterPhase(t, TREE, DBG_ALL_TREE | DBG_NO_IR),
+        IR   : TesterPhase(t, IR,   DBG_ALL_IR   | DBG_NO_CODE),
+        ASM  : TesterPhase(t, ASM,  DBG_ALL_IR),
+        REAL : RealPhase(t),
         }
 
     for step in t.args.phase_spec:
