@@ -1,9 +1,7 @@
 CC = g++
 
-I   = ./include/
 SRC = ./src/
-
-CFLAGS += -I$(I)
+CFLAGS += -I$(SRC)
 
 ifndef NDEBUG
   CFLAGS += -g -Wall
@@ -30,11 +28,11 @@ else
   BISON = bison
 endif
 
-OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbol.o $(OBJ)treenode.o\
+OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbol.o $(OBJ)treenode.o \
  $(OBJ)ir.o $(OBJ)logger.o $(OBJ)main.o $(OBJ)asm.o
 
-HFILES = $(I)common.h $(I)symbol.h $(I)treenode.h $(I)ir.h\
- $(I)logger.h $(I)parser.h $(I)asm.h
+HFILES = $(SRC)common.h $(SRC)symbol.h $(SRC)treenode.h $(SRC)ir.h \
+ $(SRC)logger.h $(SRC)parser.h $(SRC)asm.h
 
 #------------------------------------------------------------------------------
 $(BIN)c--: $(OBJ)parser.cpp $(OBJ)scanner.cpp $(OBJFILES)
