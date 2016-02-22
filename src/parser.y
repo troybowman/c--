@@ -446,12 +446,13 @@ static bool check_params(const symvec_t &p1, const symvec_t &p2)
         i1 != p1.end() && i2 != p2.end();
         i1++, i2++ )
   {
-    symref_t s1 = *i1;
-    symref_t s2 = *i2;
+    const symbol_t &s1 = **i1;
+    const symbol_t &s2 = **i2;
 
-    if ( s1->type() != s2->type() || s1->base() != s2->base() )
+    if ( s1.type() != s2.type() || s1.base() != s2.base() )
       return false;
   }
+
   return true;
 }
 
@@ -518,8 +519,7 @@ static void set_decl_srcinfo(symbol_t &f1, const symbol_t &f2)
 //-----------------------------------------------------------------------------
 static void func_enter(parser_ctx_t &ctx, symref_t f, primitive_t rt)
 {
-  ASSERT(1000, f != NULL);
-  ASSERT(1004, f->is_func());
+  ASSERT(1000, f != NULL && f->is_func());
 
   f->set_base(rt);
   symref_t prev = ctx.gsyms.get(f->name());
@@ -1072,8 +1072,7 @@ static treenode_t *process_assg(
     treenode_t *rhs,
     int line)
 {
-  ASSERT(1046, lhs != NULL);
-  ASSERT(1047, rhs != NULL);
+  ASSERT(1046, lhs != NULL && rhs != NULL);
 
   if ( !validate_assg(*lhs, *rhs) )
   {
@@ -1235,8 +1234,7 @@ static void process_func_list(
     primitive_t rt,
     bool is_extern)
 {
-  ASSERT(1010, vec != NULL);
-  ASSERT(1025, rt != PRIM_UNKNOWN);
+  ASSERT(1010, vec != NULL && rt != PRIM_UNKNOWN);
 
   for ( symvec_t::iterator i = vec->begin(); i != vec->end(); i++ )
   {
