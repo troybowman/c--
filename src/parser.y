@@ -34,53 +34,34 @@ struct scanner_t
 //---------------------------------------------------------------------------
 class parser_ctx_t : public parse_results_t
 {
-  int mode;
+  int _mode;
 #define CTX_GLOBAL 0
 #define CTX_LOCAL  1
 #define CTX_TEMP   2
   union
   {
-    // pointer to currently active symbol table
-    symtab_t *syms;
-    // pointer to function we are currently parsing
-    usymref_t sym;
+    symtab_t *_syms;     // currently active symbol table
+    struct
+    {
+      symtab_t *_locals; // local variables
+      usymref_t _func;   // current function
+    };
   };
 
 public:
-  parser_ctx_t() : mode(CTX_GLOBAL), syms(&gsyms) {}
+  parser_ctx_t() : _mode(CTX_GLOBAL), _syms(&gsyms) {}
   ~parser_ctx_t() { clear(); }
 
-  void clear()
-  {
-    if ( mode == CTX_LOCAL )
-      func().~symref_t();
-  }
-  void trash()
-  {
-    if ( mode == CTX_TEMP )
-      delete syms;
-    setglobal();
-  }
+  void clear() { if ( _mode == CTX_LOCAL ) { func().~symref_t(); } }
+  void trash() { if ( _mode == CTX_TEMP ) { delete _syms; } setglobal(); }
 
-  void setglobal()          { clear(); mode = CTX_GLOBAL; syms = &gsyms; }
-  void setlocal(symref_t f) { clear(); mode = CTX_LOCAL;  putref(sym, f); }
-  void settemp()            { clear(); mode = CTX_TEMP;   syms = new symtab_t; }
+  void setglobal()          { clear(); _mode = CTX_GLOBAL; _syms = &gsyms; }
+  void setlocal(symref_t f) { clear(); _mode = CTX_LOCAL;  _syms = f->symbols(); putref(_func, f); }
+  void settemp()            { clear(); _mode = CTX_TEMP;   _syms = new symtab_t; }
 
-  symref_t &func()    const { return getref(sym); }
-
-  void insert(symref_t sym)
-  {
-    if ( mode == CTX_GLOBAL || mode == CTX_TEMP )
-      syms->insert(sym);
-    else
-      func()->symbols()->insert(sym);
-  }
-  symref_t get(const std::string &key) const
-  {
-    return mode == CTX_GLOBAL || mode == CTX_TEMP
-         ? syms->get(key)
-         : func()->symbols()->get(key);
-  }
+  symref_t &func() const { return getref(_func); }
+  void insert(symref_t s) { _syms->insert(s); }
+  symref_t get(const std::string &key) const { return _syms->get(key); }
 
   // built-in print functions
   symref_t print_string;
