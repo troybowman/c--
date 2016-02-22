@@ -18,6 +18,7 @@ struct parse_results_t
   symtab_t gsyms;
   stx_trees_t trees;
   errvec_t errmsgs;
+  void swap(parse_results_t &r);
 };
 
 //-----------------------------------------------------------------------------

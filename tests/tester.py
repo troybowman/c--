@@ -133,13 +133,13 @@ class StderrMonitor:
 #------------------------------------------------------------------------------
 class MemoryMonitor:
 
-    def __init__(self, enabled, phase_argv, inpath):
-        self.enabled  = enabled
+    def __init__(self, t, phase_argv, inpath):
+        self.grind    = t.args.grind
         self.def_argv = phase_argv + [ inpath ]
         self.log      = replace_ext(inpath, "vg")
 
     def __enter__(self):
-        if not self.enabled:
+        if not self.grind:
             return self.def_argv
         else:
             return [ "valgrind",
@@ -149,7 +149,7 @@ class MemoryMonitor:
                      ] + self.def_argv
 
     def __exit__(self, tp, v, tr):
-        if self.enabled:
+        if self.grind:
             with open(self.log, "r+b") as log:
                 pattern  = re.compile(r"""
                     (LEAK\s+SUMMARY.*
@@ -182,7 +182,7 @@ class TesterPhase:
     def compile(self, t, inpath):
         t.verb("compiling: %s\n" % simplify_inpath(inpath))
         with StderrMonitor(inpath) as errors:
-            with MemoryMonitor(t.args.grind, self.argv(t), inpath) as argv:
+            with MemoryMonitor(t, self.argv(t), inpath) as argv:
                 try:
                     subprocess.check_call(argv, stdout=errors, stderr=errors)
                 except subprocess.CalledProcessError:

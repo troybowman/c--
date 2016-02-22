@@ -44,7 +44,7 @@ class parser_ctx_t : public parse_results_t
     struct
     {
       symtab_t *_locals; // local variables
-      symplace_t _func;   // current function
+      symplace_t _func;  // current function
     };
   };
 
@@ -52,7 +52,7 @@ public:
   parser_ctx_t() : _mode(CTX_GLOBAL), _syms(&gsyms) {}
   ~parser_ctx_t() { clear(); }
 
-  void clear() { if ( _mode == CTX_LOCAL ) { func().~symref_t(); } }
+  void clear() { if ( _mode == CTX_LOCAL ) func().~symref_t(); }
   void trash() { if ( _mode == CTX_TEMP ) { delete _syms; } setglobal(); }
 
   void setglobal()          { clear(); _mode = CTX_GLOBAL; _syms = &gsyms; }
@@ -1475,19 +1475,23 @@ void usererr(parser_ctx_t &ctx, const char *format, ...)
 }
 
 //---------------------------------------------------------------------------
+void parse_results_t::swap(parse_results_t &r)
+{
+  gsyms.swap(r.gsyms);
+  trees.swap(r.trees);
+  errmsgs.swap(r.errmsgs);
+}
+
+//---------------------------------------------------------------------------
 bool parse(parse_results_t &res, FILE *infile)
 {
-  ASSERT(1101, infile);
   /*yydebug = 1;*/
 
   parser_ctx_t ctx;
   scanner_t scanner(infile);
-
   yyparse(scanner.yyscan, ctx);
 
-  res.gsyms.swap(ctx.gsyms);
-  res.trees.swap(ctx.trees);
-  res.errmsgs.swap(ctx.errmsgs);
+  res.swap(ctx);
 
   return res.errmsgs.empty();
 }
