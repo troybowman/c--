@@ -676,21 +676,24 @@ static void cleanup_fmtarg_list(treenode_t *root)
 static void prepare_substring_arg(
       const parser_ctx_t &ctx,
       format_args_t &fmtargs,
-      const char *const start,
-      const char *const end)
+      const char *const substr_start,
+      const char *const substr_end)
 {
-  int len = end - start;
-  if ( len <= 0 )
+  int substr_len = substr_end - substr_start;
+  if ( substr_len <= 0 )
     return;
 
-  char *str = (char *)malloc(len+3);
-  char *ptr = str;
-  APPCHAR(ptr, '"', 1);
-  APPSTR (ptr, start, len);
-  APPCHAR(ptr, '"', 1);
-  *ptr = '\0';
+  int arg_len = substr_len+3;
+  char *const arg_str = (char *)malloc(arg_len);
+  const char *const arg_end = arg_str + arg_len;
 
-  treenode_t *node = new treenode_t(TNT_STRCON, str);
+  char *ptr = arg_str;
+  APPCHAR(ptr, arg_end, '"', 1);
+  APPSTR (ptr, arg_end, substr_start, substr_len);
+  APPCHAR(ptr, arg_end, '"', 1);
+  APPZERO(ptr, arg_end);
+
+  treenode_t *node = new treenode_t(TNT_STRCON, arg_str);
   fmtargs.push_back(format_arg_t(ctx.print_string, node));
 }
 

@@ -450,18 +450,19 @@ static void print_frame_item(stack_frame_t &frame, offset_t off, const char *fmt
 
   char item[TABLEN+NAMELEN+5]; // <tab> + '#' + ' ' + '|' + name + '|' + '\0'
   char *ptr = item;
+  const char *const end = item + sizeof(item);
 
   const char *pfx = TAB1"# |";
-  APPSTR(ptr, pfx, strlen(pfx));
+  APPSTR(ptr, end, pfx, strlen(pfx));
 
   int len = cmin(strlen(namestr), NAMELEN);
-  const char *const end = ptr + NAMELEN;
+  const char *const name_end = ptr + NAMELEN;
 
-  APPCHAR(ptr, ' ', (NAMELEN - len) / 2);
-  APPSTR (ptr, namestr, len);
-  APPCHAR(ptr, ' ', end-ptr);
-  APPCHAR(ptr, '|', 1);
-  *ptr = '\0';
+  APPCHAR(ptr, end, ' ', (NAMELEN - len) / 2);
+  APPSTR (ptr, end, namestr, len);
+  APPCHAR(ptr, end, ' ', name_end-ptr);
+  APPCHAR(ptr, end, '|', 1);
+  APPZERO(ptr, end);
 
   frame.ctx.out("%s\n", item);
 

@@ -36,31 +36,33 @@ inline bool is_path_sep(char c)
 static char *gen_outpath(const char *inpath)
 {
   int len = strlen(inpath);
-  const char *const end = inpath + len;
+  const char *const in_end = inpath + len;
 
-  const char *ptr1 = end;
+  const char *ptr1 = in_end;
   for ( ; ptr1 != inpath; ptr1-- )
     if ( is_path_sep(*(ptr1-1)) )
       break;
 
-  const char *ptr2 = end;
+  const char *ptr2 = in_end;
   for ( ; ptr2 != ptr1; ptr2-- )
     if ( *ptr2 == '.' )
       break;
 
   if ( ptr2 == ptr1 )
-    ptr2 = end;
+    ptr2 = in_end;
 
   int baselen = ptr2-ptr1;
   int extlen  = strlen(OUTFILE_EXT);
 
-  char *buf = (char *)malloc(baselen+extlen+2);
+  int buflen = baselen+extlen+2;
+  char *buf = (char *)malloc(buflen);
   char *ptr = buf;
+  const char *const end = buf + buflen;
 
-  APPSTR(ptr, ptr1, baselen);
-  APPSTR(ptr, ".", 1);
-  APPSTR(ptr, OUTFILE_EXT, extlen);
-  *ptr = '\0';
+  APPSTR (ptr, end, ptr1, baselen);
+  APPCHAR(ptr, end, '.', 1);
+  APPSTR (ptr, end, OUTFILE_EXT, extlen);
+  APPZERO(ptr, end);
 
   return buf;
 }
@@ -166,6 +168,7 @@ static args_t parseargs(int argc, char **argv)
 static int process_args_err(args_t args, const char *prog)
 {
   fprintf(stderr, usagestr, prog);
+
   switch ( args.code )
   {
     case ARGS_BADOPT:
@@ -202,6 +205,7 @@ static int process_parse_err(const parse_results_t &res, args_t &args)
       break;
     }
   }
+
   remove(args.outpath);
   return 8;
 }
