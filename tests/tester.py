@@ -14,19 +14,32 @@ TREE     = "tree"
 IR       = "ir"
 ASM      = "asm"
 REAL     = "real"
-RELEASE  = "release"
+
+#------------------------------------------------------------------------------
+DBG_NO_PARSE   = 0x01
+DBG_DUMP_GSYMS = 0x02
+DBG_DUMP_LSYMS = 0x04
+DBG_DUMP_TREE  = 0x08
+DBG_NO_IR      = 0x10
+DBG_DUMP_IR    = 0x20
+DBG_NO_CODE    = 0x40
+
+DBG_ALL_DECL = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
+DBG_ALL_TREE = DBG_ALL_DECL   | DBG_DUMP_TREE   # 0x0e
+DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
+
+#------------------------------------------------------------------------------
+INFO = 0
+VERB = 1
+TRCE = 2
+
+FAILURE  = '\033[91m'
+SUCCESS  = '\033[92m'
+WARNING  = '\033[93m'
+ENDCOLOR = '\033[0m'
 
 #------------------------------------------------------------------------------
 class Tester(ArgumentParser):
-
-    INFO = 0
-    VERB = 1
-    TRCE = 2
-
-    FAILURE  = '\033[91m'
-    SUCCESS  = '\033[92m'
-    WARNING  = '\033[93m'
-    ENDCOLOR = '\033[0m'
 
     def __init__(self):
         self.__find_cmm__() # fail if we're not in the c-- directory tree
@@ -40,38 +53,48 @@ class Tester(ArgumentParser):
                 raise Exception("Error: could not find c-- root directory!")
             cur = parent
         self.home = cur
-        self.dbg = os.path.join(self.home, "bin", "debug", "c--")
+        self.dbg = os.path.join(self.home, "bin", "dbg", "c--")
         if not os.path.exists(self.dbg):
             self.dbg = None
-        self.opt = os.path.join(self.home, "bin", "release", "c--")
+        self.opt = os.path.join(self.home, "bin", "opt", "c--")
         if not os.path.exists(self.opt):
             self.opt = None
 
     def __init_args__(self):
         ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
         self.add_argument(
-            "-p", "--phase_spec",
+            "-p", "--phase-spec",
             help="list of phases to run",
             metavar="PHASES",
             nargs="+",
-            choices=[DECL, TREE, IR, ASM, REAL, RELEASE],
-            default=[DECL, TREE, IR, ASM, REAL])
+            choices=[DECL, TREE, IR, ASM, REAL],
+            default=[DECL, TREE, IR, ASM, REAL],
+            dest="phase_spec")
         self.add_argument(
-            "-f", "--file_pattern",
+            "-f", "--file-pattern",
             help="only compile files matching the given pattern",
             metavar="FILES",
-            default="*.c")
+            default="*.c",
+            dest="file_pattern")
         self.add_argument(
             "-v", "--verbosity",
             help="set verbosity level: 0=sparse, 1=verbose, 2=trace",
             metavar="LEVEL",
             type=int,
-            default=self.VERB)
+            default=VERB,
+            dest="verbosity")
         self.add_argument(
             "-g", "--grind",
             help="enable valgrind memory checks",
             action="store_true",
-            default=False)
+            default=False,
+            dest="grind")
+        self.add_argument(
+            "-o", "--use-optimized",
+            help="test with optimized build of c--",
+            action="store_true",
+            default=False,
+            dest="opt")
         self.args = super(Tester, self).parse_args()
 
     def debug(self):
@@ -86,22 +109,22 @@ class Tester(ArgumentParser):
 
     def out(self, verbosity, text, color=""):
         if self.args.verbosity >= verbosity:
-            endcolor = "" if color is "" else self.ENDCOLOR
+            endcolor = "" if color is "" else ENDCOLOR
             sys.stdout.write(color + text + endcolor)
 
     def info(self, text, color=""):
-        self.out(self.INFO, text, color)
+        self.out(INFO, text, color)
     def verb(self, text, color=""):
-        self.out(self.VERB, text, color)
+        self.out(VERB, text, color)
     def trce(self, text, color=""):
-        self.out(self.TRCE, text, color)
+        self.out(TRCE, text, color)
 
     def success(self, text):
-        self.info(text, self.SUCCESS)
+        self.info(text, SUCCESS)
     def failure(self, text):
-        self.info(text, self.FAILURE)
+        self.info(text, FAILURE)
     def warning(self, text):
-        self.info(text, self.WARNING)
+        self.info(text, WARNING)
 
 #------------------------------------------------------------------------------
 def replace_ext(path, ext):
@@ -168,16 +191,20 @@ class MemoryMonitor:
 #------------------------------------------------------------------------------
 class TesterPhase:
 
-    def __init__(self, dir):
-        self.dir     = dir
+    def __init__(self, t, dirname, flags):
+        self.cwd     = os.path.join(t.home, "tests", dirname)
         self.prevdir = os.getcwd()
+        self.flags   = flags
 
     def __enter__(self):
-        os.chdir(self.dir)
+        os.chdir(self.cwd)
         return self
 
     def __exit__(self, typ, val, tb):
         os.chdir(self.prevdir)
+
+    def argv(self, t):
+        return [ t.release() if t.args.opt else t.debug(), "-v", hex(self.flags) ]
 
     def compile(self, t, inpath):
         t.verb("compiling: %s\n" % simplify_inpath(inpath))
@@ -191,7 +218,7 @@ class TesterPhase:
                     errors.write("couldn't launch c--: %s\n" % e.strerror)
 
     def execute(self, t):
-        t.info("running phase: %s\n" % os.path.basename(self.dir))
+        t.info("running phase: %s\n" % os.path.basename(self.cwd))
         pattern = replace_ext(t.args.file_pattern, "c")
         for inpath in glob.iglob(pattern):
             self.compile(t, inpath)
@@ -204,6 +231,19 @@ class TesterPhase:
             t.failure("\n" + status + "\n")
         else:
             t.success(" Clean!\n\n")
+
+    def validate(self, t):
+        self.status(t)
+
+#------------------------------------------------------------------------------
+class RealPhase(TesterPhase):
+
+    def __init__(self, t):
+        TesterPhase.__init__(self, t, REAL, DBG_ALL_IR)
+
+    def validate(self, t):
+        self.execAsmFiles(t)
+        self.status(t)
 
     def execAsmFiles(self, t):
         pattern = replace_ext(t.args.file_pattern, "asm")
@@ -218,67 +258,17 @@ class TesterPhase:
                 except OSError as e:
                     outfile.write("couldn't launch spim: %s\n" % e.strerror)
 
-    def validate(self, t):
-        self.status(t)
-
-#------------------------------------------------------------------------------
-class DbgPhase(TesterPhase):
-
-    DBG_NO_PARSE   = 0x01
-    DBG_DUMP_GSYMS = 0x02
-    DBG_DUMP_LSYMS = 0x04
-    DBG_DUMP_TREE  = 0x08
-    DBG_NO_IR      = 0x10
-    DBG_DUMP_IR    = 0x20
-    DBG_NO_CODE    = 0x40
-
-    DBG_ALL_DECL = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
-    DBG_ALL_TREE = DBG_ALL_DECL   | DBG_DUMP_TREE   # 0x0e
-    DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
-
-    def __init__(self, dir, flags):
-        TesterPhase.__init__(self, dir)
-        self.flags = flags
-
-    def argv(self, t):
-        return [ t.debug(), "-v", hex(self.flags) ]
-
-#------------------------------------------------------------------------------
-class RealPhase(DbgPhase):
-
-    def __init__(self, tests):
-        DbgPhase.__init__(self, os.path.join(tests, REAL), DbgPhase.DBG_ALL_IR)
-
-    def validate(self, t):
-        self.execAsmFiles(t)
-        self.status(t)
-
-#------------------------------------------------------------------------------
-class ReleasePhase(TesterPhase):
-
-    def __init__(self, dir):
-        TesterPhase.__init__(self, os.path.join(tests, RELEASE))
-
-    def argv(self, t):
-        return [ t.release() ]
-
-    def validate(self, t):
-        self.execAsmFiles(t)
-        self.status(t)
-
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
 
     t = Tester()
 
-    tests  = os.path.join(t.home, "tests")
     phases = {
-        DECL    : DbgPhase(os.path.join(tests, DECL), DbgPhase.DBG_ALL_DECL | DbgPhase.DBG_NO_IR),
-        TREE    : DbgPhase(os.path.join(tests, TREE), DbgPhase.DBG_ALL_TREE | DbgPhase.DBG_NO_IR),
-        IR      : DbgPhase(os.path.join(tests, IR  ), DbgPhase.DBG_ALL_IR   | DbgPhase.DBG_NO_CODE),
-        ASM     : DbgPhase(os.path.join(tests, ASM ), DbgPhase.DBG_ALL_IR),
-        REAL    : RealPhase(tests),
-        RELEASE : ReleasePhase(tests),
+        DECL    : TesterPhase(t, DECL, DBG_ALL_DECL | DBG_NO_IR),
+        TREE    : TesterPhase(t, TREE, DBG_ALL_TREE | DBG_NO_IR),
+        IR      : TesterPhase(t, IR,   DBG_ALL_IR   | DBG_NO_CODE),
+        ASM     : TesterPhase(t, ASM,  DBG_ALL_IR),
+        REAL    : RealPhase(t),
         }
 
     for step in t.args.phase_spec:

@@ -1,14 +1,11 @@
-#ifndef MESSAGES_H
-#define MESSAGES_H
+#ifndef LOGGER_H
+#define LOGGER_H
+
+#include <common.h>
 
 //-----------------------------------------------------------------------------
 // Debug/Logging messages
 //-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-#ifndef NDEBUG
-
-#include <common.h>
 
 typedef uint32_t dbg_flags_t;
 
@@ -27,14 +24,6 @@ enum dbg_flag_t
   dbg_no_code     = 1 << 6,
   dbg_asm_cmts    = 1 << 7,
 };
-
-//-----------------------------------------------------------------------------
-#define DBG(flag, ...)             \
-do                                 \
-{                                  \
-  if ( (dbg_flags & flag) != 0 )   \
-    fprintf(stdout, __VA_ARGS__);  \
-} while ( false );
 
 //-----------------------------------------------------------------------------
 class symtab_t;
@@ -95,18 +84,15 @@ do                                      \
 } while ( false );
 
 //-----------------------------------------------------------------------------
-#define LOG_FRAME_SUMMARY(frame) frame.print()
-
+#ifndef NDEBUG
+#define DBG(flag, ...)             \
+do                                 \
+{                                  \
+  if ( (dbg_flags & flag) != 0 )   \
+    fprintf(stdout, __VA_ARGS__);  \
+} while ( false );
 #else
+#define DBG(flag, ...) // nothing
+#endif
 
-//-----------------------------------------------------------------------------
-#define DBG(flag, ...)              // nothing
-#define LOG_INIT(outfile)           // nothing
-#define LOG_PARSE_RESULTS(results)  // nothing
-#define LOG_IR(code)                // nothing
-#define LOG_CHECK_PHASE_FLAG(flags) // nothing
-#define LOG_FRAME_SUMMARY(frame)    // nothing
-
-#endif // DEBUG
-
-#endif // MESSAGES_H
+#endif // LOGGER_H

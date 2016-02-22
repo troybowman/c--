@@ -5,12 +5,12 @@ CFLAGS += -I$(SRC)
 
 ifndef NDEBUG
   CFLAGS += -g -Wall
-  BIN = ./bin/debug/
-  OBJ = ./obj/debug/
+  BIN = ./bin/dbg/
+  OBJ = ./obj/dbg/
 else
   CFLAGS += -O3 -DNDEBUG
-  BIN = ./bin/release/
-  OBJ = ./obj/release/
+  BIN = ./bin/opt/
+  OBJ = ./obj/opt/
 endif
 
 # We require bison 3.0, but xcode is still stuck on bison 2.3.
@@ -29,7 +29,7 @@ else
 endif
 
 OBJFILES = $(OBJ)parser.o $(OBJ)scanner.o $(OBJ)symbol.o $(OBJ)treenode.o \
- $(OBJ)ir.o $(OBJ)logger.o $(OBJ)main.o $(OBJ)asm.o
+ $(OBJ)ir.o $(OBJ)asm.o $(OBJ)main.o $(OBJ)logger.o
 
 HFILES = $(SRC)common.h $(SRC)symbol.h $(SRC)treenode.h $(SRC)ir.h \
  $(SRC)logger.h $(SRC)parser.h $(SRC)asm.h

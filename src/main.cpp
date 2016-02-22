@@ -11,16 +11,10 @@
 
 #define OUTFILE_EXT "asm"
 
-#ifndef NDEBUG
 dbg_flags_t dbg_flags = 0;
 static const char *argdesc  = ":v:o:";
 static const char *usagestr =
     "usage: %s [-v dbg_flags] [-o outfile] filename\n";
-#else
-static const char *argdesc  = ":o:";
-static const char *usagestr =
-    "usage: %s [-o outfile] filename\n";
-#endif
 
 //-----------------------------------------------------------------------------
 inline bool is_path_sep(char c)
@@ -128,11 +122,9 @@ static args_t parseargs(int argc, char **argv)
     }
     switch ( c )
     {
-#ifndef NDEBUG
       case 'v':
         dbg_flags |= dbg_flags_t(strtoul(optarg, NULL, 0));
         break;
-#endif
       case 'o':
         outpath = optarg;
         break;
