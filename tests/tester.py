@@ -104,10 +104,10 @@ class Tester(ArgumentParser):
             dest="opt")
         self.args = super(Tester, self).parse_args()
 
-    def get_cmm_path(self, debug):
-        path = getattr(self, "dbg" if debug else "opt")
+    def get_cmm_path(self, opt):
+        path = getattr(self, "opt" if opt else "dbg")
         if path is None:
-            raise Exception("Error: could not find c-- %s binary!" % build)
+            raise Exception("Error: could not find c-- binary!")
         return path
 
     def out(self, verbosity, text, color=""):
