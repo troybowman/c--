@@ -334,18 +334,18 @@ void stack_frame_t::build_params_section()
 
     virtual void visit_item(item_info_t &info)
     {
+      symloc_t &loc = info.sym.loc;
+
       if ( info.idx < ARGREGQTY && info.idx >= nregargs )
-        info.sym.loc.set_reg(argreg_names[info.idx]);
+        loc.set_reg(argreg_names[info.idx]);
       else
-        info.sym.loc.set_stkoff(info.sec.end);
+        loc.set_stkoff(info.sec.end);
 
       info.sec.end += WORDSIZE;
     }
+  } b;
 
-    params_builder_t(uint32_t _nregargs) : nregargs(_nregargs) {}
-
-  } b(sections[FS_REGARGS].nitems());
-
+  b.nregargs = sections[FS_REGARGS].nitems();
   visit_items(FS_PARAMS, b);
 }
 

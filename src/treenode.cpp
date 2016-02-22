@@ -97,7 +97,7 @@ treenode_t::treenode_t(symref_t ref, treenode_type_t type, ...) : _type(type)
 {
   INIT_CHILDREN();
 
-  putref(_sym, ref);
+  emplace(_sym, ref);
   ASSERT(1113, sym() != NULL);
 
   va_list va;

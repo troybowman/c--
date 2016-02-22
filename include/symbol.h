@@ -171,18 +171,18 @@ public:
 
 //-----------------------------------------------------------------------------
 typedef refcnt_t<symbol_t> symref_t;
-typedef uint8_t usymref_t[sizeof(symref_t)];
+typedef uint8_t symplace_t[sizeof(symref_t)];
 #define NULLREF symref_t(NULL)
 
 //-----------------------------------------------------------------------------
-inline void putref(usymref_t uref, symref_t ref)
+inline void emplace(symplace_t p, symref_t ref)
 {
-  unionize<symref_t>(uref, ref);
+  emplace<symref_t>(p, ref);
 }
 
-inline symref_t &getref(const usymref_t &uref)
+inline symref_t &deplace(const symplace_t &p)
 {
-  return deunionize<symref_t>(uref);
+  return deplace<symref_t>(p);
 }
 
 //-----------------------------------------------------------------------------

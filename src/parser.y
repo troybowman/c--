@@ -44,7 +44,7 @@ class parser_ctx_t : public parse_results_t
     struct
     {
       symtab_t *_locals; // local variables
-      usymref_t _func;   // current function
+      symplace_t _func;   // current function
     };
   };
 
@@ -56,10 +56,10 @@ public:
   void trash() { if ( _mode == CTX_TEMP ) { delete _syms; } setglobal(); }
 
   void setglobal()          { clear(); _mode = CTX_GLOBAL; _syms = &gsyms; }
-  void setlocal(symref_t f) { clear(); _mode = CTX_LOCAL;  _syms = f->symbols(); putref(_func, f); }
+  void setlocal(symref_t f) { clear(); _mode = CTX_LOCAL;  _syms = f->symbols(); emplace(_func, f); }
   void settemp()            { clear(); _mode = CTX_TEMP;   _syms = new symtab_t; }
 
-  symref_t &func() const { return getref(_func); }
+  symref_t &func() const { return deplace(_func); }
   void insert(symref_t s) { _syms->insert(s); }
   symref_t get(const std::string &key) const { return _syms->get(key); }
 
@@ -99,10 +99,13 @@ static symvec_t *sym_list_prepend(symref_t, symvec_t *);
 static symvec_t *process_param_list(symref_t, symvec_t *, symref_t);
 
 //---------------------------------------------------------------------------
-static    symref_t yygetsym(const usymref_t &);
-static terr_info_t yygeterr(const uterr_info_t &);
-static        void yyputsym(usymref_t, symref_t);
-static        void yyputerr(uterr_info_t, terr_info_t);
+static    symref_t yydeplace(const symplace_t &);
+static terr_info_t yydeplace(const errplace_t &);
+static        void yyemplace(symplace_t, symref_t);
+static        void yyemplace(errplace_t, terr_info_t);
+
+#define DPL(p)     yydeplace(p)
+#define EMPL(p, o) yyemplace(p, o)
 
 //---------------------------------------------------------------------------
 #define EMPTYSTRING "\"\""
@@ -145,8 +148,8 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
   treenode_t *tree;
   symtab_t *symtab;
   seq_t seq;
-  uterr_info_t asfx;
-  usymref_t sym;
+  errplace_t asfx;
+  symplace_t sym;
   name_info_t ni;
 }
 
@@ -171,7 +174,7 @@ int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 %destructor { free($$.str); } name
 %destructor { delete $$; ctx.trash(); } params
 %destructor { delete $$; } var_decls func_decls var_decl_list func_decl_list param_decl_list
-%destructor { yygetsym($$); } var_decl func_decl ellipsis param_decl
+%destructor { DPL($$); } var_decl func_decl ellipsis param_decl
 %destructor { delete $$; } stmt_var stmt_array_sfx assg
 %destructor { delete $$.head; } stmts arg_list assg_list
 
@@ -212,82 +215,82 @@ type : INT_TYPE  { $$ = PRIM_INT;  }
      ;
 
 /*---------------------------------------------------------------------------*/
-var_decls : var_decl var_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
+var_decls : var_decl var_decl_list { $$ = sym_list_prepend(DPL($1), $2); }
           ;
 
 var_decl : name decl_array_sfx
            {
-             symref_t ref = process_var_id($1.str, lineno, yygeterr($2), 0);
-             yyputsym($$, ref);
+             symref_t ref = process_var_id($1.str, lineno, DPL($2), 0);
+             EMPL($$, ref);
              free($1.str);
            }
          ;
 
-decl_array_sfx : '[' INT ']' { yyputerr($$, process_array_sfx(ctx, $2, lineno)); }
-               | /* empty */ { yyputerr($$, terr_info_t(TERR_OK)); }
+decl_array_sfx : '[' INT ']' { EMPL($$, process_array_sfx(ctx, $2, lineno)); }
+               | /* empty */ { EMPL($$, terr_info_t(TERR_OK)); }
                ;
 
-var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, yygetsym($3)); }
+var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, DPL($3)); }
               | /* empty */                { $$ = NULL; }
               ;
 
 /*---------------------------------------------------------------------------*/
-func_decls : func_decl func_decl_list { $$ = sym_list_prepend(yygetsym($1), $2); }
+func_decls : func_decl func_decl_list { $$ = sym_list_prepend(DPL($1), $2); }
            ;
 
 func_decl : name '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
               symref_t func(new symbol_t($1.flags, $1.str, lineno, $4));
-              yyputsym($$, func);
+              EMPL($$, func);
               free($1.str);
             }
             /* TODO: functions with no parameter spec (i.e. 'int func();') will leak memory,
                unless we explicity handle it here. Try to put this logic in a destructor. */
-          | name '(' error { free($1.str); ctx.trash(); yyputsym($$, NULLREF); }
+          | name '(' error { free($1.str); ctx.trash(); EMPL($$, NULLREF); }
           ;
 
 name : MAIN   { $$.str = $1; $$.flags = SF_MAIN; }
      | ID     { $$.str = $1; $$.flags = 0; }
      ;
 
-func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, yygetsym($3)); }
+func_decl_list : func_decl_list ',' func_decl { $$ = sym_list_append($1, DPL($3)); }
                | /* empty */                  { $$ = NULL; }
                ;
 
 /*---------------------------------------------------------------------------*/
 params : param_decl param_decl_list ellipsis
          {
-           $$ = process_param_list(yygetsym($1), $2, yygetsym($3));
+           $$ = process_param_list(DPL($1), $2, DPL($3));
          }
        | VOID { $$ = new symvec_t; }
        ;
 
-ellipsis : ',' ELLIPSIS { yyputsym($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
-         | /* empty */  { yyputsym($$, NULLREF); }
+ellipsis : ',' ELLIPSIS { EMPL($$, symref_t(new symbol_t(ST_ELLIPSIS))); }
+         | /* empty */  { EMPL($$, NULLREF); }
          ;
 
 param_decl : type name param_array_sfx
              {
-               symref_t sym = process_var_id($2.str, lineno, yygeterr($3), SF_PARAMETER);
+               symref_t sym = process_var_id($2.str, lineno, DPL($3), SF_PARAMETER);
                if ( sym != NULL && !process_var_decl(ctx, sym, $1) )
                  sym = NULLREF;
-               yyputsym($$, sym);
+               EMPL($$, sym);
                free($2.str);
              }
            ;
 
-param_array_sfx : '[' ']'     { yyputerr($$, terr_info_t(TERR_OK2, BADOFFSET)); }
-                | /* empty */ { yyputerr($$, terr_info_t(TERR_OK)); }
+param_array_sfx : '[' ']'     { EMPL($$, terr_info_t(TERR_OK2, BADOFFSET)); }
+                | /* empty */ { EMPL($$, terr_info_t(TERR_OK)); }
                 ;
 
-param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, yygetsym($3)); }
+param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, DPL($3)); }
                 | /* empty */                    { $$ = NULL; }
                 ;
 
 /*---------------------------------------------------------------------------*/
 func : type func_decl
        '{'
-          { func_enter(ctx, yygetsym($2), $1); }
+          { func_enter(ctx, DPL($2), $1); }
           func_body
           { func_leave(ctx, $5); }
        '}'
@@ -960,31 +963,31 @@ static treenode_t *process_call_ctx(
 }
 
 //-----------------------------------------------------------------------------
-static inline void yyputsym(usymref_t usym, symref_t sym)
+static inline void yyemplace(symplace_t p, symref_t sym)
 {
-  putref(usym, sym);
+  emplace(p, sym);
 }
 
 //-----------------------------------------------------------------------------
 // deletes the reference after extracting
-static inline symref_t yygetsym(const usymref_t &usym)
+static inline symref_t yydeplace(const symplace_t &p)
 {
-  symref_t &yyref = getref(usym);
+  symref_t &yyref = deplace(p);
   symref_t ret = yyref;
   yyref.~symref_t();
   return ret;
 }
 
 //-----------------------------------------------------------------------------
-static inline void yyputerr(uterr_info_t uerr, terr_info_t err)
+static inline void yyemplace(errplace_t p, terr_info_t err)
 {
-  unionize<terr_info_t>(uerr, err);
+  emplace<terr_info_t>(p, err);
 }
 
 //-----------------------------------------------------------------------------
-static inline terr_info_t yygeterr(const uterr_info_t &uerr)
+static inline terr_info_t yydeplace(const errplace_t &p)
 {
-  return deunionize<terr_info_t>(uerr);
+  return deplace<terr_info_t>(p);
 }
 
 //-----------------------------------------------------------------------------

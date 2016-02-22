@@ -55,13 +55,13 @@ enum type_error_t
 struct terr_info_t
 {
   type_error_t code;
-  int data;
-  terr_info_t(type_error_t _code, int _data = 0)
+  size_t data;
+  terr_info_t(type_error_t _code, size_t _data = 0)
     : code(_code), data(_data) {}
 };
 
 //---------------------------------------------------------------------------
-typedef uint8_t uterr_info_t[sizeof(terr_info_t)];
+typedef uint8_t errplace_t[sizeof(terr_info_t)];
 
 //---------------------------------------------------------------------------
 struct name_info_t
