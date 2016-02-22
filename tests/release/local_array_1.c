@@ -1,1 +1,0 @@
-../real/local_array_1.c

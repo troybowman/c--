@@ -1,1 +1,0 @@
-../real/array_assign_4.c

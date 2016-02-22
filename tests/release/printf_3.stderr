@@ -1,2 +1,0 @@
-error, line 4: ellipsis "..." notation is is only valid when declaring builtin function: extern void printf(char format[], ...);
-c-- returned a nonzero exit code

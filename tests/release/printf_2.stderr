@@ -1,9 +1,0 @@
-error, line 1: ellipsis "..." notation is is only valid when declaring builtin function: extern void printf(char format[], ...);
-syntax error, line: 2
-syntax error, line: 3
-error, line 4: ellipsis "..." notation is is only valid when declaring builtin function: extern void printf(char format[], ...);
-syntax error, line: 5
-error, line 6: ellipsis "..." notation is is only valid when declaring builtin function: extern void printf(char format[], ...);
-error, line 7: ellipsis "..." notation is is only valid when declaring builtin function: extern void printf(char format[], ...);
-error: function printf is defined at line 9 but is declared extern at line 8
-c-- returned a nonzero exit code
