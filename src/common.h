@@ -158,6 +158,7 @@ typedef uint64_t offsize_t;
 #define BADOFFSET offset_t(-1)
 #define DWORDSIZE (WORDSIZE*2)
 #define ALIGN(off, val) ((off + (val-1)) & ~(val-1))
+#define MAXSTR 1024
 
 //-----------------------------------------------------------------------------
 struct area_t
