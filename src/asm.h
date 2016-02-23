@@ -35,8 +35,6 @@ class frame_section_t : public area_t
   symvec_t items;
 
 public:
-  frame_section_t() {}
-
   void init(const symvec_t &vec)
     { items.assign(vec); }
   void init(const symtab_t &table)

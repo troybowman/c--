@@ -19,14 +19,12 @@ static const char *argreg_names[ARGREGQTY] =
 #define RESERVED_TEMP3 "$t9"
 
 //-----------------------------------------------------------------------------
-asm_ctx_t::asm_ctx_t(FILE *_outfile) : outfile(_outfile)
+asm_ctx_t::asm_ctx_t(FILE *_outfile) :
+    outfile(_outfile),
+    t7(new symbol_t(ST_TEMP)),
+    t8(new symbol_t(ST_TEMP)),
+    t9(new symbol_t(ST_TEMP))
 {
-  ASSERT(0, outfile);
-
-  t7 = symref_t(new symbol_t(ST_TEMP));
-  t8 = symref_t(new symbol_t(ST_TEMP));
-  t9 = symref_t(new symbol_t(ST_TEMP));
-
   t7->loc.set_reg(RESERVED_TEMP1);
   t8->loc.set_reg(RESERVED_TEMP2);
   t9->loc.set_reg(RESERVED_TEMP3);
@@ -346,6 +344,7 @@ void stack_frame_t::build_params_section()
   } b;
 
   b.nregargs = sections[FS_REGARGS].nitems();
+
   visit_items(FS_PARAMS, b);
 }
 
