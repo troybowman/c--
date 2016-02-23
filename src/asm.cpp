@@ -799,7 +799,7 @@ static void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
 }
 
 //-----------------------------------------------------------------------------
-static void init_resources(ir_func_t &f)
+static void set_register_names(ir_func_t &f)
 {
   // temps
   symvec_t temps;
@@ -828,7 +828,7 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
   for ( ir_funcs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
   {
     ir_func_t &f = **i;
-    init_resources(f);
+    set_register_names(f);
 
     ctx.out("\n%s:\n", f.sym->c_str());
 
