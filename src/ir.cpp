@@ -207,7 +207,7 @@ void ir_engine_t::check_src(symref_t sym)
 }
 
 //-----------------------------------------------------------------------------
-symref_t ir_engine_t::gen_temp(uint32_t flags)
+symref_t ir_engine_t::gen_temp(tree_ctx_t::flags_t flags)
 {
   symref_t temp;
 

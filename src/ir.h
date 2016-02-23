@@ -152,7 +152,9 @@ struct ir_t
 //-----------------------------------------------------------------------------
 struct tree_ctx_t
 {
-  uint32_t flags;
+  typedef uint32_t flags_t;
+
+  flags_t flags;
 #define TCTX_LVAL 0x1
 #define TCTX_SAVE 0x2
 #define TCTX_IF   0x4
@@ -160,7 +162,7 @@ struct tree_ctx_t
   symref_t endif;
 
   tree_ctx_t(symref_t _endif) : flags(TCTX_IF), endif(_endif) {}
-  tree_ctx_t(uint32_t _flags = 0) : flags(_flags), endif(NULL) {}
+  tree_ctx_t(flags_t _flags = 0) : flags(_flags), endif(NULL) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -179,7 +181,7 @@ private:
   void check_dest(symref_t src);
   void check_src(symref_t src);
 
-  symref_t gen_temp(uint32_t flags = 0);
+  symref_t gen_temp(tree_ctx_t::flags_t flags = 0);
   symref_t gen_argloc();
 
   void append(
