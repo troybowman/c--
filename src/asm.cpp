@@ -174,7 +174,7 @@ void stack_frame_t::build_regargs_section()
 
   regargs.init(*f.get(ST_REGARG));
 
-  if ( f.has_call() )
+  if ( f.has_call )
     regargs.end = ARGREGQTY * WORDSIZE;
 
   struct regargs_builder_t : public frame_item_visitor_t
@@ -284,7 +284,7 @@ void stack_frame_t::build_lvars_section()
 {
   frame_section_t &lvars = sections[FS_LVARS];
 
-  lvars.init(*f.sym()->symbols());
+  lvars.init(*f.sym->symbols());
   lvars.start = lvars.end = sections[FS_PADDING1].end;
 
   struct lvars_builder_t : public frame_item_visitor_t
@@ -325,7 +325,7 @@ void stack_frame_t::build_params_section()
 {
   frame_section_t &params = sections[FS_PARAMS];
 
-  params.init(*f.sym()->params());
+  params.init(*f.sym->params());
   params.start = params.end = sections[FS_PADDING2].end;
 
   struct params_builder_t : public frame_item_visitor_t
@@ -353,7 +353,7 @@ void stack_frame_t::build_params_section()
 stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
   : f(_f), ctx(_ctx), epilogue_lbl(new symbol_t(ST_LABEL))
 {
-  prepare_named_symbol(ctx, epilogue_lbl, "%s%s", "__leave", f.sym()->c_str());
+  prepare_named_symbol(ctx, epilogue_lbl, "%s%s", "__leave", f.sym->c_str());
 
   build_regargs_section();
   build_stkargs_section();
@@ -422,7 +422,7 @@ void stack_frame_t::gen_epilogue()
     ctx.out(TAB1"la $sp, %u($sp)\n", size());
 
   // MARS, for some utterly moronic reason, does not call main. we must manually exit
-  if ( f.sym()->is_main() )
+  if ( f.sym->is_main() )
     ctx.out(TAB1"jal %s\n", EXIT);
   else
     ctx.out(TAB1"jr $ra\n");
@@ -815,13 +815,13 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
     ir_func_t &f = **i;
     init_resources(f);
 
-    ctx.out("\n%s:\n", f.sym()->c_str());
+    ctx.out("\n%s:\n", f.sym->c_str());
 
     stack_frame_t frame(f, ctx);
     frame.print();
 
     frame.gen_prologue();
-    gen_func_body(ctx, f.code(), frame.epilogue_lbl);
+    gen_func_body(ctx, f.code, frame.epilogue_lbl);
     frame.gen_epilogue();
   }
 

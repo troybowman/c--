@@ -22,7 +22,7 @@ symref_t resource_manager_t::get_first_available()
 void resource_manager_t::reset()
 {
   _free.clear();
-  rmap_t::const_iterator i;
+  resource_map_t::const_iterator i;
   for ( i = _used.begin(); i != _used.end(); i++ )
     free(i->second);
 }
@@ -30,7 +30,7 @@ void resource_manager_t::reset()
 //-----------------------------------------------------------------------------
 void resource_manager_t::get_used_resources(symvec_t &vec) const
 {
-  rmap_t::const_iterator i;
+  resource_map_t::const_iterator i;
   for ( i = _used.begin(); i != _used.end(); i++ )
     vec.push_back(i->second);
 }
@@ -84,24 +84,24 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-ir_func_t::ir_func_t(symref_t s) : _sym(s), _code(NULL), _has_call(false)
+ir_func_t::ir_func_t(symref_t s) : sym(s), code(NULL), has_call(false)
 {
-  _store[ST_STKTEMP] = new stack_manager_t(ST_STKTEMP);
-  _store[ST_STKARG]  = new stack_manager_t(ST_STKARG);
-  _store[ST_TEMP]    = new reg_manager_t(ST_TEMP,   TEMPREGQTY);
-  _store[ST_SVTEMP]  = new reg_manager_t(ST_SVTEMP, SVREGQTY);
-  _store[ST_REGARG]  = new reg_manager_t(ST_REGARG, ARGREGQTY);
-  _store[ST_RETVAL]  = new reg_manager_t(ST_RETVAL, 1);
-  _store[ST_RETADDR] = new fixed_resource_t(ST_RETADDR);
-  _store[ST_ZERO]    = new fixed_resource_t(ST_ZERO);
+  store[ST_STKTEMP] = new stack_manager_t(ST_STKTEMP);
+  store[ST_STKARG]  = new stack_manager_t(ST_STKARG);
+  store[ST_TEMP]    = new reg_manager_t(ST_TEMP,   TEMPREGQTY);
+  store[ST_SVTEMP]  = new reg_manager_t(ST_SVTEMP, SVREGQTY);
+  store[ST_REGARG]  = new reg_manager_t(ST_REGARG, ARGREGQTY);
+  store[ST_RETVAL]  = new reg_manager_t(ST_RETVAL, 1);
+  store[ST_RETADDR] = new fixed_resource_t(ST_RETADDR);
+  store[ST_ZERO]    = new fixed_resource_t(ST_ZERO);
 }
 
 //-----------------------------------------------------------------------------
 ir_func_t::~ir_func_t()
 {
-  delete _code;
+  delete code;
   resource_store_t::iterator i;
-  for ( i = _store.begin(); i != _store.end(); i++ )
+  for ( i = store.begin(); i != store.end(); i++ )
     delete i->second;
 }
 
@@ -381,9 +381,9 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_CALL:
       {
-        if ( !f.has_call() )
+        if ( !f.has_call )
         {
-          f.set_has_call();
+          f.has_call = true;
           f.use(f.gen_resource(ST_RETADDR));
         }
 
@@ -571,7 +571,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 void ir_engine_t::start(const treenode_t *root)
 {
   generate(root);
-  f.set_code(head);
+  f.code = head;
 }
 
 //-----------------------------------------------------------------------------

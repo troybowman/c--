@@ -73,4 +73,4 @@ $(OBJ)logger.o: $(SRC)logger.cpp $(HFILES)
 #------------------------------------------------------------------------------
 .PHONY: clean
 clean:
-	rm -rf $(BIN)c--* $(OBJ)*
+	rm -rf bin/*/c--* obj/*/*

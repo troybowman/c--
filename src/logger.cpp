@@ -394,13 +394,13 @@ void logger_t::print_ir(const ir_t &ir)
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
     ir_func_t *f = *i;
-    fprintf(logfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->sym()->c_str());
+    fprintf(logfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->sym->c_str());
     cmtout(0, "temps used:    %d\n", f->count(ST_TEMP));
     cmtout(0, "svregs used:   %d\n", f->count(ST_SVTEMP));
     cmtout(0, "stktemps used: %d\n", f->count(ST_STKTEMP));
     cmtout(0, "regargs used:  %d\n", f->count(ST_REGARG));
     cmtout(0, "stkargs used:  %d\n", f->count(ST_STKARG));
-    print_ir_code(f->code());
+    print_ir_code(f->code);
   }
 }
 

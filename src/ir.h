@@ -76,9 +76,9 @@ protected:
   symbol_type_t _type;
   int _cnt;
 
-  typedef std::map<int, symref_t> rmap_t;
-  rmap_t _free;
-  rmap_t _used;
+  typedef std::map<int, symref_t> resource_map_t;
+  resource_map_t _free;
+  resource_map_t _used;
 
   symref_t get_first_available();
 
@@ -101,44 +101,32 @@ typedef std::map<symbol_type_t, resource_manager_t *> resource_store_t;
 
 //-----------------------------------------------------------------------------
 // intermediate representation of a function
-class ir_func_t
+struct ir_func_t
 {
-  symref_t _sym;
-  codenode_t *_code;
-  bool _has_call;
-  resource_store_t _store;
+  symref_t sym;     // pointer to source-level function symbol
+  codenode_t *code; // head of three-address code linked list
+  bool has_call;    // does this function call another function?
 
-public:
   ir_func_t(symref_t s);
   ~ir_func_t();
 
-  void set_has_call()          { _has_call = true; }
-  void set_code(codenode_t *c) { _code = c; }
+private:
+  // each ir_func_t owns all the temporary resources that it uses.
+  // for example, each function will create a new symbol object
+  // representing the zero register - even though technically we only need
+  // one global object representing this register for all functions.
+  // but having each function share pointers the same resources would be kind of a mess,
+  // especially if we want to start playing with symlocs (during optimization, for instance).
+  resource_store_t store;
 
-  symref_t sym()         const { return _sym; }
-  bool has_call()        const { return _has_call; }
-  codenode_t *code()     const { return _code; }
-
-  void free(symref_t sym) { _store[sym->type()]->free(sym); }
-  void use(symref_t sym)  { _store[sym->type()]->use(sym);  }
-
-  void reset(symbol_type_t st)      { _store.at(st)->reset(); }
-  int count(symbol_type_t st) const { return _store.at(st)->count(); }
-
-  symref_t gen_resource(symbol_type_t st)
-  {
-    return _store.at(st)->gen_resource();
-  }
-
-  void get_used_resources(symbol_type_t st, symvec_t &vec) const
-  {
-    _store.at(st)->get_used_resources(vec);
-  }
-
-  const resource_manager_t *get(symbol_type_t st) const
-  {
-    return _store.at(st);
-  }
+public:
+  void free(symref_t s)                                       { store[s->type()]->free(s); }
+  void use(symref_t s)                                        { store[s->type()]->use(s); }
+  void get_used_resources(symbol_type_t t, symvec_t &v) const { store.at(t)->get_used_resources(v); }
+  void reset(symbol_type_t t)                                 { store.at(t)->reset(); }
+  symref_t gen_resource(symbol_type_t t)                      { return store.at(t)->gen_resource(); }
+  const resource_manager_t *get(symbol_type_t t)        const { return store.at(t); }
+  int count(symbol_type_t t)                            const { return store.at(t)->count(); }
 };
 
 //-----------------------------------------------------------------------------
