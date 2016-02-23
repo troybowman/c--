@@ -433,6 +433,35 @@ void stack_frame_t::gen_epilogue()
 #define REQUIRE_REG_SRC1 0x2
 #define REQUIRE_REG_SRC2 0x4
 
+#define REQUIRES_SWAP(flag, sym) ((flags & flag) != 0 && !sym->loc.is_reg())
+
+//-----------------------------------------------------------------------------
+static bool maybe_swap_source_operand(
+    asm_ctx_t &ctx,
+    uint32_t flags,
+    uint32_t flag,
+    codenode_t *node,
+    symref_t swap_out,
+    symref_t swap_in)
+{
+  if ( REQUIRES_SWAP(flag, swap_out) )
+  {
+    switch ( swap_out->loc.type() )
+    {
+      case SLT_STKOFF:
+        ctx.out(TAB1"lw %s, %d($sp)\n", swap_in->loc.reg(), swap_out->loc.stkoff());
+        break;
+      case SLT_GLOBAL:
+        ctx.out(TAB1"lw %s, %s\n", swap_in->loc.reg(), swap_out->c_str());
+        break;
+      default:
+        INTERR(0); // registers should always be compatible
+    }
+    return true;
+  }
+  return false;
+}
+
 //-----------------------------------------------------------------------------
 static void ensure_compatible_operands(asm_ctx_t &ctx, codenode_t *node, uint32_t flags)
 {
@@ -440,27 +469,13 @@ static void ensure_compatible_operands(asm_ctx_t &ctx, codenode_t *node, uint32_
   symref_t src1 = node->src1;
   symref_t src2 = node->src2;
 
-  if ( (flags & REQUIRE_REG_SRC1) != 0 && !src1->loc.is_reg() )
-  {
-    if ( src1->loc.is_stkoff() )
-      ctx.out(TAB1"lw %s, %d($sp)\n", ctx.t7->loc.reg(), src1->loc.stkoff());
-    else
-      ctx.out(TAB1"lw %s, %s\n", ctx.t7->loc.reg(), src1->c_str());
-
+  if ( maybe_swap_source_operand(ctx, flags, REQUIRE_REG_SRC1, node, src1, ctx.t7) )
     node->src1 = ctx.t7;
-  }
 
-  if ( (flags & REQUIRE_REG_SRC2) != 0 && !src2->loc.is_reg() )
-  {
-    if ( src2->loc.is_stkoff() )
-      ctx.out(TAB1"lw %s, %d($sp)\n", ctx.t8->loc.reg(), src2->loc.stkoff());
-    else
-      ctx.out(TAB1"lw %s, %s\n", ctx.t8->loc.reg(), src2->c_str());
-
+  if ( maybe_swap_source_operand(ctx, flags, REQUIRE_REG_SRC2, node, src2, ctx.t8) )
     node->src2 = ctx.t8;
-  }
 
-  if ( (flags & REQUIRE_REG_DEST) != 0 && !dest->loc.is_reg() )
+  if ( REQUIRES_SWAP(REQUIRE_REG_DEST, dest) )
   {
     symref_t olddest = node->dest;
     node->dest = ctx.t9;

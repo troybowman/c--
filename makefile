@@ -1,17 +1,17 @@
 CC = g++
 
 SRC = ./src/
-CFLAGS += -I$(SRC)
+CFLAGS += -I$(SRC) -g
 
 ifndef NDEBUG
-  CFLAGS += -g -Wall
-  BIN = ./bin/dbg/
-  OBJ = ./obj/dbg/
+  B=dbg
 else
+  B=opt
   CFLAGS += -O3 -DNDEBUG
-  BIN = ./bin/opt/
-  OBJ = ./obj/opt/
 endif
+
+BIN = ./bin/$(B)/
+OBJ = ./obj/$(B)/
 
 # We require bison 3.0, but xcode is still stuck on bison 2.3.
 # So on mac we use the homebrew versions of flex and bison, which are up to date.
