@@ -369,8 +369,8 @@ stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
   build_ra(ctx, *this);
   build_padding_section(*this, FS_PADDING1, FS_RA);
   build_lvars(ctx, *this);
-  build_params(ctx, *this);
   build_padding_section(*this, FS_PADDING2, FS_LVARS);
+  build_params(ctx, *this);
 }
 
 //-----------------------------------------------------------------------------
