@@ -992,15 +992,23 @@ void stack_frame_t::print()
 {
   ctx.out("\n"TAB1"# "SEPARATOR"\n");
 
-  print_params(ctx, *this);
-  print_pseudo_section(ctx, *this, FS_PADDING2, "<padding>");
-  print_lvars(ctx, *this);
-  print_pseudo_section(ctx, *this, FS_PADDING1, "<padding>");
-  print_ra(ctx, *this);
-  print_stktemps(ctx, *this);
-  print_svregs(ctx, *this);
-  print_stkargs(ctx, *this);
-  print_pseudo_section(ctx, *this, FS_REGARGS, "<minimum 4 arg slots>");
+#define PRINT(sec)          print_##sec(ctx, *this)
+#define PRINT_P(idx, label) print_pseudo_section(ctx, *this, idx, label)
+#define PLABEL "<padding>"
+
+  PRINT(params);
+  PRINT_P(FS_PADDING2, PLABEL);
+  PRINT(lvars);
+  PRINT_P(FS_PADDING1, PLABEL);
+  PRINT(ra);
+  PRINT(stktemps);
+  PRINT(svregs);
+  PRINT(stkargs);
+  PRINT_P(FS_REGARGS, "<minimum 4 arg slots>");
+
+#undef PRINT
+#undef PRINT_P
+#undef PLABEL
 }
 
 //-----------------------------------------------------------------------------

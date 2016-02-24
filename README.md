@@ -9,7 +9,8 @@ See spec/ for language specification and calling convention.
 
 todo:
 
-- const correctness in frame item visitors
+- vprint_frame_item
+- gen_func_body
 - char arguments passed in argument registers are not truncated
 - short circuit evaluation
 - tester: lint, valgrind, fuzz, profile
