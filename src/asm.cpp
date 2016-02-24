@@ -182,11 +182,15 @@ void frame_section_t::build_items(
 }
 
 //-----------------------------------------------------------------------------
+#define INIT_FRAME_SECTION(name, idx, symbols)                     \
+  frame_section_t &name = frame.sections[idx];                     \
+  name.init(symbols);                                              \
+  name.start = name.end = idx > 0 ? frame.sections[idx-1].end : 0; \
+
+//-----------------------------------------------------------------------------
 static void build_regargs(asm_ctx_t &ctx, stack_frame_t &frame)
 {
-  frame_section_t &regargs = frame.sections[FS_REGARGS];
-
-  regargs.init(*frame.f.get(ST_REGARG));
+  INIT_FRAME_SECTION(regargs, FS_REGARGS, *frame.f.get(ST_REGARG));
 
   if ( frame.f.has_call )
     regargs.end = ARGREGQTY * WORDSIZE;
@@ -205,10 +209,7 @@ static void build_regargs(asm_ctx_t &ctx, stack_frame_t &frame)
 //-----------------------------------------------------------------------------
 static void build_stkargs(asm_ctx_t &ctx, stack_frame_t &frame)
 {
-  frame_section_t &stkargs = frame.sections[FS_STKARGS];
-
-  stkargs.init(*frame.f.get(ST_STKARG));
-  stkargs.start = stkargs.end = frame.sections[FS_REGARGS].end;
+  INIT_FRAME_SECTION(stkargs, FS_STKARGS, *frame.f.get(ST_STKARG));
 
   struct stkargs_builder_t : public frame_item_builder_t
   {
@@ -225,10 +226,7 @@ static void build_stkargs(asm_ctx_t &ctx, stack_frame_t &frame)
 //-----------------------------------------------------------------------------
 static void build_svregs(asm_ctx_t &ctx, stack_frame_t &frame)
 {
-  frame_section_t &svregs = frame.sections[FS_SVREGS];
-
-  svregs.init(*frame.f.get(ST_SVTEMP));
-  svregs.start = svregs.end = frame.sections[FS_STKARGS].end;
+  INIT_FRAME_SECTION(svregs, FS_SVREGS, *frame.f.get(ST_SVTEMP));
 
   struct svregs_builder_t : public frame_item_builder_t
   {
@@ -245,10 +243,7 @@ static void build_svregs(asm_ctx_t &ctx, stack_frame_t &frame)
 //-----------------------------------------------------------------------------
 static void build_stktemps(asm_ctx_t &ctx, stack_frame_t &frame)
 {
-  frame_section_t &stktemps = frame.sections[FS_STKTEMPS];
-
-  stktemps.init(*frame.f.get(ST_STKTEMP));
-  stktemps.start = stktemps.end = frame.sections[FS_SVREGS].end;
+  INIT_FRAME_SECTION(stktemps, FS_STKTEMPS, *frame.f.get(ST_STKTEMP));
 
   struct stktemps_builder_t : public frame_item_builder_t
   {
@@ -265,10 +260,7 @@ static void build_stktemps(asm_ctx_t &ctx, stack_frame_t &frame)
 //-----------------------------------------------------------------------------
 static void build_ra(asm_ctx_t &ctx, stack_frame_t &frame)
 {
-  frame_section_t &ra = frame.sections[FS_RA];
-
-  ra.init(*frame.f.get(ST_RETADDR));
-  ra.start = ra.end = frame.sections[FS_STKTEMPS].end;
+  INIT_FRAME_SECTION(ra, FS_RA, *frame.f.get(ST_RETADDR));
 
   struct ra_builder_t : public frame_item_builder_t
   {
@@ -283,21 +275,18 @@ static void build_ra(asm_ctx_t &ctx, stack_frame_t &frame)
 }
 
 //-----------------------------------------------------------------------------
-static void build_padding_section(stack_frame_t &frame, int padid, int previd)
+static void build_padding_section(stack_frame_t &frame, int idx)
 {
-  frame_section_t &padding = frame.sections[padid];
-
-  padding.start = frame.sections[previd].end;
+  ASSERT(0, idx > 0);
+  frame_section_t &padding = frame.sections[idx];
+  padding.start = frame.sections[idx-1].end;
   padding.end   = ALIGN(padding.start, DWORDSIZE);
 }
 
 //-----------------------------------------------------------------------------
 static void build_lvars(asm_ctx_t &ctx, stack_frame_t &frame)
 {
-  frame_section_t &lvars = frame.sections[FS_LVARS];
-
-  lvars.init(*frame.f.sym->symbols());
-  lvars.start = lvars.end = frame.sections[FS_PADDING1].end;
+  INIT_FRAME_SECTION(lvars, FS_LVARS, *frame.f.sym->symbols());
 
   struct lvars_builder_t : public frame_item_builder_t
   {
@@ -332,10 +321,7 @@ static void build_lvars(asm_ctx_t &ctx, stack_frame_t &frame)
 //-----------------------------------------------------------------------------
 static void build_params(asm_ctx_t &ctx, stack_frame_t &frame)
 {
-  frame_section_t &params = frame.sections[FS_PARAMS];
-
-  params.init(*frame.f.sym->params());
-  params.start = params.end = frame.sections[FS_PADDING2].end;
+  INIT_FRAME_SECTION(params, FS_PARAMS, *frame.f.sym->params());
 
   struct params_builder_t : public frame_item_builder_t
   {
@@ -362,15 +348,21 @@ stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
 {
   prepare_named_symbol(ctx, epilogue_lbl, "%s%s", "__leave", f.sym->c_str());
 
-  build_regargs(ctx, *this);
-  build_stkargs(ctx, *this);
-  build_svregs(ctx, *this);
-  build_stktemps(ctx, *this);
-  build_ra(ctx, *this);
-  build_padding_section(*this, FS_PADDING1, FS_RA);
-  build_lvars(ctx, *this);
-  build_padding_section(*this, FS_PADDING2, FS_LVARS);
-  build_params(ctx, *this);
+#define BUILD(sec)   build_##sec(ctx, *this)
+#define BUILD_P(idx) build_padding_section(*this, idx)
+
+  BUILD(regargs);
+  BUILD(stkargs);
+  BUILD(svregs);
+  BUILD(stktemps);
+  BUILD(ra);
+  BUILD_P(FS_PADDING1);
+  BUILD(lvars);
+  BUILD_P(FS_PADDING2);
+  BUILD(params);
+
+#undef BUILD
+#undef BUILD_P
 }
 
 //-----------------------------------------------------------------------------
@@ -405,11 +397,18 @@ void stack_frame_t::gen_prologue()
   if ( size() > 0 )
     ctx.out(TAB1"la $sp, -%u($sp)\n", size());
 
-  for ( int i = 0; i < 3; i++ )
-  {
-    reg_saver_t s("sw", sections[pairs[i].base]);
-    sections[pairs[i].sec].visit_items(ctx, s);
-  }
+#define SAVE(sec, base)                \
+do                                     \
+{                                      \
+  reg_saver_t s("sw", sections[base]); \
+  sections[sec].visit_items(ctx, s);   \
+} while ( false )
+
+  SAVE(FS_SVREGS,  FS_SVREGS);
+  SAVE(FS_RA,      FS_RA);
+  SAVE(FS_REGARGS, FS_PARAMS);
+
+#undef SAVE
 
   ctx.out("\n");
 }
@@ -419,11 +418,18 @@ void stack_frame_t::gen_epilogue()
 {
   ctx.out("\n%s:\n", epilogue_lbl->c_str());
 
-  for ( int i = 2; i >= 0; i-- )
-  {
-    reg_saver_t s("lw", sections[pairs[i].base]);
-    sections[pairs[i].sec].visit_items(ctx, s, FIV_REVERSE);
-  }
+#define RESTORE(sec, base)                        \
+do                                                \
+{                                                 \
+  reg_saver_t s("lw", sections[base]);            \
+  sections[sec].visit_items(ctx, s, FIV_REVERSE); \
+} while ( false )
+
+  RESTORE(FS_REGARGS, FS_PARAMS);
+  RESTORE(FS_RA,      FS_RA);
+  RESTORE(FS_SVREGS,  FS_SVREGS);
+
+#undef RESTORE
 
   if ( size() > 0 )
     ctx.out(TAB1"la $sp, %u($sp)\n", size());
