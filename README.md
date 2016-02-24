@@ -11,6 +11,8 @@ todo:
 
 - vprint_frame_item
 - gen_func_body
+- get rid of pseudo sections
+- why do params depend on regargs when saving
 - char arguments passed in argument registers are not truncated
 - short circuit evaluation
 - tester: lint, valgrind, fuzz, profile
