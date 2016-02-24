@@ -366,14 +366,6 @@ stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
 }
 
 //-----------------------------------------------------------------------------
-static const struct saver_pair_t { int sec; int base; } pairs[3] =
-{
- { FS_SVREGS,  FS_SVREGS },
- { FS_RA,      FS_RA     },
- { FS_REGARGS, FS_PARAMS },
-};
-
-//-----------------------------------------------------------------------------
 struct reg_saver_t : public frame_item_visitor_t
 {
   const char *cmd;
