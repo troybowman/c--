@@ -350,7 +350,6 @@ stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
 
 #define BUILD(sec)   build_##sec(ctx, *this)
 #define BUILD_P(idx) build_padding_section(*this, idx)
-
   BUILD(regargs);
   BUILD(stkargs);
   BUILD(svregs);
@@ -360,7 +359,6 @@ stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
   BUILD(lvars);
   BUILD_P(FS_PADDING2);
   BUILD(params);
-
 #undef BUILD
 #undef BUILD_P
 }
@@ -395,11 +393,9 @@ do                                     \
   reg_saver_t s("sw", sections[base]); \
   sections[sec].visit_items(ctx, s);   \
 } while ( false )
-
   SAVE(FS_SVREGS,  FS_SVREGS);
   SAVE(FS_RA,      FS_RA);
   SAVE(FS_REGARGS, FS_PARAMS);
-
 #undef SAVE
 
   ctx.out("\n");
@@ -416,11 +412,9 @@ do                                                \
   reg_saver_t s("lw", sections[base]);            \
   sections[sec].visit_items(ctx, s, FIV_REVERSE); \
 } while ( false )
-
   RESTORE(FS_REGARGS, FS_PARAMS);
   RESTORE(FS_RA,      FS_RA);
   RESTORE(FS_SVREGS,  FS_SVREGS);
-
 #undef RESTORE
 
   if ( size() > 0 )
@@ -795,7 +789,6 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
 }
 
 //-----------------------------------------------------------------------------
-#define FMTLEN  1024
 #define NAMELEN 32
 #define SEPARATOR "|--------------------------------|"
 
@@ -807,8 +800,8 @@ static void vprint_frame_item(
     const char *fmt,
     va_list va)
 {
-  char namestr[FMTLEN];
-  vsnprintf(namestr, FMTLEN, fmt, va);
+  char namestr[MAXSTR];
+  vsnprintf(namestr, MAXSTR, fmt, va);
 
   char item[TABLEN+NAMELEN+5]; // <tab> + '#' + ' ' + '|' + name + '|' + '\0'
   char *ptr = item;
@@ -820,21 +813,17 @@ static void vprint_frame_item(
   int len = cmin(strlen(namestr), NAMELEN);
   const char *const name_end = ptr + NAMELEN;
 
+  // center the name within the NAMELEN spaces we have allocated for it
   APPCHAR(ptr, end, ' ', (NAMELEN - len) / 2);
   APPSTR (ptr, end, namestr, len);
   APPCHAR(ptr, end, ' ', name_end-ptr);
   APPCHAR(ptr, end, '|', 1);
   APPZERO(ptr, end);
 
-  ctx.out("%s\n", item);
-
-  char offstr[MAXSTR];
-  snprintf(offstr,
-           MAXSTR,
-           "sp+%d%s",
-           off, off == framesize ? "  <-- start of caller's stack" : "");
-
-  ctx.out(TAB1"# "SEPARATOR" %s\n", offstr);
+  ctx.out("%s\n"TAB1"# "SEPARATOR" sp+%d%s\n",
+          item,
+          off,
+          off == framesize ? "  <-- start of caller's stack" : "");
 }
 
 //-----------------------------------------------------------------------------
