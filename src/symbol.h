@@ -198,8 +198,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// symbol table
-class symtab_t
+class symtab_t // symbol table
 {
   typedef std::map<std::string, symref_t> symmap_t;
 

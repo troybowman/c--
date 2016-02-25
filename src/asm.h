@@ -2,7 +2,6 @@
 #define MIPS_ASM_H
 
 #include <ir.h>
-#include <logger.h>
 
 struct asm_ctx_t;
 class frame_section_t;
