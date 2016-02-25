@@ -34,7 +34,7 @@
 #   line: 4
 #   type: ST_PRIMITIVE
 #     base: PRIM_INT
-# sym: _print_int
+# sym: __print_int
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -43,7 +43,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_hex
+# sym: __print_hex
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -52,7 +52,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_char
+# sym: __print_char
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -61,7 +61,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: yes
-# sym: _print_string
+# sym: __print_string
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -254,7 +254,7 @@
 # child PRINTF_TREE for node 79
 # node 80: type: TNT_STMT
 # child SEQ_CUR for node 80
-# node 81: type: TNT_CALL sym: _print_int
+# node 81: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 81
 # node 82: type: TNT_ARG
 # child SEQ_CUR for node 82
@@ -262,7 +262,7 @@
 # child SEQ_NEXT for node 80
 # node 84: type: TNT_STMT
 # child SEQ_CUR for node 84
-# node 85: type: TNT_CALL sym: _print_string
+# node 85: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 85
 # node 86: type: TNT_ARG
 # child SEQ_CUR for node 86
@@ -707,7 +707,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -724,7 +724,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 
 .data
 

@@ -173,9 +173,9 @@ struct area_t
 };
 
 // names of the built-in print functions
-#define BI_PRINT_STRING "_print_string"
-#define BI_PRINT_INT    "_print_int"
-#define BI_PRINT_CHAR   "_print_char"
-#define BI_PRINT_HEX    "_print_hex"
+#define BI_PRINT_STRING "__print_string"
+#define BI_PRINT_INT    "__print_int"
+#define BI_PRINT_CHAR   "__print_char"
+#define BI_PRINT_HEX    "__print_hex"
 
 #endif // COMMON_H

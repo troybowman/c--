@@ -2,7 +2,7 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 6
-# sym: _print_int
+# sym: __print_int
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -11,7 +11,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_hex
+# sym: __print_hex
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -20,7 +20,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_char
+# sym: __print_char
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -29,7 +29,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: yes
-# sym: _print_string
+# sym: __print_string
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -102,7 +102,7 @@
 # child PRINTF_TREE for node 15
 # node 16: type: TNT_STMT
 # child SEQ_CUR for node 16
-# node 17: type: TNT_CALL sym: _print_string
+# node 17: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 17
 # node 18: type: TNT_ARG
 # child SEQ_CUR for node 18
@@ -132,7 +132,7 @@
 # child PRINTF_TREE for node 30
 # node 31: type: TNT_STMT
 # child SEQ_CUR for node 31
-# node 32: type: TNT_CALL sym: _print_string
+# node 32: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 32
 # node 33: type: TNT_ARG
 # child SEQ_CUR for node 33
@@ -162,7 +162,7 @@
 # child PRINTF_TREE for node 45
 # node 46: type: TNT_STMT
 # child SEQ_CUR for node 46
-# node 47: type: TNT_CALL sym: _print_string
+# node 47: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 47
 # node 48: type: TNT_ARG
 # child SEQ_CUR for node 48
@@ -190,7 +190,7 @@
 # child PRINTF_TREE for node 59
 # node 60: type: TNT_STMT
 # child SEQ_CUR for node 60
-# node 61: type: TNT_CALL sym: _print_string
+# node 61: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 61
 # node 62: type: TNT_ARG
 # child SEQ_CUR for node 62
@@ -279,7 +279,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LABEL
@@ -359,7 +359,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LABEL
@@ -439,7 +439,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LABEL
@@ -514,7 +514,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LABEL

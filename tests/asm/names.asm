@@ -825,7 +825,7 @@ main:
   beq $t2, $zero, _L1
   lb $t0, _str1
   move $a0, $t0
-  jal _print_int
+  jal print_int
   j _L5
 _L1:
   lb $t0, _str5
@@ -834,12 +834,12 @@ _L1:
   beq $t2, $zero, _L3
   lb $t0, _str3
   move $a0, $t0
-  jal _print_int
+  jal print_int
   j _L5
 _L3:
   lb $t0, _str5
   move $a0, $t0
-  jal _print_int
+  jal print_int
 _L5:
 
 __leavemain:

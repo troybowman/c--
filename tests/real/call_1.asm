@@ -14,7 +14,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: no
-# sym: _print_int
+# sym: __print_int
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -23,7 +23,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_hex
+# sym: __print_hex
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -32,7 +32,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_char
+# sym: __print_char
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -41,7 +41,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: yes
-# sym: _print_string
+# sym: __print_string
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -182,7 +182,7 @@
 # child PRINTF_TREE for node 27
 # node 28: type: TNT_STMT
 # child SEQ_CUR for node 28
-# node 29: type: TNT_CALL sym: _print_string
+# node 29: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 29
 # node 30: type: TNT_ARG
 # child SEQ_CUR for node 30
@@ -190,7 +190,7 @@
 # child SEQ_NEXT for node 28
 # node 32: type: TNT_STMT
 # child SEQ_CUR for node 32
-# node 33: type: TNT_CALL sym: _print_int
+# node 33: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 33
 # node 34: type: TNT_ARG
 # child SEQ_CUR for node 34
@@ -198,7 +198,7 @@
 # child SEQ_NEXT for node 32
 # node 36: type: TNT_STMT
 # child SEQ_CUR for node 36
-# node 37: type: TNT_CALL sym: _print_string
+# node 37: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 37
 # node 38: type: TNT_ARG
 # child SEQ_CUR for node 38
@@ -226,7 +226,7 @@
 # child PRINTF_TREE for node 49
 # node 50: type: TNT_STMT
 # child SEQ_CUR for node 50
-# node 51: type: TNT_CALL sym: _print_string
+# node 51: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 51
 # node 52: type: TNT_ARG
 # child SEQ_CUR for node 52
@@ -234,7 +234,7 @@
 # child SEQ_NEXT for node 50
 # node 54: type: TNT_STMT
 # child SEQ_CUR for node 54
-# node 55: type: TNT_CALL sym: _print_int
+# node 55: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 55
 # node 56: type: TNT_ARG
 # child SEQ_CUR for node 56
@@ -242,7 +242,7 @@
 # child SEQ_NEXT for node 54
 # node 58: type: TNT_STMT
 # child SEQ_CUR for node 58
-# node 59: type: TNT_CALL sym: _print_string
+# node 59: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 59
 # node 60: type: TNT_ARG
 # child SEQ_CUR for node 60
@@ -270,7 +270,7 @@
 # child PRINTF_TREE for node 71
 # node 72: type: TNT_STMT
 # child SEQ_CUR for node 72
-# node 73: type: TNT_CALL sym: _print_string
+# node 73: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 73
 # node 74: type: TNT_ARG
 # child SEQ_CUR for node 74
@@ -278,7 +278,7 @@
 # child SEQ_NEXT for node 72
 # node 76: type: TNT_STMT
 # child SEQ_CUR for node 76
-# node 77: type: TNT_CALL sym: _print_int
+# node 77: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 77
 # node 78: type: TNT_ARG
 # child SEQ_CUR for node 78
@@ -286,7 +286,7 @@
 # child SEQ_NEXT for node 76
 # node 80: type: TNT_STMT
 # child SEQ_CUR for node 80
-# node 81: type: TNT_CALL sym: _print_string
+# node 81: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 81
 # node 82: type: TNT_ARG
 # child SEQ_CUR for node 82
@@ -316,7 +316,7 @@
 # child PRINTF_TREE for node 94
 # node 95: type: TNT_STMT
 # child SEQ_CUR for node 95
-# node 96: type: TNT_CALL sym: _print_string
+# node 96: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 96
 # node 97: type: TNT_ARG
 # child SEQ_CUR for node 97
@@ -324,7 +324,7 @@
 # child SEQ_NEXT for node 95
 # node 99: type: TNT_STMT
 # child SEQ_CUR for node 99
-# node 100: type: TNT_CALL sym: _print_int
+# node 100: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 100
 # node 101: type: TNT_ARG
 # child SEQ_CUR for node 101
@@ -332,7 +332,7 @@
 # child SEQ_NEXT for node 99
 # node 103: type: TNT_STMT
 # child SEQ_CUR for node 103
-# node 104: type: TNT_CALL sym: _print_string
+# node 104: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 104
 # node 105: type: TNT_ARG
 # child SEQ_CUR for node 105
@@ -360,7 +360,7 @@
 # child PRINTF_TREE for node 116
 # node 117: type: TNT_STMT
 # child SEQ_CUR for node 117
-# node 118: type: TNT_CALL sym: _print_string
+# node 118: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 118
 # node 119: type: TNT_ARG
 # child SEQ_CUR for node 119
@@ -368,7 +368,7 @@
 # child SEQ_NEXT for node 117
 # node 121: type: TNT_STMT
 # child SEQ_CUR for node 121
-# node 122: type: TNT_CALL sym: _print_int
+# node 122: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 122
 # node 123: type: TNT_ARG
 # child SEQ_CUR for node 123
@@ -376,7 +376,7 @@
 # child SEQ_NEXT for node 121
 # node 125: type: TNT_STMT
 # child SEQ_CUR for node 125
-# node 126: type: TNT_CALL sym: _print_string
+# node 126: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 126
 # node 127: type: TNT_ARG
 # child SEQ_CUR for node 127
@@ -408,7 +408,7 @@
 # child PRINTF_TREE for node 140
 # node 141: type: TNT_STMT
 # child SEQ_CUR for node 141
-# node 142: type: TNT_CALL sym: _print_string
+# node 142: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 142
 # node 143: type: TNT_ARG
 # child SEQ_CUR for node 143
@@ -416,7 +416,7 @@
 # child SEQ_NEXT for node 141
 # node 145: type: TNT_STMT
 # child SEQ_CUR for node 145
-# node 146: type: TNT_CALL sym: _print_int
+# node 146: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 146
 # node 147: type: TNT_ARG
 # child SEQ_CUR for node 147
@@ -424,7 +424,7 @@
 # child SEQ_NEXT for node 145
 # node 149: type: TNT_STMT
 # child SEQ_CUR for node 149
-# node 150: type: TNT_CALL sym: _print_string
+# node 150: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 150
 # node 151: type: TNT_ARG
 # child SEQ_CUR for node 151
@@ -436,7 +436,7 @@
 # child PRINTF_TREE for node 154
 # node 155: type: TNT_STMT
 # child SEQ_CUR for node 155
-# node 156: type: TNT_CALL sym: _print_int
+# node 156: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 156
 # node 157: type: TNT_ARG
 # child SEQ_CUR for node 157
@@ -444,7 +444,7 @@
 # child SEQ_NEXT for node 155
 # node 159: type: TNT_STMT
 # child SEQ_CUR for node 159
-# node 160: type: TNT_CALL sym: _print_string
+# node 160: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 160
 # node 161: type: TNT_ARG
 # child SEQ_CUR for node 161
@@ -598,7 +598,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -615,7 +615,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -632,7 +632,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -691,7 +691,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -708,7 +708,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -725,7 +725,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LI
@@ -784,7 +784,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -801,7 +801,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -818,7 +818,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -884,7 +884,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -901,7 +901,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -918,7 +918,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -977,7 +977,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -994,7 +994,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -1011,7 +1011,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -1083,7 +1083,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -1100,7 +1100,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -1117,7 +1117,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -1169,7 +1169,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -1186,7 +1186,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 
 .data
 

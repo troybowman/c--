@@ -6,7 +6,7 @@
 #   line: 3
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
-# sym: _print_int
+# sym: __print_int
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -15,7 +15,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_hex
+# sym: __print_hex
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -24,7 +24,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_char
+# sym: __print_char
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -33,7 +33,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: yes
-# sym: _print_string
+# sym: __print_string
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -80,7 +80,7 @@
 # child PRINTF_TREE for node 6
 # node 7: type: TNT_STMT
 # child SEQ_CUR for node 7
-# node 8: type: TNT_CALL sym: _print_char
+# node 8: type: TNT_CALL sym: __print_char
 # child CALL_ARGS for node 8
 # node 9: type: TNT_ARG
 # child SEQ_CUR for node 9
@@ -88,7 +88,7 @@
 # child SEQ_NEXT for node 7
 # node 11: type: TNT_STMT
 # child SEQ_CUR for node 11
-# node 12: type: TNT_CALL sym: _print_string
+# node 12: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 12
 # node 13: type: TNT_ARG
 # child SEQ_CUR for node 13
@@ -96,7 +96,7 @@
 # child SEQ_NEXT for node 11
 # node 15: type: TNT_STMT
 # child SEQ_CUR for node 15
-# node 16: type: TNT_CALL sym: _print_int
+# node 16: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 16
 # node 17: type: TNT_ARG
 # child SEQ_CUR for node 17
@@ -104,7 +104,7 @@
 # child SEQ_NEXT for node 15
 # node 19: type: TNT_STMT
 # child SEQ_CUR for node 19
-# node 20: type: TNT_CALL sym: _print_string
+# node 20: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 20
 # node 21: type: TNT_ARG
 # child SEQ_CUR for node 21
@@ -143,7 +143,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_char)
+# src1 -> ST_FUNCTION (__print_char)
 # |
 # >
 # CNT_LEA
@@ -160,7 +160,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LB
@@ -177,7 +177,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -194,7 +194,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 
 .data
 

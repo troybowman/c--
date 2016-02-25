@@ -2,7 +2,7 @@
 # GLOBAL SYMBOL TABLE
 #-----------------------------------------------------------------------------
 # size: 9
-# sym: _print_int
+# sym: __print_int
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -11,7 +11,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_hex
+# sym: __print_hex
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -20,7 +20,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_INT
 #     is_extern: yes
-# sym: _print_char
+# sym: __print_char
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -29,7 +29,7 @@
 #         type: ST_PRIMITIVE
 #           base: PRIM_CHAR
 #     is_extern: yes
-# sym: _print_string
+# sym: __print_string
 #   line: -1
 #   type: ST_FUNCTION
 #     rt_type: PRIM_VOID
@@ -212,7 +212,7 @@
 # child PRINTF_TREE for node 8
 # node 9: type: TNT_STMT
 # child SEQ_CUR for node 9
-# node 10: type: TNT_CALL sym: _print_string
+# node 10: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 10
 # node 11: type: TNT_ARG
 # child SEQ_CUR for node 11
@@ -220,7 +220,7 @@
 # child SEQ_NEXT for node 9
 # node 13: type: TNT_STMT
 # child SEQ_CUR for node 13
-# node 14: type: TNT_CALL sym: _print_int
+# node 14: type: TNT_CALL sym: __print_int
 # child CALL_ARGS for node 14
 # node 15: type: TNT_ARG
 # child SEQ_CUR for node 15
@@ -228,7 +228,7 @@
 # child SEQ_NEXT for node 13
 # node 17: type: TNT_STMT
 # child SEQ_CUR for node 17
-# node 18: type: TNT_CALL sym: _print_string
+# node 18: type: TNT_CALL sym: __print_string
 # child CALL_ARGS for node 18
 # node 19: type: TNT_ARG
 # child SEQ_CUR for node 19
@@ -416,7 +416,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 # |
 # >
 # CNT_LW
@@ -433,7 +433,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_int)
+# src1 -> ST_FUNCTION (__print_int)
 # |
 # >
 # CNT_LEA
@@ -450,7 +450,7 @@
 # >
 # CNT_CALL
 # --------
-# src1 -> ST_FUNCTION (_print_string)
+# src1 -> ST_FUNCTION (__print_string)
 #-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
