@@ -984,7 +984,6 @@ void stack_frame_t::print()
 #define PRINT(sec)          print_##sec(ctx, *this)
 #define PRINT_P(idx, label) print_pseudo_section(ctx, *this, idx, label)
 #define PLABEL "<padding>"
-
   PRINT(params);
   PRINT_P(FS_PADDING2, PLABEL);
   PRINT(lvars);
@@ -994,7 +993,6 @@ void stack_frame_t::print()
   PRINT(svregs);
   PRINT(stkargs);
   PRINT_P(FS_REGARGS, "<minimum 4 arg slots>");
-
 #undef PRINT
 #undef PRINT_P
 #undef PLABEL

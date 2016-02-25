@@ -205,27 +205,27 @@ static int process_parse_err(const parse_results_t &res, args_t &args)
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
+  ir_t ir;
   args_t args = parseargs(argc, argv);
+
   if ( args.code != ARGS_OK )
     return process_args_err(args, argv[0]);
 
-  // parse input source -------------------------------------------------------
-  parse_results_t res;
-  if ( !parse(res, args.infile) )
-    return process_parse_err(res, args);
+  {
+    parse_results_t res;
+    if ( !parse(res, args.infile) )
+      return process_parse_err(res, args);
 
-  LOG_INIT(args.outfile);
-  LOG_PARSE_RESULTS(res);
-  LOG_CHECK_PHASE_FLAG(dbg_no_ir);
+    LOG_INIT(args.outfile);
+    LOG_PARSE_RESULTS(res);
+    LOG_CHECK_PHASE_FLAG(dbg_no_ir);
 
-  // intermediate representation ----------------------------------------------
-  ir_t ir;
-  generate_ir(ir, res);
+    generate_ir(ir, res);
 
-  LOG_IR(ir);
-  LOG_CHECK_PHASE_FLAG(dbg_no_code);
+    LOG_IR(ir);
+    LOG_CHECK_PHASE_FLAG(dbg_no_code);
+  }
 
-  // backend ------------------------------------------------------------------
   asm_ctx_t ctx(args.outfile);
   generate_mips_asm(ctx, ir);
 
