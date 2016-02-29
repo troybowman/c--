@@ -484,17 +484,6 @@ static type_error_t validate_func_def(const symbol_t &def, symref_t prev)
 }
 
 //-----------------------------------------------------------------------------
-static void init_lsyms(symbol_t &f)
-{
-  symvec_t::const_iterator i;
-  for ( i = f.params()->begin(); i != f.params()->end(); i++ )
-  {
-    ASSERT(1003, *i != NULL);
-    f.symbols()->insert(*i);
-  }
-}
-
-//-----------------------------------------------------------------------------
 static void set_decl_srcinfo(symbol_t &f1, const symbol_t &f2)
 {
   f1.set_line(f2.line());
@@ -546,7 +535,11 @@ static void func_enter(parser_ctx_t &ctx, symref_t f, primitive_t rt)
       break;
   }
 
-  init_lsyms(*f);
+  // add function's parameters to its local symbol table
+  symvec_t::const_iterator i;
+  for ( i = f->params()->begin(); i != f->params()->end(); i++ )
+    f->symbols()->insert(*i);
+
   ctx.setlocal(f);
 }
 

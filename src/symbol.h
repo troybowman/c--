@@ -126,7 +126,7 @@ public:
   symbol_t(symbol_type_t type, char *str);
   symbol_t(symbol_type_t type);
 
-  virtual ~symbol_t(); // TODO: why does it have to be virtual? (release())
+  virtual ~symbol_t();
 
   bool is_prim()            const { return _type  == ST_PRIMITIVE; }
   bool is_array()           const { return _type  == ST_ARRAY; }
@@ -180,6 +180,7 @@ inline void emplace(symplace_t p, symref_t ref)
   emplace<symref_t>(p, ref);
 }
 
+//-----------------------------------------------------------------------------
 inline symref_t &deplace(const symplace_t &p)
 {
   return deplace<symref_t>(p);
