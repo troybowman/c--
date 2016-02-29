@@ -1214,10 +1214,12 @@ static void build_print_functions(parser_ctx_t &ctx, symref_t printf)
   ASSERT(1108, printf != NULL);
   printf->set_printf();
 
-  ctx.print_int    = build_print_function(BI_PRINT_INT,    "val",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);
-  ctx.print_hex    = build_print_function(BI_PRINT_HEX,    "hex",  ST_PRIMITIVE, PRIM_INT,  ctx.gsyms);
-  ctx.print_char   = build_print_function(BI_PRINT_CHAR,   "c",    ST_PRIMITIVE, PRIM_CHAR, ctx.gsyms);
-  ctx.print_string = build_print_function(BI_PRINT_STRING, "str",  ST_ARRAY,     PRIM_CHAR, ctx.gsyms);
+#define BPF(sname, fname, pname, t1, t2) ctx.sname = build_print_function(fname, pname, t1, t2, ctx.gsyms)
+  BPF(print_int,    BI_PRINT_INT,    "val", ST_PRIMITIVE, PRIM_INT);
+  BPF(print_hex,    BI_PRINT_HEX,    "hex", ST_PRIMITIVE, PRIM_INT);
+  BPF(print_char,   BI_PRINT_CHAR,   "c",   ST_PRIMITIVE, PRIM_CHAR);
+  BPF(print_string, BI_PRINT_STRING, "str", ST_ARRAY,     PRIM_CHAR);
+#undef BPF
 }
 
 //-----------------------------------------------------------------------------
