@@ -1008,23 +1008,22 @@ static void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
 }
 
 //-----------------------------------------------------------------------------
-static void set_register_names(ir_func_t &f)
+static void init_genreg_names(ir_func_t &f)
 {
-  // temps
+  // the use of these registers does not affect the stack, so we go ahead
+  // and name them all here. the other registers (saved regsters, $ra, etc)
+  // are initialized when we build the stack_frame_t for this function.
   symvec_t temps;
   f.get_used_resources(ST_TEMP, temps);
-
   for ( symvec_t::iterator i = temps.begin(); i != temps.end(); i++ )
   {
     symbol_t &temp = **i;
     temp.loc.set_reg(tempreg_names[temp.val()]);
   }
 
-  // $v0
   symref_t retval = f.gen_resource(ST_RETVAL);
   retval->loc.set_reg("$v0");
 
-  // $zero
   symref_t zero = f.gen_resource(ST_ZERO);
   zero->loc.set_reg("$zero");
 }
@@ -1037,7 +1036,7 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
   for ( ir_funcs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
   {
     ir_func_t &f = **i;
-    set_register_names(f);
+    init_genreg_names(f);
 
     ctx.out("\n%s:\n", f.sym->c_str());
 

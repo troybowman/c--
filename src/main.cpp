@@ -197,7 +197,6 @@ static int process_parse_err(const parse_results_t &res, args_t &args)
       break;
     }
   }
-
   remove(args.outpath);
   return 8;
 }
@@ -205,12 +204,12 @@ static int process_parse_err(const parse_results_t &res, args_t &args)
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  ir_t ir;
   args_t args = parseargs(argc, argv);
 
   if ( args.code != ARGS_OK )
     return process_args_err(args, argv[0]);
 
+  ir_t ir;
   {
     parse_results_t res;
     if ( !parse(res, args.infile) )

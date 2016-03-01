@@ -9,11 +9,11 @@ import mmap
 from argparse import *
 
 #------------------------------------------------------------------------------
-DECL     = "decl"
-TREE     = "tree"
-IR       = "ir"
-ASM      = "asm"
-REAL     = "real"
+DECL = "decl"
+TREE = "tree"
+IR   = "ir"
+ASM  = "asm"
+REAL = "real"
 ALL_PHASES = [DECL, TREE, IR, ASM, REAL]
 
 #------------------------------------------------------------------------------
@@ -184,11 +184,11 @@ class MemoryMonitor:
                 os.remove(self.log)
 
 #------------------------------------------------------------------------------
-class TesterPhase:
+class TesterPhase(object):
 
     def __init__(self, t, dirname, flags):
         self.cwd     = os.path.join(t.home, "tests", dirname)
-        self.prevdir = os.getcwd()
+        self.old_cwd = os.getcwd()
         self.flags   = flags
 
     def __enter__(self):
@@ -196,7 +196,7 @@ class TesterPhase:
         return self
 
     def __exit__(self, typ, val, tb):
-        os.chdir(self.prevdir)
+        os.chdir(self.old_cwd)
 
     def argv(self, t):
         return [ t.get_cmm_path(t.args.opt), "-v", hex(self.flags) ]
@@ -244,7 +244,7 @@ class RealPhase(TesterPhase):
 
     def validate(self, t):
         self.execAsmFiles(t)
-        self.status(t)
+        super(RealPhase, self).validate(t)
 
     def execAsmFiles(self, t):
         pattern = replace_ext(t.args.file_pattern, "asm")
