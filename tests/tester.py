@@ -184,7 +184,7 @@ class MemoryMonitor:
                 os.remove(self.log)
 
 #------------------------------------------------------------------------------
-class TesterPhase(object):
+class TesterPhase:
 
     def __init__(self, t, dirname, flags):
         self.cwd     = os.path.join(t.home, "tests", dirname)
@@ -244,7 +244,7 @@ class RealPhase(TesterPhase):
 
     def validate(self, t):
         self.execAsmFiles(t)
-        super(RealPhase, self).validate(t)
+        TesterPhase.validate(self, t)
 
     def execAsmFiles(self, t):
         pattern = replace_ext(t.args.file_pattern, "asm")
