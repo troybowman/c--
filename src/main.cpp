@@ -11,7 +11,6 @@
 
 #define OUTFILE_EXT "asm"
 
-dbg_flags_t dbg_flags = 0;
 static const char *argdesc  = ":v:o:";
 static const char *usagestr =
     "usage: %s [-v dbg_flags] [-o outfile] filename\n";
@@ -74,6 +73,7 @@ struct args_t
 
   FILE *infile;
   char *outpath;
+  uint32_t flags;
   union
   {
     char c;
@@ -87,8 +87,8 @@ struct args_t
   args_t(char *_outpath, const char *_str)
     : code(ARGS_OUTFILE), outpath(_outpath), str(_str) {}
 
-  args_t(FILE *_infile, char *_outpath, FILE *_outfile)
-    : code(ARGS_OK), infile(_infile), outpath(_outpath), outfile(_outfile) {}
+  args_t(FILE *i, char *op, FILE *of, uint32_t f)
+    : code(ARGS_OK), infile(i), outpath(op), outfile(of), flags(f) {}
 
   ~args_t()
   {
@@ -109,6 +109,7 @@ struct args_t
 static args_t parseargs(int argc, char **argv)
 {
   char *outpath = NULL;
+  uint32_t flags = 0;
 
   int c, prev_ind;
   while ( prev_ind = optind, (c = getopt(argc, argv, argdesc)) != -1 )
@@ -123,7 +124,7 @@ static args_t parseargs(int argc, char **argv)
     switch ( c )
     {
       case 'v':
-        dbg_flags |= dbg_flags_t(strtoul(optarg, NULL, 0));
+        flags |= strtoul(optarg, NULL, 0);
         break;
       case 'o':
         outpath = optarg;
@@ -153,7 +154,7 @@ static args_t parseargs(int argc, char **argv)
   if ( outfile == NULL )
     return args_t(outpath, strerror(errno));
 
-  return args_t(infile, outpath, outfile);
+  return args_t(infile, outpath, outfile, flags);
 }
 
 //-----------------------------------------------------------------------------

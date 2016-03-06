@@ -405,7 +405,7 @@ void logger_t::print_ir(const ir_t &ir)
 }
 
 //-----------------------------------------------------------------------------
-void logger_t::walk_funcs(const stx_trees_t &trees, dbg_flags_t flags)
+void logger_t::walk_funcs(const stx_trees_t &trees, uint32_t flags)
 {
   stx_trees_t::const_iterator i;
   for ( i = trees.begin(); i != trees.end(); i++ )

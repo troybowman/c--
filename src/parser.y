@@ -3,7 +3,6 @@
 class parser_ctx_t;
 #include "parser.hpp"
 #include "scanner.hpp"
-#include <logger.h>
 }
 
 %code requires {
