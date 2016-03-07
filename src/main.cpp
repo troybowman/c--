@@ -1,11 +1,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include <common.h>
 #include <parser.h>
-#include <symbol.h>
-#include <treenode.h>
-#include <ir.h>
 #include <asm.h>
 #include <logger.h>
 
