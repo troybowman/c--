@@ -9,12 +9,6 @@
 #include <asm.h>
 #include <logger.h>
 
-#define OUTFILE_EXT "asm"
-
-static const char *argdesc  = ":v:o:";
-static const char *usagestr =
-    "usage: %s [-v dbg_flags] [-o outfile] filename\n";
-
 //-----------------------------------------------------------------------------
 inline bool is_path_sep(char c)
 {
@@ -45,16 +39,15 @@ static char *gen_outpath(const char *inpath)
     ptr2 = in_end;
 
   int baselen = ptr2-ptr1;
-  int extlen  = strlen(OUTFILE_EXT);
+  int buflen = baselen+5;
 
-  int buflen = baselen+extlen+2;
   char *buf = (char *)malloc(buflen);
   char *ptr = buf;
   const char *const end = buf + buflen;
 
   APPSTR (ptr, end, ptr1, baselen);
   APPCHAR(ptr, end, '.', 1);
-  APPSTR (ptr, end, OUTFILE_EXT, extlen);
+  APPSTR (ptr, end, "asm", 3);
   APPZERO(ptr, end);
 
   return buf;
@@ -112,7 +105,7 @@ static args_t parseargs(int argc, char **argv)
   uint32_t flags = 0;
 
   int c, prev_ind;
-  while ( prev_ind = optind, (c = getopt(argc, argv, argdesc)) != -1 )
+  while ( prev_ind = optind, (c = getopt(argc, argv, ":v:o:")) != -1 )
   {
     if ( optind == prev_ind + 2
      &&  optarg != NULL
@@ -160,7 +153,7 @@ static args_t parseargs(int argc, char **argv)
 //-----------------------------------------------------------------------------
 static int process_args_err(args_t args, const char *prog)
 {
-  fprintf(stderr, usagestr, prog);
+  fprintf(stderr, "usage: %s [-v dbg_flags] [-o outfile] filename\n", prog);
 
   switch ( args.code )
   {
