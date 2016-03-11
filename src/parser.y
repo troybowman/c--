@@ -427,12 +427,9 @@ expr : INT                  { $$ = new treenode_t(TNT_INTCON, $1); }
 //-----------------------------------------------------------------------------
 static symref_t process_var_id(const char *name, int line, terr_info_t asfx, uint32_t flags)
 {
-  switch ( asfx.code )
-  {
-    case TERR_OK:  return symref_t(new symbol_t(flags, name, line));
-    case TERR_OK2: return symref_t(new symbol_t(flags, name, line, asfx.data));
-    default:       return NULLREF;
-  }
+  return symref_t(asfx.code == TERR_OK  ? new symbol_t(flags, name, line)
+                : asfx.code == TERR_OK2 ? new symbol_t(flags, name, line, asfx.data)
+                : NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -1172,33 +1169,39 @@ static void process_fdecl_error(parser_ctx_t &ctx, terr_info_t err, const symbol
   switch ( err.code )
   {
     case TERR_REDECLARED:
-      usererr(ctx, "error: function %s redeclared at line %d (previous declaration at line %d)\n",
+      usererr(ctx,
+              "error: function %s redeclared at line %d (previous declaration at line %d)\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_REDEFINED:
-      usererr(ctx, "error: function %s redefined at line %d "
+      usererr(ctx,
+              "error: function %s redefined at line %d "
               "(previous definition starts at line %d)\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_PARAMS:
-      usererr(ctx, "error: parameters in definition of function %s at line %d "
+      usererr(ctx,
+              "error: parameters in definition of function %s at line %d "
               "do not match the parameters in its declaration at line %d\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_RTN_TYPES:
-      usererr(ctx, "error: return type for function %s at line %d "
+      usererr(ctx,
+              "error: return type for function %s at line %d "
               "does not match the return type in its declaration at line %d\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_EXTERN:
-      usererr(ctx, "error: function %s is defined at line %d "
+      usererr(ctx,
+              "error: function %s is defined at line %d "
               "but is declared extern at line %d\n",
               sym.c_str(), sym.line(), err.data);
       break;
     case TERR_PRINTF_DECL:
     case TERR_PRINTF_DEF1:
     case TERR_PRINTF_DEF2:
-      usererr(ctx, "error, line %d: ellipsis \"...\" notation is is only valid when declaring "
+      usererr(ctx,
+              "error, line %d: ellipsis \"...\" notation is is only valid when declaring "
               "builtin function: extern void printf(char format[], ...);\n",
               sym.line());
       break;

@@ -174,11 +174,11 @@ static int process_args_err(args_t args, const char *prog)
 }
 
 //-----------------------------------------------------------------------------
-static int process_parse_err(const parse_results_t &res, args_t &args)
+static int process_parse_err(const errvec_t &errmsgs, const char *outpath)
 {
   int count = 0;
   errvec_t::const_iterator i;
-  for ( i = res.errmsgs.begin(); i != res.errmsgs.end(); i++, count++ )
+  for ( i = errmsgs.begin(); i != errmsgs.end(); i++, count++ )
   {
     fprintf(stderr, i->c_str());
     if ( count >= 25 )
@@ -187,7 +187,7 @@ static int process_parse_err(const parse_results_t &res, args_t &args)
       break;
     }
   }
-  remove(args.outpath);
+  remove(outpath);
   return 8;
 }
 
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
   {
     parse_results_t res;
     if ( !parse(res, args.infile) )
-      return process_parse_err(res, args);
+      return process_parse_err(res.errmsgs, args.outpath);
 
     LOG_INIT(args.outfile);
     LOG_PARSE_RESULTS(res);
