@@ -49,9 +49,8 @@ class Tester(ArgumentParser):
 
     def __init__(self):
         self.__find_home__()
-        self.__find_cmm_path__("dbg")
-        self.__find_cmm_path__("opt")
         self.__init_args__()
+        self.__find_cmm__()
 
     def __find_home__(self):
         # fail if we're not in the c-- directory tree
@@ -63,9 +62,13 @@ class Tester(ArgumentParser):
             cur = parent
         self.home = cur
 
-    def __find_cmm_path__(self, build):
+    def __find_cmm__(self):
+        # fail if we can't find the c-- executable
+        build = "opt" if self.args.opt else "dbg"
         path = os.path.join(self.home, "bin", build, "c--")
-        setattr(self, build, path if os.path.exists(path) else None)
+        if not os.path.exists(path):
+            raise Exception("Error: could not find c-- binary!")
+        self.cmm = path
 
     def __init_args__(self):
         ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
@@ -102,13 +105,7 @@ class Tester(ArgumentParser):
             action="store_true",
             default=False,
             dest="opt")
-        self.args = super(Tester, self).parse_args()
-
-    def get_cmm_path(self, opt):
-        path = getattr(self, "opt" if opt else "dbg")
-        if path is None:
-            raise Exception("Error: could not find c-- binary!")
-        return path
+        self.args = ArgumentParser.parse_args(self)
 
     def out(self, verbosity, text, color=""):
         if self.args.verbosity >= verbosity:
@@ -199,7 +196,7 @@ class TesterPhase:
         os.chdir(self.old_cwd)
 
     def argv(self, t):
-        return [ t.get_cmm_path(t.args.opt), "-v", hex(self.flags) ]
+        return [ t.cmm, "-v", hex(self.flags) ]
 
     def simplify_inpath(self, path):
         f = os.path.basename(path)
