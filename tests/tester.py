@@ -218,14 +218,7 @@ class TesterPhase:
                 except OSError as e:
                     errors.write("couldn't launch c--: %s\n" % e.strerror)
 
-    def execute(self, t):
-        t.info("running phase: %s\n" % os.path.basename(self.cwd))
-        pattern = replace_ext(t.args.file_pattern, "c")
-        for inpath in glob.iglob(pattern):
-            self.compile(t, inpath)
-        self.validate(t)
-
-    def status(self, t):
+    def validate(self, t):
         t.info("status:")
         status = subprocess.check_output(["git", "ls-files", "-dmo"])
         if len(status) > 0:
@@ -233,8 +226,12 @@ class TesterPhase:
         else:
             t.success(" Clean!\n\n")
 
-    def validate(self, t):
-        self.status(t)
+    def execute(self, t):
+        t.info("running phase: %s\n" % os.path.basename(self.cwd))
+        pattern = replace_ext(t.args.file_pattern, "c")
+        for inpath in glob.iglob(pattern):
+            self.compile(t, inpath)
+        self.validate(t)
 
 #------------------------------------------------------------------------------
 class RealPhase(TesterPhase):
