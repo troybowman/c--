@@ -506,8 +506,9 @@ static void func_enter(parser_ctx_t &ctx, symref_t f, primitive_t rt)
   ASSERT(1000, f != NULL && f->is_func());
 
   f->set_base(rt);
+
   symref_t prev = ctx.gsyms.get(f->name());
-  terr_info_t err(validate_func_def(*f, prev));
+  terr_info_t err = validate_func_def(*f, prev);
 
   switch ( err.code )
   {
@@ -574,15 +575,18 @@ static treenode_t *process_ret_stmt(parser_ctx_t &ctx, treenode_t *expr, int lin
     switch ( err )
     {
       case TERR_NO_RET:
-        usererr(ctx, "error: line %d - return statements in a non-void function "
+        usererr(ctx,
+                "error: line %d - return statements in a non-void function "
                 "must return a value\n", line);
         break;
       case TERR_BAD_RET:
-        usererr(ctx, "error: line %d - return statements in a void function "
+        usererr(ctx,
+                "error: line %d - return statements in a void function "
                 "must not return a value\n", line);
         break;
       case TERR_RET_EXPR:
-        usererr(ctx, "error: line %d - return value is not compatible "
+        usererr(ctx,
+                "error: line %d - return value is not compatible "
                 "with function's return type\n", line);
         break;
       default:
@@ -605,19 +609,10 @@ static bool check_arg(const symbol_t &param, const treenode_t &expr)
   {
     case ST_PRIMITIVE:
       return expr.is_int_compat();
-
     case ST_ARRAY:
-      if ( expr.type() == TNT_STRCON )
-      {
-        return param.base() == PRIM_CHAR;
-      }
-      else if ( expr.type() == TNT_SYMBOL )
-      {
-        return expr.sym()->is_array()
-            && expr.sym()->base() == param.base();
-      }
-      return false;
-
+      return expr.type() == TNT_STRCON ? (param.base() == PRIM_CHAR)
+           : expr.type() == TNT_SYMBOL ? (expr.sym()->is_array() && expr.sym()->base() == param.base())
+           : false;
     default:
       INTERR(1031);
   }
@@ -881,15 +876,18 @@ static treenode_t *process_call(
     switch ( err.code )
     {
       case TERR_NUMARGS:
-        usererr(ctx, "error: expected %d arguments for function %s, %d were provided. line %d\n",
+        usererr(ctx,
+                "error: expected %d arguments for function %s, %d were provided. line %d\n",
                 f->params()->size(), f->c_str(), err.data, line);
         break;
       case TERR_BADARG:
-        usererr(ctx, "error: argument %d to function %s is of incompatible type, line %d\n",
+        usererr(ctx,
+                "error: argument %d to function %s is of incompatible type, line %d\n",
                 err.data, f->c_str(), line);
         break;
       case TERR_NOFUNC:
-        usererr(ctx, "error: symbol %s used a function but is not of function type, line %d\n",
+        usererr(ctx,
+                "error: symbol %s is not callable, line %d\n",
                 f->c_str(), line);
         break;
       default:
@@ -934,12 +932,14 @@ static treenode_t *process_call_ctx(
     switch ( err )
     {
       case TERR_VOID_EXPR:
-        usererr(ctx, "error: line %d - function %s called as part of an expression "
+        usererr(ctx,
+                "error: line %d - function %s called as part of an expression "
                 "but does not return a value\n",
                 line, call->sym()->c_str());
         break;
       case TERR_PROCEDURE:
-        usererr(ctx, "error: line %d - function %s called as a standalone statement "
+        usererr(ctx,
+                "error: line %d - function %s called as a standalone statement "
                 "but does not have return type void\n",
                 line, call->sym()->c_str());
         break;
@@ -996,9 +996,7 @@ static symref_t process_stmt_id(parser_ctx_t &ctx, const char *id, int line)
 }
 
 //-----------------------------------------------------------------------------
-static type_error_t validate_array_lookup(
-    const symbol_t &sym,
-    const treenode_t &idx)
+static type_error_t validate_array_lookup(const symbol_t &sym, const treenode_t &idx)
 {
   return !sym.is_array()      ? TERR_BASE
        : !idx.is_int_compat() ? TERR_INDEX
@@ -1024,11 +1022,14 @@ static treenode_t *process_stmt_var(
     switch ( err )
     {
       case TERR_BASE:
-        usererr(ctx, "error: symbol %s used as an array but is not of array type, line %d\n",
+        usererr(ctx,
+                "error: symbol %s used as an array but is not of array type, line %d\n",
                 sym->c_str(), line);
         break;
       case TERR_INDEX:
-        usererr(ctx, "error: expression for array index is not of integer type, line %d\n", line);
+        usererr(ctx,
+                "error: expression for array index is not of integer type, line %d\n",
+                line);
         break;
       default:
         INTERR(1034);
@@ -1102,11 +1103,14 @@ static bool process_var_decl(parser_ctx_t &ctx, symref_t sym, primitive_t type)
     switch ( err.code )
     {
       case TERR_REDECLARED:
-        usererr(ctx, "error: variable %s redeclared at line %d (previous declaration at line %d)\n",
+        usererr(ctx,
+                "error: variable %s redeclared at line %d (previous declaration at line %d)\n",
                 sym->c_str(), sym->line(), err.data);
         break;
       case TERR_BAD_VOID:
-        usererr(ctx, "error: void type is only valid for parameter declarations, line %d\n", sym->line());
+        usererr(ctx,
+                "error: void type is only valid for parameter declarations, line %d\n",
+                sym->line());
         break;
       default:
         INTERR(0);

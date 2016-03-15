@@ -6,5 +6,5 @@ error: non-void funcion at must return a value
 error: line 12 - return statements in a non-void function must return a value
 error: line 14 - return value is not compatible with function's return type
 error: line 15 - return value is not compatible with function's return type
-error: symbol x used a function but is not of function type, line 16
+error: symbol x is not callable, line 16
 c-- returned a nonzero exit code
