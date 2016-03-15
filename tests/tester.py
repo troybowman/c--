@@ -48,19 +48,9 @@ def replace_ext(path, ext):
 class Tester(ArgumentParser):
 
     def __init__(self):
-        self.__find_home__()
         self.__init_args__()
+        self.__find_home__()
         self.__find_cmm__()
-
-    def __find_home__(self):
-        # fail if we're not in the c-- directory tree
-        cur = os.getcwd()
-        while not os.path.basename(cur).lower() == "c--":
-            parent = os.path.dirname(cur)
-            if parent == cur:
-                raise Exception("Error: could not find c-- root directory!")
-            cur = parent
-        self.home = cur
 
     def __init_args__(self):
         ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
@@ -98,6 +88,16 @@ class Tester(ArgumentParser):
             default=False,
             dest="opt")
         self.args = ArgumentParser.parse_args(self)
+
+    def __find_home__(self):
+        # fail if we're not in the c-- directory tree
+        cur = os.getcwd()
+        while not os.path.basename(cur).lower() == "c--":
+            parent = os.path.dirname(cur)
+            if parent == cur:
+                raise Exception("Error: could not find c-- root directory!")
+            cur = parent
+        self.home = cur
 
     def __find_cmm__(self):
         # fail if we can't find the c-- executable
