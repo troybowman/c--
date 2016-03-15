@@ -62,14 +62,6 @@ class Tester(ArgumentParser):
             cur = parent
         self.home = cur
 
-    def __find_cmm__(self):
-        # fail if we can't find the c-- executable
-        build = "opt" if self.args.opt else "dbg"
-        path = os.path.join(self.home, "bin", build, "c--")
-        if not os.path.exists(path):
-            raise Exception("Error: could not find c-- binary!")
-        self.cmm = path
-
     def __init_args__(self):
         ArgumentParser.__init__(self, formatter_class=ArgumentDefaultsHelpFormatter)
         self.add_argument(
@@ -106,6 +98,13 @@ class Tester(ArgumentParser):
             default=False,
             dest="opt")
         self.args = ArgumentParser.parse_args(self)
+
+    def __find_cmm__(self):
+        # fail if we can't find the c-- executable
+        build = "opt" if self.args.opt else "dbg"
+        self.cmm = os.path.join(self.home, "bin", build, "c--")
+        if not os.path.exists(self.cmm):
+            raise Exception("Error: could not find c-- binary!")
 
     def out(self, verbosity, text, color=""):
         if self.args.verbosity >= verbosity:
