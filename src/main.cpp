@@ -157,7 +157,7 @@ static int process_args_err(args_t args, const char *prog)
       fprintf(stderr, "error: unknown option '-%c'\n", args.c);
       return 3;
     case ARGS_MISSING:
-      fprintf(stderr, "error: option '-%c' requiargs an argument\n", args.c);
+      fprintf(stderr, "error: option '-%c' requires an argument\n", args.c);
       return 4;
     case ARGS_INFILE:
       fprintf(stderr, "error: could not open input file: %s\n", args.str);

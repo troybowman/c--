@@ -31,7 +31,7 @@ asm_ctx_t::asm_ctx_t(FILE *_outfile) :
 }
 
 //-----------------------------------------------------------------------------
-void asm_ctx_t::out(const char *fmt, ...)
+void asm_ctx_t::print(const char *fmt, ...)
 {
   va_list va;
   va_start(va, fmt);
@@ -103,7 +103,7 @@ static void init_gsyms(asm_ctx_t &ctx, ir_t &ir)
 //-----------------------------------------------------------------------------
 static void gen_data_section(asm_ctx_t &ctx)
 {
-  ctx.out("\n.data\n\n");
+  ctx.print("\n.data\n\n");
 
   for ( symtab_t::const_iterator i = ctx.gsyms.begin(); i != ctx.gsyms.end(); i++ )
   {
@@ -112,33 +112,33 @@ static void gen_data_section(asm_ctx_t &ctx)
     if ( sym.type() == ST_FUNCTION || sym.type() == ST_LABEL )
       continue;
 
-    ctx.out(TAB1"%s:\n", sym.c_str());
+    ctx.print(TAB1"%s:\n", sym.c_str());
 
     switch ( sym.type() )
     {
       case ST_PRIMITIVE:
         if ( sym.base() == PRIM_INT )
-          ctx.out(TAB2".space %d\n", WORDSIZE);
+          ctx.print(TAB2".space %d\n", WORDSIZE);
         else
-          ctx.out(TAB2".space 1\n"
-                  TAB2".align 2\n");
+          ctx.print(TAB2".space 1\n"
+                    TAB2".align 2\n");
         break;
       case ST_ARRAY:
         if ( sym.base() == PRIM_INT )
-          ctx.out(TAB2".space %d\n", sym.size() * WORDSIZE);
+          ctx.print(TAB2".space %d\n", sym.size() * WORDSIZE);
         else
-          ctx.out(TAB2".space %d\n"
-                  TAB2".align 2\n",  sym.size());
+          ctx.print(TAB2".space %d\n"
+                    TAB2".align 2\n",  sym.size());
         break;
       case ST_STRCON:
-        ctx.out(  TAB2".asciiz %s\n"
-                  TAB2".align 2\n",  sym.str());
+        ctx.print(  TAB2".asciiz %s\n"
+                    TAB2".align 2\n",  sym.str());
         break;
       default:
         INTERR(1085);
     }
 
-    ctx.out("\n");
+    ctx.print("\n");
   }
 }
 
@@ -366,65 +366,71 @@ stack_frame_t::stack_frame_t(const ir_func_t &_f, asm_ctx_t &_ctx)
 //-----------------------------------------------------------------------------
 struct reg_saver_t : public frame_item_visitor_t
 {
+  offset_t base;
   const char *cmd;
-  frame_section_t &base;
 
-  virtual void visit_item(item_info_t &info, const symbol_t &sym)
+  virtual void visit_item(item_info_t &info, const symbol_t &item)
   {
-    info.ctx->out(
+    info.ctx->print(
         TAB1"%s %s, %d($sp)\n",
         cmd,
-        sym.loc.reg(),
-        base.start + info.idx * WORDSIZE);
+        item.loc.reg(),
+        base + info.idx * WORDSIZE);
   }
-
-  reg_saver_t(const char *_cmd, frame_section_t &_base) : cmd(_cmd), base(_base) {}
 };
 
 //-----------------------------------------------------------------------------
 void stack_frame_t::gen_prologue()
 {
   if ( size() > 0 )
-    ctx.out(TAB1"la $sp, -%u($sp)\n", size());
+    ctx.print(TAB1"la $sp, -%u($sp)\n", size());
 
-#define SAVE(sec, base)                \
+#define SAVE(sec, base_sec)            \
 do                                     \
 {                                      \
-  reg_saver_t s("sw", sections[base]); \
+  reg_saver_t s;                       \
+  s.base = sections[base_sec].start;   \
+  s.cmd = "sw";                        \
   sections[sec].visit_items(ctx, s);   \
 } while ( false )
+
   SAVE(FS_SVREGS,  FS_SVREGS);
   SAVE(FS_RA,      FS_RA);
   SAVE(FS_REGARGS, FS_PARAMS);
+
 #undef SAVE
 
-  ctx.out("\n");
+  ctx.print("\n");
 }
 
 //-----------------------------------------------------------------------------
 void stack_frame_t::gen_epilogue()
 {
-  ctx.out("\n%s:\n", epilogue_lbl->c_str());
+  ctx.print("\n%s:\n", epilogue_lbl->c_str());
 
-#define RESTORE(sec, base)                        \
+#define RESTORE(sec, base_sec)                    \
 do                                                \
 {                                                 \
-  reg_saver_t s("lw", sections[base]);            \
+  reg_saver_t s;                                  \
+  s.base = sections[base_sec].start;              \
+  s.cmd = "lw";                                   \
   sections[sec].visit_items(ctx, s, FIV_REVERSE); \
 } while ( false )
+
   RESTORE(FS_REGARGS, FS_PARAMS);
   RESTORE(FS_RA,      FS_RA);
   RESTORE(FS_SVREGS,  FS_SVREGS);
+
 #undef RESTORE
 
   if ( size() > 0 )
-    ctx.out(TAB1"la $sp, %u($sp)\n", size());
+    ctx.print(TAB1"la $sp, %u($sp)\n", size());
 
   // MARS, for some utterly moronic reason, does not call main. we must manually exit
   if ( f.sym->is_main() )
-    ctx.out(TAB1"jal %s\n", EXIT);
+    ctx.print(TAB1"jal %s\n", EXIT);
   else
-    ctx.out(TAB1"jr $ra\n");
+    ctx.print(TAB1"jr $ra\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -448,10 +454,10 @@ static bool maybe_swap_source_operand(
     switch ( swap_out->loc.type() )
     {
       case SLT_STKOFF:
-        ctx.out(TAB1"lw %s, %d($sp)\n", swap_in->loc.reg(), swap_out->loc.stkoff());
+        ctx.print(TAB1"lw %s, %d($sp)\n", swap_in->loc.reg(), swap_out->loc.stkoff());
         break;
       case SLT_GLOBAL:
-        ctx.out(TAB1"lw %s, %s\n", swap_in->loc.reg(), swap_out->c_str());
+        ctx.print(TAB1"lw %s, %s\n", swap_in->loc.reg(), swap_out->c_str());
         break;
       default:
         INTERR(0); // registers should always be compatible
@@ -570,10 +576,10 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
           switch ( src1->type() )
           {
             case ST_INTCON:
-              ctx.out(TAB1"li %s, %d\n", dest->loc.reg(), src1->val());
+              ctx.print(TAB1"li %s, %d\n", dest->loc.reg(), src1->val());
               break;
             case ST_CHARCON:
-              ctx.out(TAB1"li %s, %s\n", dest->loc.reg(), src1->str());
+              ctx.print(TAB1"li %s, %s\n", dest->loc.reg(), src1->str());
               break;
             default:
               INTERR(1090);
@@ -585,13 +591,13 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
           switch ( dest->loc.type() )
           {
             case SLT_GLOBAL:
-              ctx.out(TAB1"sw %s, %s\n", src1->loc.reg(), dest->c_str());
+              ctx.print(TAB1"sw %s, %s\n", src1->loc.reg(), dest->c_str());
               break;
             case SLT_STKOFF:
-              ctx.out(TAB1"sw %s, %d($sp)\n", src1->loc.reg(), dest->loc.stkoff());
+              ctx.print(TAB1"sw %s, %d($sp)\n", src1->loc.reg(), dest->loc.stkoff());
               break;
             case SLT_REG:
-              ctx.out(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+              ctx.print(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
               break;
             default:
               INTERR(1091);
@@ -603,16 +609,16 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
           switch ( src1->loc.type() )
           {
             case SLT_GLOBAL:
-              ctx.out(TAB1"la %s, %s\n", dest->loc.reg(), src1->c_str());
+              ctx.print(TAB1"la %s, %s\n", dest->loc.reg(), src1->c_str());
               break;
             case SLT_STKOFF:
               if ( src1->is_param() )
-                ctx.out(TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+                ctx.print(TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
               else
-                ctx.out(TAB1"la %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+                ctx.print(TAB1"la %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
               break;
             case SLT_REG:
-              ctx.out(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+              ctx.print(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
               break;
             default:
               INTERR(1092);
@@ -627,16 +633,16 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
           switch ( dest->loc.type() )
           {
             case SLT_GLOBAL:
-              ctx.out(TAB1"%s %s, %s\n", store, src1->loc.reg(), dest->c_str());
+              ctx.print(TAB1"%s %s, %s\n", store, src1->loc.reg(), dest->c_str());
               break;
             case SLT_STKOFF:
-              ctx.out(TAB1"%s %s, %d($sp)\n", store, src1->loc.reg(), dest->loc.stkoff());
+              ctx.print(TAB1"%s %s, %d($sp)\n", store, src1->loc.reg(), dest->loc.stkoff());
               break;
             case SLT_REG:
               if ( dest->is_param() )
-                ctx.out(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+                ctx.print(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
               else
-                ctx.out(TAB1"%s %s, (%s)\n", store, src1->loc.reg(), dest->loc.reg());
+                ctx.print(TAB1"%s %s, (%s)\n", store, src1->loc.reg(), dest->loc.reg());
               break;
             default:
               INTERR(1093);
@@ -651,16 +657,16 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
           switch ( src1->loc.type() )
           {
             case SLT_GLOBAL:
-              ctx.out(TAB1"%s %s, %s\n", load, dest->loc.reg(), src1->c_str());
+              ctx.print(TAB1"%s %s, %s\n", load, dest->loc.reg(), src1->c_str());
               break;
             case SLT_STKOFF:
-              ctx.out(TAB1"%s %s, %d($sp)\n", load, dest->loc.reg(), src1->loc.stkoff());
+              ctx.print(TAB1"%s %s, %d($sp)\n", load, dest->loc.reg(), src1->loc.stkoff());
               break;
             case SLT_REG:
               if ( src1->is_param() )
-                ctx.out(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+                ctx.print(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
               else
-                ctx.out(TAB1"%s %s, (%s)\n", load, dest->loc.reg(), src1->loc.reg());
+                ctx.print(TAB1"%s %s, (%s)\n", load, dest->loc.reg(), src1->loc.reg());
               break;
             default:
               INTERR(1094);
@@ -676,10 +682,10 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
                 switch ( src1->loc.type() )
                 {
                   case SLT_STKOFF:
-                    ctx.out(TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+                    ctx.print(TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
                     break;
                   case SLT_REG:
-                    ctx.out(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+                    ctx.print(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
                     break;
                   default:
                     INTERR(1095);
@@ -694,7 +700,7 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
                     ensure_compatible_operands(ctx, node, REQUIRE_REG_SRC1);
                     src1 = node->src1;
                   case SLT_REG:
-                    ctx.out(TAB1"sw %s, %d($sp)\n", src1->loc.reg(), dest->loc.stkoff());
+                    ctx.print(TAB1"sw %s, %d($sp)\n", src1->loc.reg(), dest->loc.stkoff());
                     break;
                   default:
                     INTERR(1096);
@@ -713,20 +719,20 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
             switch ( src1->loc.type() )
             {
               case SLT_GLOBAL:
-                ctx.out(TAB1"lw %s, %s\n", dest->loc.reg(), src1->c_str());
+                ctx.print(TAB1"lw %s, %s\n", dest->loc.reg(), src1->c_str());
                 break;
               case SLT_STKOFF:
-                ctx.out(TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
+                ctx.print(TAB1"lw %s, %d($sp)\n", dest->loc.reg(), src1->loc.stkoff());
                 break;
               case SLT_REG:
-                ctx.out(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
+                ctx.print(TAB1"move %s, %s\n", dest->loc.reg(), src1->loc.reg());
                 break;
               default:
                 INTERR(1098);
             }
           }
 
-          ctx.out(TAB1"j %s\n", epilogue->c_str());
+          ctx.print(TAB1"j %s\n", epilogue->c_str());
         }
         break;
       case CNT_SLL:
@@ -737,13 +743,13 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
           switch ( src2->type() )
           {
             case ST_INTCON:
-              ctx.out(TAB1"%s %s, %s, %d\n",
-                      instr, dest->loc.reg(), src1->loc.reg(), src2->val());
+              ctx.print(TAB1"%s %s, %s, %d\n",
+                        instr, dest->loc.reg(), src1->loc.reg(), src2->val());
               break;
             case ST_TEMP:
               ASSERT(0, node->type != CNT_SLL);
-              ctx.out(TAB1"%s %s, %s, %s\n",
-                      instr, dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
+              ctx.print(TAB1"%s %s, %s, %s\n",
+                        instr, dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
               break;
             default:
               INTERR(0);
@@ -764,23 +770,23 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
       case CNT_SGE:
       case CNT_SLLV:
       case CNT_SRLV:
-        ctx.out(TAB1"%s %s, %s, %s\n",
-                cnt2instr(node->type), dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
+        ctx.print(TAB1"%s %s, %s, %s\n",
+                  cnt2instr(node->type), dest->loc.reg(), src1->loc.reg(), src2->loc.reg());
         break;
       case CNT_CNDJMP:
-        ctx.out(TAB1"beq %s, $zero, %s\n", src1->loc.reg(), dest->c_str());
+        ctx.print(TAB1"beq %s, $zero, %s\n", src1->loc.reg(), dest->c_str());
         break;
       case CNT_NOT:
-        ctx.out(TAB1"not %s, %s\n", dest->loc.reg(), src1->loc.reg());
+        ctx.print(TAB1"not %s, %s\n", dest->loc.reg(), src1->loc.reg());
         break;
       case CNT_CALL:
-        ctx.out(TAB1"jal %s\n", node->src1->c_str());
+        ctx.print(TAB1"jal %s\n", node->src1->c_str());
         break;
       case CNT_LABEL:
-        ctx.out("%s:\n", node->src1->c_str());
+        ctx.print("%s:\n", node->src1->c_str());
         break;
       case CNT_JUMP:
-        ctx.out(TAB1"j %s\n", node->dest->c_str());
+        ctx.print(TAB1"j %s\n", node->dest->c_str());
         break;
       default:
         continue;
@@ -820,10 +826,10 @@ static void vprint_frame_item(
   APPCHAR(ptr, end, '|', 1);
   APPZERO(ptr, end);
 
-  ctx.out("%s\n"TAB1"# "SEPARATOR" sp+%d%s\n",
-          item,
-          off,
-          off == framesize ? "  <-- start of caller's stack" : "");
+  ctx.print("%s\n"TAB1"# "SEPARATOR" sp+%d%s\n",
+            item,
+            off,
+            off == framesize ? "  <-- start of caller's stack" : "");
 }
 
 //-----------------------------------------------------------------------------
@@ -979,7 +985,7 @@ static void print_stkargs(asm_ctx_t &ctx, const stack_frame_t &frame)
 //-----------------------------------------------------------------------------
 void stack_frame_t::print()
 {
-  ctx.out("\n"TAB1"# "SEPARATOR"\n");
+  ctx.print("\n"TAB1"# "SEPARATOR"\n");
 
 #define PRINT(sec)          print_##sec(ctx, *this)
 #define PRINT_P(idx, label) print_pseudo_section(ctx, *this, idx, label)
@@ -1001,10 +1007,10 @@ void stack_frame_t::print()
 //-----------------------------------------------------------------------------
 static void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
 {
-  ctx.out("\n%s:\n"
-          TAB1"li $v0, %d\n"
-          TAB1"syscall\n"
-          TAB1"jr $ra\n", name, syscall);
+  ctx.print("\n%s:\n"
+            TAB1"li $v0, %d\n"
+            TAB1"syscall\n"
+            TAB1"jr $ra\n", name, syscall);
 }
 
 //-----------------------------------------------------------------------------
@@ -1031,14 +1037,14 @@ static void init_genreg_names(ir_func_t &f)
 //-----------------------------------------------------------------------------
 static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
 {
-  ctx.out(".text\n");
+  ctx.print(".text\n");
 
   for ( ir_funcs_t::iterator i = funcs.begin(); i != funcs.end(); i++ )
   {
     ir_func_t &f = **i;
     init_genreg_names(f);
 
-    ctx.out("\n%s:\n", f.sym->c_str());
+    ctx.print("\n%s:\n", f.sym->c_str());
 
     stack_frame_t frame(f, ctx);
     frame.print();

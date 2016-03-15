@@ -123,7 +123,6 @@ struct format_arg_t
 typedef std::vector<format_arg_t> format_args_t;
 
 //---------------------------------------------------------------------------
-#define MAXERRLEN 1024
 static void usererr(parser_ctx_t &ctx, const char *format, ...);
 int yyerror(void *scanner, parser_ctx_t &ctx, const char *s);
 
@@ -1465,8 +1464,8 @@ void usererr(parser_ctx_t &ctx, const char *format, ...)
   va_list va;
   va_start(va, format);
 
-  char buf[MAXERRLEN];
-  vsnprintf(buf, MAXERRLEN, format, va);
+  char buf[MAXSTR];
+  vsnprintf(buf, MAXSTR, format, va);
   ctx.errmsgs.push_back(buf);
 
   va_end(va);

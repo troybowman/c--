@@ -4,17 +4,16 @@
 #include <ir.h>
 
 struct asm_ctx_t;
-class frame_section_t;
-class stack_frame_t;
 
 //-----------------------------------------------------------------------------
 void generate_mips_asm(asm_ctx_t &ctx, ir_t &ir);
 
 //-----------------------------------------------------------------------------
-struct asm_ctx_t
+class asm_ctx_t
 {
   FILE *outfile;
 
+public:
   // all named symbols (labels, strings, src symbols)
   symtab_t gsyms;
 
@@ -26,7 +25,7 @@ struct asm_ctx_t
 
   asm_ctx_t(FILE *_outfile);
 
-  void out(const char *fmt, ...);
+  void print(const char *fmt, ...);
 };
 
 //-----------------------------------------------------------------------------
