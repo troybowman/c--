@@ -807,14 +807,13 @@ static void vprint_frame_item(
 
   char item[ITEMCHARS+1];
   char *ptr = item;
-  const char *const end  = item + sizeof(item);
-  const char *const nend = end-1;
+  const char *const end = item + ITEMCHARS;
 
   // center the name within the ITEMCHARS spaces we have allocated for it
-  APPCHAR(ptr, nend, ' ', (ITEMCHARS-namelen) / 2);
-  APPSTR (ptr, nend, namestr, namelen);
-  APPCHAR(ptr, nend, ' ', nend-ptr);
-  APPZERO(ptr, end);
+  APPCHAR(ptr, end, ' ', (ITEMCHARS-namelen)/2);
+  APPSTR (ptr, end, namestr, namelen);
+  APPCHAR(ptr, end, ' ', end-ptr);
+  APPZERO(ptr, end+1);
 
   ctx.print(TAB1"# |%s|\n"TAB1"# "SEPARATOR" sp+%d%s\n",
             item,
