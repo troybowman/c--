@@ -381,21 +381,13 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_CALL:
       {
-        if ( !f.has_call )
-        {
-          f.has_call = true;
-          f.use(f.gen_resource(ST_RETADDR));
-        }
+        f.set_has_call();
 
         symvec_t argvals;
         symvec_t arglocs;
 
-        const_tree_iterator_t ti(tree->children[CALL_ARGS]);
-        for ( ; *ti != NULL; ti++ )
-        {
-          symref_t argval = generate(*ti, has_call(ti.next()) ? TCTX_SAVE : 0);
-          argvals.push_back(argval);
-        }
+        for ( const_tree_iterator_t ti(tree->children[CALL_ARGS]); *ti != NULL; ti++ )
+          argvals.push_back(generate(*ti, has_call(ti.next()) ? TCTX_SAVE : 0));
 
         for ( size_t i = 0; i < argvals.size(); i++ )
           arglocs.push_back(gen_argloc());

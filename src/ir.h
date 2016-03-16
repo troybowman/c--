@@ -127,17 +127,15 @@ public:
   symref_t gen_resource(symbol_type_t t)                      { return store.at(t)->gen_resource(); }
   const resource_manager_t *get(symbol_type_t t)        const { return store.at(t); }
   int count(symbol_type_t t)                            const { return store.at(t)->count(); }
+
+  void set_has_call() { if ( !has_call ) { has_call = true; use(gen_resource(ST_RETADDR)); } }
 };
 
 //-----------------------------------------------------------------------------
 class ir_funcs_t : public std::vector<ir_func_t *>
 {
 public:
-  ~ir_funcs_t()
-  {
-    for ( iterator i = begin(); i != end(); i++ )
-      delete *i;
-  }
+  ~ir_funcs_t() { for ( iterator i = begin(); i != end(); i++ ) delete *i; }
 };
 
 //-----------------------------------------------------------------------------
