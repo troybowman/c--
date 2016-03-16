@@ -1,9 +1,6 @@
 #include <common.h>
 #include <asm.h>
 
-#define MAXNAMELEN 32
-#define EXIT "__exit"
-
 //-----------------------------------------------------------------------------
 static const char *tempreg_names[TEMPREGQTY] =
   { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6" };
@@ -48,9 +45,8 @@ static bool prepare_named_symbol(asm_ctx_t &ctx, symref_t sym, const char *fmt, 
     va_list va;
     va_start(va, fmt);
 
-    // TODO: must get rid of this limitation
-    char buf[MAXNAMELEN];
-    vsnprintf(buf, MAXNAMELEN, fmt, va);
+    char buf[MAXSTR];
+    vsnprintf(buf, MAXSTR, fmt, va);
 
     va_end(va);
 
@@ -428,7 +424,7 @@ do                                                \
 
   // MARS, for some utterly moronic reason, does not call main. we must manually exit
   if ( f.sym->is_main() )
-    ctx.print(TAB1"jal %s\n", EXIT);
+    ctx.print(TAB1"jal %s\n", BI_EXIT);
   else
     ctx.print(TAB1"jr $ra\n");
 }
@@ -794,8 +790,6 @@ static void gen_func_body(asm_ctx_t &ctx, codenode_t *code, symref_t epilogue)
   }
 }
 
-//-----------------------------------------------------------------------------
-#define NAMELEN 32
 #define SEPARATOR "|--------------------------------|"
 
 //-----------------------------------------------------------------------------
@@ -806,27 +800,23 @@ static void vprint_frame_item(
     const char *fmt,
     va_list va)
 {
-  char namestr[MAXSTR];
-  vsnprintf(namestr, MAXSTR, fmt, va);
+#define ITEMCHARS 32 // for readability, limit items to 32 chars when printing
+  char namestr[ITEMCHARS+1];
+  vsnprintf(namestr, sizeof(namestr), fmt, va);
+  int namelen = strlen(namestr);
 
-  char item[TABLEN+NAMELEN+5]; // <tab> + '#' + ' ' + '|' + name + '|' + '\0'
+  char item[ITEMCHARS+1];
   char *ptr = item;
-  const char *const end = item + sizeof(item);
+  const char *const end  = item + sizeof(item);
+  const char *const nend = end-1;
 
-  const char *pfx = TAB1"# |";
-  APPSTR(ptr, end, pfx, strlen(pfx));
-
-  int len = cmin(strlen(namestr), NAMELEN);
-  const char *const name_end = ptr + NAMELEN;
-
-  // center the name within the NAMELEN spaces we have allocated for it
-  APPCHAR(ptr, end, ' ', (NAMELEN - len) / 2);
-  APPSTR (ptr, end, namestr, len);
-  APPCHAR(ptr, end, ' ', name_end-ptr);
-  APPCHAR(ptr, end, '|', 1);
+  // center the name within the ITEMCHARS spaces we have allocated for it
+  APPCHAR(ptr, nend, ' ', (ITEMCHARS-namelen) / 2);
+  APPSTR (ptr, nend, namestr, namelen);
+  APPCHAR(ptr, nend, ' ', nend-ptr);
   APPZERO(ptr, end);
 
-  ctx.print("%s\n"TAB1"# "SEPARATOR" sp+%d%s\n",
+  ctx.print(TAB1"# |%s|\n"TAB1"# "SEPARATOR" sp+%d%s\n",
             item,
             off,
             off == framesize ? "  <-- start of caller's stack" : "");
@@ -1059,7 +1049,7 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
   BIF(BI_PRINT_INT,    1);
   BIF(BI_PRINT_CHAR,  11);
   BIF(BI_PRINT_HEX,   34);
-  BIF(EXIT,           10);
+  BIF(BI_EXIT,        10);
 #undef BIF
 }
 

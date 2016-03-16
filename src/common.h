@@ -33,7 +33,7 @@ do                         \
 
 #define ASSERT(code, cond) // nothing
 
-#endif
+#endif // !NDEBUG
 
 //-----------------------------------------------------------------------------
 #define APPCHAR(ptr, end, chr, count) \
@@ -63,10 +63,6 @@ do                             \
   ASSERT(1005, (ptr) < (end)); \
   *(ptr) = '\0';               \
 } while ( false );
-
-//-----------------------------------------------------------------------------
-#define cmin(a,b) ((a) < (b) ? (a) : (b))
-#define cmax(a,b) ((a) > (b) ? (a) : (b))
 
 //-----------------------------------------------------------------------------
 class refcnt_obj_t
@@ -139,6 +135,7 @@ template <class T> inline void emplace(uint8_t const addr[], T &obj)
   new ((T *)addr) T(obj);
 }
 
+//-----------------------------------------------------------------------------
 template <class T> inline T &deplace(uint8_t const addr[])
 {
   return *(T *)addr;
@@ -172,10 +169,12 @@ struct area_t
   offsize_t size() const { return end - start; }
 };
 
-// names of the built-in print functions
+//-----------------------------------------------------------------------------
+// names of the built-in functions
 #define BI_PRINT_STRING "__print_string"
 #define BI_PRINT_INT    "__print_int"
 #define BI_PRINT_CHAR   "__print_char"
 #define BI_PRINT_HEX    "__print_hex"
+#define BI_EXIT         "__exit"
 
 #endif // COMMON_H
