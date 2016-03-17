@@ -142,16 +142,11 @@ template <class T> inline T &deplace(uint8_t const addr[])
 }
 
 //-----------------------------------------------------------------------------
-#ifndef __EA64__
 typedef uint32_t offset_t;
 typedef uint32_t offsize_t;
-#define WORDSIZE 4
-#else
-typedef uint64_t offset_t;
-typedef uint64_t offsize_t;
-#define WORDSIZE 8
-#endif
 
+//-----------------------------------------------------------------------------
+#define WORDSIZE 4
 #define BADOFFSET offset_t(-1)
 #define DWORDSIZE (WORDSIZE*2)
 #define ALIGN(off, val) ((off + (val-1)) & ~(val-1))
