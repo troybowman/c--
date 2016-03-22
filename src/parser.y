@@ -1366,6 +1366,7 @@ static treenode_t *process_for_stmt(
     delete init; delete cond; delete inc; delete body;
     return ERRNODE;
   }
+
   return new treenode_t(TNT_FOR, init, cond, inc, body);
 }
 
@@ -1384,6 +1385,7 @@ static treenode_t *process_while_stmt(
     delete cond; delete body;
     return ERRNODE;
   }
+
   return new treenode_t(TNT_WHILE, cond, body);
 }
 
@@ -1403,6 +1405,7 @@ static treenode_t *process_if_stmt(
     delete cond; delete body; delete el;
     return ERRNODE;
   }
+
   return new treenode_t(TNT_IF, cond, body, el);
 }
 
