@@ -218,8 +218,7 @@ var_decls : var_decl var_decl_list { $$ = sym_list_prepend(DPL($1), $2); }
 
 var_decl : name decl_array_sfx
            {
-             symref_t ref = process_var_id($1.str, lineno, DPL($2), 0);
-             EMPL($$, ref);
+             EMPL($$, process_var_id($1.str, lineno, DPL($2), 0));
              free($1.str);
            }
          ;
@@ -238,8 +237,7 @@ func_decls : func_decl func_decl_list { $$ = sym_list_prepend(DPL($1), $2); }
 
 func_decl : name '(' { ctx.settemp(); } params { ctx.trash(); } ')'
             {
-              symref_t func(new symbol_t($1.flags, $1.str, lineno, $4));
-              EMPL($$, func);
+              EMPL($$, symref_t(new symbol_t($1.flags, $1.str, lineno, $4)));
               free($1.str);
             }
             /* TODO: functions with no parameter spec (i.e. 'int func();') will leak memory,
@@ -1455,6 +1453,7 @@ static treenode_t *process_bool_expr(
     delete lhs; delete rhs;
     return ERRNODE;
   }
+
   return new treenode_t(type, lhs, rhs);
 }
 
