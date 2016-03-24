@@ -994,12 +994,24 @@ void stack_frame_t::print()
 }
 
 //-----------------------------------------------------------------------------
-static void gen_builtin_function(asm_ctx_t &ctx, const char *name, int syscall)
+static void gen_builtin_functions(asm_ctx_t &ctx)
 {
-  ctx.print("\n%s:\n"
-            TAB1"li $v0, %d\n"
-            TAB1"syscall\n"
-            TAB1"jr $ra\n", name, syscall);
+#define BIF(name, syscall)                  \
+do                                          \
+{                                           \
+  ctx.print("\n%s:\n"                       \
+            TAB1"li $v0, %d\n"              \
+            TAB1"syscall\n"                 \
+            TAB1"jr $ra\n", name, syscall); \
+} while ( false );
+
+  BIF(BI_PRINT_STRING, 4);
+  BIF(BI_PRINT_INT,    1);
+  BIF(BI_PRINT_CHAR,  11);
+  BIF(BI_PRINT_HEX,   34);
+  BIF(BI_EXIT,        10);
+
+#undef BIF
 }
 
 //-----------------------------------------------------------------------------
@@ -1043,13 +1055,7 @@ static void gen_text_section(asm_ctx_t &ctx, ir_funcs_t &funcs)
     frame.gen_epilogue();
   }
 
-#define BIF(name, syscall) gen_builtin_function(ctx, name, syscall)
-  BIF(BI_PRINT_STRING, 4);
-  BIF(BI_PRINT_INT,    1);
-  BIF(BI_PRINT_CHAR,  11);
-  BIF(BI_PRINT_HEX,   34);
-  BIF(BI_EXIT,        10);
-#undef BIF
+  gen_builtin_functions(ctx);
 }
 
 //-----------------------------------------------------------------------------
