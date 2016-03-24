@@ -496,7 +496,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 
         symref_t cond = generate(tree->children[FOR_COND]);
         if ( cond == NULL )
-        {
+        { // if the for loop has an empty condition, assume it's true (just like gcc)
           cond = gen_temp();
           append(CNT_LI, cond, symref_t(new symbol_t(ST_INTCON, 1)));
         }
