@@ -818,7 +818,7 @@ static void vprint_frame_item(
   ctx.print(TAB1"# |%s|\n"TAB1"# "SEPARATOR" sp+%d%s\n",
             item,
             off,
-            off == framesize ? "  <-- start of caller's stack" : "");
+            off == framesize ? "  <-- start of caller's frame" : "");
 }
 
 //-----------------------------------------------------------------------------
@@ -1002,6 +1002,7 @@ void stack_frame_t::print()
 #define PRINT(sec)          print_##sec(ctx, *this)
 #define PRINT_P(idx, label) print_pseudo_section(ctx, *this, idx, label)
 #define PLABEL "<padding>"
+
   PRINT(saved_argregs);
   PRINT(params);
   PRINT_P(FS_PADDING2, PLABEL);
@@ -1012,6 +1013,7 @@ void stack_frame_t::print()
   PRINT(svregs);
   PRINT(stkargs);
   PRINT_P(FS_REGARGS, "<minimum 4 arg slots>");
+
 #undef PRINT
 #undef PRINT_P
 #undef PLABEL
