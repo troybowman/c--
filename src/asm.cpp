@@ -878,7 +878,7 @@ static void print_items(
 static void print_saved_argregs(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   // sometimes a function won't be passed an argument in an argument register, but still needs
-  // to save the register value because the register will be used by the this function.
+  // to save the register value because the register will be used by the function.
   // we make special note of this here.
   struct saved_argreg_printer_t : public frame_item_printer_t
   {
