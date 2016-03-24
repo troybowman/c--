@@ -877,29 +877,22 @@ static void print_items(
 //-----------------------------------------------------------------------------
 static void print_saved_argregs(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
-  // sometimes a function won't be passed an argument in an argument register,
-  // but still needs to save the register value because the register will be used by the current function.
+  // sometimes a function won't be passed an argument in an argument register, but still needs
+  // to save the register value because the register will be used by the this function.
   // we make special note of this here.
   struct saved_argreg_printer_t : public frame_item_printer_t
   {
-    int nparams;
-    offset_t poff;
+    const frame_section_t &params;
 
     virtual void visit_item(item_info_t &info, const symbol_t &argreg)
     {
-      if ( argreg.val() >= nparams )
-      {
-        print_frame_item(*info.ctx,
-                         poff + info.idx * WORDSIZE,
-                         "<saved value of %s>", argreg.loc.reg());
-
-      }
+      if ( argreg.val() >= params.nitems() )
+        print_frame_item(*info.ctx, params.start + info.idx * WORDSIZE, "%s", argreg.loc.reg());
     }
-  } p;
 
-  const frame_section_t &params = frame.sections[FS_PARAMS];
-  p.nparams = params.nitems();
-  p.poff = params.start;
+    saved_argreg_printer_t(const frame_section_t &s) : params(s) {}
+
+  } p(frame.sections[FS_PARAMS]);
 
   print_items(ctx, frame, FS_REGARGS, p);
 }
