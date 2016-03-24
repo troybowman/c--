@@ -875,6 +875,36 @@ static void print_items(
 }
 
 //-----------------------------------------------------------------------------
+static void print_saved_argregs(asm_ctx_t &ctx, const stack_frame_t &frame)
+{
+  // sometimes a function won't be passed an argument in an argument register,
+  // but still needs to save the register value because the register will be used by the current function.
+  // we make special note of this here.
+  struct saved_argreg_printer_t : public frame_item_printer_t
+  {
+    int nparams;
+    offset_t poff;
+
+    virtual void visit_item(item_info_t &info, const symbol_t &argreg)
+    {
+      if ( argreg.val() >= nparams )
+      {
+        print_frame_item(*info.ctx,
+                         poff + info.idx * WORDSIZE,
+                         "<saved value of %s>", argreg.loc.reg());
+
+      }
+    }
+  } p;
+
+  const frame_section_t &params = frame.sections[FS_PARAMS];
+  p.nparams = params.nitems();
+  p.poff = params.start;
+
+  print_items(ctx, frame, FS_REGARGS, p);
+}
+
+//-----------------------------------------------------------------------------
 static void print_params(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   struct param_printer_t : public frame_item_printer_t
@@ -979,6 +1009,7 @@ void stack_frame_t::print()
 #define PRINT(sec)          print_##sec(ctx, *this)
 #define PRINT_P(idx, label) print_pseudo_section(ctx, *this, idx, label)
 #define PLABEL "<padding>"
+  PRINT(saved_argregs);
   PRINT(params);
   PRINT_P(FS_PADDING2, PLABEL);
   PRINT(lvars);
