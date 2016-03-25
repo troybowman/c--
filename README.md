@@ -14,3 +14,4 @@ todo:
 - char arguments passed in argument registers are not truncated
 - short circuit evaluation
 - tester: lint, valgrind, fuzz, profile
+- why signed ints work with binary operators (sometimes), symplace_t raison d'etre
