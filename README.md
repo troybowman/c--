@@ -9,6 +9,7 @@ See spec/ for language specification and calling convention.
 
 todo:
 
+- refactor symbol table printing
 - improve printf code
 - char arguments passed in argument registers are not truncated
 - short circuit evaluation
