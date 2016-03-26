@@ -1,8 +1,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <symbol.h>
-#include <treenode.h>
+#include "symbol.h"
+#include "treenode.h"
 
 struct parse_results_t;
 

@@ -1,5 +1,4 @@
-#include <common.h>
-#include <asm.h>
+#include "asm.h"
 
 //-----------------------------------------------------------------------------
 static const char *tempreg_names[TEMPREGQTY] =

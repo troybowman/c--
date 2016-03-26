@@ -1,7 +1,5 @@
 CC = g++
-
-SRC = ./src/
-CFLAGS += -I$(SRC) -g
+CFLAGS += -g
 
 ifndef NDEBUG
   B=dbg
@@ -12,6 +10,7 @@ endif
 
 BIN = ./bin/$(B)/
 OBJ = ./obj/$(B)/
+SRC = ./src/
 
 # We require bison 3.0, but xcode is still stuck on bison 2.3.
 # So on mac we use the homebrew versions of flex and bison, which are up to date.
@@ -47,10 +46,10 @@ $(OBJ)scanner.cpp: $(SRC)scanner.l $(HFILES)
 
 #------------------------------------------------------------------------------
 $(OBJ)parser.o: $(OBJ)parser.cpp
-	$(CC) $(IFLEX) $(CFLAGS) -c -o $@ $<
+	$(CC) $(IFLEX) -I$(SRC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)scanner.o: $(OBJ)scanner.cpp
-	$(CC) $(IFLEX) $(CFLAGS) -c -o $@ $<
+	$(CC) $(IFLEX) -I$(SRC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)symbol.o: $(SRC)symbol.cpp $(HFILES)
 	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<

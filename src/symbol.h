@@ -1,7 +1,7 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <common.h>
+#include "common.h"
 
 class symtab_t;
 class symvec_t;

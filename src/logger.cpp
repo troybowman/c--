@@ -1,8 +1,6 @@
-#include <logger.h>
-#include <symbol.h>
-#include <treenode.h>
-#include <ir.h>
-#include <asm.h>
+#include "logger.h"
+#include "treenode.h"
+#include "asm.h"
 
 //-----------------------------------------------------------------------------
 static const char *header =

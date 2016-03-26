@@ -1,7 +1,7 @@
-#include <ir.h>
-#include <treenode.h>
-#include <logger.h>
-#include <parser.h>
+#include "ir.h"
+#include "treenode.h"
+#include "logger.h"
+#include "parser.h"
 
 #define CNT_LOAD(sym)  (sym->base() == PRIM_INT ? CNT_LW : CNT_LB)
 #define CNT_STORE(sym) (sym->base() == PRIM_INT ? CNT_SW : CNT_SB)

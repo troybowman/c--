@@ -1,7 +1,7 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
-#include <symbol.h>
+#include "symbol.h"
 
 //-----------------------------------------------------------------------------
 enum treenode_type_t

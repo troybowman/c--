@@ -1,5 +1,4 @@
-#include <treenode.h>
-#include <logger.h>
+#include "treenode.h"
 
 #define INIT_CHILDREN() memset(children, 0, sizeof(children))
 

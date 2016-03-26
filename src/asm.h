@@ -1,7 +1,7 @@
 #ifndef MIPS_ASM_H
 #define MIPS_ASM_H
 
-#include <ir.h>
+#include "ir.h"
 
 struct asm_ctx_t;
 

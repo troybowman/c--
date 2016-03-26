@@ -1,7 +1,7 @@
 #ifndef CODENODE_H
 #define CODENODE_H
 
-#include <symbol.h>
+#include "symbol.h"
 
 struct ir_t;
 class treenode_t;
