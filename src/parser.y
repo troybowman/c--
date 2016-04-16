@@ -224,7 +224,7 @@ var_decl : name decl_array_sfx
          ;
 
 decl_array_sfx : '[' INT ']' { EMPL($$, process_array_sfx(ctx, $2, lineno)); }
-               | /* empty */ { EMPL($$, terr_info_t(TERR_OK)); }
+               | /* empty */ { EMPL($$, TERR_OK); }
                ;
 
 var_decl_list : var_decl_list ',' var_decl { $$ = sym_list_append($1, DPL($3)); }
@@ -276,7 +276,7 @@ param_decl : type name param_array_sfx
            ;
 
 param_array_sfx : '[' ']'     { EMPL($$, terr_info_t(TERR_OK2, BADOFFSET)); }
-                | /* empty */ { EMPL($$, terr_info_t(TERR_OK)); }
+                | /* empty */ { EMPL($$, TERR_OK); }
                 ;
 
 param_decl_list : param_decl_list ',' param_decl { $$ = sym_list_append($1, DPL($3)); }
