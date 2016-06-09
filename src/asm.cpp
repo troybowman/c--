@@ -140,8 +140,7 @@ static void gen_data_section(asm_ctx_t &ctx)
 //-----------------------------------------------------------------------------
 void frame_section_t::visit_items(
     asm_ctx_t &ctx,
-    frame_item_visitor_t &fiv,
-    uint32_t flags) const
+    frame_item_visitor_t &fiv) const
 {
   for ( size_t i = 0; i < items.size(); i++ )
   {
@@ -149,7 +148,7 @@ void frame_section_t::visit_items(
 
     info.ctx = &ctx;
     info.sec = *this;
-    info.idx = (flags & FIV_REVERSE) == 0 ? i : (items.size()-1) - i;
+    info.idx = (fiv.flags & FIV_REVERSE) == 0 ? i : (items.size()-1) - i;
 
     fiv.visit_item(info, *items[info.idx]);
   }
@@ -407,9 +406,10 @@ void stack_frame_t::gen_epilogue()
 do                                                \
 {                                                 \
   reg_saver_t s;                                  \
+  s.flags |= FIV_REVERSE;                         \
   s.base = sections[base_sec].start;              \
   s.cmd = "lw";                                   \
-  sections[sec].visit_items(ctx, s, FIV_REVERSE); \
+  sections[sec].visit_items(ctx, s);              \
 } while ( false )
 
   RESTORE(FS_REGARGS, FS_PARAMS);
@@ -860,6 +860,9 @@ protected:
     vprint_frame_item(ctx, off, framesize, fmt, va);
     va_end(va);
   }
+
+public:
+  frame_item_printer_t() : frame_item_visitor_t(FIV_REVERSE) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -870,7 +873,7 @@ static void print_items(
     frame_item_printer_t &fip)
 {
   fip.framesize = frame.size();
-  frame.sections[sectionidx].visit_items(ctx, fip, FIV_REVERSE);
+  frame.sections[sectionidx].visit_items(ctx, fip);
 }
 
 //-----------------------------------------------------------------------------

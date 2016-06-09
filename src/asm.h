@@ -39,6 +39,12 @@ struct item_info_t
 //-----------------------------------------------------------------------------
 struct frame_item_visitor_t
 {
+  uint32_t flags;
+#define FIV_REVERSE 0x1
+
+  frame_item_visitor_t() : flags(0) {}
+  frame_item_visitor_t(uint32_t _flags) : flags(_flags) {}
+
   virtual void visit_item(const item_info_t &info, const symbol_t &item) = 0;
 };
 
@@ -67,8 +73,7 @@ public:
   void init(const resource_manager_t &rm)
     { rm.get_used_resources(items); }
 
-#define FIV_REVERSE 0x1
-  void visit_items(asm_ctx_t &, frame_item_visitor_t &, uint32_t flags = 0) const;
+  void visit_items(asm_ctx_t &, frame_item_visitor_t &) const;
   void build_items(asm_ctx_t &, frame_item_builder_t &);
 
   size_t nitems() const { return items.size(); }
