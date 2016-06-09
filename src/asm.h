@@ -39,7 +39,7 @@ struct item_info_t
 //-----------------------------------------------------------------------------
 struct frame_item_visitor_t
 {
-  virtual void visit_item(item_info_t &info, const symbol_t &item) = 0;
+  virtual void visit_item(const item_info_t &info, const symbol_t &item) = 0;
 };
 
 //-----------------------------------------------------------------------------

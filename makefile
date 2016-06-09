@@ -12,10 +12,10 @@ BIN = ./bin/$(B)/
 OBJ = ./obj/$(B)/
 SRC = ./src/
 
-# We require bison 3.0, but xcode is still stuck on bison 2.3.
-# So on mac we use the homebrew versions of flex and bison, which are up to date.
-# 'brew install flex' and 'brew install bison' should do the trick.
 ifdef __MAC__
+	# We require bison 3.0, but Xcode is still stuck on bison 2.3.
+	# So on mac we use the homebrew versions of flex and bison, which are up to date.
+	# 'brew install flex' and 'brew install bison' should do the trick.
   FLEXDIR  = /usr/local/opt/flex/
   BISONDIR = /usr/local/opt/bison/
   IFLEX = -I$(FLEXDIR)include

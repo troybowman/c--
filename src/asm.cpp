@@ -364,7 +364,7 @@ struct reg_saver_t : public frame_item_visitor_t
   offset_t base;
   const char *cmd;
 
-  virtual void visit_item(item_info_t &info, const symbol_t &item)
+  virtual void visit_item(const item_info_t &info, const symbol_t &item)
   {
     info.ctx->print(
         TAB1"%s %s, %d($sp)\n",
@@ -883,7 +883,7 @@ static void print_saved_argregs(asm_ctx_t &ctx, const stack_frame_t &frame)
   {
     const frame_section_t &params;
 
-    virtual void visit_item(item_info_t &info, const symbol_t &argreg)
+    virtual void visit_item(const item_info_t &info, const symbol_t &argreg)
     {
       if ( argreg.val() >= params.nitems() )
         print_frame_item(*info.ctx, params.start + info.idx * WORDSIZE, "%s", argreg.loc.reg());
@@ -901,7 +901,7 @@ static void print_params(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   struct param_printer_t : public frame_item_printer_t
   {
-    virtual void visit_item(item_info_t &info, const symbol_t &param)
+    virtual void visit_item(const item_info_t &info, const symbol_t &param)
     {
       if ( param.loc.is_stkoff() )
         print_frame_item(*info.ctx, param.loc.stkoff(), param.c_str());
@@ -920,7 +920,7 @@ static void print_lvars(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   struct lvar_printer_t : public frame_item_printer_t
   {
-    virtual void visit_item(item_info_t &info, const symbol_t &lvar)
+    virtual void visit_item(const item_info_t &info, const symbol_t &lvar)
     {
       if ( !lvar.is_param() )
         print_frame_item(*info.ctx, lvar.loc.stkoff(), lvar.c_str());
@@ -935,7 +935,7 @@ static void print_ra(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   struct ra_printer_t : public frame_item_printer_t
   {
-    virtual void visit_item(item_info_t &info, const symbol_t &ra)
+    virtual void visit_item(const item_info_t &info, const symbol_t &ra)
     {
       print_frame_item(*info.ctx, info.sec.start, ra.loc.reg());
     }
@@ -949,7 +949,7 @@ static void print_stktemps(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   struct stktemp_printer_t : public frame_item_printer_t
   {
-    virtual void visit_item(item_info_t &info, const symbol_t &stktemp)
+    virtual void visit_item(const item_info_t &info, const symbol_t &stktemp)
     {
       print_frame_item(*info.ctx,
                        stktemp.loc.stkoff(),
@@ -965,7 +965,7 @@ static void print_svregs(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   struct svregs_printer_t : public frame_item_printer_t
   {
-    virtual void visit_item(item_info_t &info, const symbol_t &svreg)
+    virtual void visit_item(const item_info_t &info, const symbol_t &svreg)
     {
       print_frame_item(*info.ctx,
                        info.sec.start + info.idx * WORDSIZE,
@@ -982,7 +982,7 @@ static void print_stkargs(asm_ctx_t &ctx, const stack_frame_t &frame)
 {
   struct stkargs_printer_t : public frame_item_printer_t
   {
-    virtual void visit_item(item_info_t &info, const symbol_t &stkarg)
+    virtual void visit_item(const item_info_t &info, const symbol_t &stkarg)
     {
       print_frame_item(*info.ctx,
                        stkarg.loc.stkoff(),
