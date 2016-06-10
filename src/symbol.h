@@ -203,8 +203,8 @@ class symtab_t // symbol table
 {
   typedef std::map<std::string, symref_t> symmap_t;
 
-  symmap_t map;   // fast lookups
-  symvec_t vec;   // maintain insertion order
+  symmap_t map; // fast lookups
+  symvec_t vec; // maintain insertion order
 
 public:
   symref_t get(const std::string &key) const
