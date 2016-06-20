@@ -848,22 +848,17 @@ static void print_pseudo_section(
 }
 
 //-----------------------------------------------------------------------------
-struct frame_item_printer_t : public frame_item_visitor_t
+void frame_item_printer_t::print_frame_item(
+    asm_ctx_t &ctx,
+    offset_t off,
+    const char *fmt,
+    ...)
 {
-  offset_t framesize;
-
-protected:
-  void print_frame_item(asm_ctx_t &ctx, offset_t off, const char *fmt, ...)
-  {
-    va_list va;
-    va_start(va, fmt);
-    vprint_frame_item(ctx, off, framesize, fmt, va);
-    va_end(va);
-  }
-
-public:
-  frame_item_printer_t() : frame_item_visitor_t(FIV_REVERSE) {}
-};
+  va_list va;
+  va_start(va, fmt);
+  vprint_frame_item(ctx, off, framesize, fmt, va);
+  va_end(va);
+}
 
 //-----------------------------------------------------------------------------
 static void print_items(

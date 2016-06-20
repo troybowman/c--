@@ -109,6 +109,17 @@ struct stack_frame_t
   void print();
 };
 
+//-----------------------------------------------------------------------------
+struct frame_item_printer_t : public frame_item_visitor_t
+{
+  offset_t framesize;
+
+  frame_item_printer_t() : frame_item_visitor_t(FIV_REVERSE) {}
+
+protected:
+  void print_frame_item(asm_ctx_t &ctx, offset_t off, const char *fmt, ...);
+};
+
 #define TAB1   "  "
 #define TAB2   "    "
 #define TABLEN 2
