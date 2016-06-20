@@ -42,8 +42,7 @@ struct frame_item_visitor_t
   uint32_t flags;
 #define FIV_REVERSE 0x1
 
-  frame_item_visitor_t() : flags(0) {}
-  frame_item_visitor_t(uint32_t _flags) : flags(_flags) {}
+  frame_item_visitor_t(uint32_t _flags = 0) : flags(_flags) {}
 
   virtual void visit_item(const item_info_t &info, const symbol_t &item) = 0;
 };
