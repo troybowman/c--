@@ -106,3 +106,116 @@
 #   line: 17
 #   type: ST_PRIMITIVE
 #     base: PRIM_CHAR
+
+.data
+
+  _a:
+    .space 4
+
+  _b:
+    .space 1
+    .align 2
+
+  _c:
+    .space 12
+
+  _d:
+    .space 5
+    .align 2
+
+  _X_1:
+    .space 4
+
+  _X__2:
+    .space 4
+
+  _bunch_of_under_scores:
+    .space 1
+    .align 2
+
+  _even_more_under_scores:
+    .space 16000
+
+  _one:
+    .space 4
+
+  _two:
+    .space 4
+
+  _three:
+    .space 4
+
+  _four:
+    .space 1
+    .align 2
+
+  _five:
+    .space 1
+    .align 2
+
+  _six:
+    .space 1
+    .align 2
+
+  _seven:
+    .space 1
+    .align 2
+
+  _eight:
+    .space 1
+    .align 2
+
+  _nine:
+    .space 4
+
+  _ten:
+    .space 40
+
+  _eleven:
+    .space 44
+
+  _twelve:
+    .space 4
+
+  _str1:
+    .space 1
+    .align 2
+
+  _str2:
+    .space 2
+    .align 2
+
+  _str3:
+    .space 3
+    .align 2
+
+  _ch:
+    .space 1
+    .align 2
+
+.text
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

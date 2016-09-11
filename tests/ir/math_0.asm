@@ -1,128 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: main
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: argc
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: argc
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: string
-#   line: 5
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0x5
-# sym: x
-#   line: 6
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_ASSG
-# child LHS for node 2
-# node 3: type: TNT_SYMBOL sym: x
-# child RHS for node 2
-# node 4: type: TNT_PLUS
-# child LHS for node 4
-# node 5: type: TNT_INTCON val: 1
-# child RHS for node 4
-# node 6: type: TNT_INTCON val: 2
-# child SEQ_NEXT for node 1
-# node 7: type: TNT_STMT
-# child SEQ_CUR for node 7
-# node 8: type: TNT_ASSG
-# child LHS for node 8
-# node 9: type: TNT_SYMBOL sym: x
-# child RHS for node 8
-# node 10: type: TNT_DIV
-# child LHS for node 10
-# node 11: type: TNT_INTCON val: 2
-# child RHS for node 10
-# node 12: type: TNT_INTCON val: 4
-# child SEQ_NEXT for node 7
-# node 13: type: TNT_STMT
-# child SEQ_CUR for node 13
-# node 14: type: TNT_ASSG
-# child LHS for node 14
-# node 15: type: TNT_SYMBOL sym: x
-# child RHS for node 14
-# node 16: type: TNT_MULT
-# child LHS for node 16
-# node 17: type: TNT_INTCON val: 50
-# child RHS for node 16
-# node 18: type: TNT_INTCON val: 100
-# child SEQ_NEXT for node 13
-# node 19: type: TNT_STMT
-# child SEQ_CUR for node 19
-# node 20: type: TNT_ASSG
-# child LHS for node 20
-# node 21: type: TNT_SYMBOL sym: x
-# child RHS for node 20
-# node 22: type: TNT_MINUS
-# child LHS for node 22
-# node 23: type: TNT_INTCON val: 137
-# child RHS for node 22
-# node 24: type: TNT_INTCON val: 1
-# child SEQ_NEXT for node 19
-# node 25: type: TNT_STMT
-# child SEQ_CUR for node 25
-# node 26: type: TNT_ASSG
-# child LHS for node 26
-# node 27: type: TNT_ARRAY_LOOKUP sym: string
-# child AL_OFFSET for node 27
-# node 28: type: TNT_INTCON val: 0
-# child RHS for node 26
-# node 29: type: TNT_PLUS
-# child LHS for node 29
-# node 30: type: TNT_CHARCON str: 'a'
-# child RHS for node 29
-# node 31: type: TNT_CHARCON str: 'b'
-# child SEQ_NEXT for node 25
-# node 32: type: TNT_STMT
-# child SEQ_CUR for node 32
-# node 33: type: TNT_ASSG
-# child LHS for node 33
-# node 34: type: TNT_ARRAY_LOOKUP sym: string
-# child AL_OFFSET for node 34
-# node 35: type: TNT_INTCON val: 1
-# child RHS for node 33
-# node 36: type: TNT_PLUS
-# child LHS for node 36
-# node 37: type: TNT_ARRAY_LOOKUP sym: string
-# child AL_OFFSET for node 37
-# node 38: type: TNT_INTCON val: 2
-# child RHS for node 36
-# node 39: type: TNT_ARRAY_LOOKUP sym: string
-# child AL_OFFSET for node 39
-# node 40: type: TNT_INTCON val: 3
-# child SEQ_NEXT for node 32
-# node 41: type: TNT_STMT
-# child SEQ_CUR for node 41
-# node 42: type: TNT_ASSG
-# child LHS for node 42
-# node 43: type: TNT_SYMBOL sym: argc
-# child RHS for node 42
-# node 44: type: TNT_PLUS
-# child LHS for node 44
-# node 45: type: TNT_SYMBOL sym: x
-# child RHS for node 44
-# node 46: type: TNT_SYMBOL sym: argc
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # temps used:    4
@@ -379,3 +255,90 @@
 # ------
 # dest -> ST_PRIMITIVE (argc)
 # src1 -> ST_TEMP (2)
+
+.data
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |        <argc is in $a0>        |
+  # |--------------------------------| sp+16  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+12
+  # |               x                |
+  # |--------------------------------| sp+8
+  # |             string             |
+  # |--------------------------------| sp+0
+  la $sp, -16($sp)
+
+  li $t0, 1
+  li $t1, 2
+  addu $t2, $t0, $t1
+  sw $t2, 8($sp)
+  li $t0, 2
+  li $t1, 4
+  div $t2, $t0, $t1
+  sw $t2, 8($sp)
+  li $t0, 50
+  li $t1, 100
+  mul $t2, $t0, $t1
+  sw $t2, 8($sp)
+  li $t0, 137
+  li $t1, 1
+  sub $t2, $t0, $t1
+  sw $t2, 8($sp)
+  li $t0, 'a'
+  li $t1, 'b'
+  addu $t2, $t0, $t1
+  li $t0, 0
+  la $t1, 0($sp)
+  addu $t3, $t1, $t0
+  sb $t2, ($t3)
+  li $t0, 2
+  la $t1, 0($sp)
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 3
+  la $t2, 0($sp)
+  addu $t3, $t2, $t1
+  lb $t1, ($t3)
+  addu $t2, $t0, $t1
+  li $t0, 1
+  la $t1, 0($sp)
+  addu $t3, $t1, $t0
+  sb $t2, ($t3)
+  lw $t0, 8($sp)
+  move $t1, $a0
+  addu $t2, $t0, $t1
+  move $a0, $t2
+
+__leavemain:
+  la $sp, 16($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

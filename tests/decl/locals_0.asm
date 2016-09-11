@@ -35,3 +35,54 @@
 #   type: ST_ARRAY
 #     base: PRIM_INT
 #     size: 0x5
+
+.data
+
+.text
+
+_func:
+
+  # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+44
+  # |              vec               |
+  # |--------------------------------| sp+24
+  # |             string             |
+  # |--------------------------------| sp+12
+  # |               z                |
+  # |--------------------------------| sp+8
+  # |               y                |
+  # |--------------------------------| sp+4
+  # |               x                |
+  # |--------------------------------| sp+0
+  la $sp, -48($sp)
+
+
+__leave_func:
+  la $sp, 48($sp)
+  jr $ra
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

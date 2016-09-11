@@ -1,19 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: main
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -59,3 +44,59 @@
 # node 21: type: TNT_STMT
 # child SEQ_CUR for node 21
 # node 22: type: TNT_RET
+
+.data
+
+.text
+
+main:
+
+  # |--------------------------------|
+
+  li $t0, 3
+  li $t1, 4
+  slt $t2, $t0, $t1
+  beq $t2, $zero, _L0
+  j __leavemain
+_L0:
+  li $t0, 5
+  li $t1, 6
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  j __leavemain
+_L1:
+  li $t0, 7
+  li $t1, 8
+  sgt $t2, $t0, $t1
+  beq $t2, $zero, _L2
+  j __leavemain
+  j __leavemain
+_L2:
+
+__leavemain:
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

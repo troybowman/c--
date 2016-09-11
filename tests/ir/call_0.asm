@@ -1,91 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 4
-# sym: empty1
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: empty2
-#   line: 4
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: gimme5
-#   line: 6
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       none
-#     is_extern: no
-# sym: main
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: empty1
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: empty1
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: empty2
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: empty2
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: gimme5
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: gimme5
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_INTCON val: 5
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 10
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_CALL sym: empty1
-# child SEQ_NEXT for node 1
-# node 3: type: TNT_STMT
-# child SEQ_CUR for node 3
-# node 4: type: TNT_CALL sym: empty2
-# child SEQ_NEXT for node 3
-# node 5: type: TNT_STMT
-# child SEQ_CUR for node 5
-# node 6: type: TNT_ASSG
-# child LHS for node 6
-# node 7: type: TNT_SYMBOL sym: x
-# child RHS for node 6
-# node 8: type: TNT_CALL sym: gimme5
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: empty1
 #-----------------------------------------------------------------------------
 # temps used:    0
@@ -155,3 +68,87 @@
 # ------
 # dest -> ST_PRIMITIVE (x)
 # src1 -> ST_TEMP (0)
+
+.data
+
+.text
+
+_empty1:
+
+  # |--------------------------------|
+
+
+__leave_empty1:
+  jr $ra
+
+_empty2:
+
+  # |--------------------------------|
+
+  j __leave_empty2
+
+__leave_empty2:
+  jr $ra
+
+_gimme5:
+
+  # |--------------------------------|
+
+  li $t0, 5
+  move $v0, $t0
+  j __leave_gimme5
+
+__leave_gimme5:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+28
+  # |               x                |
+  # |--------------------------------| sp+24
+  # |           <padding>            |
+  # |--------------------------------| sp+20
+  # |              $ra               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -32($sp)
+  sw $ra, 16($sp)
+
+  jal _empty1
+  jal _empty2
+  jal _gimme5
+  move $t0, $v0
+  sw $t0, 24($sp)
+
+__leavemain:
+  lw $ra, 16($sp)
+  la $sp, 32($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

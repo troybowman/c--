@@ -1,23 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: main
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -113,3 +94,107 @@
 # node 46: type: TNT_RET
 # child RET_EXPR for node 46
 # node 47: type: TNT_INTCON val: 17
+
+.data
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+4
+  # |               x                |
+  # |--------------------------------| sp+0
+  la $sp, -8($sp)
+
+  lw $t0, 0($sp)
+  li $t1, 4
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  lw $t0, 0($sp)
+  li $t1, 5
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  lw $t0, 0($sp)
+  li $t1, 6
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L0
+  li $t0, 7
+  move $v0, $t0
+  j __leavemain
+  j _L1
+_L0:
+  li $t0, 8
+  move $v0, $t0
+  j __leavemain
+_L1:
+  lw $t0, 0($sp)
+  li $t1, 9
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L6
+  lw $t0, 0($sp)
+  li $t1, 10
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L5
+  lw $t0, 0($sp)
+  li $t1, 11
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L4
+  lw $t0, 0($sp)
+  li $t1, 12
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L2
+  li $t0, 13
+  move $v0, $t0
+  j __leavemain
+  j _L4
+_L2:
+  lw $t0, 0($sp)
+  li $t1, 14
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L3
+  li $t0, 15
+  move $v0, $t0
+  j __leavemain
+  j _L4
+_L3:
+  li $t0, 16
+  move $v0, $t0
+  j __leavemain
+_L4:
+  j _L6
+_L5:
+  li $t0, 17
+  move $v0, $t0
+  j __leavemain
+_L6:
+
+__leavemain:
+  la $sp, 8($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

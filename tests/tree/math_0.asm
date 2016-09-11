@@ -1,39 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: sum
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: main
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: sum
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: x
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: y
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: sum
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -45,19 +10,6 @@
 # node 4: type: TNT_SYMBOL sym: x
 # child RHS for node 3
 # node 5: type: TNT_SYMBOL sym: y
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: x
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: y
-#   line: 8
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xa
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
@@ -156,3 +108,127 @@
 # node 47: type: TNT_ARG
 # child SEQ_CUR for node 47
 # node 48: type: TNT_INTCON val: 777
+
+.data
+
+.text
+
+_sum:
+
+  # |--------------------------------|
+  # |         <y is in $a1>          |
+  # |--------------------------------| sp+4
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  move $t1, $a1
+  addu $t2, $t0, $t1
+  move $v0, $t2
+  j __leave_sum
+
+__leave_sum:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |              $a1               |
+  # |--------------------------------| sp+44
+  # |              $a0               |
+  # |--------------------------------| sp+40  <-- start of caller's frame
+  # |               y                |
+  # |--------------------------------| sp+28
+  # |               x                |
+  # |--------------------------------| sp+24
+  # |              $ra               |
+  # |--------------------------------| sp+20
+  # |              $s0               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -40($sp)
+  sw $s0, 16($sp)
+  sw $ra, 20($sp)
+  sw $a0, 40($sp)
+  sw $a1, 44($sp)
+
+  li $t0, 1
+  li $t1, 2
+  addu $t2, $t0, $t1
+  sw $t2, 24($sp)
+  li $t0, 2
+  li $t1, 3
+  sub $t2, $t0, $t1
+  sw $t2, 24($sp)
+  li $t0, 4
+  li $t1, 5
+  mul $t2, $t0, $t1
+  sw $t2, 24($sp)
+  li $t0, 6
+  li $t1, 7
+  div $t2, $t0, $t1
+  sw $t2, 24($sp)
+  li $t0, 1
+  la $t1, 28($sp)
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 2
+  la $t2, 28($sp)
+  addu $t3, $t2, $t1
+  lb $t1, ($t3)
+  addu $t2, $t0, $t1
+  li $t0, 0
+  la $t1, 28($sp)
+  addu $t3, $t1, $t0
+  sb $t2, ($t3)
+  li $t0, 4
+  la $t1, 28($sp)
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  lw $t1, 24($sp)
+  move $a1, $t1
+  move $a0, $t0
+  jal _sum
+  move $s0, $v0
+  li $t0, 150
+  li $t1, 777
+  move $a1, $t1
+  move $a0, $t0
+  jal _sum
+  move $t0, $v0
+  div $t1, $s0, $t0
+  sw $t1, 24($sp)
+
+__leavemain:
+  lw $a1, 44($sp)
+  lw $a0, 40($sp)
+  lw $ra, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 40($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

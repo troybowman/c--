@@ -1,40 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: one
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: main
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#       1: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: x
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: y
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: z
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -92,3 +56,67 @@
 # node 27: type: TNT_SYMBOL sym: y
 # child RHS for node 26
 # node 28: type: TNT_SYMBOL sym: z
+
+.data
+
+  _one:
+    .space 4
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |         <y is in $a1>          |
+  # |--------------------------------| sp+12
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+8  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+4
+  # |               z                |
+  # |--------------------------------| sp+0
+  la $sp, -8($sp)
+
+  move $t0, $a0
+  sw $t0, _one
+  move $t0, $a1
+  sw $t0, _one
+  lw $t0, _one
+  move $a0, $t0
+  move $t0, $a1
+  move $a1, $t0
+  lw $t0, _one
+  sb $t0, 0($sp)
+  lb $t0, 0($sp)
+  sw $t0, _one
+  lb $t0, 0($sp)
+  move $a1, $t0
+
+__leavemain:
+  la $sp, 8($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

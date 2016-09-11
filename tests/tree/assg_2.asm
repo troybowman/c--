@@ -1,33 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: x
-#   line: 1
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0x6
-# sym: func1
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: main
-#   line: 9
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: x
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: func1
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: func1
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -90,15 +61,6 @@
 # child RHS for node 27
 # node 30: type: TNT_INTCON val: 6
 #-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 9
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -150,3 +112,114 @@
 # node 24: type: TNT_INTCON val: 4
 # child RHS for node 22
 # node 25: type: TNT_CHARCON str: 'o'
+
+.data
+
+  _x:
+    .space 24
+
+.text
+
+_func1:
+
+  # |--------------------------------|
+
+  li $t0, 1
+  li $t1, 0
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 2
+  li $t1, 1
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 3
+  li $t1, 2
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 4
+  li $t1, 3
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 5
+  li $t1, 4
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 6
+  li $t1, 5
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+
+__leave_func1:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  li $t0, 'h'
+  li $t1, 0
+  move $t2, $a0
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'e'
+  li $t1, 1
+  move $t2, $a0
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'l'
+  li $t1, 2
+  move $t2, $a0
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'l'
+  li $t1, 3
+  move $t2, $a0
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'o'
+  li $t1, 4
+  move $t2, $a0
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+
+__leavemain:
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

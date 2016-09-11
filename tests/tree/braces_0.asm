@@ -1,28 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: main
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: x
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: y
-#   line: 6
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0x32
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -114,3 +90,78 @@
 # node 44: type: TNT_SYMBOL sym: x
 # child RHS for node 43
 # node 45: type: TNT_SYMBOL sym: x
+
+.data
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |               y                |
+  # |--------------------------------| sp+4
+  # |               x                |
+  # |--------------------------------| sp+0
+  la $sp, -56($sp)
+
+  lw $t0, 0($sp)
+  li $t1, 13
+  la $t2, 4($sp)
+  addu $t3, $t2, $t1
+  lb $t1, ($t3)
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L0
+  li $t0, 1
+  move $v0, $t0
+  j __leavemain
+_L0:
+  li $t0, 2
+  move $v0, $t0
+  j __leavemain
+  li $t0, 3
+  move $v0, $t0
+  j __leavemain
+  li $t0, 4
+  move $v0, $t0
+  j __leavemain
+  li $t0, 5
+  move $v0, $t0
+  j __leavemain
+  li $t0, 3
+  li $t1, 4
+  slt $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  j _L2
+_L1:
+  lw $t0, 0($sp)
+  sw $t0, 0($sp)
+_L2:
+
+__leavemain:
+  la $sp, 56($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

@@ -1,348 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 8
-# sym: right_back
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: num_at
-#   line: 4
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: array
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#       1: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: char_at
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_CHAR
-#     params:
-#       0: string
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: bunch
-#   line: 16
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: one
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: two
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#       2: three
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#       3: four
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       4: five
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#       5: six
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       6: seven
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       7: eight
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#       8: nine
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       9: ten
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#     is_extern: no
-# sym: blip
-#   line: 18
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: gint
-#   line: 20
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: gchar
-#   line: 21
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: stuff
-#   line: 23
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: right_back
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: right_back
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_SYMBOL sym: x
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: num_at
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: array
-#   line: 4
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xffffffff
-# sym: idx
-#   line: 4
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: num_at
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_ARRAY_LOOKUP sym: array
-# child AL_OFFSET for node 3
-# node 4: type: TNT_SYMBOL sym: idx
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: char_at
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: string
-#   line: 5
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
-# sym: idx
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: char_at
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_ARRAY_LOOKUP sym: string
-# child AL_OFFSET for node 3
-# node 4: type: TNT_SYMBOL sym: idx
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: bunch
-#-----------------------------------------------------------------------------
-# size: 10
-# sym: one
-#   line: 7
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
-# sym: two
-#   line: 8
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xffffffff
-# sym: three
-#   line: 9
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: four
-#   line: 10
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: five
-#   line: 11
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xffffffff
-# sym: six
-#   line: 12
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: seven
-#   line: 13
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: eight
-#   line: 14
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: nine
-#   line: 15
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
-# sym: ten
-#   line: 16
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: bunch
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: blip
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 18
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: blip
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: stuff
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: larray
-#   line: 25
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0x1f4
-# sym: lint
-#   line: 26
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: stuff
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_ASSG
-# child LHS for node 2
-# node 3: type: TNT_SYMBOL sym: gint
-# child RHS for node 2
-# node 4: type: TNT_CALL sym: right_back
-# child CALL_ARGS for node 4
-# node 5: type: TNT_ARG
-# child SEQ_CUR for node 5
-# node 6: type: TNT_INTCON val: 5
-# child SEQ_NEXT for node 1
-# node 7: type: TNT_STMT
-# child SEQ_CUR for node 7
-# node 8: type: TNT_ASSG
-# child LHS for node 8
-# node 9: type: TNT_SYMBOL sym: gint
-# child RHS for node 8
-# node 10: type: TNT_CALL sym: right_back
-# child CALL_ARGS for node 10
-# node 11: type: TNT_ARG
-# child SEQ_CUR for node 11
-# node 12: type: TNT_CHARCON str: 'a'
-# child SEQ_NEXT for node 7
-# node 13: type: TNT_STMT
-# child SEQ_CUR for node 13
-# node 14: type: TNT_ASSG
-# child LHS for node 14
-# node 15: type: TNT_SYMBOL sym: lint
-# child RHS for node 14
-# node 16: type: TNT_CALL sym: num_at
-# child CALL_ARGS for node 16
-# node 17: type: TNT_ARG
-# child SEQ_CUR for node 17
-# node 18: type: TNT_SYMBOL sym: larray
-# child SEQ_NEXT for node 17
-# node 19: type: TNT_ARG
-# child SEQ_CUR for node 19
-# node 20: type: TNT_INTCON val: 6
-# child SEQ_NEXT for node 13
-# node 21: type: TNT_STMT
-# child SEQ_CUR for node 21
-# node 22: type: TNT_ASSG
-# child LHS for node 22
-# node 23: type: TNT_SYMBOL sym: gchar
-# child RHS for node 22
-# node 24: type: TNT_CALL sym: char_at
-# child CALL_ARGS for node 24
-# node 25: type: TNT_ARG
-# child SEQ_CUR for node 25
-# node 26: type: TNT_STRCON str: "hello"
-# child SEQ_NEXT for node 25
-# node 27: type: TNT_ARG
-# child SEQ_CUR for node 27
-# node 28: type: TNT_INTCON val: 16
-# child SEQ_NEXT for node 21
-# node 29: type: TNT_STMT
-# child SEQ_CUR for node 29
-# node 30: type: TNT_CALL sym: bunch
-# child CALL_ARGS for node 30
-# node 31: type: TNT_ARG
-# child SEQ_CUR for node 31
-# node 32: type: TNT_STRCON str: "one"
-# child SEQ_NEXT for node 31
-# node 33: type: TNT_ARG
-# child SEQ_CUR for node 33
-# node 34: type: TNT_SYMBOL sym: larray
-# child SEQ_NEXT for node 33
-# node 35: type: TNT_ARG
-# child SEQ_CUR for node 35
-# node 36: type: TNT_CHARCON str: '3'
-# child SEQ_NEXT for node 35
-# node 37: type: TNT_ARG
-# child SEQ_CUR for node 37
-# node 38: type: TNT_INTCON val: 4
-# child SEQ_NEXT for node 37
-# node 39: type: TNT_ARG
-# child SEQ_CUR for node 39
-# node 40: type: TNT_SYMBOL sym: larray
-# child SEQ_NEXT for node 39
-# node 41: type: TNT_ARG
-# child SEQ_CUR for node 41
-# node 42: type: TNT_INTCON val: 6
-# child SEQ_NEXT for node 41
-# node 43: type: TNT_ARG
-# child SEQ_CUR for node 43
-# node 44: type: TNT_INTCON val: 7
-# child SEQ_NEXT for node 43
-# node 45: type: TNT_ARG
-# child SEQ_CUR for node 45
-# node 46: type: TNT_CHARCON str: '8'
-# child SEQ_NEXT for node 45
-# node 47: type: TNT_ARG
-# child SEQ_CUR for node 47
-# node 48: type: TNT_STRCON str: "nine"
-# child SEQ_NEXT for node 47
-# node 49: type: TNT_ARG
-# child SEQ_CUR for node 49
-# node 50: type: TNT_INTCON val: 10
-# child SEQ_NEXT for node 29
-# node 51: type: TNT_STMT
-# child SEQ_CUR for node 51
-# node 52: type: TNT_CALL sym: blip
-# child CALL_ARGS for node 52
-# node 53: type: TNT_ARG
-# child SEQ_CUR for node 53
-# node 54: type: TNT_INTCON val: 500000
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: right_back
 #-----------------------------------------------------------------------------
 # temps used:    1
@@ -749,3 +405,249 @@
 # CNT_CALL
 # --------
 # src1 -> ST_FUNCTION (blip)
+
+.data
+
+  _gint:
+    .space 4
+
+  _gchar:
+    .space 1
+    .align 2
+
+  _str0:
+    .asciiz "hello"
+    .align 2
+
+  _str1:
+    .asciiz "one"
+    .align 2
+
+  _str2:
+    .asciiz "nine"
+    .align 2
+
+.text
+
+_right_back:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  move $v0, $t0
+  j __leave_right_back
+
+__leave_right_back:
+  jr $ra
+
+_num_at:
+
+  # |--------------------------------|
+  # |        <idx is in $a1>         |
+  # |--------------------------------| sp+4
+  # |       <array is in $a0>        |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a1
+  sll $t1, $t0, 2
+  move $t0, $a0
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  move $v0, $t0
+  j __leave_num_at
+
+__leave_num_at:
+  jr $ra
+
+_char_at:
+
+  # |--------------------------------|
+  # |        <idx is in $a1>         |
+  # |--------------------------------| sp+4
+  # |       <string is in $a0>       |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a1
+  move $t1, $a0
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  move $v0, $t0
+  j __leave_char_at
+
+__leave_char_at:
+  jr $ra
+
+_bunch:
+
+  # |--------------------------------|
+  # |              ten               |
+  # |--------------------------------| sp+36
+  # |              nine              |
+  # |--------------------------------| sp+32
+  # |             eight              |
+  # |--------------------------------| sp+28
+  # |             seven              |
+  # |--------------------------------| sp+24
+  # |              six               |
+  # |--------------------------------| sp+20
+  # |              five              |
+  # |--------------------------------| sp+16
+  # |        <four is in $a3>        |
+  # |--------------------------------| sp+12
+  # |       <three is in $a2>        |
+  # |--------------------------------| sp+8
+  # |        <two is in $a1>         |
+  # |--------------------------------| sp+4
+  # |        <one is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_bunch:
+  jr $ra
+
+_blip:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_blip:
+  jr $ra
+
+_stuff:
+
+  # |--------------------------------|
+  # |              $a3               |
+  # |--------------------------------| sp+2076
+  # |              $a2               |
+  # |--------------------------------| sp+2072
+  # |              $a1               |
+  # |--------------------------------| sp+2068
+  # |              $a0               |
+  # |--------------------------------| sp+2064  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+2060
+  # |              lint              |
+  # |--------------------------------| sp+2056
+  # |             larray             |
+  # |--------------------------------| sp+56
+  # |              $ra               |
+  # |--------------------------------| sp+52
+  # |              $s2               |
+  # |--------------------------------| sp+48
+  # |              $s1               |
+  # |--------------------------------| sp+44
+  # |              $s0               |
+  # |--------------------------------| sp+40
+  # |           <stkarg 5>           |
+  # |--------------------------------| sp+36
+  # |           <stkarg 4>           |
+  # |--------------------------------| sp+32
+  # |           <stkarg 3>           |
+  # |--------------------------------| sp+28
+  # |           <stkarg 2>           |
+  # |--------------------------------| sp+24
+  # |           <stkarg 1>           |
+  # |--------------------------------| sp+20
+  # |           <stkarg 0>           |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -2064($sp)
+  sw $s0, 40($sp)
+  sw $s1, 44($sp)
+  sw $s2, 48($sp)
+  sw $ra, 52($sp)
+  sw $a0, 2064($sp)
+  sw $a1, 2068($sp)
+  sw $a2, 2072($sp)
+  sw $a3, 2076($sp)
+
+  li $t0, 5
+  move $a0, $t0
+  jal _right_back
+  move $t0, $v0
+  sw $t0, _gint
+  li $t0, 'a'
+  move $a0, $t0
+  jal _right_back
+  move $t0, $v0
+  sw $t0, _gint
+  la $t0, 56($sp)
+  li $t1, 6
+  move $a1, $t1
+  move $a0, $t0
+  jal _num_at
+  move $t0, $v0
+  sw $t0, 2056($sp)
+  la $t0, _str0
+  li $t1, 16
+  move $a1, $t1
+  move $a0, $t0
+  jal _char_at
+  move $t0, $v0
+  sb $t0, _gchar
+  la $t0, _str1
+  la $t1, 56($sp)
+  li $t2, '3'
+  li $t3, 4
+  la $t4, 56($sp)
+  li $t5, 6
+  li $t6, 7
+  li $s0, '8'
+  la $s1, _str2
+  li $s2, 10
+  sw $s2, 36($sp)
+  sw $s1, 32($sp)
+  sw $s0, 28($sp)
+  sw $t6, 24($sp)
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _bunch
+  li $t0, 500000
+  move $a0, $t0
+  jal _blip
+
+__leave_stuff:
+  lw $a3, 2076($sp)
+  lw $a2, 2072($sp)
+  lw $a1, 2068($sp)
+  lw $a0, 2064($sp)
+  lw $ra, 52($sp)
+  lw $s2, 48($sp)
+  lw $s1, 44($sp)
+  lw $s0, 40($sp)
+  la $sp, 2064($sp)
+  jr $ra
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

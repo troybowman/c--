@@ -1,229 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 10
-# sym: f1
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f2
-#   line: 4
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f3
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f4
-#   line: 6
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f5
-#   line: 7
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f6
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f7
-#   line: 9
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f8
-#   line: 10
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: f9
-#   line: 11
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: main
-#   line: 13
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f1
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f1
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f2
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f2
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f3
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f3
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f4
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f4
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f5
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f5
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f6
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f6
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f7
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f7
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f8
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f8
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f9
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f9
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_IF
-# child IF_COND for node 2
-# node 3: type: TNT_LT
-# child LHS for node 3
-# node 4: type: TNT_INTCON val: 111
-# child RHS for node 3
-# node 5: type: TNT_INTCON val: 222
-# child IF_BODY for node 2
-# node 6: type: TNT_CALL sym: f1
-# child SEQ_NEXT for node 1
-# node 7: type: TNT_STMT
-# child SEQ_CUR for node 7
-# node 8: type: TNT_IF
-# child IF_COND for node 8
-# node 9: type: TNT_EQ
-# child LHS for node 9
-# node 10: type: TNT_INTCON val: 333
-# child RHS for node 9
-# node 11: type: TNT_INTCON val: 444
-# child IF_BODY for node 8
-# node 12: type: TNT_CALL sym: f2
-# child IF_ELSE for node 8
-# node 13: type: TNT_CALL sym: f3
-# child SEQ_NEXT for node 7
-# node 14: type: TNT_STMT
-# child SEQ_CUR for node 14
-# node 15: type: TNT_IF
-# child IF_COND for node 15
-# node 16: type: TNT_NEQ
-# child LHS for node 16
-# node 17: type: TNT_INTCON val: 555
-# child RHS for node 16
-# node 18: type: TNT_INTCON val: 666
-# child IF_BODY for node 15
-# node 19: type: TNT_CALL sym: f4
-# child IF_ELSE for node 15
-# node 20: type: TNT_IF
-# child IF_COND for node 20
-# node 21: type: TNT_GEQ
-# child LHS for node 21
-# node 22: type: TNT_INTCON val: 777
-# child RHS for node 21
-# node 23: type: TNT_INTCON val: 888
-# child IF_BODY for node 20
-# node 24: type: TNT_CALL sym: f5
-# child IF_ELSE for node 20
-# node 25: type: TNT_IF
-# child IF_COND for node 25
-# node 26: type: TNT_LEQ
-# child LHS for node 26
-# node 27: type: TNT_INTCON val: 999
-# child RHS for node 26
-# node 28: type: TNT_INTCON val: 1000
-# child IF_BODY for node 25
-# node 29: type: TNT_CALL sym: f6
-# child IF_ELSE for node 25
-# node 30: type: TNT_CALL sym: f7
-# child SEQ_NEXT for node 14
-# node 31: type: TNT_STMT
-# child SEQ_CUR for node 31
-# node 32: type: TNT_IF
-# child IF_COND for node 32
-# node 33: type: TNT_EQ
-# child LHS for node 33
-# node 34: type: TNT_INTCON val: 1001
-# child RHS for node 33
-# node 35: type: TNT_INTCON val: 1002
-# child IF_BODY for node 32
-# node 36: type: TNT_CALL sym: f8
-# child IF_ELSE for node 32
-# node 37: type: TNT_IF
-# child IF_COND for node 37
-# node 38: type: TNT_NEQ
-# child LHS for node 38
-# node 39: type: TNT_INTCON val: 1003
-# child RHS for node 38
-# node 40: type: TNT_INTCON val: 1004
-# child IF_BODY for node 37
-# node 41: type: TNT_CALL sym: f9
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f1
 #-----------------------------------------------------------------------------
 # temps used:    0
@@ -591,3 +366,173 @@
 # CNT_LABEL
 # ---------
 # src1 -> ST_LABEL (8)
+
+.data
+
+.text
+
+_f1:
+
+  # |--------------------------------|
+
+
+__leave_f1:
+  jr $ra
+
+_f2:
+
+  # |--------------------------------|
+
+
+__leave_f2:
+  jr $ra
+
+_f3:
+
+  # |--------------------------------|
+
+
+__leave_f3:
+  jr $ra
+
+_f4:
+
+  # |--------------------------------|
+
+
+__leave_f4:
+  jr $ra
+
+_f5:
+
+  # |--------------------------------|
+
+
+__leave_f5:
+  jr $ra
+
+_f6:
+
+  # |--------------------------------|
+
+
+__leave_f6:
+  jr $ra
+
+_f7:
+
+  # |--------------------------------|
+
+
+__leave_f7:
+  jr $ra
+
+_f8:
+
+  # |--------------------------------|
+
+
+__leave_f8:
+  jr $ra
+
+_f9:
+
+  # |--------------------------------|
+
+
+__leave_f9:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+20
+  # |              $ra               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -24($sp)
+  sw $ra, 16($sp)
+
+  li $t0, 111
+  li $t1, 222
+  slt $t2, $t0, $t1
+  beq $t2, $zero, _L0
+  jal _f1
+_L0:
+  li $t0, 333
+  li $t1, 444
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  jal _f2
+  j _L2
+_L1:
+  jal _f3
+_L2:
+  li $t0, 555
+  li $t1, 666
+  sne $t2, $t0, $t1
+  beq $t2, $zero, _L3
+  jal _f4
+  j _L6
+_L3:
+  li $t0, 777
+  li $t1, 888
+  sge $t2, $t0, $t1
+  beq $t2, $zero, _L4
+  jal _f5
+  j _L6
+_L4:
+  li $t0, 999
+  li $t1, 1000
+  sle $t2, $t0, $t1
+  beq $t2, $zero, _L5
+  jal _f6
+  j _L6
+_L5:
+  jal _f7
+_L6:
+  li $t0, 1001
+  li $t1, 1002
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L7
+  jal _f8
+  j _L8
+_L7:
+  li $t0, 1003
+  li $t1, 1004
+  sne $t2, $t0, $t1
+  beq $t2, $zero, _L8
+  jal _f9
+_L8:
+
+__leavemain:
+  lw $ra, 16($sp)
+  la $sp, 24($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

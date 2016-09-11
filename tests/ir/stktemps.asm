@@ -1,429 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: f0
-#   line: 6
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: a
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: b
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       2: c
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       3: d
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       4: e
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       5: f
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       6: g
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       7: h
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       8: i
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       9: j
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       10: k
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       11: l
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       12: m
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       13: n
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       14: o
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       15: p
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       16: q
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       17: r
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       18: s
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       19: t
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       20: u
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       21: v
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       22: w
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       23: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       24: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       25: z
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: math
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-# sym: main
-#   line: 34
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: f0
-#-----------------------------------------------------------------------------
-# size: 26
-# sym: a
-#   line: 1
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: b
-#   line: 1
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: c
-#   line: 1
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: d
-#   line: 1
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: e
-#   line: 1
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: f
-#   line: 2
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: g
-#   line: 2
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: h
-#   line: 2
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: i
-#   line: 2
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: j
-#   line: 2
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: k
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: l
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: m
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: n
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: o
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: p
-#   line: 4
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: q
-#   line: 4
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: r
-#   line: 4
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: s
-#   line: 4
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: t
-#   line: 4
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: u
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: v
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: w
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: x
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: y
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: z
-#   line: 6
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: f0
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: math
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 10
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: math
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_ASSG
-# child LHS for node 2
-# node 3: type: TNT_SYMBOL sym: x
-# child RHS for node 2
-# node 4: type: TNT_PLUS
-# child LHS for node 4
-# node 5: type: TNT_INTCON val: 111
-# child RHS for node 4
-# node 6: type: TNT_PLUS
-# child LHS for node 6
-# node 7: type: TNT_INTCON val: 222
-# child RHS for node 6
-# node 8: type: TNT_PLUS
-# child LHS for node 8
-# node 9: type: TNT_INTCON val: 333
-# child RHS for node 8
-# node 10: type: TNT_PLUS
-# child LHS for node 10
-# node 11: type: TNT_INTCON val: 444
-# child RHS for node 10
-# node 12: type: TNT_PLUS
-# child LHS for node 12
-# node 13: type: TNT_INTCON val: 555
-# child RHS for node 12
-# node 14: type: TNT_PLUS
-# child LHS for node 14
-# node 15: type: TNT_INTCON val: 666
-# child RHS for node 14
-# node 16: type: TNT_PLUS
-# child LHS for node 16
-# node 17: type: TNT_INTCON val: 777
-# child RHS for node 16
-# node 18: type: TNT_PLUS
-# child LHS for node 18
-# node 19: type: TNT_INTCON val: 888
-# child RHS for node 18
-# node 20: type: TNT_PLUS
-# child LHS for node 20
-# node 21: type: TNT_INTCON val: 999
-# child RHS for node 20
-# node 22: type: TNT_PLUS
-# child LHS for node 22
-# node 23: type: TNT_INTCON val: 1000
-# child RHS for node 22
-# node 24: type: TNT_PLUS
-# child LHS for node 24
-# node 25: type: TNT_INTCON val: 1001
-# child RHS for node 24
-# node 26: type: TNT_PLUS
-# child LHS for node 26
-# node 27: type: TNT_INTCON val: 1002
-# child RHS for node 26
-# node 28: type: TNT_PLUS
-# child LHS for node 28
-# node 29: type: TNT_INTCON val: 1003
-# child RHS for node 28
-# node 30: type: TNT_PLUS
-# child LHS for node 30
-# node 31: type: TNT_INTCON val: 1004
-# child RHS for node 30
-# node 32: type: TNT_PLUS
-# child LHS for node 32
-# node 33: type: TNT_INTCON val: 1005
-# child RHS for node 32
-# node 34: type: TNT_PLUS
-# child LHS for node 34
-# node 35: type: TNT_INTCON val: 1006
-# child RHS for node 34
-# node 36: type: TNT_PLUS
-# child LHS for node 36
-# node 37: type: TNT_INTCON val: 1007
-# child RHS for node 36
-# node 38: type: TNT_PLUS
-# child LHS for node 38
-# node 39: type: TNT_INTCON val: 1008
-# child RHS for node 38
-# node 40: type: TNT_PLUS
-# child LHS for node 40
-# node 41: type: TNT_INTCON val: 1009
-# child RHS for node 40
-# node 42: type: TNT_PLUS
-# child LHS for node 42
-# node 43: type: TNT_INTCON val: 1010
-# child RHS for node 42
-# node 44: type: TNT_INTCON val: 1011
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_CALL sym: f0
-# child CALL_ARGS for node 2
-# node 3: type: TNT_ARG
-# child SEQ_CUR for node 3
-# node 4: type: TNT_INTCON val: 1
-# child SEQ_NEXT for node 3
-# node 5: type: TNT_ARG
-# child SEQ_CUR for node 5
-# node 6: type: TNT_INTCON val: 2
-# child SEQ_NEXT for node 5
-# node 7: type: TNT_ARG
-# child SEQ_CUR for node 7
-# node 8: type: TNT_INTCON val: 3
-# child SEQ_NEXT for node 7
-# node 9: type: TNT_ARG
-# child SEQ_CUR for node 9
-# node 10: type: TNT_INTCON val: 4
-# child SEQ_NEXT for node 9
-# node 11: type: TNT_ARG
-# child SEQ_CUR for node 11
-# node 12: type: TNT_INTCON val: 5
-# child SEQ_NEXT for node 11
-# node 13: type: TNT_ARG
-# child SEQ_CUR for node 13
-# node 14: type: TNT_INTCON val: 6
-# child SEQ_NEXT for node 13
-# node 15: type: TNT_ARG
-# child SEQ_CUR for node 15
-# node 16: type: TNT_INTCON val: 7
-# child SEQ_NEXT for node 15
-# node 17: type: TNT_ARG
-# child SEQ_CUR for node 17
-# node 18: type: TNT_INTCON val: 8
-# child SEQ_NEXT for node 17
-# node 19: type: TNT_ARG
-# child SEQ_CUR for node 19
-# node 20: type: TNT_INTCON val: 9
-# child SEQ_NEXT for node 19
-# node 21: type: TNT_ARG
-# child SEQ_CUR for node 21
-# node 22: type: TNT_INTCON val: 10
-# child SEQ_NEXT for node 21
-# node 23: type: TNT_ARG
-# child SEQ_CUR for node 23
-# node 24: type: TNT_INTCON val: 11
-# child SEQ_NEXT for node 23
-# node 25: type: TNT_ARG
-# child SEQ_CUR for node 25
-# node 26: type: TNT_INTCON val: 12
-# child SEQ_NEXT for node 25
-# node 27: type: TNT_ARG
-# child SEQ_CUR for node 27
-# node 28: type: TNT_INTCON val: 13
-# child SEQ_NEXT for node 27
-# node 29: type: TNT_ARG
-# child SEQ_CUR for node 29
-# node 30: type: TNT_INTCON val: 14
-# child SEQ_NEXT for node 29
-# node 31: type: TNT_ARG
-# child SEQ_CUR for node 31
-# node 32: type: TNT_INTCON val: 15
-# child SEQ_NEXT for node 31
-# node 33: type: TNT_ARG
-# child SEQ_CUR for node 33
-# node 34: type: TNT_INTCON val: 16
-# child SEQ_NEXT for node 33
-# node 35: type: TNT_ARG
-# child SEQ_CUR for node 35
-# node 36: type: TNT_INTCON val: 17
-# child SEQ_NEXT for node 35
-# node 37: type: TNT_ARG
-# child SEQ_CUR for node 37
-# node 38: type: TNT_INTCON val: 18
-# child SEQ_NEXT for node 37
-# node 39: type: TNT_ARG
-# child SEQ_CUR for node 39
-# node 40: type: TNT_INTCON val: 19
-# child SEQ_NEXT for node 39
-# node 41: type: TNT_ARG
-# child SEQ_CUR for node 41
-# node 42: type: TNT_INTCON val: 20
-# child SEQ_NEXT for node 41
-# node 43: type: TNT_ARG
-# child SEQ_CUR for node 43
-# node 44: type: TNT_INTCON val: 21
-# child SEQ_NEXT for node 43
-# node 45: type: TNT_ARG
-# child SEQ_CUR for node 45
-# node 46: type: TNT_INTCON val: 22
-# child SEQ_NEXT for node 45
-# node 47: type: TNT_ARG
-# child SEQ_CUR for node 47
-# node 48: type: TNT_INTCON val: 23
-# child SEQ_NEXT for node 47
-# node 49: type: TNT_ARG
-# child SEQ_CUR for node 49
-# node 50: type: TNT_INTCON val: 24
-# child SEQ_NEXT for node 49
-# node 51: type: TNT_ARG
-# child SEQ_CUR for node 51
-# node 52: type: TNT_INTCON val: 25
-# child SEQ_NEXT for node 51
-# node 53: type: TNT_ARG
-# child SEQ_CUR for node 53
-# node 54: type: TNT_INTCON val: 26
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: f0
 #-----------------------------------------------------------------------------
 # temps used:    0
@@ -1032,3 +607,425 @@
 # CNT_CALL
 # --------
 # src1 -> ST_FUNCTION (f0)
+
+.data
+
+.text
+
+_f0:
+
+  # |--------------------------------|
+  # |               z                |
+  # |--------------------------------| sp+100
+  # |               y                |
+  # |--------------------------------| sp+96
+  # |               x                |
+  # |--------------------------------| sp+92
+  # |               w                |
+  # |--------------------------------| sp+88
+  # |               v                |
+  # |--------------------------------| sp+84
+  # |               u                |
+  # |--------------------------------| sp+80
+  # |               t                |
+  # |--------------------------------| sp+76
+  # |               s                |
+  # |--------------------------------| sp+72
+  # |               r                |
+  # |--------------------------------| sp+68
+  # |               q                |
+  # |--------------------------------| sp+64
+  # |               p                |
+  # |--------------------------------| sp+60
+  # |               o                |
+  # |--------------------------------| sp+56
+  # |               n                |
+  # |--------------------------------| sp+52
+  # |               m                |
+  # |--------------------------------| sp+48
+  # |               l                |
+  # |--------------------------------| sp+44
+  # |               k                |
+  # |--------------------------------| sp+40
+  # |               j                |
+  # |--------------------------------| sp+36
+  # |               i                |
+  # |--------------------------------| sp+32
+  # |               h                |
+  # |--------------------------------| sp+28
+  # |               g                |
+  # |--------------------------------| sp+24
+  # |               f                |
+  # |--------------------------------| sp+20
+  # |               e                |
+  # |--------------------------------| sp+16
+  # |         <d is in $a3>          |
+  # |--------------------------------| sp+12
+  # |         <c is in $a2>          |
+  # |--------------------------------| sp+8
+  # |         <b is in $a1>          |
+  # |--------------------------------| sp+4
+  # |         <a is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_f0:
+  jr $ra
+
+_math:
+
+  # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+68
+  # |               x                |
+  # |--------------------------------| sp+64
+  # |           <padding>            |
+  # |--------------------------------| sp+60
+  # |          <stktemp 6>           |
+  # |--------------------------------| sp+56
+  # |          <stktemp 5>           |
+  # |--------------------------------| sp+52
+  # |          <stktemp 4>           |
+  # |--------------------------------| sp+48
+  # |          <stktemp 3>           |
+  # |--------------------------------| sp+44
+  # |          <stktemp 2>           |
+  # |--------------------------------| sp+40
+  # |          <stktemp 1>           |
+  # |--------------------------------| sp+36
+  # |          <stktemp 0>           |
+  # |--------------------------------| sp+32
+  # |              $s7               |
+  # |--------------------------------| sp+28
+  # |              $s6               |
+  # |--------------------------------| sp+24
+  # |              $s5               |
+  # |--------------------------------| sp+20
+  # |              $s4               |
+  # |--------------------------------| sp+16
+  # |              $s3               |
+  # |--------------------------------| sp+12
+  # |              $s2               |
+  # |--------------------------------| sp+8
+  # |              $s1               |
+  # |--------------------------------| sp+4
+  # |              $s0               |
+  # |--------------------------------| sp+0
+  la $sp, -72($sp)
+  sw $s0, 0($sp)
+  sw $s1, 4($sp)
+  sw $s2, 8($sp)
+  sw $s3, 12($sp)
+  sw $s4, 16($sp)
+  sw $s5, 20($sp)
+  sw $s6, 24($sp)
+  sw $s7, 28($sp)
+
+  li $t0, 111
+  li $t1, 222
+  li $t2, 333
+  li $t3, 444
+  li $t4, 555
+  li $t5, 666
+  li $t6, 777
+  li $s0, 888
+  li $s1, 999
+  li $s2, 1000
+  li $s3, 1001
+  li $s4, 1002
+  li $s5, 1003
+  li $s6, 1004
+  li $s7, 1005
+  li $t9, 1006
+  sw $t9, 32($sp)
+  li $t9, 1007
+  sw $t9, 36($sp)
+  li $t9, 1008
+  sw $t9, 40($sp)
+  li $t9, 1009
+  sw $t9, 44($sp)
+  li $t9, 1010
+  sw $t9, 48($sp)
+  li $t9, 1011
+  sw $t9, 52($sp)
+  lw $t7, 48($sp)
+  lw $t8, 52($sp)
+  addu $t9, $t7, $t8
+  sw $t9, 56($sp)
+  lw $t7, 44($sp)
+  lw $t8, 56($sp)
+  addu $t9, $t7, $t8
+  sw $t9, 48($sp)
+  lw $t7, 40($sp)
+  lw $t8, 48($sp)
+  addu $t9, $t7, $t8
+  sw $t9, 44($sp)
+  lw $t7, 36($sp)
+  lw $t8, 44($sp)
+  addu $t9, $t7, $t8
+  sw $t9, 40($sp)
+  lw $t7, 32($sp)
+  lw $t8, 40($sp)
+  addu $t9, $t7, $t8
+  sw $t9, 36($sp)
+  lw $t8, 36($sp)
+  addu $t9, $s7, $t8
+  sw $t9, 32($sp)
+  lw $t8, 32($sp)
+  addu $s7, $s6, $t8
+  addu $s6, $s5, $s7
+  addu $s5, $s4, $s6
+  addu $s4, $s3, $s5
+  addu $s3, $s2, $s4
+  addu $s2, $s1, $s3
+  addu $s1, $s0, $s2
+  addu $s0, $t6, $s1
+  addu $t6, $t5, $s0
+  addu $t5, $t4, $t6
+  addu $t4, $t3, $t5
+  addu $t3, $t2, $t4
+  addu $t2, $t1, $t3
+  addu $t1, $t0, $t2
+  sw $t1, 64($sp)
+
+__leave_math:
+  lw $s7, 28($sp)
+  lw $s6, 24($sp)
+  lw $s5, 20($sp)
+  lw $s4, 16($sp)
+  lw $s3, 12($sp)
+  lw $s2, 8($sp)
+  lw $s1, 4($sp)
+  lw $s0, 0($sp)
+  la $sp, 72($sp)
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |              $a3               |
+  # |--------------------------------| sp+196
+  # |              $a2               |
+  # |--------------------------------| sp+192
+  # |              $a1               |
+  # |--------------------------------| sp+188
+  # |              $a0               |
+  # |--------------------------------| sp+184  <-- start of caller's frame
+  # |              $ra               |
+  # |--------------------------------| sp+180
+  # |          <stktemp 10>          |
+  # |--------------------------------| sp+176
+  # |          <stktemp 9>           |
+  # |--------------------------------| sp+172
+  # |          <stktemp 8>           |
+  # |--------------------------------| sp+168
+  # |          <stktemp 7>           |
+  # |--------------------------------| sp+164
+  # |          <stktemp 6>           |
+  # |--------------------------------| sp+160
+  # |          <stktemp 5>           |
+  # |--------------------------------| sp+156
+  # |          <stktemp 4>           |
+  # |--------------------------------| sp+152
+  # |          <stktemp 3>           |
+  # |--------------------------------| sp+148
+  # |          <stktemp 2>           |
+  # |--------------------------------| sp+144
+  # |          <stktemp 1>           |
+  # |--------------------------------| sp+140
+  # |          <stktemp 0>           |
+  # |--------------------------------| sp+136
+  # |              $s7               |
+  # |--------------------------------| sp+132
+  # |              $s6               |
+  # |--------------------------------| sp+128
+  # |              $s5               |
+  # |--------------------------------| sp+124
+  # |              $s4               |
+  # |--------------------------------| sp+120
+  # |              $s3               |
+  # |--------------------------------| sp+116
+  # |              $s2               |
+  # |--------------------------------| sp+112
+  # |              $s1               |
+  # |--------------------------------| sp+108
+  # |              $s0               |
+  # |--------------------------------| sp+104
+  # |          <stkarg 21>           |
+  # |--------------------------------| sp+100
+  # |          <stkarg 20>           |
+  # |--------------------------------| sp+96
+  # |          <stkarg 19>           |
+  # |--------------------------------| sp+92
+  # |          <stkarg 18>           |
+  # |--------------------------------| sp+88
+  # |          <stkarg 17>           |
+  # |--------------------------------| sp+84
+  # |          <stkarg 16>           |
+  # |--------------------------------| sp+80
+  # |          <stkarg 15>           |
+  # |--------------------------------| sp+76
+  # |          <stkarg 14>           |
+  # |--------------------------------| sp+72
+  # |          <stkarg 13>           |
+  # |--------------------------------| sp+68
+  # |          <stkarg 12>           |
+  # |--------------------------------| sp+64
+  # |          <stkarg 11>           |
+  # |--------------------------------| sp+60
+  # |          <stkarg 10>           |
+  # |--------------------------------| sp+56
+  # |           <stkarg 9>           |
+  # |--------------------------------| sp+52
+  # |           <stkarg 8>           |
+  # |--------------------------------| sp+48
+  # |           <stkarg 7>           |
+  # |--------------------------------| sp+44
+  # |           <stkarg 6>           |
+  # |--------------------------------| sp+40
+  # |           <stkarg 5>           |
+  # |--------------------------------| sp+36
+  # |           <stkarg 4>           |
+  # |--------------------------------| sp+32
+  # |           <stkarg 3>           |
+  # |--------------------------------| sp+28
+  # |           <stkarg 2>           |
+  # |--------------------------------| sp+24
+  # |           <stkarg 1>           |
+  # |--------------------------------| sp+20
+  # |           <stkarg 0>           |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -184($sp)
+  sw $s0, 104($sp)
+  sw $s1, 108($sp)
+  sw $s2, 112($sp)
+  sw $s3, 116($sp)
+  sw $s4, 120($sp)
+  sw $s5, 124($sp)
+  sw $s6, 128($sp)
+  sw $s7, 132($sp)
+  sw $ra, 180($sp)
+  sw $a0, 184($sp)
+  sw $a1, 188($sp)
+  sw $a2, 192($sp)
+  sw $a3, 196($sp)
+
+  li $t0, 1
+  li $t1, 2
+  li $t2, 3
+  li $t3, 4
+  li $t4, 5
+  li $t5, 6
+  li $t6, 7
+  li $s0, 8
+  li $s1, 9
+  li $s2, 10
+  li $s3, 11
+  li $s4, 12
+  li $s5, 13
+  li $s6, 14
+  li $s7, 15
+  li $t9, 16
+  sw $t9, 136($sp)
+  li $t9, 17
+  sw $t9, 140($sp)
+  li $t9, 18
+  sw $t9, 144($sp)
+  li $t9, 19
+  sw $t9, 148($sp)
+  li $t9, 20
+  sw $t9, 152($sp)
+  li $t9, 21
+  sw $t9, 156($sp)
+  li $t9, 22
+  sw $t9, 160($sp)
+  li $t9, 23
+  sw $t9, 164($sp)
+  li $t9, 24
+  sw $t9, 168($sp)
+  li $t9, 25
+  sw $t9, 172($sp)
+  li $t9, 26
+  sw $t9, 176($sp)
+  lw $t7, 176($sp)
+  sw $t7, 100($sp)
+  lw $t7, 172($sp)
+  sw $t7, 96($sp)
+  lw $t7, 168($sp)
+  sw $t7, 92($sp)
+  lw $t7, 164($sp)
+  sw $t7, 88($sp)
+  lw $t7, 160($sp)
+  sw $t7, 84($sp)
+  lw $t7, 156($sp)
+  sw $t7, 80($sp)
+  lw $t7, 152($sp)
+  sw $t7, 76($sp)
+  lw $t7, 148($sp)
+  sw $t7, 72($sp)
+  lw $t7, 144($sp)
+  sw $t7, 68($sp)
+  lw $t7, 140($sp)
+  sw $t7, 64($sp)
+  lw $t7, 136($sp)
+  sw $t7, 60($sp)
+  sw $s7, 56($sp)
+  sw $s6, 52($sp)
+  sw $s5, 48($sp)
+  sw $s4, 44($sp)
+  sw $s3, 40($sp)
+  sw $s2, 36($sp)
+  sw $s1, 32($sp)
+  sw $s0, 28($sp)
+  sw $t6, 24($sp)
+  sw $t5, 20($sp)
+  sw $t4, 16($sp)
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal _f0
+
+__leavemain:
+  lw $a3, 196($sp)
+  lw $a2, 192($sp)
+  lw $a1, 188($sp)
+  lw $a0, 184($sp)
+  lw $ra, 180($sp)
+  lw $s7, 132($sp)
+  lw $s6, 128($sp)
+  lw $s5, 124($sp)
+  lw $s4, 120($sp)
+  lw $s3, 116($sp)
+  lw $s2, 112($sp)
+  lw $s1, 108($sp)
+  lw $s0, 104($sp)
+  la $sp, 184($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

@@ -1,46 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: i
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: x
-#   line: 4
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xa
-# sym: test
-#   line: 6
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: argc
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: argv
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: test
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: argc
-#   line: 6
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: argv
-#   line: 6
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
-# sym: c
-#   line: 8
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: test
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -150,3 +108,135 @@
 # node 53: type: TNT_ARRAY_LOOKUP sym: x
 # child AL_OFFSET for node 53
 # node 54: type: TNT_CHARCON str: 'b'
+
+.data
+
+  _i:
+    .space 4
+
+  _x:
+    .space 40
+
+.text
+
+_test:
+
+  # |--------------------------------|
+  # |        <argv is in $a1>        |
+  # |--------------------------------| sp+12
+  # |        <argc is in $a0>        |
+  # |--------------------------------| sp+8  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+4
+  # |               c                |
+  # |--------------------------------| sp+0
+  la $sp, -8($sp)
+
+  li $t0, 0
+  move $t1, $a1
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  sw $t0, _i
+  lw $t0, _i
+  li $t1, 0
+  move $t2, $a1
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 0
+  lw $t1, _i
+  move $t2, $a1
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  lw $t0, _i
+  move $t1, $a1
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  lw $t1, _i
+  move $t2, $a1
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 'z'
+  sb $t0, 0($sp)
+  lb $t0, 0($sp)
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  lb $t1, 0($sp)
+  move $t2, $a1
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  lw $t0, _i
+  move $t1, $a1
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 0
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  lw $t0, _i
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  move $t1, $a1
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  lw $t1, _i
+  move $t2, $a1
+  addu $t3, $t2, $t1
+  lb $t1, ($t3)
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 'b'
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  move $t1, $a1
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 'a'
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  lw $t1, ($t3)
+  move $t2, $a1
+  addu $t3, $t2, $t1
+  lb $t1, ($t3)
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+
+__leave_test:
+  la $sp, 8($sp)
+  jr $ra
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

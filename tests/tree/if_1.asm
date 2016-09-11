@@ -1,29 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: main
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: arg
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: arg
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: x
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -131,3 +106,104 @@
 # node 52: type: TNT_SYMBOL sym: x
 # child RHS for node 51
 # node 53: type: TNT_CHARCON str: 'z'
+
+.data
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |        <arg is in $a0>         |
+  # |--------------------------------| sp+8  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+4
+  # |               x                |
+  # |--------------------------------| sp+0
+  la $sp, -8($sp)
+
+  move $t0, $a0
+  li $t1, 1
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L0
+  li $t0, 'a'
+  sw $t0, 0($sp)
+  j _L3
+_L0:
+  move $t0, $a0
+  li $t1, 2
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  li $t0, 'b'
+  sw $t0, 0($sp)
+  j _L3
+_L1:
+  move $t0, $a0
+  li $t1, 3
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L2
+  li $t0, 'c'
+  sw $t0, 0($sp)
+  j _L3
+_L2:
+  li $t0, 'z'
+  sw $t0, 0($sp)
+_L3:
+  move $t0, $a0
+  li $t1, 1
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L4
+  li $t0, 'a'
+  sw $t0, 0($sp)
+  j _L9
+_L4:
+  move $t0, $a0
+  li $t1, 2
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L5
+  li $t0, 'b'
+  sw $t0, 0($sp)
+  j _L8
+_L5:
+  move $t0, $a0
+  li $t1, 3
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L6
+  li $t0, 'c'
+  sw $t0, 0($sp)
+  j _L7
+_L6:
+  li $t0, 'z'
+  sw $t0, 0($sp)
+_L7:
+_L8:
+_L9:
+
+__leavemain:
+  la $sp, 8($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

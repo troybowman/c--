@@ -1,78 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 7
-# sym: x
-#   line: 3
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0x5
-# sym: y
-#   line: 4
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0x4
-# sym: x_at
-#   line: 6
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: y_at
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: PRIM_CHAR
-#     params:
-#       0: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: char_at
-#   line: 10
-#   type: ST_FUNCTION
-#     rt_type: PRIM_CHAR
-#     params:
-#       0: string
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: idx
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: sum
-#   line: 15
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       2: z
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: main
-#   line: 17
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: x_at
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: idx
-#   line: 6
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: x_at
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -82,14 +8,6 @@
 # node 3: type: TNT_ARRAY_LOOKUP sym: x
 # child AL_OFFSET for node 3
 # node 4: type: TNT_SYMBOL sym: idx
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: y_at
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: idx
-#   line: 8
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: y_at
 #-----------------------------------------------------------------------------
@@ -101,19 +19,6 @@
 # child AL_OFFSET for node 3
 # node 4: type: TNT_SYMBOL sym: idx
 #-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: char_at
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: string
-#   line: 10
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xffffffff
-# sym: idx
-#   line: 10
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: char_at
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -123,10 +28,6 @@
 # node 3: type: TNT_ARRAY_LOOKUP sym: string
 # child AL_OFFSET for node 3
 # node 4: type: TNT_SYMBOL sym: idx
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 0
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
@@ -237,3 +138,220 @@
 # node 53: type: TNT_ARG
 # child SEQ_CUR for node 53
 # node 54: type: TNT_INTCON val: 1
+
+.data
+
+  _x:
+    .space 20
+
+  _y:
+    .space 4
+    .align 2
+
+  _str0:
+    .asciiz "test"
+    .align 2
+
+  _str1:
+    .asciiz "AM THE ONE WHO KNOCKS"
+    .align 2
+
+  _str2:
+    .asciiz "I..."
+    .align 2
+
+.text
+
+_x_at:
+
+  # |--------------------------------|
+  # |        <idx is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  move $v0, $t0
+  j __leave_x_at
+
+__leave_x_at:
+  jr $ra
+
+_y_at:
+
+  # |--------------------------------|
+  # |        <idx is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  la $t1, _y
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  move $v0, $t0
+  j __leave_y_at
+
+__leave_y_at:
+  jr $ra
+
+_char_at:
+
+  # |--------------------------------|
+  # |        <idx is in $a1>         |
+  # |--------------------------------| sp+4
+  # |       <string is in $a0>       |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a1
+  move $t1, $a0
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  move $v0, $t0
+  j __leave_char_at
+
+__leave_char_at:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |              $a2               |
+  # |--------------------------------| sp+40
+  # |              $a1               |
+  # |--------------------------------| sp+36
+  # |              $a0               |
+  # |--------------------------------| sp+32  <-- start of caller's frame
+  # |              $ra               |
+  # |--------------------------------| sp+28
+  # |              $s2               |
+  # |--------------------------------| sp+24
+  # |              $s1               |
+  # |--------------------------------| sp+20
+  # |              $s0               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -32($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
+  sw $s2, 24($sp)
+  sw $ra, 28($sp)
+  sw $a0, 32($sp)
+  sw $a1, 36($sp)
+  sw $a2, 40($sp)
+
+  li $t0, 0
+  move $a0, $t0
+  jal _x_at
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  li $t1, 0
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 0
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $s0, ($t2)
+  li $t0, 0
+  move $a0, $t0
+  jal _x_at
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  sw $s0, ($t2)
+  li $s0, 'x'
+  la $t0, _str0
+  li $t1, 0
+  move $a1, $t1
+  move $a0, $t0
+  jal _char_at
+  move $t0, $v0
+  move $a0, $t0
+  jal _y_at
+  move $t0, $v0
+  move $a0, $t0
+  jal _x_at
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  la $t1, _y
+  addu $t2, $t1, $t0
+  sb $s0, ($t2)
+  la $t0, _str1
+  li $t1, 1
+  move $a1, $t1
+  move $a0, $t0
+  jal _char_at
+  move $t0, $v0
+  la $t1, _y
+  addu $t2, $t1, $t0
+  lb $s0, ($t2)
+  li $t0, 1
+  move $a0, $t0
+  jal _x_at
+  move $s1, $v0
+  li $t0, 0
+  move $a0, $t0
+  jal _y_at
+  move $s2, $v0
+  la $t0, _str2
+  li $t1, 7
+  move $a1, $t1
+  move $a0, $t0
+  jal _char_at
+  move $t0, $v0
+  move $a2, $t0
+  move $a1, $s2
+  move $a0, $s1
+  jal sum
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  sw $s0, ($t2)
+
+__leavemain:
+  lw $a2, 40($sp)
+  lw $a1, 36($sp)
+  lw $a0, 32($sp)
+  lw $ra, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 32($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

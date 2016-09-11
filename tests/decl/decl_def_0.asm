@@ -190,3 +190,120 @@
 #   type: ST_ARRAY
 #     base: PRIM_CHAR
 #     size: 0xffffffff
+
+.data
+
+.text
+
+_func7:
+
+  # |--------------------------------|
+  # |         <aa is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_func7:
+  jr $ra
+
+_func6:
+
+  # |--------------------------------|
+
+
+__leave_func6:
+  jr $ra
+
+_func5:
+
+  # |--------------------------------|
+  # |         <bb is in $a1>         |
+  # |--------------------------------| sp+4
+  # |         <aa is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_func5:
+  jr $ra
+
+_func4:
+
+  # |--------------------------------|
+  # |         <dd is in $a3>         |
+  # |--------------------------------| sp+12
+  # |         <cc is in $a2>         |
+  # |--------------------------------| sp+8
+  # |         <bb is in $a1>         |
+  # |--------------------------------| sp+4
+  # |         <aa is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_func4:
+  jr $ra
+
+_emp:
+
+  # |--------------------------------|
+
+
+__leave_emp:
+  jr $ra
+
+_func1:
+
+  # |--------------------------------|
+
+
+__leave_func1:
+  jr $ra
+
+_func2:
+
+  # |--------------------------------|
+  # |        <four is in $a3>        |
+  # |--------------------------------| sp+12
+  # |       <three is in $a2>        |
+  # |--------------------------------| sp+8
+  # |        <two is in $a1>         |
+  # |--------------------------------| sp+4
+  # |        <one is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_func2:
+  jr $ra
+
+_func3:
+
+  # |--------------------------------|
+  # |         <y is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_func3:
+  jr $ra
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

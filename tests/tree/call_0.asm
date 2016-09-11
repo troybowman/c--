@@ -1,88 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 6
-# sym: print_string
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: str
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: yes
-# sym: print_strings
-#   line: 8
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: str1
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: str2
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       2: str3
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       3: str4
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: yes
-# sym: print_int
-#   line: 9
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: print_ints
-#   line: 10
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       1: y
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       2: z
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: print_misc
-#   line: 11
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: one
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: two
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#       2: three
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       3: four
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: main
-#   line: 13
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -164,3 +80,120 @@
 # node 39: type: TNT_ARG
 # child SEQ_CUR for node 39
 # node 40: type: TNT_INTCON val: 4
+
+.data
+
+  _str0:
+    .asciiz "hello"
+    .align 2
+
+  _str1:
+    .asciiz "one"
+    .align 2
+
+  _str2:
+    .asciiz "two"
+    .align 2
+
+  _str3:
+    .asciiz "three"
+    .align 2
+
+  _str4:
+    .asciiz "four"
+    .align 2
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |              $a3               |
+  # |--------------------------------| sp+36
+  # |              $a2               |
+  # |--------------------------------| sp+32
+  # |              $a1               |
+  # |--------------------------------| sp+28
+  # |              $a0               |
+  # |--------------------------------| sp+24  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+20
+  # |              $ra               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -24($sp)
+  sw $ra, 16($sp)
+  sw $a0, 24($sp)
+  sw $a1, 28($sp)
+  sw $a2, 32($sp)
+  sw $a3, 36($sp)
+
+  la $t0, _str0
+  move $a0, $t0
+  jal print_string
+  li $t0, 5
+  move $a0, $t0
+  jal print_int
+  li $t0, 'x'
+  move $a0, $t0
+  jal print_int
+  la $t0, _str1
+  la $t1, _str2
+  la $t2, _str3
+  la $t3, _str4
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal print_strings
+  li $t0, 1
+  li $t1, 2
+  li $t2, '3'
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal print_ints
+  la $t0, _str1
+  li $t1, '2'
+  la $t2, _str3
+  li $t3, 4
+  move $a3, $t3
+  move $a2, $t2
+  move $a1, $t1
+  move $a0, $t0
+  jal print_misc
+
+__leavemain:
+  lw $a3, 36($sp)
+  lw $a2, 32($sp)
+  lw $a1, 28($sp)
+  lw $a0, 24($sp)
+  lw $ra, 16($sp)
+  la $sp, 24($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

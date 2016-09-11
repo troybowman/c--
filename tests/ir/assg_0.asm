@@ -1,77 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: g1
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: g2
-#   line: 4
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xa
-# sym: main
-#   line: 6
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: l1
-#   line: 8
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: l2
-#   line: 8
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xa
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_ASSG
-# child LHS for node 2
-# node 3: type: TNT_SYMBOL sym: g1
-# child RHS for node 2
-# node 4: type: TNT_INTCON val: 5
-# child SEQ_NEXT for node 1
-# node 5: type: TNT_STMT
-# child SEQ_CUR for node 5
-# node 6: type: TNT_ASSG
-# child LHS for node 6
-# node 7: type: TNT_ARRAY_LOOKUP sym: g2
-# child AL_OFFSET for node 7
-# node 8: type: TNT_INTCON val: 0
-# child RHS for node 6
-# node 9: type: TNT_CHARCON str: 'a'
-# child SEQ_NEXT for node 5
-# node 10: type: TNT_STMT
-# child SEQ_CUR for node 10
-# node 11: type: TNT_ASSG
-# child LHS for node 11
-# node 12: type: TNT_SYMBOL sym: l1
-# child RHS for node 11
-# node 13: type: TNT_INTCON val: 5555
-# child SEQ_NEXT for node 10
-# node 14: type: TNT_STMT
-# child SEQ_CUR for node 14
-# node 15: type: TNT_ASSG
-# child LHS for node 15
-# node 16: type: TNT_ARRAY_LOOKUP sym: l2
-# child AL_OFFSET for node 16
-# node 17: type: TNT_INTCON val: 10
-# child RHS for node 15
-# node 18: type: TNT_ARRAY_LOOKUP sym: g2
-# child AL_OFFSET for node 18
-# node 19: type: TNT_INTCON val: 3
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # temps used:    4
@@ -189,3 +116,73 @@
 # ------
 # dest -> ST_TEMP (3)
 # src1 -> ST_TEMP (0)
+
+.data
+
+  _g1:
+    .space 4
+
+  _g2:
+    .space 10
+    .align 2
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+44
+  # |               l2               |
+  # |--------------------------------| sp+4
+  # |               l1               |
+  # |--------------------------------| sp+0
+  la $sp, -48($sp)
+
+  li $t0, 5
+  sw $t0, _g1
+  li $t0, 'a'
+  li $t1, 0
+  la $t2, _g2
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+  li $t0, 5555
+  sw $t0, 0($sp)
+  li $t0, 3
+  la $t1, _g2
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 10
+  sll $t2, $t1, 2
+  la $t1, 4($sp)
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+
+__leavemain:
+  la $sp, 48($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

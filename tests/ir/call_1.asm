@@ -1,182 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: half
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: main
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: half
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: half
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_DIV
-# child LHS for node 3
-# node 4: type: TNT_SYMBOL sym: x
-# child RHS for node 3
-# node 5: type: TNT_INTCON val: 2
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_ASSG
-# child LHS for node 2
-# node 3: type: TNT_SYMBOL sym: x
-# child RHS for node 2
-# node 4: type: TNT_PLUS
-# child LHS for node 4
-# node 5: type: TNT_INTCON val: 1
-# child RHS for node 4
-# node 6: type: TNT_CALL sym: half
-# child CALL_ARGS for node 6
-# node 7: type: TNT_ARG
-# child SEQ_CUR for node 7
-# node 8: type: TNT_INTCON val: 2
-# child SEQ_NEXT for node 1
-# node 9: type: TNT_STMT
-# child SEQ_CUR for node 9
-# node 10: type: TNT_ASSG
-# child LHS for node 10
-# node 11: type: TNT_SYMBOL sym: x
-# child RHS for node 10
-# node 12: type: TNT_PLUS
-# child LHS for node 12
-# node 13: type: TNT_PLUS
-# child LHS for node 13
-# node 14: type: TNT_PLUS
-# child LHS for node 14
-# node 15: type: TNT_PLUS
-# child LHS for node 15
-# node 16: type: TNT_INTCON val: 3
-# child RHS for node 15
-# node 17: type: TNT_CALL sym: half
-# child CALL_ARGS for node 17
-# node 18: type: TNT_ARG
-# child SEQ_CUR for node 18
-# node 19: type: TNT_INTCON val: 4
-# child RHS for node 14
-# node 20: type: TNT_CALL sym: half
-# child CALL_ARGS for node 20
-# node 21: type: TNT_ARG
-# child SEQ_CUR for node 21
-# node 22: type: TNT_INTCON val: 5
-# child RHS for node 13
-# node 23: type: TNT_CALL sym: half
-# child CALL_ARGS for node 23
-# node 24: type: TNT_ARG
-# child SEQ_CUR for node 24
-# node 25: type: TNT_INTCON val: 6
-# child RHS for node 12
-# node 26: type: TNT_CALL sym: half
-# child CALL_ARGS for node 26
-# node 27: type: TNT_ARG
-# child SEQ_CUR for node 27
-# node 28: type: TNT_INTCON val: 7
-# child SEQ_NEXT for node 9
-# node 29: type: TNT_STMT
-# child SEQ_CUR for node 29
-# node 30: type: TNT_ASSG
-# child LHS for node 30
-# node 31: type: TNT_SYMBOL sym: x
-# child RHS for node 30
-# node 32: type: TNT_PLUS
-# child LHS for node 32
-# node 33: type: TNT_CALL sym: half
-# child CALL_ARGS for node 33
-# node 34: type: TNT_ARG
-# child SEQ_CUR for node 34
-# node 35: type: TNT_INTCON val: 8
-# child RHS for node 32
-# node 36: type: TNT_PLUS
-# child LHS for node 36
-# node 37: type: TNT_CALL sym: half
-# child CALL_ARGS for node 37
-# node 38: type: TNT_ARG
-# child SEQ_CUR for node 38
-# node 39: type: TNT_INTCON val: 9
-# child RHS for node 36
-# node 40: type: TNT_PLUS
-# child LHS for node 40
-# node 41: type: TNT_CALL sym: half
-# child CALL_ARGS for node 41
-# node 42: type: TNT_ARG
-# child SEQ_CUR for node 42
-# node 43: type: TNT_INTCON val: 10
-# child RHS for node 40
-# node 44: type: TNT_CALL sym: half
-# child CALL_ARGS for node 44
-# node 45: type: TNT_ARG
-# child SEQ_CUR for node 45
-# node 46: type: TNT_INTCON val: 11
-# child SEQ_NEXT for node 29
-# node 47: type: TNT_STMT
-# child SEQ_CUR for node 47
-# node 48: type: TNT_ASSG
-# child LHS for node 48
-# node 49: type: TNT_SYMBOL sym: x
-# child RHS for node 48
-# node 50: type: TNT_PLUS
-# child LHS for node 50
-# node 51: type: TNT_PLUS
-# child LHS for node 51
-# node 52: type: TNT_PLUS
-# child LHS for node 52
-# node 53: type: TNT_CALL sym: half
-# child CALL_ARGS for node 53
-# node 54: type: TNT_ARG
-# child SEQ_CUR for node 54
-# node 55: type: TNT_INTCON val: 12
-# child RHS for node 52
-# node 56: type: TNT_CALL sym: half
-# child CALL_ARGS for node 56
-# node 57: type: TNT_ARG
-# child SEQ_CUR for node 57
-# node 58: type: TNT_INTCON val: 13
-# child RHS for node 51
-# node 59: type: TNT_CALL sym: half
-# child CALL_ARGS for node 59
-# node 60: type: TNT_ARG
-# child SEQ_CUR for node 60
-# node 61: type: TNT_INTCON val: 14
-# child RHS for node 50
-# node 62: type: TNT_CALL sym: half
-# child CALL_ARGS for node 62
-# node 63: type: TNT_ARG
-# child SEQ_CUR for node 63
-# node 64: type: TNT_INTCON val: 15
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: half
 #-----------------------------------------------------------------------------
 # temps used:    3
@@ -638,3 +460,152 @@
 # ------
 # dest -> ST_PRIMITIVE (x)
 # src1 -> ST_TEMP (1)
+
+.data
+
+.text
+
+_half:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  li $t1, 2
+  div $t2, $t0, $t1
+  move $v0, $t2
+  j __leave_half
+
+__leave_half:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |              $a0               |
+  # |--------------------------------| sp+40  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+36
+  # |               x                |
+  # |--------------------------------| sp+32
+  # |              $ra               |
+  # |--------------------------------| sp+28
+  # |              $s2               |
+  # |--------------------------------| sp+24
+  # |              $s1               |
+  # |--------------------------------| sp+20
+  # |              $s0               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -40($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
+  sw $s2, 24($sp)
+  sw $ra, 28($sp)
+  sw $a0, 40($sp)
+
+  li $s0, 1
+  li $t0, 2
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $t1, $s0, $t0
+  sw $t1, 32($sp)
+  li $s0, 3
+  li $t0, 4
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $s1, $s0, $t0
+  li $t0, 5
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $s0, $s1, $t0
+  li $t0, 6
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $s1, $s0, $t0
+  li $t0, 7
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $t1, $s1, $t0
+  sw $t1, 32($sp)
+  li $t0, 8
+  move $a0, $t0
+  jal _half
+  move $s0, $v0
+  li $t0, 9
+  move $a0, $t0
+  jal _half
+  move $s1, $v0
+  li $t0, 10
+  move $a0, $t0
+  jal _half
+  move $s2, $v0
+  li $t0, 11
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $t1, $s2, $t0
+  addu $t0, $s1, $t1
+  addu $t1, $s0, $t0
+  sw $t1, 32($sp)
+  li $t0, 12
+  move $a0, $t0
+  jal _half
+  move $s0, $v0
+  li $t0, 13
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $s1, $s0, $t0
+  li $t0, 14
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $s0, $s1, $t0
+  li $t0, 15
+  move $a0, $t0
+  jal _half
+  move $t0, $v0
+  addu $t1, $s0, $t0
+  sw $t1, 32($sp)
+
+__leavemain:
+  lw $a0, 40($sp)
+  lw $ra, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 40($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

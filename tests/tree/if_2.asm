@@ -1,32 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: boring
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: main
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: boring
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: boring
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -34,19 +6,6 @@
 # node 2: type: TNT_RET
 # child RET_EXPR for node 2
 # node 3: type: TNT_SYMBOL sym: x
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: x
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: s
-#   line: 8
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xa
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
@@ -179,3 +138,165 @@
 # node 64: type: TNT_ARG
 # child SEQ_CUR for node 64
 # node 65: type: TNT_INTCON val: 4
+
+.data
+
+.text
+
+_boring:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  move $v0, $t0
+  j __leave_boring
+
+__leave_boring:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |              $a0               |
+  # |--------------------------------| sp+48  <-- start of caller's frame
+  # |               s                |
+  # |--------------------------------| sp+36
+  # |               x                |
+  # |--------------------------------| sp+32
+  # |           <padding>            |
+  # |--------------------------------| sp+28
+  # |              $ra               |
+  # |--------------------------------| sp+24
+  # |              $s1               |
+  # |--------------------------------| sp+20
+  # |              $s0               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -48($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
+  sw $ra, 24($sp)
+  sw $a0, 48($sp)
+
+  li $t0, 3
+  li $t1, 4
+  slt $t2, $t0, $t1
+  li $t0, 5
+  li $t1, 6
+  slt $t3, $t0, $t1
+  and $t0, $t2, $t3
+  beq $t0, $zero, _L0
+_L0:
+  li $t0, 3
+  lw $t1, 32($sp)
+  slt $t2, $t0, $t1
+  xor $t0, $t2, 1
+  beq $t0, $zero, _L1
+_L1:
+  lw $t0, 32($sp)
+  li $t1, 0
+  sgt $t2, $t0, $t1
+  lw $t0, 32($sp)
+  lw $t1, 32($sp)
+  la $t3, 36($sp)
+  addu $t4, $t3, $t1
+  lb $t1, ($t4)
+  sne $t3, $t0, $t1
+  and $t0, $t2, $t3
+  beq $t0, $zero, _L2
+  j _L4
+_L2:
+  li $t0, 0
+  la $t1, 36($sp)
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  li $t1, 1
+  la $t2, 36($sp)
+  addu $t3, $t2, $t1
+  lb $t1, ($t3)
+  seq $t2, $t0, $t1
+  li $t0, 1
+  la $t1, 36($sp)
+  addu $t3, $t1, $t0
+  lb $t0, ($t3)
+  li $t1, 2
+  la $t3, 36($sp)
+  addu $t4, $t3, $t1
+  lb $t1, ($t4)
+  seq $t3, $t0, $t1
+  li $t0, 2
+  la $t1, 36($sp)
+  addu $t4, $t1, $t0
+  lb $t0, ($t4)
+  lw $t1, 32($sp)
+  sne $t4, $t0, $t1
+  and $t0, $t3, $t4
+  or $t1, $t2, $t0
+  beq $t1, $zero, _L3
+  j _L4
+_L3:
+  li $t0, 0
+  move $a0, $t0
+  jal _boring
+  move $s0, $v0
+  li $t0, 1
+  move $a0, $t0
+  jal _boring
+  move $t0, $v0
+  slt $s1, $s0, $t0
+  li $t0, 2
+  move $a0, $t0
+  jal _boring
+  move $s0, $v0
+  li $t0, 3
+  move $a0, $t0
+  jal _boring
+  move $t0, $v0
+  slt $t1, $s0, $t0
+  and $s0, $s1, $t1
+  lw $s1, 32($sp)
+  li $t0, 4
+  move $a0, $t0
+  jal _boring
+  move $t0, $v0
+  seq $t1, $s1, $t0
+  and $t0, $s0, $t1
+  xor $t1, $t0, 1
+  beq $t1, $zero, _L4
+_L4:
+
+__leavemain:
+  lw $a0, 48($sp)
+  lw $ra, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 48($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

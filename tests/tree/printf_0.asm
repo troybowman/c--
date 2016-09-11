@@ -1,78 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 6
-# sym: __print_int
-#   line: -1
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: val
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: __print_hex
-#   line: -1
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: hex
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: __print_char
-#   line: -1
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: c
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#     is_extern: yes
-# sym: __print_string
-#   line: -1
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: str
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#     is_extern: yes
-# sym: printf
-#   line: 1
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: format
-#         type: ST_ARRAY
-#           base: PRIM_CHAR
-#       1: ST_ELLIPSIS
-#     is_extern: yes
-# sym: main
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 3
-# sym: i
-#   line: 5
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: c
-#   line: 6
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: str
-#   line: 7
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xa
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -398,3 +324,232 @@
 # node 161: type: TNT_ARG
 # child SEQ_CUR for node 161
 # node 162: type: TNT_STRCON str: "six"
+
+.data
+
+  _str0:
+    .asciiz ""
+    .align 2
+
+  _str1:
+    .asciiz " "
+    .align 2
+
+  _str2:
+    .asciiz "%"
+    .align 2
+
+  _str3:
+    .asciiz "%%%%%%%%"
+    .align 2
+
+  _str4:
+    .asciiz " % % % % "
+    .align 2
+
+  _str5:
+    .asciiz "str"
+    .align 2
+
+  _str6:
+    .asciiz "hello"
+    .align 2
+
+  _str7:
+    .asciiz "\n"
+    .align 2
+
+  _str8:
+    .asciiz " %q %r "
+    .align 2
+
+  _str9:
+    .asciiz "blahblahblah"
+    .align 2
+
+  _str10:
+    .asciiz " %t %u"
+    .align 2
+
+  _str11:
+    .asciiz "one"
+    .align 2
+
+  _str12:
+    .asciiz "two"
+    .align 2
+
+  _str13:
+    .asciiz "%%%"
+    .align 2
+
+  _str14:
+    .asciiz "dd"
+    .align 2
+
+  _str15:
+    .asciiz "cs"
+    .align 2
+
+  _str16:
+    .asciiz "six"
+    .align 2
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |              $a0               |
+  # |--------------------------------| sp+48  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+44
+  # |              str               |
+  # |--------------------------------| sp+32
+  # |               c                |
+  # |--------------------------------| sp+28
+  # |               i                |
+  # |--------------------------------| sp+24
+  # |           <padding>            |
+  # |--------------------------------| sp+20
+  # |              $ra               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -48($sp)
+  sw $ra, 16($sp)
+  sw $a0, 48($sp)
+
+  la $t0, _str0
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str1
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str2
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str3
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str4
+  move $a0, $t0
+  jal __print_string
+  lw $t0, 24($sp)
+  move $a0, $t0
+  jal __print_int
+  lb $t0, 28($sp)
+  move $a0, $t0
+  jal __print_char
+  la $t0, 32($sp)
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str5
+  move $a0, $t0
+  jal __print_string
+  lw $t0, 24($sp)
+  move $a0, $t0
+  jal __print_int
+  lb $t0, 28($sp)
+  move $a0, $t0
+  jal __print_char
+  la $t0, _str6
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str7
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str1
+  move $a0, $t0
+  jal __print_string
+  lw $t0, 24($sp)
+  move $a0, $t0
+  jal __print_int
+  la $t0, _str1
+  move $a0, $t0
+  jal __print_string
+  lb $t0, 28($sp)
+  move $a0, $t0
+  jal __print_char
+  la $t0, _str1
+  move $a0, $t0
+  jal __print_string
+  la $t0, 32($sp)
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str1
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str8
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str9
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str10
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str2
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str11
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str2
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str12
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str13
+  move $a0, $t0
+  jal __print_string
+  li $t0, 3
+  move $a0, $t0
+  jal __print_int
+  la $t0, _str14
+  move $a0, $t0
+  jal __print_string
+  li $t0, 4
+  move $a0, $t0
+  jal __print_int
+  li $t0, '5'
+  move $a0, $t0
+  jal __print_char
+  la $t0, _str15
+  move $a0, $t0
+  jal __print_string
+  la $t0, _str16
+  move $a0, $t0
+  jal __print_string
+
+__leavemain:
+  lw $a0, 48($sp)
+  lw $ra, 16($sp)
+  la $sp, 48($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

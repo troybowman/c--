@@ -1,46 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 5
-# sym: c
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: get5
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       none
-#     is_extern: no
-# sym: getc
-#   line: 7
-#   type: ST_FUNCTION
-#     rt_type: PRIM_CHAR
-#     params:
-#       none
-#     is_extern: no
-# sym: print_int
-#   line: 9
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: yes
-# sym: main
-#   line: 11
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: get5
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: get5
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -49,10 +7,6 @@
 # child RET_EXPR for node 2
 # node 3: type: TNT_INTCON val: 5
 #-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: getc
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: getc
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -60,14 +14,6 @@
 # node 2: type: TNT_RET
 # child RET_EXPR for node 2
 # node 3: type: TNT_CHARCON str: 'c'
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 13
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
@@ -124,3 +70,107 @@
 # node 26: type: TNT_RET
 # child RET_EXPR for node 26
 # node 27: type: TNT_INTCON val: 0
+
+.data
+
+  _c:
+    .space 1
+    .align 2
+
+.text
+
+_get5:
+
+  # |--------------------------------|
+
+  li $t0, 5
+  move $v0, $t0
+  j __leave_get5
+
+__leave_get5:
+  jr $ra
+
+_getc:
+
+  # |--------------------------------|
+
+  li $t0, 'c'
+  move $v0, $t0
+  j __leave_getc
+
+__leave_getc:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+  # |              $a0               |
+  # |--------------------------------| sp+32  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+28
+  # |               x                |
+  # |--------------------------------| sp+24
+  # |           <padding>            |
+  # |--------------------------------| sp+20
+  # |              $ra               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -32($sp)
+  sw $ra, 16($sp)
+  sw $a0, 32($sp)
+
+  jal _get5
+  move $t0, $v0
+  sw $t0, 24($sp)
+  jal _getc
+  move $t0, $v0
+  sb $t0, _c
+  jal _get5
+  move $t0, $v0
+  sb $t0, _c
+  jal _getc
+  move $t0, $v0
+  sw $t0, 24($sp)
+  jal _get5
+  move $t0, $v0
+  move $a0, $t0
+  jal print_int
+  jal _getc
+  move $t0, $v0
+  move $a0, $t0
+  jal print_int
+  li $t0, 0
+  move $v0, $t0
+  j __leavemain
+
+__leavemain:
+  lw $a0, 32($sp)
+  lw $ra, 16($sp)
+  la $sp, 32($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

@@ -1,26 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: getint
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       none
-#     is_extern: no
-# sym: nest
-#   line: 4
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: getint
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: getint
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -28,19 +6,6 @@
 # node 2: type: TNT_RET
 # child RET_EXPR for node 2
 # node 3: type: TNT_INTCON val: 4
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: nest
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: x
-#   line: 6
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xa
-# sym: y
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
 #-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: nest
 #-----------------------------------------------------------------------------
@@ -155,3 +120,122 @@
 # node 55: type: TNT_SYMBOL sym: y
 # child RHS for node 54
 # node 56: type: TNT_INTCON val: 7
+
+.data
+
+.text
+
+_getint:
+
+  # |--------------------------------|
+
+  li $t0, 4
+  move $v0, $t0
+  j __leave_getint
+
+__leave_getint:
+  jr $ra
+
+_nest:
+
+  # |--------------------------------|
+  # |           <padding>            |
+  # |--------------------------------| sp+44
+  # |               y                |
+  # |--------------------------------| sp+40
+  # |               x                |
+  # |--------------------------------| sp+0
+  la $sp, -48($sp)
+
+  lb $t0, 40($sp)
+  li $t1, 6
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L0
+  j _L2
+_L0:
+  li $t0, 10
+  sll $t1, $t0, 2
+  la $t0, 0($sp)
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  li $t1, 3
+  slt $t2, $t0, $t1
+  xor $t0, $t2, 1
+  xor $t1, $t0, 1
+  xor $t0, $t1, 1
+  beq $t0, $zero, _L1
+  j _L2
+_L1:
+  lb $t0, 40($sp)
+  li $t1, 6
+  seq $t2, $t0, $t1
+  xor $t0, $t2, 1
+  xor $t1, $t0, 1
+  xor $t0, $t1, 1
+  xor $t1, $t0, 1
+  beq $t1, $zero, _L2
+_L2:
+  lb $t0, 40($sp)
+  li $t1, 4
+  slt $t2, $t0, $t1
+  lb $t0, 40($sp)
+  li $t1, 5
+  sgt $t3, $t0, $t1
+  and $t0, $t2, $t3
+  lb $t1, 40($sp)
+  li $t2, 6
+  seq $t3, $t1, $t2
+  and $t1, $t0, $t3
+  lb $t0, 40($sp)
+  li $t2, 7
+  seq $t3, $t0, $t2
+  and $t0, $t1, $t3
+  beq $t0, $zero, _L3
+_L3:
+  lb $t0, 40($sp)
+  li $t1, 4
+  slt $t2, $t0, $t1
+  lb $t0, 40($sp)
+  li $t1, 5
+  sgt $t3, $t0, $t1
+  lb $t0, 40($sp)
+  li $t1, 6
+  seq $t4, $t0, $t1
+  lb $t0, 40($sp)
+  li $t1, 7
+  seq $t5, $t0, $t1
+  xor $t0, $t5, 1
+  and $t1, $t4, $t0
+  and $t0, $t3, $t1
+  and $t1, $t2, $t0
+  beq $t1, $zero, _L4
+_L4:
+
+__leave_nest:
+  la $sp, 48($sp)
+  jr $ra
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

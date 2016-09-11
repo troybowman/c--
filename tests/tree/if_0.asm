@@ -1,19 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: main
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 0
-#-----------------------------------------------------------------------------
 # SYNTAX TREE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # node 1: type: TNT_STMT
@@ -81,3 +66,78 @@
 # node 32: type: TNT_RET
 # child IF_ELSE for node 27
 # node 33: type: TNT_RET
+
+.data
+
+.text
+
+main:
+
+  # |--------------------------------|
+
+  li $t0, 4
+  li $t1, 5
+  slt $t2, $t0, $t1
+  beq $t2, $zero, _L0
+  j __leavemain
+_L0:
+  li $t0, 4
+  li $t1, 10
+  seq $t2, $t0, $t1
+  beq $t2, $zero, _L1
+  j __leavemain
+  j _L2
+_L1:
+  j __leavemain
+_L2:
+  li $t0, 'x'
+  li $t1, 9
+  sge $t2, $t0, $t1
+  beq $t2, $zero, _L3
+  j __leavemain
+  j _L6
+_L3:
+  li $t0, 3
+  li $t1, 4
+  sne $t2, $t0, $t1
+  beq $t2, $zero, _L4
+  j __leavemain
+  j _L6
+_L4:
+  li $t0, 67
+  li $t1, 66
+  sle $t2, $t0, $t1
+  beq $t2, $zero, _L5
+  j __leavemain
+  j _L6
+_L5:
+  j __leavemain
+_L6:
+
+__leavemain:
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

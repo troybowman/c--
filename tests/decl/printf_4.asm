@@ -94,3 +94,60 @@
 # LOCAL SYMBOLS FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # size: 0
+
+.data
+
+.text
+
+_print_int:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_print_int:
+  jr $ra
+
+_print_string:
+
+  # |--------------------------------|
+  # |        <str is in $a0>         |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+
+__leave_print_string:
+  jr $ra
+
+main:
+
+  # |--------------------------------|
+
+
+__leavemain:
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

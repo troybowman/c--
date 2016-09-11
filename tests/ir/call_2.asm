@@ -1,346 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 5
-# sym: checksum0
-#   line: 3
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: checksum1
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: array
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#     is_extern: no
-# sym: checksum2
-#   line: 7
-#   type: ST_FUNCTION
-#     rt_type: PRIM_INT
-#     params:
-#       0: array
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#       1: idx1
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       2: idx2
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#       3: idx3
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: div
-#   line: 12
-#   type: ST_FUNCTION
-#     rt_type: PRIM_CHAR
-#     params:
-#       0: x
-#         type: ST_PRIMITIVE
-#           base: PRIM_INT
-#     is_extern: no
-# sym: go
-#   line: 14
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       0: array
-#         type: ST_ARRAY
-#           base: PRIM_INT
-#       1: c
-#         type: ST_PRIMITIVE
-#           base: PRIM_CHAR
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: checksum0
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 3
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: checksum0
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_SYMBOL sym: x
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: checksum1
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: array
-#   line: 5
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xffffffff
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: checksum1
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_PLUS
-# child LHS for node 3
-# node 4: type: TNT_PLUS
-# child LHS for node 4
-# node 5: type: TNT_ARRAY_LOOKUP sym: array
-# child AL_OFFSET for node 5
-# node 6: type: TNT_INTCON val: 0
-# child RHS for node 4
-# node 7: type: TNT_ARRAY_LOOKUP sym: array
-# child AL_OFFSET for node 7
-# node 8: type: TNT_INTCON val: 1
-# child RHS for node 3
-# node 9: type: TNT_ARRAY_LOOKUP sym: array
-# child AL_OFFSET for node 9
-# node 10: type: TNT_INTCON val: 2
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: checksum2
-#-----------------------------------------------------------------------------
-# size: 4
-# sym: array
-#   line: 7
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xffffffff
-# sym: idx1
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: idx2
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-# sym: idx3
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: checksum2
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_DIV
-# child LHS for node 3
-# node 4: type: TNT_MULT
-# child LHS for node 4
-# node 5: type: TNT_ARRAY_LOOKUP sym: array
-# child AL_OFFSET for node 5
-# node 6: type: TNT_SYMBOL sym: idx1
-# child RHS for node 4
-# node 7: type: TNT_ARRAY_LOOKUP sym: array
-# child AL_OFFSET for node 7
-# node 8: type: TNT_SYMBOL sym: idx2
-# child RHS for node 3
-# node 9: type: TNT_ARRAY_LOOKUP sym: array
-# child AL_OFFSET for node 9
-# node 10: type: TNT_SYMBOL sym: idx3
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: div
-#-----------------------------------------------------------------------------
-# size: 1
-# sym: x
-#   line: 12
-#   type: ST_PRIMITIVE
-#     base: PRIM_INT
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: div
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_RET
-# child RET_EXPR for node 2
-# node 3: type: TNT_DIV
-# child LHS for node 3
-# node 4: type: TNT_SYMBOL sym: x
-# child RHS for node 3
-# node 5: type: TNT_INTCON val: 5
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: go
-#-----------------------------------------------------------------------------
-# size: 4
-# sym: array
-#   line: 14
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xffffffff
-# sym: c
-#   line: 14
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-# sym: s
-#   line: 16
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0xa
-# sym: x
-#   line: 17
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xa
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: go
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_ASSG
-# child LHS for node 2
-# node 3: type: TNT_SYMBOL sym: c
-# child RHS for node 2
-# node 4: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 4
-# node 5: type: TNT_CALL sym: div
-# child CALL_ARGS for node 5
-# node 6: type: TNT_ARG
-# child SEQ_CUR for node 6
-# node 7: type: TNT_SYMBOL sym: c
-# child SEQ_NEXT for node 1
-# node 8: type: TNT_STMT
-# child SEQ_CUR for node 8
-# node 9: type: TNT_ASSG
-# child LHS for node 9
-# node 10: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 10
-# node 11: type: TNT_CALL sym: div
-# child CALL_ARGS for node 11
-# node 12: type: TNT_ARG
-# child SEQ_CUR for node 12
-# node 13: type: TNT_SYMBOL sym: c
-# child RHS for node 9
-# node 14: type: TNT_SYMBOL sym: c
-# child SEQ_NEXT for node 8
-# node 15: type: TNT_STMT
-# child SEQ_CUR for node 15
-# node 16: type: TNT_ASSG
-# child LHS for node 16
-# node 17: type: TNT_SYMBOL sym: c
-# child RHS for node 16
-# node 18: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 18
-# node 19: type: TNT_CALL sym: div
-# child CALL_ARGS for node 19
-# node 20: type: TNT_ARG
-# child SEQ_CUR for node 20
-# node 21: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 21
-# node 22: type: TNT_CALL sym: div
-# child CALL_ARGS for node 22
-# node 23: type: TNT_ARG
-# child SEQ_CUR for node 23
-# node 24: type: TNT_INTCON val: 11
-# child SEQ_NEXT for node 15
-# node 25: type: TNT_STMT
-# child SEQ_CUR for node 25
-# node 26: type: TNT_ASSG
-# child LHS for node 26
-# node 27: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 27
-# node 28: type: TNT_CALL sym: div
-# child CALL_ARGS for node 28
-# node 29: type: TNT_ARG
-# child SEQ_CUR for node 29
-# node 30: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 30
-# node 31: type: TNT_CALL sym: div
-# child CALL_ARGS for node 31
-# node 32: type: TNT_ARG
-# child SEQ_CUR for node 32
-# node 33: type: TNT_INTCON val: 22
-# child RHS for node 26
-# node 34: type: TNT_SYMBOL sym: c
-# child SEQ_NEXT for node 25
-# node 35: type: TNT_STMT
-# child SEQ_CUR for node 35
-# node 36: type: TNT_ASSG
-# child LHS for node 36
-# node 37: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 37
-# node 38: type: TNT_CALL sym: checksum0
-# child CALL_ARGS for node 38
-# node 39: type: TNT_ARG
-# child SEQ_CUR for node 39
-# node 40: type: TNT_CALL sym: checksum2
-# child CALL_ARGS for node 40
-# node 41: type: TNT_ARG
-# child SEQ_CUR for node 41
-# node 42: type: TNT_SYMBOL sym: array
-# child SEQ_NEXT for node 41
-# node 43: type: TNT_ARG
-# child SEQ_CUR for node 43
-# node 44: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 44
-# node 45: type: TNT_INTCON val: 33
-# child SEQ_NEXT for node 43
-# node 46: type: TNT_ARG
-# child SEQ_CUR for node 46
-# node 47: type: TNT_ARRAY_LOOKUP sym: s
-# child AL_OFFSET for node 47
-# node 48: type: TNT_INTCON val: 44
-# child SEQ_NEXT for node 46
-# node 49: type: TNT_ARG
-# child SEQ_CUR for node 49
-# node 50: type: TNT_PLUS
-# child LHS for node 50
-# node 51: type: TNT_SYMBOL sym: c
-# child RHS for node 50
-# node 52: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 52
-# node 53: type: TNT_CALL sym: div
-# child CALL_ARGS for node 53
-# node 54: type: TNT_ARG
-# child SEQ_CUR for node 54
-# node 55: type: TNT_INTCON val: 55
-# child RHS for node 36
-# node 56: type: TNT_ARRAY_LOOKUP sym: s
-# child AL_OFFSET for node 56
-# node 57: type: TNT_CALL sym: checksum2
-# child CALL_ARGS for node 57
-# node 58: type: TNT_ARG
-# child SEQ_CUR for node 58
-# node 59: type: TNT_SYMBOL sym: x
-# child SEQ_NEXT for node 58
-# node 60: type: TNT_ARG
-# child SEQ_CUR for node 60
-# node 61: type: TNT_CALL sym: checksum1
-# child CALL_ARGS for node 61
-# node 62: type: TNT_ARG
-# child SEQ_CUR for node 62
-# node 63: type: TNT_SYMBOL sym: array
-# child SEQ_NEXT for node 60
-# node 64: type: TNT_ARG
-# child SEQ_CUR for node 64
-# node 65: type: TNT_ARRAY_LOOKUP sym: s
-# child AL_OFFSET for node 65
-# node 66: type: TNT_INTCON val: 77
-# child SEQ_NEXT for node 64
-# node 67: type: TNT_ARG
-# child SEQ_CUR for node 67
-# node 68: type: TNT_PLUS
-# child LHS for node 68
-# node 69: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 69
-# node 70: type: TNT_CALL sym: div
-# child CALL_ARGS for node 70
-# node 71: type: TNT_ARG
-# child SEQ_CUR for node 71
-# node 72: type: TNT_INTCON val: 88
-# child RHS for node 68
-# node 73: type: TNT_SYMBOL sym: c
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: checksum0
 #-----------------------------------------------------------------------------
 # temps used:    1
@@ -1330,3 +988,293 @@
 # ------
 # dest -> ST_TEMP (2)
 # src1 -> ST_SVTEMP (0)
+
+.data
+
+.text
+
+_checksum0:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  move $v0, $t0
+  j __leave_checksum0
+
+__leave_checksum0:
+  jr $ra
+
+_checksum1:
+
+  # |--------------------------------|
+  # |       <array is in $a0>        |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  li $t0, 0
+  sll $t1, $t0, 2
+  move $t0, $a0
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  li $t1, 1
+  sll $t2, $t1, 2
+  move $t1, $a0
+  addu $t3, $t1, $t2
+  lw $t1, ($t3)
+  addu $t2, $t0, $t1
+  li $t0, 2
+  sll $t1, $t0, 2
+  move $t0, $a0
+  addu $t3, $t0, $t1
+  lw $t0, ($t3)
+  addu $t1, $t2, $t0
+  move $v0, $t1
+  j __leave_checksum1
+
+__leave_checksum1:
+  jr $ra
+
+_checksum2:
+
+  # |--------------------------------|
+  # |        <idx3 is in $a3>        |
+  # |--------------------------------| sp+12
+  # |        <idx2 is in $a2>        |
+  # |--------------------------------| sp+8
+  # |        <idx1 is in $a1>        |
+  # |--------------------------------| sp+4
+  # |       <array is in $a0>        |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a1
+  sll $t1, $t0, 2
+  move $t0, $a0
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  move $t1, $a2
+  sll $t2, $t1, 2
+  move $t1, $a0
+  addu $t3, $t1, $t2
+  lw $t1, ($t3)
+  mul $t2, $t0, $t1
+  move $t0, $a3
+  sll $t1, $t0, 2
+  move $t0, $a0
+  addu $t3, $t0, $t1
+  lw $t0, ($t3)
+  div $t1, $t2, $t0
+  move $v0, $t1
+  j __leave_checksum2
+
+__leave_checksum2:
+  jr $ra
+
+_div:
+
+  # |--------------------------------|
+  # |         <x is in $a0>          |
+  # |--------------------------------| sp+0  <-- start of caller's frame
+
+  move $t0, $a0
+  li $t1, 5
+  div $t2, $t0, $t1
+  move $v0, $t2
+  j __leave_div
+
+__leave_div:
+  jr $ra
+
+_go:
+
+  # |--------------------------------|
+  # |              $a3               |
+  # |--------------------------------| sp+108
+  # |              $a2               |
+  # |--------------------------------| sp+104
+  # |               c                |
+  # |--------------------------------| sp+100
+  # |             array              |
+  # |--------------------------------| sp+96  <-- start of caller's frame
+  # |           <padding>            |
+  # |--------------------------------| sp+92
+  # |               x                |
+  # |--------------------------------| sp+52
+  # |               s                |
+  # |--------------------------------| sp+40
+  # |              $ra               |
+  # |--------------------------------| sp+36
+  # |              $s4               |
+  # |--------------------------------| sp+32
+  # |              $s3               |
+  # |--------------------------------| sp+28
+  # |              $s2               |
+  # |--------------------------------| sp+24
+  # |              $s1               |
+  # |--------------------------------| sp+20
+  # |              $s0               |
+  # |--------------------------------| sp+16
+  # |     <minimum 4 arg slots>      |
+  # |--------------------------------| sp+0
+  la $sp, -96($sp)
+  sw $s0, 16($sp)
+  sw $s1, 20($sp)
+  sw $s2, 24($sp)
+  sw $s3, 28($sp)
+  sw $s4, 32($sp)
+  sw $ra, 36($sp)
+  sw $a0, 96($sp)
+  sw $a1, 100($sp)
+  sw $a2, 104($sp)
+  sw $a3, 108($sp)
+
+  lb $t0, 100($sp)
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  sb $t0, 100($sp)
+  lb $s0, 100($sp)
+  lb $t0, 100($sp)
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  sw $s0, ($t2)
+  li $t0, 11
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  sb $t0, 100($sp)
+  lb $s0, 100($sp)
+  li $t0, 22
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  sw $s0, ($t2)
+  la $s0, 52($sp)
+  lw $t0, 96($sp)
+  move $a0, $t0
+  jal _checksum1
+  move $s1, $v0
+  li $t0, 77
+  la $t1, 40($sp)
+  addu $t2, $t1, $t0
+  lb $s2, ($t2)
+  li $t0, 88
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  lb $t1, 100($sp)
+  addu $t2, $t0, $t1
+  move $a3, $t2
+  move $a2, $s2
+  move $a1, $s1
+  move $a0, $s0
+  jal _checksum2
+  move $t0, $v0
+  la $t1, 40($sp)
+  addu $t2, $t1, $t0
+  lb $s0, ($t2)
+  lw $s1, 96($sp)
+  li $t0, 33
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  lw $s2, ($t2)
+  li $t0, 44
+  la $t1, 40($sp)
+  addu $t2, $t1, $t0
+  lb $s3, ($t2)
+  lb $s4, 100($sp)
+  li $t0, 55
+  move $a0, $t0
+  jal _div
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  addu $t1, $s4, $t0
+  move $a3, $t1
+  move $a2, $s3
+  move $a1, $s2
+  move $a0, $s1
+  jal _checksum2
+  move $t0, $v0
+  move $a0, $t0
+  jal _checksum0
+  move $t0, $v0
+  sll $t1, $t0, 2
+  la $t0, 52($sp)
+  addu $t2, $t0, $t1
+  sw $s0, ($t2)
+
+__leave_go:
+  lw $a3, 108($sp)
+  lw $a2, 104($sp)
+  lw $a1, 100($sp)
+  lw $a0, 96($sp)
+  lw $ra, 36($sp)
+  lw $s4, 32($sp)
+  lw $s3, 28($sp)
+  lw $s2, 24($sp)
+  lw $s1, 20($sp)
+  lw $s0, 16($sp)
+  la $sp, 96($sp)
+  jr $ra
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

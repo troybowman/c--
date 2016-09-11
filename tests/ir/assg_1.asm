@@ -1,81 +1,4 @@
 #-----------------------------------------------------------------------------
-# GLOBAL SYMBOL TABLE
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: x
-#   line: 3
-#   type: ST_ARRAY
-#     base: PRIM_INT
-#     size: 0xa
-# sym: main
-#   line: 5
-#   type: ST_FUNCTION
-#     rt_type: PRIM_VOID
-#     params:
-#       none
-#     is_extern: no
-#-----------------------------------------------------------------------------
-# LOCAL SYMBOLS FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# size: 2
-# sym: y
-#   line: 7
-#   type: ST_ARRAY
-#     base: PRIM_CHAR
-#     size: 0x14
-# sym: z
-#   line: 7
-#   type: ST_PRIMITIVE
-#     base: PRIM_CHAR
-#-----------------------------------------------------------------------------
-# SYNTAX TREE FOR FUNCTION: main
-#-----------------------------------------------------------------------------
-# node 1: type: TNT_STMT
-# child SEQ_CUR for node 1
-# node 2: type: TNT_ASSG
-# child LHS for node 2
-# node 3: type: TNT_SYMBOL sym: z
-# child RHS for node 2
-# node 4: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 4
-# node 5: type: TNT_SYMBOL sym: z
-# child SEQ_NEXT for node 1
-# node 6: type: TNT_STMT
-# child SEQ_CUR for node 6
-# node 7: type: TNT_ASSG
-# child LHS for node 7
-# node 8: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 8
-# node 9: type: TNT_SYMBOL sym: z
-# child RHS for node 7
-# node 10: type: TNT_SYMBOL sym: z
-# child SEQ_NEXT for node 6
-# node 11: type: TNT_STMT
-# child SEQ_CUR for node 11
-# node 12: type: TNT_ASSG
-# child LHS for node 12
-# node 13: type: TNT_ARRAY_LOOKUP sym: y
-# child AL_OFFSET for node 13
-# node 14: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 14
-# node 15: type: TNT_ARRAY_LOOKUP sym: y
-# child AL_OFFSET for node 15
-# node 16: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 16
-# node 17: type: TNT_SYMBOL sym: z
-# child RHS for node 12
-# node 18: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 18
-# node 19: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 19
-# node 20: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 20
-# node 21: type: TNT_ARRAY_LOOKUP sym: x
-# child AL_OFFSET for node 21
-# node 22: type: TNT_ARRAY_LOOKUP sym: y
-# child AL_OFFSET for node 22
-# node 23: type: TNT_INTCON val: 3
-#-----------------------------------------------------------------------------
 # INTERMEDIATE CODE FOR FUNCTION: main
 #-----------------------------------------------------------------------------
 # temps used:    4
@@ -382,3 +305,96 @@
 # ------
 # dest -> ST_TEMP (3)
 # src1 -> ST_TEMP (0)
+
+.data
+
+  _x:
+    .space 40
+
+.text
+
+main:
+
+  # |--------------------------------|
+  # |               z                |
+  # |--------------------------------| sp+20
+  # |               y                |
+  # |--------------------------------| sp+0
+  la $sp, -24($sp)
+
+  lb $t0, 20($sp)
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  sb $t0, 20($sp)
+  lb $t0, 20($sp)
+  lb $t1, 20($sp)
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  sw $t0, ($t3)
+  li $t0, 3
+  la $t1, 0($sp)
+  addu $t2, $t1, $t0
+  lb $t0, ($t2)
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  sll $t1, $t0, 2
+  la $t0, _x
+  addu $t2, $t0, $t1
+  lw $t0, ($t2)
+  lb $t1, 20($sp)
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  lw $t1, ($t3)
+  la $t2, 0($sp)
+  addu $t3, $t2, $t1
+  lb $t1, ($t3)
+  sll $t2, $t1, 2
+  la $t1, _x
+  addu $t3, $t1, $t2
+  lw $t1, ($t3)
+  la $t2, 0($sp)
+  addu $t3, $t2, $t1
+  sb $t0, ($t3)
+
+__leavemain:
+  la $sp, 24($sp)
+  jal __exit
+
+__print_string:
+  li $v0, 4
+  syscall
+  jr $ra
+
+__print_int:
+  li $v0, 1
+  syscall
+  jr $ra
+
+__print_char:
+  li $v0, 11
+  syscall
+  jr $ra
+
+__print_hex:
+  li $v0, 34
+  syscall
+  jr $ra
+
+__exit:
+  li $v0, 10
+  syscall
+  jr $ra

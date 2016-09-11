@@ -25,10 +25,6 @@ DBG_NO_IR      = 0x10
 DBG_DUMP_IR    = 0x20
 DBG_NO_CODE    = 0x40
 
-DBG_ALL_DECL = DBG_DUMP_GSYMS | DBG_DUMP_LSYMS  # 0x06
-DBG_ALL_TREE = DBG_ALL_DECL   | DBG_DUMP_TREE   # 0x0e
-DBG_ALL_IR   = DBG_ALL_TREE   | DBG_DUMP_IR     # 0x2e
-
 #------------------------------------------------------------------------------
 INFO = 0
 VERB = 1
@@ -233,7 +229,7 @@ class TesterPhase:
 class RealPhase(TesterPhase):
 
     def __init__(self, t):
-        TesterPhase.__init__(self, t, REAL, DBG_ALL_IR)
+        TesterPhase.__init__(self, t, REAL, 0)
 
     def validate(self, t):
         self.execAsmFiles(t)
@@ -258,10 +254,10 @@ if __name__ == "__main__":
     t = Tester()
 
     phases = {
-        DECL : TesterPhase(t, DECL, DBG_ALL_DECL | DBG_NO_IR),
-        TREE : TesterPhase(t, TREE, DBG_ALL_TREE | DBG_NO_IR),
-        IR   : TesterPhase(t, IR,   DBG_ALL_IR   | DBG_NO_CODE),
-        ASM  : TesterPhase(t, ASM,  DBG_ALL_IR),
+        DECL : TesterPhase(t, DECL, DBG_DUMP_GSYMS | DBG_DUMP_LSYMS),
+        TREE : TesterPhase(t, TREE, DBG_DUMP_TREE),
+        IR   : TesterPhase(t, IR,   DBG_DUMP_IR),
+        ASM  : TesterPhase(t, ASM,  0),
         REAL : RealPhase(t),
         }
 
