@@ -193,17 +193,17 @@ void sha256_final(char hash[], int state[], char block[], int count[])
 
   sha256_transform(state, block);
 
-	for ( i = 0; i < 4; i += 1 )
+  for ( i = 0; i < 4; i += 1 )
   {
-		hash[i]    = (state[0] >> (24 - i * 8)) & 0xff;
-		hash[i+4]  = (state[1] >> (24 - i * 8)) & 0xff;
-		hash[i+8]  = (state[2] >> (24 - i * 8)) & 0xff;
-		hash[i+12] = (state[3] >> (24 - i * 8)) & 0xff;
-		hash[i+16] = (state[4] >> (24 - i * 8)) & 0xff;
-		hash[i+20] = (state[5] >> (24 - i * 8)) & 0xff;
-		hash[i+24] = (state[6] >> (24 - i * 8)) & 0xff;
-		hash[i+28] = (state[7] >> (24 - i * 8)) & 0xff;
-	}
+    hash[i]    = (state[0] >> (24 - i * 8)) & 0xff;
+    hash[i+4]  = (state[1] >> (24 - i * 8)) & 0xff;
+    hash[i+8]  = (state[2] >> (24 - i * 8)) & 0xff;
+    hash[i+12] = (state[3] >> (24 - i * 8)) & 0xff;
+    hash[i+16] = (state[4] >> (24 - i * 8)) & 0xff;
+    hash[i+20] = (state[5] >> (24 - i * 8)) & 0xff;
+    hash[i+24] = (state[6] >> (24 - i * 8)) & 0xff;
+    hash[i+28] = (state[7] >> (24 - i * 8)) & 0xff;
+  }
 }
 
 /*---------------------------------------------------------------------------*/
