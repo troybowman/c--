@@ -223,19 +223,13 @@ void sha256_from_str(char string[])
 }
 
 /*---------------------------------------------------------------------------*/
-void phase_simple_strings(void)
+void main(void)
 {
+  init_k();
   sha256_from_str("");
   sha256_from_str("abc");
   sha256_from_str("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
   sha256_from_str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   sha256_from_str("this is a secret message");
   sha256_from_str("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu");
-}
-
-/*---------------------------------------------------------------------------*/
-void main(void)
-{
-  init_k();
-  phase_simple_strings();
 }

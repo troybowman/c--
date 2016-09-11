@@ -2045,7 +2045,7 @@ __leave_sha256_from_str:
   la $sp, 248($sp)
   jr $ra
 
-_phase_simple_strings:
+main:
 
   # |--------------------------------|
   # |              $a0               |
@@ -2060,6 +2060,7 @@ _phase_simple_strings:
   sw $ra, 16($sp)
   sw $a0, 24($sp)
 
+  jal _init_k
   la $t0, _str4
   move $a0, $t0
   jal _sha256_from_str
@@ -2079,28 +2080,8 @@ _phase_simple_strings:
   move $a0, $t0
   jal _sha256_from_str
 
-__leave_phase_simple_strings:
-  lw $a0, 24($sp)
-  lw $ra, 16($sp)
-  la $sp, 24($sp)
-  jr $ra
-
-main:
-
-  # |--------------------------------|
-  # |           <padding>            |
-  # |--------------------------------| sp+20
-  # |              $ra               |
-  # |--------------------------------| sp+16
-  # |     <minimum 4 arg slots>      |
-  # |--------------------------------| sp+0
-  la $sp, -24($sp)
-  sw $ra, 16($sp)
-
-  jal _init_k
-  jal _phase_simple_strings
-
 __leavemain:
+  lw $a0, 24($sp)
   lw $ra, 16($sp)
   la $sp, 24($sp)
   jal __exit
