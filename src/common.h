@@ -129,7 +129,9 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// used to stuff smart pointers into union members
+// this function is used to construct a smart pointer inside a union member,
+// since the compiler will refuse to do that for us.
+// no problem, we can do it ourselves.
 template <class T> inline void emplace(uint8_t const addr[], T &obj)
 {
   new ((T *)addr) T(obj);
@@ -143,7 +145,7 @@ template <class T> inline T &deplace(uint8_t const addr[])
 
 //-----------------------------------------------------------------------------
 typedef uint32_t offset_t;
-typedef uint32_t offsize_t;
+typedef  int32_t offsize_t;
 
 //-----------------------------------------------------------------------------
 #define WORDSIZE 4
