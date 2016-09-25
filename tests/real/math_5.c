@@ -209,8 +209,12 @@ void sha256_final(char hash[], int state[], char block[], int count[])
 /*---------------------------------------------------------------------------*/
 void sha256_from_str(char string[])
 {
-  int state[8], count[3];
-  char block[64], output[65], hash[32];
+  int state[8];
+  int count[3];
+
+  char hash[32];
+  char block[64];
+  char output[65];
 
   sha256_init(state, count);
   sha256_update(state, block, count, string, strlen(string));

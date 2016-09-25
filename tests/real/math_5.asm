@@ -1945,11 +1945,11 @@ _sha256_from_str:
   # |--------------------------------| sp+252
   # |             string             |
   # |--------------------------------| sp+248  <-- start of caller's frame
-  # |              hash              |
-  # |--------------------------------| sp+216
   # |             output             |
-  # |--------------------------------| sp+148
+  # |--------------------------------| sp+180
   # |             block              |
+  # |--------------------------------| sp+116
+  # |              hash              |
   # |--------------------------------| sp+84
   # |             count              |
   # |--------------------------------| sp+72
@@ -1986,7 +1986,7 @@ _sha256_from_str:
   move $a0, $t0
   jal _sha256_init
   la $s0, 40($sp)
-  la $s1, 84($sp)
+  la $s1, 116($sp)
   la $s2, 72($sp)
   lw $s3, 248($sp)
   lw $t0, 248($sp)
@@ -1999,17 +1999,17 @@ _sha256_from_str:
   move $a1, $s1
   move $a0, $s0
   jal _sha256_update
-  la $t0, 216($sp)
+  la $t0, 84($sp)
   la $t1, 40($sp)
-  la $t2, 84($sp)
+  la $t2, 116($sp)
   la $t3, 72($sp)
   move $a3, $t3
   move $a2, $t2
   move $a1, $t1
   move $a0, $t0
   jal _sha256_final
-  la $t0, 148($sp)
-  la $t1, 216($sp)
+  la $t0, 180($sp)
+  la $t1, 84($sp)
   move $a1, $t1
   move $a0, $t0
   jal _get_hex_str
@@ -2025,7 +2025,7 @@ _sha256_from_str:
   la $t0, _str2
   move $a0, $t0
   jal __print_string
-  la $t0, 148($sp)
+  la $t0, 180($sp)
   move $a0, $t0
   jal __print_string
   la $t0, _str3
