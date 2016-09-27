@@ -147,7 +147,7 @@ static args_t parseargs(int argc, char **argv)
 }
 
 //-----------------------------------------------------------------------------
-static int process_args_err(args_t args, const char *prog)
+static int process_args_err(const args_t &args, const char *prog)
 {
   fprintf(stderr, "usage: %s [-v dbg_flags] [-o outfile] filename\n", prog);
 
