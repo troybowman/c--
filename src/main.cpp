@@ -180,7 +180,7 @@ static int process_parse_err(const errvec_t &errmsgs, const char *outpath)
   errvec_t::const_iterator i;
   for ( i = errmsgs.begin(); i != errmsgs.end(); i++, count++ )
   {
-    fprintf(stderr, i->c_str());
+    fprintf(stderr, "%s", i->c_str());
     if ( count >= 25 )
     {
       fprintf(stderr, "warning: too many errors - results truncated.\n");
