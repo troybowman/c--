@@ -13,9 +13,9 @@ OBJ = ./obj/$(B)/
 SRC = ./src/
 
 ifdef __MAC__
-	# We require bison 3.0, but Xcode is still stuck on bison 2.3.
-	# So on mac we use the homebrew versions of flex and bison, which are up to date.
-	# 'brew install flex' and 'brew install bison' should do the trick.
+  # We require bison 3.0, but Xcode is still stuck on bison 2.3.
+  # So on mac we use the homebrew versions of flex and bison, which are up to date.
+  # 'brew install flex' and 'brew install bison' should do the trick.
   FLEXDIR  = /usr/local/opt/flex/
   BISONDIR = /usr/local/opt/bison/
   IFLEX = -I$(FLEXDIR)include
@@ -51,11 +51,12 @@ $(OBJ)parser.o: $(OBJ)parser.cpp
 $(OBJ)scanner.o: $(OBJ)scanner.cpp
 	$(CC) $(IFLEX) -I$(SRC) $(CFLAGS) -c -o $@ $<
 
+#------------------------------------------------------------------------------
 $(OBJ)symbol.o: $(SRC)symbol.cpp $(HFILES)
-	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)treenode.o: $(SRC)treenode.cpp $(HFILES)
-	$(CC) $(CFLAGS) -Wno-varargs -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)ir.o: $(SRC)ir.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -64,7 +65,7 @@ $(OBJ)asm.o: $(SRC)asm.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)main.o: $(SRC)main.cpp $(HFILES)
-	$(CC) $(CFLAGS) -Wno-format-security -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ)logger.o: $(SRC)logger.cpp $(HFILES)
 	$(CC) $(CFLAGS) -c -o $@ $<

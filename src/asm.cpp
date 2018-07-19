@@ -10,10 +10,6 @@ static const char *svreg_names[SVREGQTY] =
 static const char *argreg_names[ARGREGQTY] =
   { "$a0", "$a1", "$a2", "$a3" };
 
-#define RESERVED_TEMP1 "$t7"
-#define RESERVED_TEMP2 "$t8"
-#define RESERVED_TEMP3 "$t9"
-
 //-----------------------------------------------------------------------------
 asm_ctx_t::asm_ctx_t(FILE *_outfile) :
     outfile(_outfile),
@@ -21,9 +17,9 @@ asm_ctx_t::asm_ctx_t(FILE *_outfile) :
     t8(new symbol_t(ST_TEMP)),
     t9(new symbol_t(ST_TEMP))
 {
-  t7->loc.set_reg(RESERVED_TEMP1);
-  t8->loc.set_reg(RESERVED_TEMP2);
-  t9->loc.set_reg(RESERVED_TEMP3);
+  t7->loc.set_reg("$t7");
+  t8->loc.set_reg("$t8");
+  t9->loc.set_reg("$t9");
 }
 
 //-----------------------------------------------------------------------------
