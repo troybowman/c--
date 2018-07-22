@@ -1471,7 +1471,7 @@ void usererr(parser_ctx_t &ctx, const char *format, ...)
   va_start(va, format);
 
   char buf[MAXSTR];
-  vsnprintf(buf, MAXSTR, format, va);
+  vsnprintf(buf, sizeof(buf), format, va);
   ctx.errmsgs.push_back(buf);
 
   va_end(va);

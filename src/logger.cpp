@@ -16,7 +16,7 @@ void logger_t::cmtout(int indent, const char *fmt, ...)
   line += fmt;
   va_list va;
   va_start(va, fmt);
-  vfprintf(logfile, line.c_str(), va);
+  vfprintf(outfile, line.c_str(), va);
   va_end(va);
 }
 
@@ -256,7 +256,7 @@ static const char *addr2str(char *buf, size_t bufsize, const symbol_t &addr)
 //-----------------------------------------------------------------------------
 void logger_t::print_syms(const symtab_t &syms, const char *title, const char *extra)
 {
-  fprintf(logfile, header, title, extra);
+  fprintf(outfile, header, title, extra);
   cmtout(0, "size: %d\n", syms.size());
 
   symtab_t::const_iterator i;
@@ -271,16 +271,16 @@ void logger_t::print_syms(const symtab_t &syms, const char *title, const char *e
     switch ( s.type() )
     {
       case ST_PRIMITIVE:
-        fprintf(logfile,  "ST_PRIMITIVE\n");
+        fprintf(outfile,  "ST_PRIMITIVE\n");
         cmtout(++indent, "base: %s\n", prim2str(s.base()));
         break;
       case ST_ARRAY:
-        fprintf(logfile,  "ST_ARRAY\n");
+        fprintf(outfile,  "ST_ARRAY\n");
         cmtout(++indent, "base: %s\n", prim2str(s.base()));
         cmtout(indent,   "size: 0x%x\n", s.size());
         break;
       case ST_FUNCTION:
-        fprintf(logfile,  "ST_FUNCTION\n");
+        fprintf(outfile,  "ST_FUNCTION\n");
         cmtout(++indent, "rt_type: %s\n", prim2str(s.base()));
         cmtout(indent,   "params:\n");
         if ( s.params()->size() < 1 )
@@ -302,11 +302,11 @@ void logger_t::print_syms(const symtab_t &syms, const char *title, const char *e
             switch ( p.type() )
             {
               case ST_PRIMITIVE:
-                fprintf(logfile, "ST_PRIMITIVE\n");
+                fprintf(outfile, "ST_PRIMITIVE\n");
                 cmtout(++pindent, "base: %s\n", prim2str(p.base()));
                 break;
               case ST_ARRAY:
-                fprintf(logfile, "ST_ARRAY\n");
+                fprintf(outfile, "ST_ARRAY\n");
                 cmtout(++pindent, "base: %s\n", prim2str(p.base()));
                 break;
               default:
@@ -334,21 +334,21 @@ void logger_t::print_tree(const treenode_t *node, int *cnt)
   switch ( node->type() )
   {
     case TNT_INTCON:
-      fprintf(logfile, " val: %d", node->val());
+      fprintf(outfile, " val: %d", node->val());
       break;
     case TNT_CHARCON:
     case TNT_STRCON:
-      fprintf(logfile, " str: %s", node->str());
+      fprintf(outfile, " str: %s", node->str());
       break;
     case TNT_SYMBOL:
     case TNT_ARRAY_LOOKUP:
     case TNT_CALL:
-      fprintf(logfile, " sym: %s", node->sym()->c_str());
+      fprintf(outfile, " sym: %s", node->sym()->c_str());
       break;
     default:
       break;
   }
-  fprintf(logfile, "\n");
+  fprintf(outfile, "\n");
   for ( int i = 0; i < 4; i++ )
   {
     treenode_t *child = node->children[i];
@@ -372,11 +372,11 @@ void logger_t::print_ir_code(const codenode_t *code)
     char buf[MAXADDRSTR];
 
     if ( ptr->dest != NULL )
-      cmtout(0, "dest -> %s\n", addr2str(buf, MAXADDRSTR, *ptr->dest));
+      cmtout(0, "dest -> %s\n", addr2str(buf, sizeof(buf), *ptr->dest));
     if ( ptr->src1 != NULL )
-      cmtout(0, "src1 -> %s\n", addr2str(buf, MAXADDRSTR, *ptr->src1));
+      cmtout(0, "src1 -> %s\n", addr2str(buf, sizeof(buf), *ptr->src1));
     if ( ptr->src2 != NULL )
-      cmtout(0, "src2 -> %s\n", addr2str(buf, MAXADDRSTR, *ptr->src2));
+      cmtout(0, "src2 -> %s\n", addr2str(buf, sizeof(buf), *ptr->src2));
 
     ptr = ptr->next;
 
@@ -392,7 +392,7 @@ void logger_t::print_ir(const ir_t &ir)
   for ( i = ir.funcs.begin(); i != ir.funcs.end(); i++ )
   {
     ir_func_t *f = *i;
-    fprintf(logfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->sym->c_str());
+    fprintf(outfile, header, "INTERMEDIATE CODE FOR FUNCTION: ", f->sym->c_str());
     cmtout(0, "temps used:    %d\n", f->count(ST_TEMP));
     cmtout(0, "svregs used:   %d\n", f->count(ST_SVTEMP));
     cmtout(0, "stktemps used: %d\n", f->count(ST_STKTEMP));
@@ -420,7 +420,7 @@ void logger_t::walk_funcs(const stx_trees_t &trees, uint32_t flags)
     if ( (flags & dbg_dump_tree) != 0 )
     {
       int cnt = 0;
-      fprintf(logfile, header, "SYNTAX TREE FOR FUNCTION: ", f.c_str());
+      fprintf(outfile, header, "SYNTAX TREE FOR FUNCTION: ", f.c_str());
       print_tree(tree, &cnt);
     }
   }

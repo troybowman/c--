@@ -31,11 +31,11 @@ struct stx_tree_t;
 //-----------------------------------------------------------------------------
 struct logger_t
 {
-  FILE *logfile;
+  FILE *outfile;
 
-  logger_t(FILE *_logfile) : logfile(_logfile)
+  logger_t(FILE *_outfile) : outfile(_outfile)
   {
-    ASSERT(1114, logfile);
+    ASSERT(1114, outfile);
   }
 
   void cmtout(int indent, const char *fmt, ...);

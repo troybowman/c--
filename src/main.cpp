@@ -58,6 +58,7 @@ struct args_t
   FILE *outfile;
 
   args_t() : flags(0), outpath(NULL), infile(NULL), outfile(NULL) {}
+
   ~args_t()
   {
     if ( outpath != NULL )
@@ -68,11 +69,11 @@ struct args_t
       fclose(outfile);
   }
 
-  bool parse(int argc, char **argv);
+  bool init(int argc, char **argv);
 };
 
 //-----------------------------------------------------------------------------
-bool args_t::parse(int argc, char **argv)
+bool args_t::init(int argc, char **argv)
 {
   const char *_outpath = NULL;
 
@@ -171,7 +172,7 @@ static int parse_input_file(ir_t &ir, args_t &args)
 int main(int argc, char **argv)
 {
   args_t args;
-  if ( !args.parse(argc, argv) )
+  if ( !args.init(argc, argv) )
   {
     fprintf(stderr, "usage: %s [-v dbg_flags] [-o outfile] filename\n", argv[0]);
     return -1;

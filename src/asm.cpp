@@ -41,7 +41,7 @@ static bool prepare_named_symbol(asm_ctx_t &ctx, symref_t sym, const char *fmt, 
     va_start(va, fmt);
 
     char buf[MAXSTR];
-    vsnprintf(buf, MAXSTR, fmt, va);
+    vsnprintf(buf, sizeof(buf), fmt, va);
 
     va_end(va);
 
