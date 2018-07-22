@@ -63,11 +63,11 @@ do                                                                \
 } while ( false );
 
 //-----------------------------------------------------------------------------
-#define LOG_CHECK_PHASE_FLAG(flag)  \
-do                                  \
-{                                   \
-  if ( (args.flags & flag) != 0 )   \
-    return 0;                       \
+#define LOG_CHECK_PHASE_FLAG(f) \
+do                              \
+{                               \
+  if ( (args.flags & f) != 0 )  \
+    return 0;                   \
 } while ( false );
 
 //-----------------------------------------------------------------------------

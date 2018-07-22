@@ -52,53 +52,27 @@ static char *gen_outpath(const char *inpath)
 //-----------------------------------------------------------------------------
 struct args_t
 {
-  int code;
-#define ARGS_OK      0
-#define ARGS_BADOPT  1
-#define ARGS_MISSING 2
-#define ARGS_INFILE  3
-#define ARGS_OUTFILE 4
-#define ARGS_NOINPUT 5
-
-  FILE *infile;
-  char *outpath;
   uint32_t flags;
-  union
-  {
-    char c;
-    const char *str;
-    FILE *outfile;
-  };
+  char *outpath;
+  FILE *infile;
+  FILE *outfile;
 
-  args_t(int _code) : code(_code) {}
-  args_t(int _code, char _c) : code(_code), c(_c) {}
-  args_t(int _code, const char *_str) : code(_code), str(_str) {}
-  args_t(char *_outpath, const char *_str)
-    : code(ARGS_OUTFILE), outpath(_outpath), str(_str) {}
-
-  args_t(FILE *i, char *op, FILE *of, uint32_t f)
-    : code(ARGS_OK), infile(i), outpath(op), outfile(of), flags(f) {}
-
+  args_t() : flags(0), outpath(NULL), infile(NULL), outfile(NULL) {}
   ~args_t()
   {
-    switch ( code )
-    {
-      case ARGS_OK:
-        fclose(outfile);
-      case ARGS_OUTFILE:
-        fclose(infile);
-        free(outpath);
-      default:
-        break;
-    }
+    if ( outfile != NULL )
+      fclose(outfile);
+    if ( outpath != NULL )
+      free(outpath);
   }
+
+  bool parse(int argc, char **argv);
 };
 
 //-----------------------------------------------------------------------------
-static args_t parseargs(int argc, char **argv)
+bool args_t::parse(int argc, char **argv)
 {
-  char *outpath = NULL;
-  uint32_t flags = 0;
+  const char *_outpath = NULL;
 
   int c, prev_ind;
   while ( prev_ind = optind, (c = getopt(argc, argv, ":v:o:")) != -1 )
@@ -116,104 +90,96 @@ static args_t parseargs(int argc, char **argv)
         flags |= strtoul(optarg, NULL, 0);
         break;
       case 'o':
-        outpath = optarg;
+        _outpath = optarg;
         break;
       case '?':
-        return args_t(ARGS_BADOPT, optopt);
+        fprintf(stderr, "error: unknown option '-%c'\n", optopt);
+        return false;
       case ':':
-        return args_t(ARGS_MISSING, optopt);
+        fprintf(stderr, "error: option '-%c' requires an argument\n", optopt);
+        return false;
       default:
         INTERR(1084);
     }
   }
 
   if ( optind >= argc )
-    return args_t(ARGS_NOINPUT);
+  {
+    fprintf(stderr, "error: no input source file specified\n");
+    return false;
+  }
 
   const char *inpath = argv[optind];
 
-  FILE *infile = fopen(inpath, "r");
+  infile = fopen(inpath, "r");
   if ( infile == NULL )
-    return args_t(ARGS_INFILE, strerror(errno));
+  {
+    fprintf(stderr, "error: could not open %s (%s)\n", inpath, strerror(errno));
+    return false;
+  }
 
-  if ( outpath == NULL )
+  if ( _outpath == NULL )
+  {
     outpath = gen_outpath(inpath);
+    _outpath = outpath;
+  }
 
-  FILE *outfile = fopen(outpath, "w");
+  outfile = fopen(_outpath, "w");
   if ( outfile == NULL )
-    return args_t(outpath, strerror(errno));
-
-  return args_t(infile, outpath, outfile, flags);
-}
-
-//-----------------------------------------------------------------------------
-static int process_args_err(const args_t &args, const char *prog)
-{
-  fprintf(stderr, "usage: %s [-v dbg_flags] [-o outfile] filename\n", prog);
-
-  switch ( args.code )
   {
-    case ARGS_BADOPT:
-      fprintf(stderr, "error: unknown option '-%c'\n", args.c);
-      return 3;
-    case ARGS_MISSING:
-      fprintf(stderr, "error: option '-%c' requires an argument\n", args.c);
-      return 4;
-    case ARGS_INFILE:
-      fprintf(stderr, "error: could not open input file: %s\n", args.str);
-      return 5;
-    case ARGS_OUTFILE:
-      fprintf(stderr, "error: could not open output file for writing: %s\n", args.str);
-      return 6;
-    case ARGS_NOINPUT:
-      fprintf(stderr, "error: no input source file specified\n");
-      return 7;
-    default:
-      INTERR(1083);
+    fprintf(stderr, "error: could not open %s (%s)\n", _outpath, strerror(errno));
+    fclose(infile);
+    return false;
   }
+
+  return true;
 }
 
 //-----------------------------------------------------------------------------
-static int process_parse_err(const errvec_t &errmsgs, const char *outpath)
+static int parse_input_file(ir_t &ir, args_t &args)
 {
-  int count = 0;
-  errvec_t::const_iterator i;
-  for ( i = errmsgs.begin(); i != errmsgs.end(); i++, count++ )
+  parse_results_t res;
+  if ( !parse(res, args.infile) )
   {
-    fprintf(stderr, "%s", i->c_str());
-    if ( count >= 25 )
+    for ( size_t i = 0, size = res.errmsgs.size(); i < size; i++ )
     {
-      fprintf(stderr, "warning: too many errors - results truncated.\n");
-      break;
+      fprintf(stderr, "%s", res.errmsgs[i].c_str());
+      if ( i >= 25 )
+      {
+        fprintf(stderr, "too many errors - results truncated.\n");
+        break;
+      }
     }
+    remove(args.outpath);
+    return -1;
   }
-  remove(outpath);
-  return 8;
+
+  LOG_INIT(args.outfile);
+  LOG_PARSE_RESULTS(res);
+  LOG_CHECK_PHASE_FLAG(dbg_no_ir);
+
+  generate_ir(ir, res);
+
+  LOG_IR(ir);
+  LOG_CHECK_PHASE_FLAG(dbg_no_code);
+
+  return 1;
 }
 
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  args_t args = parseargs(argc, argv);
-
-  if ( args.code != ARGS_OK )
-    return process_args_err(args, argv[0]);
+  args_t args;
+  if ( !args.parse(argc, argv) )
+  {
+    fprintf(stderr, "usage: %s [-v dbg_flags] [-o outfile] filename\n", argv[0]);
+    return -1;
+  }
 
   ir_t ir;
-  {
-    parse_results_t res;
-    if ( !parse(res, args.infile) )
-      return process_parse_err(res.errmsgs, args.outpath);
-
-    LOG_INIT(args.outfile);
-    LOG_PARSE_RESULTS(res);
-    LOG_CHECK_PHASE_FLAG(dbg_no_ir);
-
-    generate_ir(ir, res);
-
-    LOG_IR(ir);
-    LOG_CHECK_PHASE_FLAG(dbg_no_code);
-  }
+  int code = parse_input_file(ir, args);
+  if ( code <= 0 )
+    return code;
 
   asm_ctx_t ctx(args.outfile);
   generate_mips_asm(ctx, ir);
