@@ -60,10 +60,12 @@ struct args_t
   args_t() : flags(0), outpath(NULL), infile(NULL), outfile(NULL) {}
   ~args_t()
   {
-    if ( outfile != NULL )
-      fclose(outfile);
     if ( outpath != NULL )
       free(outpath);
+    if ( infile != NULL )
+      fclose(infile);
+    if ( outfile != NULL )
+      fclose(outfile);
   }
 
   bool parse(int argc, char **argv);
