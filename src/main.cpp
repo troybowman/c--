@@ -130,7 +130,6 @@ bool args_t::parse(int argc, char **argv)
   if ( outfile == NULL )
   {
     fprintf(stderr, "error: could not open %s (%s)\n", _outpath, strerror(errno));
-    fclose(infile);
     return false;
   }
 
