@@ -128,7 +128,14 @@ public:
   const resource_manager_t *get(symbol_type_t t)        const { return store.at(t); }
   int count(symbol_type_t t)                            const { return store.at(t)->count(); }
 
-  void set_has_call() { if ( !has_call ) { has_call = true; use(gen_resource(ST_RETADDR)); } }
+  void set_has_call()
+  {
+    if ( !has_call )
+    {
+      has_call = true;
+      use(gen_resource(ST_RETADDR));
+    }
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -175,7 +182,6 @@ class ir_engine_t
 
   int lblcnt;
 
-private:
   void check_dest(symref_t src);
   void check_src(symref_t src);
 

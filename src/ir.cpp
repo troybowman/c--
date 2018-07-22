@@ -571,10 +571,9 @@ void generate_ir(ir_t &out, parse_results_t &pres)
 {
   out.gsyms.swap(pres.gsyms);
 
-  stx_trees_t::const_iterator i;
-  for ( i = pres.trees.begin(); i != pres.trees.end(); i++ )
+  for ( size_t i = 0, size = pres.trees.size(); i < size; i++ )
   {
-    const stx_tree_t &st = **i;
+    const stx_tree_t &st = *pres.trees[i];
     ir_func_t *f = new ir_func_t(st.sym);
 
     ir_engine_t e(*f, out);
