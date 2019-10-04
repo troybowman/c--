@@ -8,7 +8,7 @@ class treenode_t;
 struct parse_results_t;
 
 //-----------------------------------------------------------------------------
-void generate_ir(ir_t &out, parse_results_t &pres);
+void generate_ir(ir_t *out, parse_results_t &pres);
 
 //-----------------------------------------------------------------------------
 enum codenode_type_t
@@ -120,13 +120,16 @@ private:
   resource_store_t store;
 
 public:
-  void free(symref_t s)                                       { store[s->type()]->free(s); }
-  void use(symref_t s)                                        { store[s->type()]->use(s); }
+  void free(symref_t s) { store[s->type()]->free(s); }
+  void use(symref_t s)  { store[s->type()]->use(s); }
+
   void get_used_resources(symbol_type_t t, symvec_t &v) const { store.at(t)->get_used_resources(v); }
-  void reset(symbol_type_t t)                                 { store.at(t)->reset(); }
-  symref_t gen_resource(symbol_type_t t)                      { return store.at(t)->gen_resource(); }
-  const resource_manager_t *get(symbol_type_t t)        const { return store.at(t); }
-  int count(symbol_type_t t)                            const { return store.at(t)->count(); }
+
+  void reset(symbol_type_t t) { store.at(t)->reset(); }
+
+  symref_t gen_resource(symbol_type_t t) { return store.at(t)->gen_resource(); }
+  const resource_manager_t *get(symbol_type_t t) const { return store.at(t); }
+  int count(symbol_type_t t) const { return store.at(t)->count(); }
 
   void set_has_call()
   {
@@ -174,8 +177,8 @@ struct tree_ctx_t
 // generates intermediate code for a single function
 class ir_engine_t
 {
-  ir_func_t &f;
-  ir_t &ir;
+  ir_func_t *f;
+  ir_t *ir;
 
   codenode_t *head;
   codenode_t *tail;
@@ -197,7 +200,7 @@ class ir_engine_t
   symref_t generate(const treenode_t *tree, tree_ctx_t ctx = tree_ctx_t());
 
 public:
-  ir_engine_t(ir_func_t &_f, ir_t &_ir)
+  ir_engine_t(ir_func_t *_f, ir_t *_ir)
     : f(_f), ir(_ir), head(NULL), tail(NULL), lblcnt(0) {}
 
   void start(const treenode_t *root);

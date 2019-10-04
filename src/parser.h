@@ -7,7 +7,7 @@
 struct parse_results_t;
 
 //-----------------------------------------------------------------------------
-bool parse(parse_results_t &res, FILE *infile);
+bool parse(parse_results_t *res, FILE *infile);
 
 //-----------------------------------------------------------------------------
 typedef std::vector<std::string> errvec_t;

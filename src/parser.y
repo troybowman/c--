@@ -1486,7 +1486,7 @@ void parse_results_t::swap(parse_results_t &r)
 }
 
 //---------------------------------------------------------------------------
-bool parse(parse_results_t &res, FILE *infile)
+bool parse(parse_results_t *res, FILE *infile)
 {
   /*yydebug = 1;*/
 
@@ -1494,7 +1494,7 @@ bool parse(parse_results_t &res, FILE *infile)
   scanner_t scanner(infile);
   yyparse(scanner.yyscan, ctx);
 
-  res.swap(ctx);
+  res->swap(ctx);
 
-  return res.errmsgs.empty();
+  return res->errmsgs.empty();
 }

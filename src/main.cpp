@@ -138,10 +138,18 @@ bool args_t::init(int argc, char **argv)
 }
 
 //-----------------------------------------------------------------------------
-static int parse_input_file(ir_t &ir, args_t &args)
+int main(int argc, char **argv)
 {
+  args_t args;
+  if ( !args.init(argc, argv) )
+  {
+    fprintf(stderr, "usage: %s [-v dbg_flags] [-o outfile] filename\n", argv[0]);
+    return -1;
+  }
+
+  // parse the source code and generate syntax trees
   parse_results_t res;
-  if ( !parse(res, args.infile) )
+  if ( !parse(&res, args.infile) )
   {
     for ( size_t i = 0, size = res.errmsgs.size(); i < size; i++ )
     {
@@ -156,33 +164,20 @@ static int parse_input_file(ir_t &ir, args_t &args)
     return -1;
   }
 
+  // dump the syntax trees
   LOG_INIT(args.outfile);
   LOG_PARSE_RESULTS(res);
   LOG_CHECK_PHASE_FLAG(dbg_no_ir);
 
-  generate_ir(ir, res);
+  // generate an intermediate representation
+  ir_t ir;
+  generate_ir(&ir, res);
 
+  // dump the intermediate code
   LOG_IR(ir);
   LOG_CHECK_PHASE_FLAG(dbg_no_code);
 
-  return 1;
-}
-
-//-----------------------------------------------------------------------------
-int main(int argc, char **argv)
-{
-  args_t args;
-  if ( !args.init(argc, argv) )
-  {
-    fprintf(stderr, "usage: %s [-v dbg_flags] [-o outfile] filename\n", argv[0]);
-    return -1;
-  }
-
-  ir_t ir;
-  int code = parse_input_file(ir, args);
-  if ( code <= 0 )
-    return code;
-
+  // MIPS code generation
   asm_ctx_t ctx(args.outfile);
   generate_mips_asm(ctx, ir);
 

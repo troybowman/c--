@@ -169,7 +169,7 @@ void ir_engine_t::check_dest(symref_t sym)
     case ST_STKARG:
     case ST_STKTEMP:
     case ST_RETVAL:
-      f.use(sym);
+      f->use(sym);
       break;
     case ST_RETADDR:
     case ST_ZERO:
@@ -191,11 +191,11 @@ void ir_engine_t::check_src(symref_t sym)
     case ST_SVTEMP:
     case ST_STKTEMP:
     case ST_RETVAL:
-      f.free(sym);
+      f->free(sym);
       break;
     case ST_LABEL:
       sym->set_val(lblcnt++);
-      ir.labels.push_back(sym);
+      ir->labels.push_back(sym);
       break;
     case ST_REGARG:
     case ST_STKARG:
@@ -214,20 +214,20 @@ symref_t ir_engine_t::gen_temp(tree_ctx_t::flags_t flags)
   if ( (flags & TCTX_SAVE) == 0 )
   {
     // use a temporary
-    temp = f.gen_resource(ST_TEMP);
+    temp = f->gen_resource(ST_TEMP);
     // use a saved reg if no temps left
     if ( temp == NULL )
-      temp = f.gen_resource(ST_SVTEMP);
+      temp = f->gen_resource(ST_SVTEMP);
   }
   else
   {
     // this temp must persist across a function call
-    temp = f.gen_resource(ST_SVTEMP);
+    temp = f->gen_resource(ST_SVTEMP);
   }
 
   // if all else fails, use the stack
   if ( temp == NULL )
-    temp = f.gen_resource(ST_STKTEMP);
+    temp = f->gen_resource(ST_STKTEMP);
 
   ASSERT(1110, temp != NULL);
   return temp;
@@ -236,10 +236,10 @@ symref_t ir_engine_t::gen_temp(tree_ctx_t::flags_t flags)
 //-----------------------------------------------------------------------------
 symref_t ir_engine_t::gen_argloc()
 {
-  symref_t argloc = f.gen_resource(ST_REGARG);
+  symref_t argloc = f->gen_resource(ST_REGARG);
 
   if ( argloc == NULL )
-    argloc = f.gen_resource(ST_STKARG);
+    argloc = f->gen_resource(ST_STKARG);
 
   ASSERT(1111, argloc != NULL);
   return argloc;
@@ -292,11 +292,11 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       {
         std::string key(tree->str());
 
-        symref_t str = ir.strings.get(key);
+        symref_t str = ir->strings.get(key);
         if ( str == NULL )
         {
           str = symref_t(new symbol_t(ST_STRCON, tree->str()));
-          ir.strings.insert(key, str);
+          ir->strings.insert(key, str);
         }
 
         symref_t dest = gen_temp(ctx.flags);
@@ -381,7 +381,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       }
     case TNT_CALL:
       {
-        f.set_has_call();
+        f->set_has_call();
 
         symvec_t argvals;
         symvec_t arglocs;
@@ -398,13 +398,13 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         for ( ; val != argvals.rend() && loc != arglocs.rend(); val++, loc++ )
           append(CNT_ARG, *loc, *val);
 
-        f.reset(ST_REGARG);
-        f.reset(ST_STKARG);
+        f->reset(ST_REGARG);
+        f->reset(ST_STKARG);
 
         symref_t sym = tree->sym();
         if ( sym->base() != PRIM_VOID )
         {
-          symref_t retval = f.gen_resource(ST_RETVAL);
+          symref_t retval = f->gen_resource(ST_RETVAL);
           append(CNT_CALL, retval, sym);
 
           symref_t temp = gen_temp(ctx.flags);
@@ -420,7 +420,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       {
         symref_t val = generate(tree->children[RET_EXPR]);
         if ( val != NULL )
-          append(CNT_RET, f.gen_resource(ST_RETVAL), val);
+          append(CNT_RET, f->gen_resource(ST_RETVAL), val);
         else
           append(CNT_RET);
         break;
@@ -539,7 +539,7 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
         symref_t no  = gen_temp(ctx.flags);
 
         if ( tree->type() == TNT_NEG )
-          append(CNT_SUB, no, f.gen_resource(ST_ZERO), val);
+          append(CNT_SUB, no, f->gen_resource(ST_ZERO), val);
         else if ( tree->type () == TNT_NOT )
           append(CNT_XOR, no, val, symref_t(new symbol_t(ST_INTCON, 1)));
         else
@@ -551,10 +551,10 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
       INTERR(1059);
   }
 
-  f.reset(ST_TEMP);
-  f.reset(ST_SVTEMP);
-  f.reset(ST_STKTEMP);
-  f.reset(ST_RETVAL);
+  f->reset(ST_TEMP);
+  f->reset(ST_SVTEMP);
+  f->reset(ST_STKTEMP);
+  f->reset(ST_RETVAL);
 
   return NULLREF;
 }
@@ -563,22 +563,22 @@ symref_t ir_engine_t::generate(const treenode_t *tree, tree_ctx_t ctx)
 void ir_engine_t::start(const treenode_t *root)
 {
   generate(root);
-  f.code = head;
+  f->code = head;
 }
 
 //-----------------------------------------------------------------------------
-void generate_ir(ir_t &out, parse_results_t &pres)
+void generate_ir(ir_t *out, parse_results_t &pres)
 {
-  out.gsyms.swap(pres.gsyms);
+  out->gsyms.swap(pres.gsyms);
 
   for ( size_t i = 0, size = pres.trees.size(); i < size; i++ )
   {
     const stx_tree_t &st = *pres.trees[i];
     ir_func_t *f = new ir_func_t(st.sym);
 
-    ir_engine_t e(*f, out);
+    ir_engine_t e(f, out);
     e.start(st.root);
 
-    out.funcs.push_back(f);
+    out->funcs.push_back(f);
   }
 }
