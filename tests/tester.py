@@ -9,12 +9,7 @@ import mmap
 from argparse import *
 
 #------------------------------------------------------------------------------
-DECL = "decl"
-TREE = "tree"
-IR   = "ir"
-ASM  = "asm"
-REAL = "real"
-ALL_PHASES = [DECL, TREE, IR, ASM, REAL]
+ALL_PHASES = ["decl", "tree", "ir", "asm", "real"]
 
 #------------------------------------------------------------------------------
 DBG_NO_PARSE   = 0x01
@@ -229,7 +224,7 @@ class TesterPhase:
 class RealPhase(TesterPhase):
 
     def __init__(self, t):
-        TesterPhase.__init__(self, t, REAL, 0)
+        TesterPhase.__init__(self, t, "real", 0)
 
     def validate(self, t):
         self.execAsmFiles(t)
@@ -243,7 +238,7 @@ class RealPhase(TesterPhase):
                     t.verb("executing: %s\n" % asm)
                     output = subprocess.check_output(["spim", "-file", asm])
                     bullshit = re.compile("(SPIM Version)?.*Loaded:.*exceptions\.s\n", re.DOTALL)
-                    output   = re.sub(bullshit, "", output)
+                    output = re.sub(bullshit, "", output)
                     outfile.write(output)
                 except OSError as e:
                     outfile.write("couldn't launch spim: %s\n" % e.strerror)
@@ -254,11 +249,17 @@ if __name__ == "__main__":
     t = Tester()
 
     phases = {
-        DECL : TesterPhase(t, DECL, DBG_DUMP_GSYMS | DBG_DUMP_LSYMS),
-        TREE : TesterPhase(t, TREE, DBG_DUMP_TREE),
-        IR   : TesterPhase(t, IR,   DBG_DUMP_IR),
-        ASM  : TesterPhase(t, ASM,  0),
-        REAL : RealPhase(t),
+        # fine-grained unit tests. these phases instruct the compiler to perform various levels of compilation
+        # and dump its internal data structures to the output file in the form of human-readable comments.
+        # such tests are useful for detecting small regressions in the compilation that occur long before the assembly code is generated.
+        "decl" : TesterPhase(t, "decl", DBG_DUMP_GSYMS | DBG_DUMP_LSYMS),
+        "tree" : TesterPhase(t, "tree", DBG_DUMP_TREE),
+        "ir"   : TesterPhase(t, "ir",   DBG_DUMP_IR),
+        "asm"  : TesterPhase(t, "asm",  0),
+        # the "real" phase compiles real-world, fully functioning c programs and executes the generated mips assembly code
+        # using the SPIM simulator. it will collect the output of the execution and compare it to the output of the same
+        # c program that was compiled with gcc.
+        "real" : RealPhase(t),
         }
 
     for step in t.args.phase_spec:
