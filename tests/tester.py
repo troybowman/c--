@@ -12,30 +12,6 @@ from argparse import *
 ALL_PHASES = ["decl", "tree", "ir", "asm", "real"]
 
 #------------------------------------------------------------------------------
-DBG_NO_PARSE   = 0x01
-DBG_DUMP_GSYMS = 0x02
-DBG_DUMP_LSYMS = 0x04
-DBG_DUMP_TREE  = 0x08
-DBG_NO_IR      = 0x10
-DBG_DUMP_IR    = 0x20
-DBG_NO_CODE    = 0x40
-
-#------------------------------------------------------------------------------
-INFO = 0
-VERB = 1
-TRCE = 2
-
-FAILURE  = '\033[91m'
-SUCCESS  = '\033[92m'
-WARNING  = '\033[93m'
-ENDCOLOR = '\033[0m'
-
-#------------------------------------------------------------------------------
-def replace_ext(path, ext):
-    base = os.path.splitext(path)[0]
-    return base + "." + ext
-
-#------------------------------------------------------------------------------
 class Tester(ArgumentParser):
 
     def __init__(self):
@@ -64,7 +40,7 @@ class Tester(ArgumentParser):
             help="set verbosity level: 0=sparse, 1=verbose, 2=trace",
             metavar="LEVEL",
             type=int,
-            default=VERB,
+            default=self.VERB,
             dest="verbosity")
         self.add_argument(
             "-g", "--grind",
@@ -97,28 +73,42 @@ class Tester(ArgumentParser):
         if not os.path.exists(self.cmm):
             raise Exception("Error: could not find c-- binary!")
 
+    INFO = 0
+    VERB = 1
+    TRCE = 2
+
     def out(self, verbosity, text, color=""):
         if self.args.verbosity >= verbosity:
-            endcolor = "" if color is "" else ENDCOLOR
+            endcolor = "" if color is "" else self.ENDCOLOR
             sys.stdout.write(color + text + endcolor)
 
     def info(self, text, color=""):
-        self.out(INFO, text, color)
+        self.out(self.INFO, text, color)
 
     def verb(self, text, color=""):
-        self.out(VERB, text, color)
+        self.out(self.VERB, text, color)
 
     def trce(self, text, color=""):
-        self.out(TRCE, text, color)
+        self.out(self.TRCE, text, color)
+
+    FAILURE  = '\033[91m'
+    SUCCESS  = '\033[92m'
+    WARNING  = '\033[93m'
+    ENDCOLOR = '\033[0m'
 
     def success(self, text):
-        self.info(text, SUCCESS)
+        self.info(text, self.SUCCESS)
 
     def failure(self, text):
-        self.info(text, FAILURE)
+        self.info(text, self.FAILURE)
 
     def warning(self, text):
-        self.info(text, WARNING)
+        self.info(text, self.WARNING)
+
+#------------------------------------------------------------------------------
+def replace_ext(path, ext):
+    base = os.path.splitext(path)[0]
+    return base + "." + ext
 
 #------------------------------------------------------------------------------
 class StderrMonitor:
@@ -169,6 +159,15 @@ class MemoryMonitor:
                 found = re.search(pattern, mmap.mmap(log.fileno(), 0))
             if found:
                 os.remove(self.log)
+
+#------------------------------------------------------------------------------
+DBG_NO_PARSE   = 0x01
+DBG_DUMP_GSYMS = 0x02
+DBG_DUMP_LSYMS = 0x04
+DBG_DUMP_TREE  = 0x08
+DBG_NO_IR      = 0x10
+DBG_DUMP_IR    = 0x20
+DBG_NO_CODE    = 0x40
 
 #------------------------------------------------------------------------------
 class TesterPhase:
@@ -251,14 +250,15 @@ if __name__ == "__main__":
     phases = {
         # fine-grained unit tests. these phases instruct the compiler to perform various levels of compilation
         # and dump its internal data structures to the output file in the form of human-readable comments.
-        # such tests are useful for detecting small regressions in the compilation that occur long before the assembly code is generated.
+        # such tests are useful for detecting small regressions in the compilation that occur long before
+        # the assembly code is generated.
         "decl" : TesterPhase(t, "decl", DBG_DUMP_GSYMS | DBG_DUMP_LSYMS),
         "tree" : TesterPhase(t, "tree", DBG_DUMP_TREE),
         "ir"   : TesterPhase(t, "ir",   DBG_DUMP_IR),
         "asm"  : TesterPhase(t, "asm",  0),
-        # the "real" phase compiles real-world, fully functioning c programs and executes the generated mips assembly code
-        # using the SPIM simulator. it will collect the output of the execution and compare it to the output of the same
-        # c program that was compiled with gcc.
+        # the "real" phase compiles real-world, fully functioning c programs and executes the generated mips
+        # assembly code using the SPIM simulator. it will collect the output of the execution and compare it
+        # to the output of the same c program that was compiled with gcc.
         "real" : RealPhase(t),
         }
 
